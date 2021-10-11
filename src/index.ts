@@ -1,18 +1,20 @@
+import http, {IncomingMessage, Server, ServerResponse} from "http";
 import {
   API,
+  APIEvent,
   CharacteristicEventTypes,
-  CharacteristicGetCallback,
   CharacteristicSetCallback,
   CharacteristicValue,
+  DynamicPlatformPlugin,
   HAP,
-  IndependentPlatformPlugin,
   Logging,
   PlatformAccessory,
+  PlatformAccessoryEvent,
   PlatformConfig,
 } from "homebridge";
 
-const PLUGIN_NAME = "homebridge-independent-platform-example";
-const PLATFORM_NAME = "ExampleIndependentPlatform";
+const PLUGIN_NAME = "homebridge-dynamic-platform-example";
+const PLATFORM_NAME = "ExampleDynamicPlatform";
 
 /*
  * IMPORTANT NOTICE
@@ -43,13 +45,17 @@ export = (api: API) => {
   hap = api.hap;
   Accessory = api.platformAccessory;
 
-  api.registerPlatform(PLATFORM_NAME, ExampleIndependentPlatform);
+  api.registerPlatform(PLATFORM_NAME, ExampleDynamicPlatform);
 };
 
-class ExampleIndependentPlatform implements IndependentPlatformPlugin {
+class ExampleDynamicPlatform implements DynamicPlatformPlugin {
 
   private readonly log: Logging;
   private readonly api: API;
+
+  private requestServer?: Server;
+
+  private readonly accessories: PlatformAccessory[] = [];
 
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
@@ -57,37 +63,83 @@ class ExampleIndependentPlatform implements IndependentPlatformPlugin {
 
     // probably parse config or something here
 
-    this.publishExampleExternalAccessory("MySwitch 1");
-
     log.info("Example platform finished initializing!");
+
+    /*
+     * When this event is fired, homebridge restored all cached accessories from disk and did call their respective
+     * `configureAccessory` method for all of them. Dynamic Platform plugins should only register new accessories
+     * after this event was fired, in order to ensure they weren't added to homebridge already.
+     * This event can also be used to start discovery of new accessories.
+     */
+    api.on(APIEvent.DID_FINISH_LAUNCHING, () => {
+      log.info("Example platform 'didFinishLaunching'");
+
+      // The idea of this plugin is that we open a http service which exposes api calls to add or remove accessories
+      this.createHttpService();
+    });
   }
 
-  publishExampleExternalAccessory(name: string) {
-    let switchOn = false;
+  /*
+   * This function is invoked when homebridge restores cached accessories from disk at startup.
+   * It should be used to setup event handlers for characteristics and update respective values.
+   */
+  configureAccessory(accessory: PlatformAccessory): void {
+    this.log("Configuring accessory %s", accessory.displayName);
 
-    const uuid = hap.uuid.generate("homebridge:examples:external-switch:" + name);
-    const accessory = new Accessory("External Switch", uuid);
+    accessory.on(PlatformAccessoryEvent.IDENTIFY, () => {
+      this.log("%s identified!", accessory.displayName);
+    });
 
-    const switchService = new hap.Service.Switch(name);
-    switchService.getCharacteristic(hap.Characteristic.On)
-      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        this.log.info("Current state of the switch was returned: " + (switchOn? "ON": "OFF"));
-        callback(undefined, switchOn);
-      })
+    accessory.getService(hap.Service.Lightbulb)!.getCharacteristic(hap.Characteristic.On)
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-        switchOn = value as boolean;
-        this.log.info("Switch state was set to: " + (switchOn? "ON": "OFF"));
+        this.log.info("%s Light was set to: " + value);
         callback();
       });
 
-    accessory.getService(hap.Service.AccessoryInformation)!
-      .setCharacteristic(hap.Characteristic.Manufacturer, "Custom Manufacturer")
-      .setCharacteristic(hap.Characteristic.Model, "External Switch");
-
-    accessory.addService(switchService);
-
-    // will be exposed as an additional accessory and must be paired separately with the pincode of homebridge
-    this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+    this.accessories.push(accessory);
   }
+
+  // --------------------------- CUSTOM METHODS ---------------------------
+
+  addAccessory(name: string) {
+    this.log.info("Adding new accessory with name %s", name);
+
+    // uuid must be generated from a unique but not changing data source, name should not be used in the most cases. But works in this specific example.
+    const uuid = hap.uuid.generate(name);
+    const accessory = new Accessory(name, uuid);
+
+    accessory.addService(hap.Service.Lightbulb, "Test Light");
+
+    this.configureAccessory(accessory); // abusing the configureAccessory here
+
+    this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+  }
+
+  removeAccessories() {
+    // we don't have any special identifiers, we just remove all our accessories
+
+    this.log.info("Removing all accessories");
+
+    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, this.accessories);
+    this.accessories.splice(0, this.accessories.length); // clear out the array
+  }
+
+  createHttpService() {
+    this.requestServer = http.createServer(this.handleRequest.bind(this));
+    this.requestServer.listen(18081, () => this.log.info("Http server listening on 18081..."));
+  }
+
+  private handleRequest(request: IncomingMessage, response: ServerResponse) {
+    if (request.url === "/add") {
+      this.addAccessory(new Date().toISOString());
+    } else if (request.url === "/remove") {
+      this.removeAccessories();
+    }
+
+    response.writeHead(204); // 204 No content
+    response.end();
+  }
+
+  // ----------------------------------------------------------------------
 
 }
