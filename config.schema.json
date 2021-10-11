@@ -1,0 +1,22 @@
+{
+    "pluginAlias": "Homebridge Automower Extras",
+    "pluginType": "platform",
+    "singular": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "title": "Username",
+          "type": "string",
+          "minLength": 1,
+          "required": true
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "minLength": 1,
+          "required": true
+        }
+      }
+    }
+  }
