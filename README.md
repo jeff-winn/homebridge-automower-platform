@@ -1,2 +1,2 @@
-# homebridge-automower-extras
-Automower extras plugin for HomeBridge
+# homebridge-automower-platform
+Automower platform plug-in for HomeBridge
