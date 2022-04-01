@@ -9,7 +9,7 @@
     "clean": "rimraf ./dist",
     "build": "npm run clean && tsc && npm test",
     "build-release": "tsc --project tsconfig.release.json",
-    "test": "jest --collect-coverage"
+    "test": "jest"
   },
   "files": [
     "README.md",
@@ -44,11 +44,11 @@
     "@typescript-eslint/parser": "^4.16.1",
     "eslint": "^7.21.0",
     "homebridge": "^1.3.1",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2",
-    "ts-node": "^9.1.1",
-    "jest": "^27.0.6",
     "ts-jest": "^27.0.3",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
   }
 }
