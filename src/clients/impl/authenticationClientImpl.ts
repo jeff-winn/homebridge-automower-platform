@@ -1,8 +1,16 @@
-import { AuthenticationClient, OAuthToken } from "./authenticationClient";
+import { AuthenticationClient, OAuthToken } from "../authenticationClient";
 import fetch, { Response } from 'node-fetch';
 
 export class AuthenticationClientImpl implements AuthenticationClient {
     constructor(private appKey: string, private baseUrl: string) { }
+
+    getApplicationKey(): string {
+        return this.appKey;
+    }
+
+    getBaseUrl(): string {
+        return this.baseUrl;
+    }
 
     async login(username: string, password: string): Promise<OAuthToken> {
         var body = this.encode({
