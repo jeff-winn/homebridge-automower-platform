@@ -2,20 +2,6 @@ import { OAuthToken } from "../authenticationClient";
 import { AutomowerClient, Mower } from "../automowerClient";
 import fetch, { Response } from 'node-fetch';
 
-/**
- * Describes the response while getting a specific mower.
- */
-interface GetMowerResponse {
-    data: Mower;
-}
-
-/**
- * Describes the response while getting all mowers.
- */
-interface GetMowersResponse {
-    data: Mower[];
-}
-
 export class AutomowerClientImpl implements AutomowerClient {
     constructor(private appKey: string, private baseUrl: string) { }
 
@@ -37,9 +23,9 @@ export class AutomowerClientImpl implements AutomowerClient {
             }
         });
 
-        if (res.status == 404) return undefined;
+        if (res.status == 404) return undefined;        
 
-        this.throwIfStatusNotOk(res);
+        await  this.throwIfStatusNotOk(res);
 
         let response = await res.json() as GetMowerResponse;
         if (response !== undefined) {
@@ -59,7 +45,7 @@ export class AutomowerClientImpl implements AutomowerClient {
             }
         });
 
-        this.throwIfStatusNotOk(res);
+        await this.throwIfStatusNotOk(res);
     
         let response = await res.json() as GetMowersResponse;
         if (response !== undefined) {
@@ -69,10 +55,50 @@ export class AutomowerClientImpl implements AutomowerClient {
         return undefined;
     }
 
-    private throwIfStatusNotOk(response: Response): void {
+    private async throwIfStatusNotOk(response: Response): Promise<void> {
         if (!response.ok)
         {
-            throw `ERR: ${response.status}`
+            let errs = await response.json() as ErrorResponse;
+            if (errs?.errors[0] !== undefined) {
+                let err = errs.errors[0];
+
+                throw `ERR: [${err.code}] ${err.title}`;
+            }
+            else {
+                throw `ERR: ${response.status}`
+            }
         }
     }
 }
+
+/**
+ * Describes the response while getting a specific mower.
+ */
+ interface GetMowerResponse {
+    data: Mower;
+}
+
+/**
+ * Describes the response while getting all mowers.
+ */
+interface GetMowersResponse {
+    data: Mower[];
+}
+
+/**
+ * Describes an error response.
+ */
+interface ErrorResponse {
+    errors: Error[];
+};
+
+/**
+ * Describes an error.
+ */
+interface Error {
+    id: string,
+    status: string,
+    code: string,
+    title: string,
+    detail: string
+};
