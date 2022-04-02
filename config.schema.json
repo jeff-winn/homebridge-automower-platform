@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "Homebridge Automower Extras",
+    "pluginAlias": "Homebridge Automower Platform",
     "pluginType": "platform",
     "singular": false,
     "schema": {

@@ -1,6 +1,6 @@
 {
-  "name": "homebridge-automower-extras",
-  "displayName": "Homebridge Automower Extras",
+  "name": "homebridge-automower-platform",
+  "displayName": "Homebridge Automower Platform",
   "description": "A platform plugin for the Husqvarna Automower.",
   "license": "ISC",
   "homepage": "https://github.com/jeff-winn/homebridge-automower-platform",
@@ -31,7 +31,7 @@
   "keywords": [
     "homebridge-plugin",
     "automower",
-    "extras"
+    "platform"
   ],
   "dependencies": {
     "node-fetch": "^2.6.1"
