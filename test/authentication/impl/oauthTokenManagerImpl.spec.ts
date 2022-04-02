@@ -84,12 +84,12 @@ describe("oauth token manager", () => {
 
         let originalToken = await target.getCurrentToken();
 
-        expect(originalToken).toBe(token1);
+        expect(originalToken).toMatchObject(token1);
 
         target.flagAsInvalid();
         let refreshToken = await target.getCurrentToken();
 
-        expect(refreshToken).toBe(token2);
+        expect(refreshToken).toMatchObject(token2);
     });
 
     it("should refresh the token when the token has expired", async () => {
@@ -118,11 +118,11 @@ describe("oauth token manager", () => {
 
         let originalToken = await target.getCurrentToken();
 
-        expect(originalToken).toBe(token1);
+        expect(originalToken).toMatchObject(token1);
 
         let refreshToken = await target.getCurrentToken();
 
-        expect(refreshToken).toBe(token2);
+        expect(refreshToken).toMatchObject(token2);
     });
 
     it("should return undefined when the refresh token cannot be retrieved", async () => {
