@@ -43,11 +43,14 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
     }
 
     protected async doLogin(): Promise<OAuthToken> {
+        this.resetToken();
+
         return await this.client.login(this.config.username, this.config.password);
     }
 
     protected async doRefreshToken(): Promise<OAuthToken | undefined> {
         const existing = this.currentToken!;    
+        this.resetToken();
 
         try {
             return await this.client.refresh(existing);
@@ -55,6 +58,13 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
         catch {
             return undefined;
         }
+    }
+
+    /**
+     * Resets the existing token.
+     */
+    protected resetToken(): void {
+        this.currentToken = undefined;
     }
 
     protected setExpiration(token: OAuthToken | undefined): void {
