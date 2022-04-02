@@ -17,8 +17,7 @@ jobs:
         node-version: 14
       
     - run: npm ci
-    - run: npm run build-release
-    - run: npm test
+    - run: npm run release
   
     - name: Upload dist
       uses: actions/upload-artifact@v2
