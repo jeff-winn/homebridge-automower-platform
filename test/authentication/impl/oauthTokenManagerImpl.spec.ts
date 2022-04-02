@@ -1,18 +1,7 @@
-import { OAuthTokenManagerImpl } from '../../../src/authentication/impl/oauthTokenManagerImpl';
 import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
-import { Mock, It, Times } from 'moq.ts';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatformConfig';
-
-class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
-    loggedIn: boolean = false;
-
-    protected override async doLogin(): Promise<OAuthToken> {
-        let token = await super.doLogin();
-
-        this.loggedIn = true;
-        return token;
-    }
-}
+import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
+import { Mock, It } from 'moq.ts';
 
 describe("oauth token manager", () => {
     let client: Mock<AuthenticationClient>;
@@ -35,7 +24,7 @@ describe("oauth token manager", () => {
         target = new OAuthTokenManagerImplSpy(client.object(), config);
     });
 
-    it("should login the user when the token does not yet exist", async () => {
+    it("should login when the token does not yet exist", async () => {
         const accessToken: string = "abcd1234";
         const expiresIn: number = 1234;
         const provider: string = "provider";
@@ -44,7 +33,7 @@ describe("oauth token manager", () => {
         const tokenType: string = "Bearer";
         const userId: string = "user id";
 
-        client.setup(x => x.login(It.Is(u => u === "username"), It.Is(p => p === "password"))).returns(
+        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -68,4 +57,90 @@ describe("oauth token manager", () => {
         expect(token.token_type).toBe(tokenType);
         expect(token.user_id).toBe(userId);
     });
+
+    it("should refresh the token when the token has been invalidated", async () => {
+        let token1: OAuthToken = {
+            access_token: "access token",
+            expires_in: 50000,
+            provider: "provider",
+            refresh_token: "12345",
+            scope: "",
+            token_type: "Bearer",
+            user_id: "user id"
+        };
+
+        let token2: OAuthToken = {
+            access_token: "access token",
+            expires_in: 0,
+            provider: "provider",
+            refresh_token: "678910",
+            scope: "",
+            token_type: "Bearer",
+            user_id: "user id"
+        };
+        
+        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(Promise.resolve(token1));
+        client.setup(x => x.refresh(token1)).returns(Promise.resolve(token2));
+
+        let originalToken = await target.getCurrentToken();
+
+        expect(originalToken).toBe(token1);
+
+        target.flagAsInvalid();
+        let refreshToken = await target.getCurrentToken();
+
+        expect(refreshToken).toBe(token2);
+    });
+
+    it("should refresh the token when the token has expired", async () => {
+        let token1: OAuthToken = {
+            access_token: "access token",
+            expires_in: 0,
+            provider: "provider",
+            refresh_token: "12345",
+            scope: "",
+            token_type: "Bearer",
+            user_id: "user id"
+        };
+
+        let token2: OAuthToken = {
+            access_token: "access token",
+            expires_in: 0,
+            provider: "provider",
+            refresh_token: "678910",
+            scope: "",
+            token_type: "Bearer",
+            user_id: "user id"
+        };
+        
+        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(Promise.resolve(token1));
+        client.setup(x => x.refresh(token1)).returns(Promise.resolve(token2));
+
+        let originalToken = await target.getCurrentToken();
+
+        expect(originalToken).toBe(token1);
+
+        let refreshToken = await target.getCurrentToken();
+
+        expect(refreshToken).toBe(token2);
+    });
+
+    it("should return undefined when the refresh token cannot be retrieved", async () => {
+        let token: OAuthToken = {
+            access_token: "access token",
+            expires_in: 0,
+            provider: "provider",
+            refresh_token: "12345",
+            scope: "",
+            token_type: "Bearer",
+            user_id: "user id"
+        };
+
+        client.setup(x => x.refresh(token)).throws("nope");
+        target.unsafeSetCurrentToken(token);        
+        
+        let newToken = await target.unsafeRefreshToken();
+
+        expect(newToken).toBeUndefined();
+    })
 });
