@@ -121,9 +121,10 @@ dist
 
 ### VisualStudioCode template
 .vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
 
 # Local History for Visual Studio Code
 .history/

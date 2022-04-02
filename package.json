@@ -3,13 +3,13 @@
   "displayName": "Homebridge Automower Extras",
   "description": "A platform plugin for the Husqvarna Automower.",
   "license": "ISC",
-  "homepage": "https://github.com/jeff-winn/homebridge-automower-extras",
+  "homepage": "https://github.com/jeff-winn/homebridge-automower-platform",
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run clean && tsc && npm test",
+    "build": "tsc && npm test",
     "build-release": "tsc --project tsconfig.release.json",
-    "test": "jest --collect-coverage"
+    "test": "jest --ci"
   },
   "files": [
     "README.md",
@@ -19,10 +19,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeff-winn/homebridge-automower-extras.git"
+    "url": "https://github.com/jeff-winn/homebridge-automower-platform.git"
   },
   "bugs": {
-    "url": "https://github.com/jeff-winn/homebridge-automower-extras/issues"
+    "url": "https://github.com/jeff-winn/homebridge-automower-platform/issues"
   },
   "engines": {
     "node": ">=12.13.0",
@@ -42,13 +42,14 @@
     "@types/node-fetch": "^2.5.7",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
+    "dotenv": "^16.0.0",
     "eslint": "^7.21.0",
     "homebridge": "^1.3.1",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2",
-    "ts-node": "^9.1.1",
-    "jest": "^27.0.6",
     "ts-jest": "^27.0.3",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
   }
 }
