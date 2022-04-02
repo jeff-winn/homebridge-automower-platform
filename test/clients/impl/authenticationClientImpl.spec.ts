@@ -1,6 +1,6 @@
 import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl'
 
-describe("authenticationClientImpl", () => {
+describe("authentication client", () => {
     /* These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace. */
     const APPKEY:   string = process.env.HUSQVARNA_APPKEY   || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';

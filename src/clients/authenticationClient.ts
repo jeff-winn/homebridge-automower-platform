@@ -1,5 +1,5 @@
 /**
- * A client used to authenticate the user to the Husqvarna platform.
+ * A client used to authenticate to the Husqvarna platform.
  */
  export interface AuthenticationClient {
     /**
