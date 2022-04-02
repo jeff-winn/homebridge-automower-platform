@@ -7,6 +7,8 @@ describe("automower client", () => {
     const APPKEY:   string = process.env.HUSQVARNA_APPKEY   || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
     const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || '';
+    const MOWER_ID: string = process.env.MOWER_ID || '';
+
     const BASE_AUTHENTICATION_URL: string = "https://api.authentication.husqvarnagroup.dev/v1";
     const BASE_URL: string = "https://api.amc.husqvarna.dev/v1";
 
@@ -39,4 +41,10 @@ describe("automower client", () => {
 
         expect(mowers).toBeDefined();
     });
+
+    it.skip("should get a specific mower by the id", async () => {
+        let mower = await target.getMower(MOWER_ID, token);
+        
+        expect(mower).toBeDefined();
+    })
 });
