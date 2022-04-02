@@ -13,7 +13,7 @@ export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
         return token;
     }
 
-    protected async doRefreshToken(): Promise<OAuthToken | undefined> {
+    protected async doRefreshToken(): Promise<OAuthToken> {
         let token = await super.doRefreshToken();
 
         this.refreshed = true;
@@ -36,11 +36,11 @@ export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
         return super.isTokenInvalidated();
     }
 
-    public unsafeRefreshToken(): Promise<OAuthToken | undefined> {
+    public unsafeRefreshToken(): Promise<OAuthToken> {
         return super.doRefreshToken();
     }
 
-    public unsafeSetCurrentToken(token: OAuthToken | undefined) {
+    public unsafeSetCurrentToken(token: OAuthToken) {
         super.setCurrentToken(token);
     }
 };

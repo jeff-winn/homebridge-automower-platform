@@ -10,10 +10,10 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
     constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig) { }
 
     async getCurrentToken(): Promise<OAuthToken> {
-        if (this.isTokenInvalidated()) {
-            let newToken: OAuthToken | undefined;
+        if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {
+            let newToken: OAuthToken;
 
-            if (this.shouldRefreshToken()) {
+            if (this.hasAlreadyLoggedIn()) {
                 newToken = await this.doRefreshToken();
             }
             else {
@@ -35,29 +35,19 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
 
     protected isTokenInvalidated(): boolean {
         let now = new Date();
-        return (this.currentToken === undefined || this.invalidated || (this.expires !== undefined && this.expires < now));
+        return (this.invalidated || (this.expires !== undefined && this.expires < now));
     }
 
-    protected shouldRefreshToken(): boolean {
+    protected hasAlreadyLoggedIn(): boolean {
         return this.currentToken !== undefined;
     }
 
     protected async doLogin(): Promise<OAuthToken> {
-        this.resetToken();
-
         return await this.client.login(this.config.username, this.config.password);
     }
 
-    protected async doRefreshToken(): Promise<OAuthToken | undefined> {
-        const existing = this.currentToken!;    
-        this.resetToken();
-
-        try {
-            return await this.client.refresh(existing);
-        }
-        catch {
-            return undefined;
-        }
+    protected async doRefreshToken(): Promise<OAuthToken> {       
+        return await this.client.refresh(this.currentToken!);
     }
 
     /**

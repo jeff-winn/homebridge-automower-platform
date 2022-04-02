@@ -95,7 +95,7 @@ describe("oauth token manager", () => {
     it("should refresh the token when the token has expired", async () => {
         let token1: OAuthToken = {
             access_token: "access token",
-            expires_in: 0,
+            expires_in: -100,
             provider: "provider",
             refresh_token: "12345",
             scope: "",
@@ -124,23 +124,4 @@ describe("oauth token manager", () => {
 
         expect(refreshToken).toMatchObject(token2);
     });
-
-    it("should return undefined when the refresh token cannot be retrieved", async () => {
-        let token: OAuthToken = {
-            access_token: "access token",
-            expires_in: 0,
-            provider: "provider",
-            refresh_token: "12345",
-            scope: "",
-            token_type: "Bearer",
-            user_id: "user id"
-        };
-
-        client.setup(x => x.refresh(token)).throws("nope");
-        target.unsafeSetCurrentToken(token);        
-        
-        let newToken = await target.unsafeRefreshToken();
-
-        expect(newToken).toBeUndefined();
-    })
 });
