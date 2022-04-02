@@ -37,6 +37,8 @@ export class AutomowerClientImpl implements AutomowerClient {
             }
         });
 
+        if (res.status == 404) return undefined;
+
         this.throwIfStatusNotOk(res);
 
         let response = await res.json() as GetMowerResponse;
