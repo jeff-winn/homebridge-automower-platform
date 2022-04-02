@@ -3,7 +3,7 @@
   "displayName": "Homebridge Automower Extras",
   "description": "A platform plugin for the Husqvarna Automower.",
   "license": "ISC",
-  "homepage": "https://github.com/jeff-winn/homebridge-automower-extras",
+  "homepage": "https://github.com/jeff-winn/homebridge-automower-platform",
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf ./dist",
@@ -19,10 +19,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeff-winn/homebridge-automower-extras.git"
+    "url": "https://github.com/jeff-winn/homebridge-automower-platform.git"
   },
   "bugs": {
-    "url": "https://github.com/jeff-winn/homebridge-automower-extras/issues"
+    "url": "https://github.com/jeff-winn/homebridge-automower-platform/issues"
   },
   "engines": {
     "node": ">=12.13.0",

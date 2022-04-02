@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "ES6",
+    "target": "ES2018",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
