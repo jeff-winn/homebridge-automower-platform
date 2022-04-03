@@ -49,18 +49,11 @@ export = (api: API) => {
 };
 
 class ExampleDynamicPlatform implements DynamicPlatformPlugin {
-
-  private readonly log: Logging;
-  private readonly api: API;
-
   private requestServer?: Server;
 
   private readonly accessories: PlatformAccessory[] = [];
 
-  constructor(log: Logging, config: PlatformConfig, api: API) {
-    this.log = log;
-    this.api = api;
-
+  constructor(private log: Logging, private config: PlatformConfig, private api: API) {
     // probably parse config or something here
 
     log.info("Example platform finished initializing!");
