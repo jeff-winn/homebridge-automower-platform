@@ -7,7 +7,6 @@ on: [ push, pull_request ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -24,5 +23,15 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - run: npm ci
-    - run: npm run release
+    - name: Run CI install
+      run: npm ci
+    - name: Install SonarScanner
+      run: npm install -g sonarqube-scanner
+    - name: Run Release build
+      run: npm run release
+    - name: Run SonarScanner
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        sonar-scanner -Dsonar.login="${{ env.SONAR_TOKEN }}"
