@@ -30,7 +30,9 @@ describe("pause mower service", () => {
         };
 
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
-        client.setup(x => x.doAction(id, It.IsAny(), token)).returns(Promise.resolve(undefined));
+        client.setup(x => x.doAction(id, {
+            type: "Pause"
+        }, token)).returns(Promise.resolve(undefined));
 
         await target.pauseMowerById(id);
 
