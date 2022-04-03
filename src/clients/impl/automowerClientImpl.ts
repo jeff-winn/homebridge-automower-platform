@@ -90,7 +90,7 @@ interface GetMowersResponse {
  */
 interface ErrorResponse {
     errors: Error[];
-};
+}
 
 /**
  * Describes an error.
@@ -101,4 +101,4 @@ interface Error {
     code: string,
     title: string,
     detail: string
-};
+}
