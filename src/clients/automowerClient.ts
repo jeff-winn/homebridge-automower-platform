@@ -16,7 +16,7 @@ export interface AutomowerClient {
      * @param token The access token.
      */
     getMowers(token: OAuthToken): Promise<Mower[] | undefined>;
-};
+}
 
 /**
  * Describes a mower.

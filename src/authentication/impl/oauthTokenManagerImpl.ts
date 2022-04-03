@@ -42,12 +42,12 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
         return this.currentToken !== undefined;
     }
 
-    protected async doLogin(): Promise<OAuthToken> {
-        return await this.client.login(this.config.username, this.config.password);
+    protected doLogin(): Promise<OAuthToken> {
+        return this.client.login(this.config.username, this.config.password);
     }
 
-    protected async doRefreshToken(): Promise<OAuthToken> {       
-        return await this.client.refresh(this.currentToken!);
+    protected doRefreshToken(): Promise<OAuthToken> {       
+        return this.client.refresh(this.currentToken!);
     }
 
     /**
@@ -81,4 +81,4 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
     protected flagAsValid(): void {
         this.invalidated = false;
     }
-};
+}
