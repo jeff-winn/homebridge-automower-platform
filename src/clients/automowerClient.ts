@@ -5,6 +5,14 @@ import { OAuthToken } from "./authenticationClient";
  */
 export interface AutomowerClient {
     /**
+     * Instructs the mower to do a specific action.
+     * @param id The id of the mower.
+     * @param action The action payload (specific to the action being performed).
+     * @param token The access token.
+     */
+    doAction(id: string, action: any, token: OAuthToken): Promise<void>;
+
+    /**
      * Gets a specific mower connected to the account.
      * @param id The id of the mower.
      * @param token The access token.
