@@ -20,7 +20,7 @@ jobs:
     - run: npm ci
     - run: npm install -g sonarqube-scanner
     - run: npm run release
-    - name: run sonarqube-scanner
+    - name: Run sonarqube-scanner
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
