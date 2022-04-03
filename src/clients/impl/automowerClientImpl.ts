@@ -14,10 +14,6 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     async doAction(id: string, action: any, token: OAuthToken): Promise<void> {
-        let payload = {
-            data: action
-        };
-
         let res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
             method: 'POST',
             headers: {
@@ -25,7 +21,9 @@ export class AutomowerClientImpl implements AutomowerClient {
                 'Authorization': `Bearer ${token.access_token}`,
                 'Authorization-Provider': token.provider
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+                data: action
+            }),
         });
 
         await this.throwIfStatusNotOk(res);
