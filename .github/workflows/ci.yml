@@ -7,24 +7,22 @@ on: [ push, pull_request ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+    - uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 16
         cache: 'npm'
 
-    - run: npm --version
     - run: npm ci
-    - run: npm run build-release
-    - run: npm test
+    - run: npm install -g sonarqube-scanner
+    - run: npm run release
+    - name: Run sonarqube-scanner
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        sonar-scanner -Dsonar.login="${{ env.SONAR_TOKEN }}"

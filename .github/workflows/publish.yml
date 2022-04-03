@@ -10,15 +10,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
+
     - uses: actions/setup-node@v2
       with:
-        node-version: 14
+        node-version: 16
+        cache: 'npm'
       
     - run: npm ci
-    - run: npm run build-release
-    - run: npm test
+    - run: npm run release
   
     - name: Upload dist
       uses: actions/upload-artifact@v2
@@ -40,7 +42,7 @@ jobs:
 
     - uses: actions/setup-node@v2
       with:
-        node-version: 14
+        node-version: 16
         registry-url: 'https://registry.npmjs.org/'
 
     - name: Set environment variables

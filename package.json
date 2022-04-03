@@ -7,9 +7,9 @@
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "tsc && npm test",
-    "build-release": "tsc --project tsconfig.release.json",
-    "test": "jest --ci"
+    "build": "tsc",
+    "test": "jest --ci",
+    "release": "tsc --project tsconfig.release.json && jest -c jest.release.config.ts"
   },
   "files": [
     "README.md",
