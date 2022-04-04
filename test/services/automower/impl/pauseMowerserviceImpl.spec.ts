@@ -1,8 +1,8 @@
-import { OAuthTokenManager } from "../../../src/authentication/oauthTokenManager"
-import { AutomowerClient } from '../../../src/clients/automowerClient'
-import { PauseMowerServiceImpl } from '../../../src/services/impl/pauseMowerServiceImpl'
+import { OAuthTokenManager } from "../../../../src/authentication/oauthTokenManager"
+import { AutomowerClient } from '../../../../src/clients/automowerClient'
+import { PauseMowerServiceImpl } from '../../../../src/services/automower/impl/pauseMowerServiceImpl'
 import { Mock, It, Times } from 'moq.ts'
-import { OAuthToken } from "../../../src/clients/authenticationClient";
+import { OAuthToken } from "../../../../src/clients/authenticationClient";
 
 describe("pause mower service", () => {
     let tokenManager: Mock<OAuthTokenManager>;

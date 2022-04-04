@@ -6,6 +6,7 @@
 	],	
 	"settings": {
 		"files.exclude": {
+			"dist": true,
 			"docs": true,
 			"coverage": true,
 			"**/bin": true,

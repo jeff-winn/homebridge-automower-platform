@@ -1,5 +1,5 @@
-import { OAuthTokenManager } from "../../authentication/oauthTokenManager";
-import { AutomowerClient } from "../../clients/automowerClient";
+import { OAuthTokenManager } from "../../../authentication/oauthTokenManager";
+import { AutomowerClient } from "../../../clients/automowerClient";
 import { PauseMowerService } from "../pauseMowerService";
 
 export class PauseMowerServiceImpl implements PauseMowerService {
