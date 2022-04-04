@@ -1,6 +1,6 @@
 import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
 import { AutomowerClient, Mower } from '../../../src/clients/automowerClient';
-import { GetMowersServiceImpl } from '../../../src/services/impl/GetMowersServiceImpl'
+import { GetMowersServiceImpl } from '../../../src/services/impl/getMowersServiceImpl'
 import { Mock, It } from 'moq.ts';
 import { OAuthToken } from '../../../src/clients/authenticationClient';
 
