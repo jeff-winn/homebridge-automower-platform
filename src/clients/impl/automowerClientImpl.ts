@@ -1,6 +1,6 @@
 import { OAuthToken } from "../authenticationClient";
 import { AutomowerClient, Mower } from "../automowerClient";
-import fetch, { Response } from 'node-fetch';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 export class AutomowerClientImpl implements AutomowerClient {
     constructor(private appKey: string, private baseUrl: string) { }
@@ -13,8 +13,28 @@ export class AutomowerClientImpl implements AutomowerClient {
         return this.baseUrl;
     }
 
+    async doAction(id: string, action: any, token: OAuthToken): Promise<void> {
+        let res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-Api-Key': this.appKey,
+                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization-Provider': token.provider
+            },
+            body: JSON.stringify({
+                data: action
+            }),
+        });
+
+        await this.throwIfStatusNotOk(res);
+    }
+
+    protected doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+        return fetch(url, init)
+    }
+
     async getMower(id: string, token: OAuthToken): Promise<Mower | undefined> {
-        let res = await fetch(this.baseUrl + `/mowers/${id}`, {
+        let res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -23,9 +43,9 @@ export class AutomowerClientImpl implements AutomowerClient {
             }
         });
 
-        if (res.status == 404) return undefined;        
+        if (res.status == 404) return undefined;
 
-        await  this.throwIfStatusNotOk(res);
+        await this.throwIfStatusNotOk(res);
 
         let response = await res.json() as GetMowerResponse;
         if (response !== undefined) {
@@ -33,10 +53,10 @@ export class AutomowerClientImpl implements AutomowerClient {
         }
 
         return undefined;
-    }
+    }    
 
     async getMowers(token: OAuthToken): Promise<Mower[] | undefined> {
-        let res = await fetch(this.baseUrl + '/mowers', {
+        let res = await this.doFetch(this.baseUrl + '/mowers', {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
