@@ -1,7 +1,7 @@
 {
     "pluginAlias": "Homebridge Automower Platform",
     "pluginType": "platform",
-    "singular": false,
+    "singular": true,
     "schema": {
       "type": "object",
       "properties": {
@@ -13,6 +13,12 @@
         },
         "password": {
           "title": "Password",
+          "type": "string",
+          "minLength": 1,
+          "required": true
+        },
+        "appKey": {
+          "title": "Application Key",
           "type": "string",
           "minLength": 1,
           "required": true

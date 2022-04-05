@@ -5,13 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch Program",
+			"name": "Launch Homebridge",
 			"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
 			"request": "launch",
 			"skipFiles": [
 				"<node_internals>/**"
 			],
-			"type": "pwa-node"
+			"type": "pwa-node",
+			"preLaunchTask": "build"
 		}
 	]
 }
