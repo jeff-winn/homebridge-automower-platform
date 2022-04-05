@@ -16,6 +16,12 @@
           "type": "string",
           "minLength": 1,
           "required": true
+        },
+        "appKey": {
+          "title": "Application Key",
+          "type": "string",
+          "minLength": 1,
+          "required": true
         }
       }
     }
