@@ -30,7 +30,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     protected doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        return fetch.default(url, init);
+        return fetch(url, init);
     }
 
     async getMower(id: string, token: OAuthToken): Promise<Mower | undefined> {
