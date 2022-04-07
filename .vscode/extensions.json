@@ -1,6 +1,7 @@
 {
     "recommendations": [
-        "kavod-io.vscode-jest-test-adapter",
-        "connorshea.vscode-test-explorer-status-bar"
+        "connorshea.vscode-test-explorer-status-bar",
+        "dbaeumer.vscode-eslint",
+        "kavod-io.vscode-jest-test-adapter"
     ]
 }
