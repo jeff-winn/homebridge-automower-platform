@@ -1,5 +1,5 @@
-import { OAuthToken } from "../authenticationClient";
-import { AutomowerClient, Mower } from "../automowerClient";
+import { OAuthToken } from '../authenticationClient';
+import { AutomowerClient, Mower } from '../automowerClient';
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 export class AutomowerClientImpl implements AutomowerClient {
@@ -13,8 +13,8 @@ export class AutomowerClientImpl implements AutomowerClient {
         return this.baseUrl;
     }
 
-    async doAction(id: string, action: any, token: OAuthToken): Promise<void> {
-        let res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+    async doAction(id: string, action: unknown, token: OAuthToken): Promise<void> {
+        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
             method: 'POST',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -30,11 +30,11 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     protected doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        return fetch(url, init)
+        return fetch.default(url, init);
     }
 
     async getMower(id: string, token: OAuthToken): Promise<Mower | undefined> {
-        let res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -43,11 +43,13 @@ export class AutomowerClientImpl implements AutomowerClient {
             }
         });
 
-        if (res.status == 404) return undefined;
+        if (res.status === 404) {
+            return undefined;
+        }
 
         await this.throwIfStatusNotOk(res);
 
-        let response = await res.json() as GetMowerResponse;
+        const response = await res.json() as GetMowerResponse;
         if (response !== undefined) {
             return response.data;
         }
@@ -56,7 +58,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     }    
 
     async getMowers(token: OAuthToken): Promise<Mower[] | undefined> {
-        let res = await this.doFetch(this.baseUrl + '/mowers', {
+        const res = await this.doFetch(this.baseUrl + '/mowers', {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -67,7 +69,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
         await this.throwIfStatusNotOk(res);
     
-        let response = await res.json() as GetMowersResponse;
+        const response = await res.json() as GetMowersResponse;
         if (response !== undefined) {
             return response.data;
         }
@@ -76,16 +78,14 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     private async throwIfStatusNotOk(response: Response): Promise<void> {
-        if (!response.ok)
-        {
-            let errs = await response.json() as ErrorResponse;
+        if (!response.ok) {
+            const errs = await response.json() as ErrorResponse;
             if (errs?.errors[0] !== undefined) {
-                let err = errs.errors[0];
+                const err = errs.errors[0];
 
                 throw `ERR: [${err.code}] ${err.title}`;
-            }
-            else {
-                throw `ERR: ${response.status}`
+            } else {
+                throw `ERR: ${response.status}`;
             }
         }
     }
@@ -116,9 +116,9 @@ interface ErrorResponse {
  * Describes an error.
  */
 interface Error {
-    id: string,
-    status: string,
-    code: string,
-    title: string,
-    detail: string
+    id: string;
+    status: string;
+    code: string;
+    title: string;
+    detail: string;
 }
