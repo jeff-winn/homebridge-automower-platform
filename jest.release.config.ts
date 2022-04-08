@@ -1,4 +1,4 @@
-import { Config } from '@jest/types'
+import { Config } from '@jest/types';
 
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:
@@ -6,12 +6,12 @@ import { Config } from '@jest/types'
  */
 
 export default async (): Promise<Config.InitialOptions> => {
-  return {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    passWithNoTests: false,
-    collectCoverage: true,
-    coverageDirectory: 'test_results/coverage',    
-    testRegex: '(?<!i)\.(spec|test)\.[jt]s$'
-  }
+    return {
+        preset: 'ts-jest',
+        testEnvironment: 'node',
+        passWithNoTests: false,
+        collectCoverage: true,
+        coverageDirectory: 'test_results/coverage',    
+        testRegex: '(?<!i)\\.(spec|test)\\.[jt]s$'
+    };
 };
