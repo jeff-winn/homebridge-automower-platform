@@ -1,5 +1,7 @@
+import { OAuthToken } from '../../../src/clients/authenticationClient';
 import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from '../../../src/clients/impl/automowerClientImpl';
+import * as constants from '../../../src/constants';
 
 describe('automower client', () => {
     /* These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace. */
@@ -8,67 +10,75 @@ describe('automower client', () => {
     const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || '';
     const MOWER_ID: string = process.env.MOWER_ID || '';
 
-    const BASE_AUTHENTICATION_URL = 'https://api.authentication.husqvarnagroup.dev/v1';
-    const BASE_URL = 'https://api.amc.husqvarna.dev/v1';
-
     let authenticationClient: AuthenticationClientImpl;
     let target: AutomowerClientImpl;
+    let token: OAuthToken;
 
     beforeAll(async () => {
-        target = new AutomowerClientImpl(APPKEY, BASE_URL);
-        authenticationClient = new AuthenticationClientImpl(APPKEY, BASE_AUTHENTICATION_URL);
+        target = new AutomowerClientImpl(APPKEY, constants.AUTOMOWER_CONNECT_API_BASE_URL);
+        authenticationClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
+
+        if (USERNAME !== '' && PASSWORD !== '') {
+            token = await authenticationClient.login(USERNAME, PASSWORD);
+        }        
+    });
+
+    afterAll(async () => {
+        if (token !== undefined) {
+            await authenticationClient.logout(token);
+        }
     });
 
     it('should initialize correctly', () => {
         expect(target.getApplicationKey()).toBe(APPKEY);
-        expect(target.getBaseUrl()).toBe(BASE_URL);
+        expect(target.getBaseUrl()).toBe(constants.AUTOMOWER_CONNECT_API_BASE_URL);
+    });
+
+    it('should throw an error when the mower id is empty on doAction', async () => {
+        let thrown = false;
+
+        try {
+            await target.doAction('', { }, token);
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when the mower id is empty on getMower', async () => {
+        let thrown = false;
+
+        try {
+            await target.getMower('', token);
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeTruthy();
     });
 
     it.skip('should pause the mower', async () => {
-        const token = await authenticationClient.login(USERNAME, PASSWORD);
-
-        try {
-            await target.doAction(MOWER_ID, {
-                type: 'Pause'
-            }, token);
-        } finally {
-            await authenticationClient.logout(token);
-        }
+        await target.doAction(MOWER_ID, {
+            type: 'Pause'
+        }, token);
     });
 
     it.skip('should get all the mowers from the account', async () => {
-        const token = await authenticationClient.login(USERNAME, PASSWORD);
+        const mowers = await target.getMowers(token);
 
-        try {
-            const mowers = await target.getMowers(token);
-
-            expect(mowers).toBeDefined();
-        } finally {
-            await authenticationClient.logout(token);
-        }        
+        expect(mowers).toBeDefined();
     });
 
     it.skip('should return undefined when the mower does not exist by id', async () => {
-        const token = await authenticationClient.login(USERNAME, PASSWORD);
-
-        try {
-            const mower = await target.getMower('000000', token);
-        
-            expect(mower).toBeUndefined();
-        } finally {
-            await authenticationClient.logout(token);
-        }
+        const mower = await target.getMower('000000', token);
+    
+        expect(mower).toBeUndefined();
     });
 
     it.skip('should get a specific mower by the id', async () => {
-        const token = await authenticationClient.login(USERNAME, PASSWORD);
-
-        try {
-            const mower = await target.getMower(MOWER_ID, token);
-        
-            expect(mower).toBeDefined();
-        } finally {
-            await authenticationClient.logout(token);
-        }
+        const mower = await target.getMower(MOWER_ID, token);
+    
+        expect(mower).toBeDefined();
     });
 });

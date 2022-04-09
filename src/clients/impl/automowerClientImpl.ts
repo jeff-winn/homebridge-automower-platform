@@ -15,6 +15,10 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     async doAction(id: string, action: unknown, token: OAuthToken): Promise<void> {
+        if (id === '') {
+            throw new Error('id cannot be empty.');
+        }
+
         const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
             method: 'POST',
             headers: {
@@ -35,6 +39,10 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     async getMower(id: string, token: OAuthToken): Promise<Mower | undefined> {
+        if (id === '') {
+            throw new Error('id cannot be empty.');
+        }
+
         const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
             method: 'GET',
             headers: {
