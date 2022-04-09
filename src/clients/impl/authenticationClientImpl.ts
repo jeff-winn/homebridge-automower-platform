@@ -1,6 +1,7 @@
 import { AuthenticationClient, OAuthToken } from '../authenticationClient';
 import { NotAuthorizedError } from '../notAuthorizedError';
 import fetch, { Response } from 'node-fetch';
+import { BadCredentialsError } from '../badCredentialsError';
 
 export class AuthenticationClientImpl implements AuthenticationClient {
     constructor(private appKey: string, private baseUrl: string) { }
@@ -37,9 +38,17 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             body: body
         });
 
+        this.throwIfBadCredentials(response);
+        this.throwIfNotAuthorized(response);
         this.throwIfStatusNotOk(response);
 
         return await response.json() as OAuthToken;
+    }
+
+    private throwIfBadCredentials(response: Response): void {
+        if (response.status === 400) {
+            throw new BadCredentialsError('The username and/or password supplied were not valid.');
+        }
     }
 
     async logout(token: OAuthToken): Promise<void> {
@@ -51,6 +60,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             }
         });
 
+        this.throwIfNotAuthorized(response);
         this.throwIfStatusNotOk(response);
     }
 
@@ -69,6 +79,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             body: body
         });
 
+        this.throwIfNotAuthorized(response);
         this.throwIfStatusNotOk(response);
 
         return await response.json() as OAuthToken;
@@ -94,9 +105,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    private throwIfStatusNotOk(response: Response): void {
-        this.throwIfNotAuthorized(response);
-        
+    private throwIfStatusNotOk(response: Response): void {        
         if (!response.ok) {
             throw new Error(`ERR: ${response.status}`);
         }

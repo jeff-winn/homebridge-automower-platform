@@ -1,21 +1,22 @@
+import { BadCredentialsError } from '../../../src/clients/badCredentialsError';
 import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl';
+import * as constants from '../../../src/constants';
 
 describe('authentication client', () => {
     /* These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace. */
     const APPKEY: string = process.env.HUSQVARNA_APPKEY || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
     const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || '';
-    const BASE_URL = 'https://api.authentication.husqvarnagroup.dev/v1';
 
     let target: AuthenticationClientImpl;
 
     beforeAll(async () => {
-        target = new AuthenticationClientImpl(APPKEY, BASE_URL);
+        target = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
     });
 
     it('should initalize correctly', () => {
         expect(target.getApplicationKey()).toBe(APPKEY);
-        expect(target.getBaseUrl()).toBe(BASE_URL);
+        expect(target.getBaseUrl()).toBe(constants.AUTHENTICATION_API_BASE_URL);
     });
 
     it('should throw an error when username is empty', async () => {
@@ -37,6 +38,19 @@ describe('authentication client', () => {
             await target.login('username', '');
         } catch (e) {
             thrown = true;
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+    
+    it.skip('should not login when the credentials are invalid', async () => {
+        let thrown = false;
+        try {
+            await target.login('this-is-not-a-username', 'nor-is-this-a-password');
+        } catch (e) {
+            if (e instanceof BadCredentialsError) {
+                thrown = true;
+            }
         }
 
         expect(thrown).toBeTruthy();
