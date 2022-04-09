@@ -35,7 +35,9 @@
     "platform"
   ],
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.6.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",

@@ -1,11 +1,13 @@
 import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatformConfig';
 import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
-import { Mock, It } from 'moq.ts';
+import { Mock, It, Times } from 'moq.ts';
+import { Logging } from 'homebridge';
 
 describe('oauth token manager', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
+    let log: Mock<Logging>;
 
     const username = 'username';
     const password = 'password';
@@ -21,7 +23,10 @@ describe('oauth token manager', () => {
             appKey: appKey
         } as AutomowerPlatformConfig;
 
-        target = new OAuthTokenManagerImplSpy(client.object(), config);
+        log = new Mock<Logging>();
+        log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
+
+        target = new OAuthTokenManagerImplSpy(client.object(), config, log.object());
     });
 
     it('should login when the token does not yet exist', async () => {
@@ -43,7 +48,7 @@ describe('oauth token manager', () => {
                 token_type: tokenType,
                 user_id: userId
             } as OAuthToken));
-
+        
         const token = await target.getCurrentToken();
 
         expect(target.loggedIn).toBeTruthy();
@@ -123,5 +128,35 @@ describe('oauth token manager', () => {
         const refreshToken = await target.getCurrentToken();
 
         expect(refreshToken).toMatchObject(token2);
+    });
+
+    it('should do nothing if the user is not logged in', async () => {
+        target.unsafeSetCurrentToken(undefined);
+
+        await target.logout();        
+
+        client.verify(x => x.logout(It.IsAny<OAuthToken>()), Times.Never());
+    });
+
+    it('should logout the user when the user has been logged in', async () => {
+        const token: OAuthToken = {
+            access_token: 'access token',
+            expires_in: -100,
+            provider: 'provider',
+            refresh_token: '12345',
+            scope: '',
+            token_type: 'Bearer',
+            user_id: 'user id'
+        };
+        
+        client.setup(x => x.logout(token)).returns(Promise.resolve(undefined));
+
+        target.unsafeSetCurrentToken(token);
+        await target.logout();
+
+        const result = target.unsafeGetCurrentToken();
+
+        client.verify(x => x.logout(token), Times.Once());
+        expect(result).toBeUndefined();
     });
 });
