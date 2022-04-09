@@ -14,6 +14,14 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     async login(username: string, password: string): Promise<OAuthToken> {
+        if (username === '') {
+            throw new Error('username cannot be empty.');
+        }
+
+        if (password === '') {
+            throw new Error('password cannot be empty.');
+        }
+
         const body = this.encode({
             client_id: this.appKey,
             grant_type: 'password',

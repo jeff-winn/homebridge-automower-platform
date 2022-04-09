@@ -18,6 +18,30 @@ describe('authentication client', () => {
         expect(target.getBaseUrl()).toBe(BASE_URL);
     });
 
+    it('should throw an error when username is empty', async () => {
+        let thrown = false;
+
+        try {
+            await target.login('', 'password');
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when password is empty', async () => {
+        let thrown = false;
+
+        try {
+            await target.login('username', '');
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
     it.skip('integration test the entire client', async () => {
         const token = await target.login(USERNAME, PASSWORD);
 
