@@ -1,18 +1,28 @@
 {
-  "compilerOptions": {
+  "compilerOptions": {  
+    "target": "ES2018", // ~node10
     "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "ES2018",
+    "lib": [
+      "ES2015",
+      "ES2016",
+      "ES2017",
+      "ES2018"
+    ],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
+    "esModuleInterop": true,
     "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts"
   ]
 }
