@@ -1,11 +1,11 @@
-import { AutomowerPlatformConfig } from "../../automowerPlatformConfig";
-import { AuthenticationClient, OAuthToken } from "../../clients/authenticationClient";
-import { OAuthTokenManager } from "../oauthTokenManager";
+import { AutomowerPlatformConfig } from '../../automowerPlatformConfig';
+import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
+import { OAuthTokenManager } from '../oauthTokenManager';
 
 export class OAuthTokenManagerImpl implements OAuthTokenManager {
     private currentToken?: OAuthToken;
     private expires?: Date;
-    private invalidated: boolean = false;    
+    private invalidated = false;    
 
     constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig) { }
 
@@ -15,8 +15,7 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
 
             if (this.hasAlreadyLoggedIn()) {
                 newToken = await this.doRefreshToken();
-            }
-            else {
+            } else {
                 newToken = await this.doLogin();
             }
             
@@ -34,7 +33,7 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
     }
 
     protected isTokenInvalidated(): boolean {
-        let now = new Date();
+        const now = new Date();
         return (this.invalidated || (this.expires !== undefined && this.expires < now));
     }
 
@@ -68,7 +67,7 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
             return;
         }
 
-        let expires = new Date();
+        const expires = new Date();
         expires.setSeconds(expires.getSeconds() + token.expires_in);
 
         this.expires = expires;

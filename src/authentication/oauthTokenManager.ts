@@ -1,4 +1,4 @@
-import { OAuthToken } from "../clients/authenticationClient";
+import { OAuthToken } from '../clients/authenticationClient';
 
 /**
  * A mechanism which manages the retrieval and renewal of an OAuth token.
