@@ -1,3 +1,4 @@
+import { Logging } from 'homebridge';
 import { AutomowerPlatformConfig } from '../../automowerPlatformConfig';
 import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
 import { OAuthTokenManager } from '../oauthTokenManager';
@@ -7,7 +8,7 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
     private expires?: Date;
     private invalidated = false;    
 
-    constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig) { }
+    constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: Logging) { }
 
     async getCurrentToken(): Promise<OAuthToken> {
         if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {
@@ -19,16 +20,20 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
                 newToken = await this.doLogin();
             }
             
-            this.setCurrentToken(newToken);
+            this.unsafeSetCurrentToken(newToken);
             this.setExpiration(newToken);
             
             this.flagAsValid();
         }
 
         return this.currentToken!;
+    }    
+
+    protected unsafeGetCurrentToken(): OAuthToken | undefined {
+        return this.currentToken;
     }
 
-    protected setCurrentToken(token: OAuthToken | undefined) {
+    protected unsafeSetCurrentToken(token: OAuthToken | undefined) {
         this.currentToken = token;
     }
 
@@ -41,8 +46,13 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
         return this.currentToken !== undefined;
     }
 
-    protected doLogin(): Promise<OAuthToken> {
-        return this.client.login(this.config.username, this.config.password);
+    protected async doLogin(): Promise<OAuthToken> {
+        this.log.info('Logging into the Husqvarna platform...');
+
+        const result = await this.client.login(this.config.username, this.config.password);
+
+        this.log.info('Connected!');
+        return result;
     }
 
     protected doRefreshToken(): Promise<OAuthToken> {       
@@ -79,5 +89,19 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
 
     protected flagAsValid(): void {
         this.invalidated = false;
+    }
+
+    async logout(): Promise<void> {
+        const token = this.unsafeGetCurrentToken();
+        if (token === undefined) {
+            return;
+        }
+
+        this.log.info('Logging out of the Husqvarna platform...');
+
+        await this.client.logout(token);
+        this.currentToken = undefined;
+
+        this.log.info('Disconnected!');
     }
 }

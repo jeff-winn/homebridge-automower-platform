@@ -1,4 +1,6 @@
 import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
+import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerImpl';
+import { OAuthTokenManager } from './authentication/oauthTokenManager';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { AutomowerPlatformContainer } from './automowerPlatformContainer';
 import { GetMowersService } from './services/automower/getMowersService';
@@ -18,8 +20,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             this.onFinishedLaunching();
         });
 
-        api.on(APIEvent.SHUTDOWN, () => {
-            this.onShutdown();
+        api.on(APIEvent.SHUTDOWN, async () => {
+            await this.onShutdown();
         });
     }
 
@@ -48,8 +50,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.container.resolve(GetMowersServiceImpl);
     }
 
-    private onShutdown(): void {
-        this.log.debug('onShutdown');
+    private async onShutdown(): Promise<void> {
+        this.log.info('Shutting down...');
+
+        const tokenManager = this.getOAuthTokenManager();
+        await tokenManager.logout();
+    }
+
+    protected getOAuthTokenManager(): OAuthTokenManager {
+        return this.container.resolve(OAuthTokenManagerImpl);
     }
 
     /*

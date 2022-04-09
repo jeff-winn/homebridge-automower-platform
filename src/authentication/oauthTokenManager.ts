@@ -13,4 +13,9 @@ export interface OAuthTokenManager {
      * Flags the token as invalid, which will cause the next attempt to get a new token.
      */
     flagAsInvalid(): void;
+
+    /**
+     * Logout the user.
+     */
+    logout(): Promise<void>;
 }

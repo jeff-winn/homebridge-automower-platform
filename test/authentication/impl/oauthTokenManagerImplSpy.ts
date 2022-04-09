@@ -40,7 +40,11 @@ export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
         return super.doRefreshToken();
     }
 
-    public unsafeSetCurrentToken(token: OAuthToken) {
-        super.setCurrentToken(token);
+    public unsafeSetCurrentToken(token: OAuthToken | undefined) {
+        super.unsafeSetCurrentToken(token);
+    }
+
+    public unsafeGetCurrentToken(): OAuthToken | undefined {
+        return super.unsafeGetCurrentToken();
     }
 }

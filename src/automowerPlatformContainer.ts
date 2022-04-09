@@ -35,7 +35,8 @@ export class AutomowerPlatformContainer {
         this.container.register(OAuthTokenManagerImpl, {
             useFactory: (context) => new OAuthTokenManagerImpl(
                 context.resolve(AuthenticationClientImpl),
-                this.config)
+                this.config,
+                this.log)
         });
 
         this.container.register(GetMowersServiceImpl, {
