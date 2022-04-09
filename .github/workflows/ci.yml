@@ -26,3 +26,9 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         sonar-scanner -Dsonar.login="${{ env.SONAR_TOKEN }}"
+    - name: Check quality gate
+      uses: SonarSource/sonarqube-quality-gate-action@v1.0.0
+      # Force to fail step after specific time
+      timeout-minutes: 5
+      env:
+       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
