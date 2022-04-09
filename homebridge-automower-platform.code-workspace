@@ -5,6 +5,7 @@
 		}
 	],	
 	"settings": {
+		"typescript.preferences.quoteStyle": "single",
 		"eslint.enable": true,
 		"editor.tabSize": 4,
 		"files.exclude": {
