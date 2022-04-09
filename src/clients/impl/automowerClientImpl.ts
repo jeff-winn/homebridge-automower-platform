@@ -1,5 +1,6 @@
 import { OAuthToken } from '../authenticationClient';
 import { AutomowerClient, Mower } from '../automowerClient';
+import { NotAuthorizedError } from '../notAuthorizedError';
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 export class AutomowerClientImpl implements AutomowerClient {
@@ -78,14 +79,18 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     private async throwIfStatusNotOk(response: Response): Promise<void> {
+        if (response.status === 401) {
+            throw new NotAuthorizedError();
+        }
+
         if (!response.ok) {
             const errs = await response.json() as ErrorResponse;
             if (errs?.errors[0] !== undefined) {
                 const err = errs.errors[0];
 
-                throw `ERR: [${err.code}] ${err.title}`;
+                throw new Error(`ERR: [${err.code}] ${err.title}`);
             } else {
-                throw `ERR: ${response.status}`;
+                throw new Error(`ERR: ${response.status}`);
             }
         }
     }

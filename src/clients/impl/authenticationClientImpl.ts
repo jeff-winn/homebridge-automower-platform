@@ -1,4 +1,5 @@
 import { AuthenticationClient, OAuthToken } from '../authenticationClient';
+import { NotAuthorizedError } from '../notAuthorizedError';
 import fetch, { Response } from 'node-fetch';
 
 export class AuthenticationClientImpl implements AuthenticationClient {
@@ -79,9 +80,17 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return result.join('&');
     }
 
+    private throwIfNotAuthorized(response: Response): void {
+        if (response.status === 401) {
+            throw new NotAuthorizedError();
+        }
+    }
+
     private throwIfStatusNotOk(response: Response): void {
+        this.throwIfNotAuthorized(response);
+        
         if (!response.ok) {
-            throw `ERR: ${response.status}`;
+            throw new Error(`ERR: ${response.status}`);
         }
     }
 }

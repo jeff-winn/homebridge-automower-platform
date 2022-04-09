@@ -6,5 +6,5 @@ export interface PauseMowerService {
      * Pauses the mower immediately.
      * @param id The id of the mower to pause.
      */
-    pauseMowerById(id: string): Promise<void>;
+    pauseMower(id: string): Promise<void>;
 }
