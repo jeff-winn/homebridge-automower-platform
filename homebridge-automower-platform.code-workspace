@@ -5,6 +5,8 @@
 		}
 	],	
 	"settings": {
+		"eslint.enable": true,
+		"editor.tabSize": 4,
 		"files.exclude": {
 			"dist": true,
 			"docs": true,

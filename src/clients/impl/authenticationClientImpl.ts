@@ -1,4 +1,4 @@
-import { AuthenticationClient, OAuthToken } from "../authenticationClient";
+import { AuthenticationClient, OAuthToken } from '../authenticationClient';
 import fetch, { Response } from 'node-fetch';
 
 export class AuthenticationClientImpl implements AuthenticationClient {
@@ -13,14 +13,14 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     async login(username: string, password: string): Promise<OAuthToken> {
-        var body = this.encode({
+        const body = this.encode({
             client_id: this.appKey,
             grant_type: 'password',
             username: username,
             password: password
         });
 
-        var response = await fetch(this.baseUrl + '/oauth2/token', {
+        const response = await fetch(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -34,7 +34,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     async logout(token: OAuthToken): Promise<void> {
-        var response = await fetch(this.baseUrl + '/token/' + token.access_token, {
+        const response = await fetch(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
                 'x-api-key': this.appKey,
@@ -46,13 +46,13 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     async refresh(token: OAuthToken): Promise<OAuthToken> {
-        var body = this.encode({
+        const body = this.encode({
             client_id: this.appKey,
             grant_type: 'refresh_token',
             refresh_token: token.refresh_token
         });
 
-        var response = await fetch(this.baseUrl + '/oauth2/token', {
+        const response = await fetch(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -65,23 +65,23 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return await response.json() as OAuthToken;
     }
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected encode(payload: any): string {
-        var result: string[] = [];
+        const result: string[] = [];
 
-        for (var prop in payload) {
-            var key = encodeURIComponent(prop);
-            var value = encodeURIComponent(payload[prop]);
+        for (const prop in payload) {
+            const key = encodeURIComponent(prop);
+            const value = encodeURIComponent(payload[prop]);
 
-            result.push(key + "=" + value);
+            result.push(key + '=' + value);
         }
 
-        return result.join("&");
+        return result.join('&');
     }
 
     private throwIfStatusNotOk(response: Response): void {
-        if (!response.ok)
-        {
-            throw `ERR: ${response.status}`
+        if (!response.ok) {
+            throw `ERR: ${response.status}`;
         }
     }
 }

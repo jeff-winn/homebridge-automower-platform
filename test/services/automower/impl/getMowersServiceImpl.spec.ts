@@ -1,10 +1,10 @@
 import { OAuthTokenManager } from '../../../../src/authentication/oauthTokenManager';
 import { AutomowerClient, Mower } from '../../../../src/clients/automowerClient';
-import { GetMowersServiceImpl } from '../../../../src/services/automower/impl/getMowersServiceImpl'
-import { Mock, It } from 'moq.ts';
+import { GetMowersServiceImpl } from '../../../../src/services/automower/impl/getMowersServiceImpl';
 import { OAuthToken } from '../../../../src/clients/authenticationClient';
+import { Mock } from 'moq.ts';
 
-describe("get mowers service", () => {
+describe('get mowers service', () => {
     let tokenManager: Mock<OAuthTokenManager>;
     let client: Mock<AutomowerClient>;
     let target: GetMowersServiceImpl;
@@ -16,20 +16,22 @@ describe("get mowers service", () => {
         target = new GetMowersServiceImpl(tokenManager.object(), client.object());
     });
 
-    it("should get all the mowers from the client", async () => {
-        let token: OAuthToken = {
-            access_token: "access token",
+    it('should get a single mower from the client', async () => {
+        const token: OAuthToken = {
+            access_token: 'access token',
             expires_in: 50000,
-            provider: "provider",
-            refresh_token: "12345",
-            scope: "",
-            token_type: "Bearer",
-            user_id: "user id"
+            provider: 'provider',
+            refresh_token: '12345',
+            scope: '',
+            token_type: 'Bearer',
+            user_id: 'user id'
         };
 
-        let mower: Mower = {
-            id: "abcd1234",
-            type: "mower",
+        const mowerId = 'abcd1234';
+
+        const mower: Mower = {
+            id: mowerId,
+            type: 'mower',
             attributes: {
                 battery: {
                     batteryPercent: 100
@@ -42,23 +44,80 @@ describe("get mowers service", () => {
                     statusTimestamp: 100
                 },
                 mower: {
-                    activity: "activity",
+                    activity: 'activity',
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: "mode",
-                    state: "online"
+                    mode: 'mode',
+                    state: 'online'
                 },
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: "no"
+                        action: 'no'
                     },
-                    restrictedReason: "none"    
+                    restrictedReason: 'none'    
                 },
                 positions: [ ],
                 system: {
-                    model: "12345",
-                    name: "dobby",
+                    model: '12345',
+                    name: 'dobby',
+                    serialNumber: 123456
+                }
+            }
+        };
+    
+        tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
+        client.setup(x => x.getMower(mowerId, token)).returns(Promise.resolve(mower));
+        
+        const actual = await target.getMower(mowerId);
+
+        expect(actual).toBeDefined();
+        expect(actual).toBe(mower);
+    });
+
+    it('should get all the mowers from the client', async () => {
+        const token: OAuthToken = {
+            access_token: 'access token',
+            expires_in: 50000,
+            provider: 'provider',
+            refresh_token: '12345',
+            scope: '',
+            token_type: 'Bearer',
+            user_id: 'user id'
+        };
+
+        const mower: Mower = {
+            id: 'abcd1234',
+            type: 'mower',
+            attributes: {
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ ]
+                },
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 100
+                },
+                mower: {
+                    activity: 'activity',
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: 'mode',
+                    state: 'online'
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: 'no'
+                    },
+                    restrictedReason: 'none'    
+                },
+                positions: [ ],
+                system: {
+                    model: '12345',
+                    name: 'dobby',
                     serialNumber: 123456
                 }
             }
@@ -67,11 +126,11 @@ describe("get mowers service", () => {
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         client.setup(x => x.getMowers(token)).returns(Promise.resolve([ mower ]));
         
-        let result = await target.getMowers();
+        const result = await target.getMowers();
 
         expect(result).toBeDefined();
 
-        let actual = result![0]!;
+        const actual = result![0]!;
         expect(actual).toBeDefined();
         expect(actual).toBe(mower);
     });

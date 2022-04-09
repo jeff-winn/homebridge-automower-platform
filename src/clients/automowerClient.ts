@@ -1,4 +1,4 @@
-import { OAuthToken } from "./authenticationClient";
+import { OAuthToken } from './authenticationClient';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -10,7 +10,7 @@ export interface AutomowerClient {
      * @param action The action payload (specific to the action being performed).
      * @param token The access token.
      */
-    doAction(id: string, action: any, token: OAuthToken): Promise<void>;
+    doAction(id: string, action: unknown, token: OAuthToken): Promise<void>;
 
     /**
      * Gets a specific mower connected to the account.
@@ -29,7 +29,7 @@ export interface AutomowerClient {
 /**
  * Describes a mower.
  */
- export interface Mower {
+export interface Mower {
     type: string;
     id: string;    
     attributes: {
@@ -40,7 +40,7 @@ export interface AutomowerClient {
         planner: Planner;
         metadata: MowerMetadata;
         positions: Position[];
-    }
+    };
 }
 
 /**
@@ -54,7 +54,7 @@ export interface Battery {
  * Describes the calendar.
  */
 export interface Calendar {
-    tasks: Task[]
+    tasks: Task[];
 }
 
 /**
@@ -92,7 +92,7 @@ export interface Planner {
     nextStartTimestamp: number;
     override: {
         action: string;
-    },
+    };
     restrictedReason: string;
 }
 

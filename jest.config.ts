@@ -1,5 +1,5 @@
-import { Config } from '@jest/types'
-import { config } from 'dotenv'
+import { Config } from '@jest/types';
+import { config } from 'dotenv';
 
 config();
 
@@ -9,11 +9,11 @@ config();
  */
 
 export default async (): Promise<Config.InitialOptions> => {
-  return {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    passWithNoTests: true,
-    collectCoverage: false,
-    testRegex: '(?<!i)\.(spec|test)\.[jt]s$'
-  }
+    return {
+        preset: 'ts-jest',
+        testEnvironment: 'node',
+        passWithNoTests: true,
+        collectCoverage: false,
+        testRegex: '(?<!i)\\.(spec|test)\\.[jt]s$'
+    };
 };

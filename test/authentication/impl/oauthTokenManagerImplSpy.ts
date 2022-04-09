@@ -2,19 +2,19 @@ import { OAuthTokenManagerImpl } from '../../../src/authentication/impl/oauthTok
 import { OAuthToken } from '../../../src/clients/authenticationClient';
 
 export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
-    loggedIn: boolean = false;
-    refreshed: boolean = false;
+    loggedIn = false;
+    refreshed = false;
     overrideInvalidated?: boolean;
 
     protected override async doLogin(): Promise<OAuthToken> {
-        let token = await super.doLogin();
+        const token = await super.doLogin();
 
         this.loggedIn = true;
         return token;
     }
 
     protected async doRefreshToken(): Promise<OAuthToken> {
-        let token = await super.doRefreshToken();
+        const token = await super.doRefreshToken();
 
         this.refreshed = true;
         return token;
@@ -43,4 +43,4 @@ export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
     public unsafeSetCurrentToken(token: OAuthToken) {
         super.setCurrentToken(token);
     }
-};
+}

@@ -1,7 +1,7 @@
 /**
  * A client used to authenticate to the Husqvarna platform.
  */
- export interface AuthenticationClient {
+export interface AuthenticationClient {
     /**
      * Login the user.
      * @param username The username.
