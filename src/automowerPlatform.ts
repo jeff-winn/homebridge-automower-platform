@@ -8,8 +8,11 @@ import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import { DiscoveryService } from './services/discoveryService';
 
+/**
+ * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.
+ */
 export class AutomowerPlatform implements DynamicPlatformPlugin {
-    private readonly accessories: AutomowerAccessory[] = [];
+    private readonly mowers: AutomowerAccessory[] = [];
 
     private readonly config: AutomowerPlatformConfig;
     private readonly container: AutomowerPlatformContainer;        
@@ -40,17 +43,21 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         await service.discoverMowers(this);
     }
 
+    /**
+     * Gets {@link DiscoveryService}.
+     * @returns The service instance.
+     */
     protected getDiscoveryService(): DiscoveryService {
         return this.container.resolve(DiscoveryServiceImpl);
     }
 
     /**
-     * Checks whether an accessory is already registered with the uuid specified.
+     * Checks whether a mower is configured.
      * @param uuid The uuid to check.
-     * @returns true if the accessory is already registered, otherwise false.
+     * @returns true if the mower is already configured, otherwise false.
      */
-    public isAlreadyRegistered(uuid: string): boolean {
-        return this.accessories.some(accessory => accessory.getUuid() === uuid);
+    public isMowerConfigured(uuid: string): boolean {
+        return this.mowers.some(accessory => accessory.getUuid() === uuid);
     }
 
     private async onShutdown(): Promise<void> {
@@ -60,6 +67,10 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         await tokenManager.logout();
     }
 
+    /**
+     * Gets the {@link OAuthTokenManager}.
+     * @returns The service instance.
+     */
     protected getOAuthTokenManager(): OAuthTokenManager {
         return this.container.resolve(OAuthTokenManagerImpl);
     }
@@ -68,10 +79,10 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Registers the accessories with the platform.
      * @param accessories The accessories to register.
      */
-    public registerAccessories(accessories: PlatformAccessory<AutomowerContext>[]): void {
-        accessories.forEach(accessory => this.configureAccessory(accessory));
+    public registerMowers(mowers: PlatformAccessory<AutomowerContext>[]): void {
+        mowers.forEach(mower => this.configureAccessory(mower));
 
-        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
+        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, mowers);
     }
 
     /*
@@ -79,8 +90,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * It should be used to setup event handlers for characteristics and update respective values.
      */
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
-        this.log.info(`Configuring accessory ${accessory.displayName}`);
+        this.log.info(`Configuring ${accessory.displayName}`);
 
-        this.accessories.push(new AutomowerAccessory(this, accessory, this.api, this.log));
+        this.mowers.push(new AutomowerAccessory(this, accessory, this.api, this.log));
     }
 }

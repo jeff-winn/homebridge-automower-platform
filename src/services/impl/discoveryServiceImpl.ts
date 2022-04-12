@@ -4,34 +4,47 @@ import { AutomowerPlatform } from '../../automowerPlatform';
 import { GetMowersService, Mower } from '../automower/getMowersService';
 import { DiscoveryService } from '../discoveryService';
 
+/**
+ * Describes model information.
+ */
 interface ModelInformation {
+    /**
+     * The manufacturer.
+     */
     manufacturer: string;
+
+    /**
+     * The model name.
+     */
     model: string;
 }
 
+/**
+ * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
+ */
 export class DiscoveryServiceImpl implements DiscoveryService {
     constructor(private mowerService: GetMowersService, private api: API, private log: Logging) { }
 
     async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');
 
-        const newAccessories: PlatformAccessory<AutomowerContext>[] = [];
+        const found: PlatformAccessory<AutomowerContext>[] = [];
         const mowers = await this.mowerService.getMowers();
         
         mowers?.forEach(mower => {
             const uuid = this.api.hap.uuid.generate(mower.id);
-            if (!platform.isAlreadyRegistered(uuid)) {
+            if (!platform.isMowerConfigured(uuid)) {
                 const accessory = this.createAccessory(uuid, mower);
 
-                newAccessories.push(accessory);
+                found.push(accessory);
             }
         });
 
-        if (newAccessories.length > 0) {
-            platform.registerAccessories(newAccessories);
+        if (found.length > 0) {
+            platform.registerMowers(found);
         }
 
-        this.log.info(`Completed mower discovery, ${newAccessories.length} new mower(s) found.`);
+        this.log.info(`Completed mower discovery, ${found.length} new mower(s) found.`);
     }
 
     private createAccessory(uuid: string, mower: Mower): PlatformAccessory<AutomowerContext> {
@@ -39,6 +52,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         const modelInformation = this.parseModelInformation(mower.attributes.system.model);
         
         const accessory = new this.api.platformAccessory<AutomowerContext>(displayName, uuid);
+
         accessory.context = {
             mowerId: mower.id,
             manufacturer: modelInformation.manufacturer,
