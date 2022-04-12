@@ -5,8 +5,8 @@ import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { AutomowerPlatformContainer } from './automowerPlatformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
-import { RegistrationServiceImpl } from './services/impl/registrationServiceImpl';
-import { RegistrationService } from './services/registrationService';
+import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
+import { DiscoveryService } from './services/discoveryService';
 
 export class AutomowerPlatform implements DynamicPlatformPlugin {
     private readonly accessories: AutomowerAccessory[] = [];
@@ -30,18 +30,18 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private async onFinishedLaunching(): Promise<void> {
         this.container.registerEverything();
 
-        await this.registerNewMowers();
+        await this.discoverNewMowers();
 
         this.log.debug('onFinishLaunching');
     }
     
-    private async registerNewMowers(): Promise<void> {
-        const service = this.getRegistrationService();
-        await service.registerMowers(this);
+    private async discoverNewMowers(): Promise<void> {
+        const service = this.getDiscoveryService();
+        await service.discoverMowers(this);
     }
 
-    protected getRegistrationService(): RegistrationService {
-        return this.container.resolve(RegistrationServiceImpl);
+    protected getDiscoveryService(): DiscoveryService {
+        return this.container.resolve(DiscoveryServiceImpl);
     }
 
     public isAccessoryAlreadyRegistered(uuid: string): boolean {

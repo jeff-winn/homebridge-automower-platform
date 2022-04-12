@@ -2,17 +2,17 @@ import { API, Logging, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../../automowerAccessory';
 import { AutomowerPlatform } from '../../automowerPlatform';
 import { GetMowersService, Mower } from '../automower/getMowersService';
-import { RegistrationService } from '../registrationService';
+import { DiscoveryService } from '../discoveryService';
 
 interface ModelInformation {
     manufacturer: string;
     model: string;
 }
 
-export class RegistrationServiceImpl implements RegistrationService {
+export class DiscoveryServiceImpl implements DiscoveryService {
     constructor(private mowerService: GetMowersService, private api: API, private log: Logging) { }
 
-    async registerMowers(platform: AutomowerPlatform): Promise<void> {
+    async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');
 
         const newAccessories: PlatformAccessory<AutomowerContext>[] = [];

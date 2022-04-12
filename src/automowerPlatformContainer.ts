@@ -6,8 +6,8 @@ import { AuthenticationClientImpl } from './clients/impl/authenticationClientImp
 import { AutomowerClientImpl } from './clients/impl/automowerClientImpl';
 import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
 import { PauseMowerServiceImpl } from './services/automower/impl/pauseMowerServiceImpl';
+import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import * as constants from './constants';
-import { RegistrationServiceImpl } from './services/impl/registrationServiceImpl';
 
 export class AutomowerPlatformContainer {
     private readonly container: DependencyContainer;
@@ -54,8 +54,8 @@ export class AutomowerPlatformContainer {
             )
         });
 
-        this.container.register(RegistrationServiceImpl, {
-            useFactory: (context) => new RegistrationServiceImpl(
+        this.container.register(DiscoveryServiceImpl, {
+            useFactory: (context) => new DiscoveryServiceImpl(
                 context.resolve(GetMowersServiceImpl),
                 this.api,
                 this.log
