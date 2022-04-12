@@ -44,15 +44,13 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.container.resolve(DiscoveryServiceImpl);
     }
 
-    public isAccessoryAlreadyRegistered(uuid: string): boolean {
-        for (let index = 0; index < this.accessories.length; index++) {
-            const current = this.accessories[index];
-            if (current.getUuid() === uuid) {
-                return true;
-            }
-        }
-
-        return false;
+    /**
+     * Checks whether an accessory is already registered with the uuid specified.
+     * @param uuid The uuid to check.
+     * @returns true if the accessory is already registered, otherwise false.
+     */
+    public isAlreadyRegistered(uuid: string): boolean {
+        return this.accessories.some(accessory => accessory.getUuid() === uuid);
     }
 
     private async onShutdown(): Promise<void> {
@@ -66,6 +64,10 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.container.resolve(OAuthTokenManagerImpl);
     }
 
+    /**
+     * Registers the accessories with the platform.
+     * @param accessories The accessories to register.
+     */
     public registerAccessories(accessories: PlatformAccessory<AutomowerContext>[]): void {
         accessories.forEach(accessory => this.configureAccessory(accessory));
 

@@ -20,7 +20,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         
         mowers?.forEach(mower => {
             const uuid = this.api.hap.uuid.generate(mower.id);
-            if (!platform.isAccessoryAlreadyRegistered(uuid)) {
+            if (!platform.isAlreadyRegistered(uuid)) {
                 const accessory = this.createAccessory(uuid, mower);
 
                 newAccessories.push(accessory);
