@@ -1,4 +1,4 @@
-import { Logging } from 'homebridge';
+import { API, Logging } from 'homebridge';
 import { container, DependencyContainer, InjectionToken } from 'tsyringe';
 import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerImpl';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
@@ -7,11 +7,12 @@ import { AutomowerClientImpl } from './clients/impl/automowerClientImpl';
 import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
 import { PauseMowerServiceImpl } from './services/automower/impl/pauseMowerServiceImpl';
 import * as constants from './constants';
+import { RegistrationServiceImpl } from './services/impl/registrationServiceImpl';
 
 export class AutomowerPlatformContainer {
     private readonly container: DependencyContainer;
 
-    constructor(private config: AutomowerPlatformConfig, private log: Logging) { 
+    constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { 
         this.container = container;
     }
 
@@ -53,6 +54,14 @@ export class AutomowerPlatformContainer {
             )
         });
 
+        this.container.register(RegistrationServiceImpl, {
+            useFactory: (context) => new RegistrationServiceImpl(
+                context.resolve(GetMowersServiceImpl),
+                this.api,
+                this.log
+            )
+        });
+        
         this.log.debug('Completed DI container registrations.');
     }
 
