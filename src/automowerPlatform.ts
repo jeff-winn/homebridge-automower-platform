@@ -4,6 +4,7 @@ import { OAuthTokenManager } from './authentication/oauthTokenManager';
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { AutomowerPlatformContainer } from './automowerPlatformContainer';
+import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { RegistrationServiceImpl } from './services/impl/registrationServiceImpl';
 import { RegistrationService } from './services/registrationService';
 
@@ -63,6 +64,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected getOAuthTokenManager(): OAuthTokenManager {
         return this.container.resolve(OAuthTokenManagerImpl);
+    }
+
+    public registerAccessories(accessories: PlatformAccessory<AutomowerContext>[]): void {
+        accessories.forEach(accessory => this.configureAccessory(accessory));
+
+        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }
 
     /*

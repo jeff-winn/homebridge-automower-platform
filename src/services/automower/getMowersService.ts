@@ -1,5 +1,7 @@
 import { Mower } from '../../clients/automowerClient';
 
+export { Mower };
+
 /**
  * A service used to retrieve the mowers associated with a Husqvarna account.
  */

@@ -1,8 +1,7 @@
 import { API, Logging, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../../automowerAccessory';
 import { AutomowerPlatform } from '../../automowerPlatform';
-import { PLATFORM_NAME, PLUGIN_ID } from '../../constants';
-import { GetMowersService } from '../automower/getMowersService';
+import { GetMowersService, Mower } from '../automower/getMowersService';
 import { RegistrationService } from '../registrationService';
 
 interface ModelInformation {
@@ -14,7 +13,7 @@ export class RegistrationServiceImpl implements RegistrationService {
     constructor(private mowerService: GetMowersService, private api: API, private log: Logging) { }
 
     async registerMowers(platform: AutomowerPlatform): Promise<void> {
-        this.log.info('Discovering available mowers...');
+        this.log.info('Discovering new mowers...');
 
         const newAccessories: PlatformAccessory<AutomowerContext>[] = [];
         const mowers = await this.mowerService.getMowers();
@@ -22,27 +21,32 @@ export class RegistrationServiceImpl implements RegistrationService {
         mowers?.forEach(mower => {
             const uuid = this.api.hap.uuid.generate(mower.id);
             if (!platform.isAccessoryAlreadyRegistered(uuid)) {
-                const displayName = mower.attributes.system.name;
-                const modelInformation = this.parseModelInformation(mower.attributes.system.model);
-                
-                const accessory = new this.api.platformAccessory<AutomowerContext>(displayName, uuid);
-                accessory.context = {
-                    mowerId: mower.id,
-                    manufacturer: modelInformation.manufacturer,
-                    model: modelInformation.model,
-                    serialNumber: mower.attributes.system.serialNumber.toString()
-                };
-                
-                platform.configureAccessory(accessory);
+                const accessory = this.createAccessory(uuid, mower);
+
                 newAccessories.push(accessory);
             }
         });
 
         if (newAccessories.length > 0) {
-            this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, newAccessories);
+            platform.registerAccessories(newAccessories);
         }
 
-        this.log.info('Completed mower discovery.');
+        this.log.info(`Completed mower discovery, ${newAccessories.length} new mower(s) found.`);
+    }
+
+    private createAccessory(uuid: string, mower: Mower): PlatformAccessory<AutomowerContext> {
+        const displayName = mower.attributes.system.name;
+        const modelInformation = this.parseModelInformation(mower.attributes.system.model);
+        
+        const accessory = new this.api.platformAccessory<AutomowerContext>(displayName, uuid);
+        accessory.context = {
+            mowerId: mower.id,
+            manufacturer: modelInformation.manufacturer,
+            model: modelInformation.model,
+            serialNumber: mower.attributes.system.serialNumber.toString()
+        };
+        
+        return accessory;
     }
 
     private parseModelInformation(value: string): ModelInformation {
