@@ -66,7 +66,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         return undefined;
     }    
 
-    async getMowers(token: OAuthToken): Promise<Mower[] | undefined> {
+    async getMowers(token: OAuthToken): Promise<Mower[]> {
         const res = await this.doFetch(this.baseUrl + '/mowers', {
             method: 'GET',
             headers: {
@@ -83,7 +83,7 @@ export class AutomowerClientImpl implements AutomowerClient {
             return response.data;
         }
 
-        return undefined;
+        return [];
     }
 
     private async throwIfStatusNotOk(response: Response): Promise<void> {

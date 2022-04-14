@@ -8,7 +8,7 @@ describe('constants', () => {
 
     it('should be the plugin name', () => {
         // Changing this test could break the plugin and prevent upgrades.
-        expect(constants.PLUGIN_NAME).toBe('homebridge-automower-platform');
+        expect(constants.PLUGIN_ID).toBe('homebridge-automower-platform');
     });
 
     it('should contain the husqvarna authentication base url', () => {

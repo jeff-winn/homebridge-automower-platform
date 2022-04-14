@@ -4,9 +4,9 @@
 export const PLATFORM_NAME = 'Homebridge Automower Platform';
 
 /**
-  * The name of the plugin (which must match the package.json package name).
+  * The identifier of the plugin (which must match the package.json package name).
   */
-export const PLUGIN_NAME = 'homebridge-automower-platform';
+export const PLUGIN_ID = 'homebridge-automower-platform';
  
 /**
   * The base url for the authentication api.

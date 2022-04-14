@@ -20,7 +20,7 @@ export class GetMowersServiceImpl implements GetMowersService {
         }
     }
 
-    async getMowers(): Promise<Mower[] | undefined> {
+    async getMowers(): Promise<Mower[]> {
         try {
             const token = await this.tokenManager.getCurrentToken();
 

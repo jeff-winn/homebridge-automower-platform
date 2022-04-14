@@ -1,17 +1,18 @@
-import { Logging } from 'homebridge';
+import { API, Logging } from 'homebridge';
 import { container, DependencyContainer, InjectionToken } from 'tsyringe';
 import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerImpl';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { AuthenticationClientImpl } from './clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from './clients/impl/automowerClientImpl';
+import { DefaultAccessoryFactory } from './primitives/defaultAccessoryFactory';
 import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
-import { PauseMowerServiceImpl } from './services/automower/impl/pauseMowerServiceImpl';
+import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import * as constants from './constants';
 
 export class AutomowerPlatformContainer {
     private readonly container: DependencyContainer;
 
-    constructor(private config: AutomowerPlatformConfig, private log: Logging) { 
+    constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { 
         this.container = container;
     }
 
@@ -46,13 +47,17 @@ export class AutomowerPlatformContainer {
             )
         });
 
-        this.container.register(PauseMowerServiceImpl, {
-            useFactory: (context) => new PauseMowerServiceImpl(
-                context.resolve(OAuthTokenManagerImpl),
-                context.resolve(AutomowerClientImpl)
-            )
+        this.container.register(DefaultAccessoryFactory, {
+            useFactory: () => new DefaultAccessoryFactory(this.api)
         });
 
+        this.container.register(DiscoveryServiceImpl, {
+            useFactory: (context) => new DiscoveryServiceImpl(
+                context.resolve(GetMowersServiceImpl),                
+                this.log,
+                context.resolve(DefaultAccessoryFactory))
+        });
+        
         this.log.debug('Completed DI container registrations.');
     }
 
