@@ -20,6 +20,19 @@ describe('discovery service', () => {
         target = new DiscoveryServiceImpl(getMowersService.object(), log.object(), accessoryFactory.object());
     });
     
+    it('should do nothing when no mowers are found', async () => {
+        const platform = new Mock<AutomowerPlatform>();
+
+        log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
+        getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ ]));
+        platform.setup(x => x.registerMowers(It.IsAny()));
+
+        await target.discoverMowers(platform.object());
+
+        getMowersService.verify(x => x.getMowers(), Times.Once());
+        platform.verify(x => x.registerMowers(It.IsAny()), Times.Never());
+    });
+
     it('should discover only one of the mowers', async () => {
         const platform = new Mock<AutomowerPlatform>();
 
