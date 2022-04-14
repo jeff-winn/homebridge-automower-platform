@@ -92,6 +92,9 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
         this.log.info(`Configuring ${accessory.displayName}`);
 
-        this.mowers.push(new AutomowerAccessory(this, accessory, this.api, this.log));
+        const automower = new AutomowerAccessory(this, accessory, this.api, this.log);
+        automower.initAccessoryInformation();
+
+        this.mowers.push(automower);
     }
 }
