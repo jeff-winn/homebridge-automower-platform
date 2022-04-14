@@ -1,9 +1,9 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: CI
+name: Pull Request
 
-on: [ push ]
+on: [ pull_request ]
 
 jobs:
   build:
@@ -26,3 +26,9 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         sonar-scanner -Dsonar.login="${{ env.SONAR_TOKEN }}"
+    - name: Check quality gate
+      uses: SonarSource/sonarqube-quality-gate-action@v1.0.0
+      # Force to fail step after specific time
+      timeout-minutes: 5
+      env:
+       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
