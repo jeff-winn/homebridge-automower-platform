@@ -4,6 +4,7 @@ import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerIm
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { AuthenticationClientImpl } from './clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from './clients/impl/automowerClientImpl';
+import { DefaultAccessoryFactory } from './primitives/defaultAccessoryFactory';
 import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
 import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import * as constants from './constants';
@@ -46,12 +47,15 @@ export class AutomowerPlatformContainer {
             )
         });
 
+        this.container.register(DefaultAccessoryFactory, {
+            useFactory: () => new DefaultAccessoryFactory(this.api)
+        });
+
         this.container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
-                context.resolve(GetMowersServiceImpl),
-                this.api,
-                this.log
-            )
+                context.resolve(GetMowersServiceImpl),                
+                this.log,
+                context.resolve(DefaultAccessoryFactory))
         });
         
         this.log.debug('Completed DI container registrations.');

@@ -1,21 +1,12 @@
-import { API, Logging, PlatformAccessory } from 'homebridge';
+import { Logging, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../../automowerAccessory';
 import { AutomowerPlatform } from '../../automowerPlatform';
+import { AccessoryFactory } from '../../accessoryFactory';
 import { GetMowersService, Mower } from '../automower/getMowersService';
 import { DiscoveryService } from '../discoveryService';
 
-/**
- * Describes model information.
- */
 interface ModelInformation {
-    /**
-     * The manufacturer.
-     */
     manufacturer: string;
-
-    /**
-     * The model name.
-     */
     model: string;
 }
 
@@ -23,7 +14,7 @@ interface ModelInformation {
  * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
  */
 export class DiscoveryServiceImpl implements DiscoveryService {
-    constructor(private mowerService: GetMowersService, private api: API, private log: Logging) { }
+    constructor(private mowerService: GetMowersService, private log: Logging, private accessoryFactory: AccessoryFactory) { }
 
     async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');
@@ -32,10 +23,9 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         const mowers = await this.mowerService.getMowers();
         
         mowers?.forEach(mower => {
-            const uuid = this.api.hap.uuid.generate(mower.id);
+            const uuid = this.accessoryFactory.generateUuid(mower.id);
             if (!platform.isMowerConfigured(uuid)) {
                 const accessory = this.createAccessory(uuid, mower);
-
                 found.push(accessory);
             }
         });
@@ -51,7 +41,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         const displayName = mower.attributes.system.name;
         const modelInformation = this.parseModelInformation(mower.attributes.system.model);
         
-        const accessory = new this.api.platformAccessory<AutomowerContext>(displayName, uuid);
+        const accessory = this.accessoryFactory.create(displayName, uuid);
 
         accessory.context = {
             mowerId: mower.id,
