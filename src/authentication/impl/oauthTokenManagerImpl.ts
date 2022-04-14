@@ -47,11 +47,11 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
     }
 
     protected async doLogin(): Promise<OAuthToken> {
-        this.log.info('Logging into the Husqvarna platform...');
+        this.log.debug('Logging into the Husqvarna platform...');
 
         const result = await this.client.login(this.config.username, this.config.password);
 
-        this.log.info('Connected!');
+        this.log.debug('Connected!');
         return result;
     }
 

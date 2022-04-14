@@ -24,6 +24,7 @@ describe('oauth token manager', () => {
         } as AutomowerPlatformConfig;
 
         log = new Mock<Logging>();
+        log.setup(x => x.debug(It.IsAny<string>())).returns(undefined);
         log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
 
         target = new OAuthTokenManagerImplSpy(client.object(), config, log.object());
