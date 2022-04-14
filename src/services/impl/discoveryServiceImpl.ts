@@ -22,7 +22,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         const found: PlatformAccessory<AutomowerContext>[] = [];
         const mowers = await this.mowerService.getMowers();
         
-        mowers?.forEach(mower => {
+        mowers.forEach(mower => {
             const uuid = this.accessoryFactory.generateUuid(mower.id);
             if (!platform.isMowerConfigured(uuid)) {
                 const accessory = this.createAccessory(uuid, mower);

@@ -23,7 +23,7 @@ export interface AutomowerClient {
      * Gets all the mowers connected to the account.
      * @param token The access token.
      */
-    getMowers(token: OAuthToken): Promise<Mower[] | undefined>;
+    getMowers(token: OAuthToken): Promise<Mower[]>;
 }
 
 /**

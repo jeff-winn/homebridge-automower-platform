@@ -15,5 +15,5 @@ export interface GetMowersService {
     /**
      * Gets the mowers.
      */
-    getMowers(): Promise<Mower[] | undefined>;
+    getMowers(): Promise<Mower[]>;
 }
