@@ -30,13 +30,17 @@ export class AutomowerAccessory {
     /**
      * Initializes the accessory information.
      */
-    public initAccessoryInformation(): void {
+    public init(): void {
+        this.initAccessoryInformation();
+    }
+    
+    protected initAccessoryInformation(): void {
         this.informationService = this.accessory.getService(this.Service.AccessoryInformation)!
             .setCharacteristic(this.Characteristic.Manufacturer, this.accessory.context.manufacturer)
             .setCharacteristic(this.Characteristic.Model, this.accessory.context.model)
             .setCharacteristic(this.Characteristic.Name, this.accessory.displayName)
-            .setCharacteristic(this.Characteristic.SerialNumber, this.accessory.context.serialNumber);
-    }
+            .setCharacteristic(this.Characteristic.SerialNumber, this.accessory.context.serialNumber);    
+    }    
 
     public getUuid(): string {
         return this.accessory.UUID;
