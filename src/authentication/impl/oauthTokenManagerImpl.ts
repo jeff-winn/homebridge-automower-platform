@@ -1,6 +1,7 @@
 import { Logging } from 'homebridge';
 import { AutomowerPlatformConfig } from '../../automowerPlatformConfig';
-import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
+import { AuthenticationClient } from '../../clients/authenticationClient';
+import { OAuthToken } from '../../clients/model';
 import { OAuthTokenManager } from '../oauthTokenManager';
 
 export class OAuthTokenManagerImpl implements OAuthTokenManager {

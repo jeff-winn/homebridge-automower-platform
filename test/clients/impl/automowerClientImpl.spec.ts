@@ -1,6 +1,6 @@
-import { OAuthToken } from '../../../src/clients/authenticationClient';
 import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from '../../../src/clients/impl/automowerClientImpl';
+import { OAuthToken } from '../../../src/clients/model';
 import * as constants from '../../../src/constants';
 
 describe('automower client', () => {

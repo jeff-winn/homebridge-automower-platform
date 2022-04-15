@@ -1,5 +1,6 @@
 import { OAuthTokenManager } from '../../../authentication/oauthTokenManager';
-import { AutomowerClient, Mower } from '../../../clients/automowerClient';
+import { AutomowerClient } from '../../../clients/automowerClient';
+import { Mower } from '../../../clients/model';
 import { NotAuthorizedError } from '../../../clients/notAuthorizedError';
 import { GetMowersService } from '../getMowersService';
 

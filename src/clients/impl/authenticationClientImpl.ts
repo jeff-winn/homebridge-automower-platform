@@ -1,7 +1,9 @@
-import { AuthenticationClient, OAuthToken } from '../authenticationClient';
-import { NotAuthorizedError } from '../notAuthorizedError';
 import fetch, { Response } from 'node-fetch';
+
+import { AuthenticationClient } from '../authenticationClient';
+import { NotAuthorizedError } from '../notAuthorizedError';
 import { BadCredentialsError } from '../badCredentialsError';
+import { OAuthToken } from '../model';
 
 export class AuthenticationClientImpl implements AuthenticationClient {
     constructor(private appKey: string, private baseUrl: string) { }

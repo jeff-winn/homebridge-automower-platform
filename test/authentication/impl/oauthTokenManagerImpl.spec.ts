@@ -1,8 +1,9 @@
-import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
+import { AuthenticationClient } from '../../../src/clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatformConfig';
 import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
 import { Mock, It, Times } from 'moq.ts';
 import { Logging } from 'homebridge';
+import { OAuthToken } from '../../../src/clients/model';
 
 describe('oauth token manager', () => {
     let client: Mock<AuthenticationClient>;

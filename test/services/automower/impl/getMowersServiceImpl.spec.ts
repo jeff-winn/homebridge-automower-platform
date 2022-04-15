@@ -1,9 +1,9 @@
 import { OAuthTokenManager } from '../../../../src/authentication/oauthTokenManager';
-import { AutomowerClient, Mower } from '../../../../src/clients/automowerClient';
+import { AutomowerClient } from '../../../../src/clients/automowerClient';
 import { GetMowersServiceImpl } from '../../../../src/services/automower/impl/getMowersServiceImpl';
-import { OAuthToken } from '../../../../src/clients/authenticationClient';
 import { NotAuthorizedError } from '../../../../src/clients/notAuthorizedError';
 import { Mock, Times } from 'moq.ts';
+import { Mower, OAuthToken } from '../../../../src/clients/model';
 
 describe('get mowers service', () => {
     let tokenManager: Mock<OAuthTokenManager>;

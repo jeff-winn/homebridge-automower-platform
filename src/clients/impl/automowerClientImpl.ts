@@ -1,7 +1,8 @@
-import { OAuthToken } from '../authenticationClient';
-import { AutomowerClient, Mower } from '../automowerClient';
-import { NotAuthorizedError } from '../notAuthorizedError';
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
+
+import { AutomowerClient } from '../automowerClient';
+import { Mower, OAuthToken } from '../model';
+import { NotAuthorizedError } from '../notAuthorizedError';
 
 export class AutomowerClientImpl implements AutomowerClient {
     constructor(private appKey: string, private baseUrl: string) { }

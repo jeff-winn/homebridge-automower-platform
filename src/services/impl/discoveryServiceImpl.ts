@@ -2,7 +2,8 @@ import { Logging, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../../automowerAccessory';
 import { AutomowerPlatform } from '../../automowerPlatform';
 import { AccessoryFactory } from '../../accessoryFactory';
-import { GetMowersService, Mower } from '../automower/getMowersService';
+import { Mower } from '../../clients/model';
+import { GetMowersService } from '../automower/getMowersService';
 import { DiscoveryService } from '../discoveryService';
 
 interface ModelInformation {
