@@ -1,14 +1,9 @@
 import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
 import { Mock, Times } from 'moq.ts';
-import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
+import { AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerPlatform } from '../src/automowerPlatform';
-
-class AutomowerAccessorySpy extends AutomowerAccessory {
-    unsafeInitAccessoryInformation(): void {
-        this.initAccessoryInformation();
-    }
-}
+import { AutomowerAccessorySpy } from './automowerAccessorySpy';
 
 describe('automower accessory', () => {
     let service: typeof Service;
@@ -37,6 +32,14 @@ describe('automower accessory', () => {
         hap.setup(x => x.Service).returns(service);
 
         target = new AutomowerAccessorySpy(platform.object(), accessory.object(), api.object(), log.object());
+    });
+
+    it('should initialize all services', () => {
+        target.shouldRun = false;
+
+        target.init();
+
+        expect(target.accessoryInformationInitialized).toBeTruthy
     });
 
     it('initializes the accessory information correctly', () => {
