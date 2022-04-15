@@ -39,7 +39,7 @@ describe('automower accessory', () => {
 
         target.init();
 
-        expect(target.accessoryInformationInitialized).toBeTruthy
+        expect(target.accessoryInformationInitialized).toBeTruthy();
     });
 
     it('initializes the accessory information correctly', () => {
