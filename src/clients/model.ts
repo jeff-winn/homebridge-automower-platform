@@ -80,6 +80,13 @@ export interface Device {
 }
 
 /**
+ * Describes the information about the headlight.
+ */
+export interface Headlight {
+    mode: string;
+}
+
+/**
  * Describes the additional metadata about a mower.
  */
 export interface MowerMetadata {

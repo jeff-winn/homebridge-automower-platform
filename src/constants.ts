@@ -17,3 +17,8 @@ export const AUTHENTICATION_API_BASE_URL = 'https://api.authentication.husqvarna
   * The base url for the Automower Connect api.
   */
 export const AUTOMOWER_CONNECT_API_BASE_URL = 'https://api.amc.husqvarna.dev/v1';
+
+/**
+ * The base url for the Automower event streaming api.
+ */
+export const AUTOMOWER_STREAM_API_BASE_URL = 'wss://ws.openapi.husqvarna.dev/v1';
