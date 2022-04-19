@@ -8,6 +8,7 @@ import { AutomowerEventStreamImpl } from './clients/impl/automowerEventStreamImp
 import { DefaultAccessoryFactory } from './primitives/defaultAccessoryFactory';
 import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
 import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
+import { EventStreamServiceImpl } from './services/automower/eventStreamService';
 import * as constants from './constants';
 
 export class AutomowerPlatformContainer {
@@ -48,6 +49,13 @@ export class AutomowerPlatformContainer {
 
         container.register(AutomowerEventStreamImpl, {
             useFactory: () => new AutomowerEventStreamImpl(constants.AUTOMOWER_STREAM_API_BASE_URL)
+        });
+
+        container.register(EventStreamServiceImpl, {
+            useFactory: (context) => new EventStreamServiceImpl(
+                context.resolve(OAuthTokenManagerImpl),
+                context.resolve(AutomowerEventStreamImpl),
+                this.log)
         });
         
         this.log.debug('Completed DI container registrations.');

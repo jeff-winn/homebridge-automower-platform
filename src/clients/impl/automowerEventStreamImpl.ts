@@ -39,7 +39,7 @@ export class AutomowerEventStreamImpl implements AutomowerEventStream {
         }
 
         const payload = JSON.parse(data.toString()) as AutomowerEvent;
-        if (this.onMessageReceivedCallback !== undefined) {
+        if (this.onMessageReceivedCallback !== undefined && payload.type !== undefined) {
             this.onMessageReceivedCallback(payload);
         }
     }

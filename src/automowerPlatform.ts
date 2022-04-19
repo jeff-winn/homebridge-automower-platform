@@ -7,15 +7,18 @@ import { AutomowerPlatformContainer } from './automowerPlatformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import { DiscoveryService } from './services/discoveryService';
+import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
+import { StatusEvent } from './clients/events';
 
 /**
  * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.
  */
 export class AutomowerPlatform implements DynamicPlatformPlugin {
     private readonly mowers: AutomowerAccessory[] = [];
-
     private readonly config: AutomowerPlatformConfig;
     private readonly container: AutomowerPlatformContainer;        
+
+    private eventStream?: EventStreamService;
 
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
@@ -34,6 +37,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         this.container.registerEverything();
 
         await this.discoverNewMowers();
+        await this.startReceivingEvents();
 
         this.log.debug('onFinishLaunching');
     }
@@ -41,6 +45,24 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private async discoverNewMowers(): Promise<void> {
         const service = this.getDiscoveryService();
         await service.discoverMowers(this);
+    }
+
+    private async startReceivingEvents(): Promise<void> {
+        this.eventStream = this.getEventStreamService();
+        this.eventStream.onStatusEventReceived(this.onStatusEventReceived.bind(this));
+        
+        await this.eventStream.start();
+    }
+
+    protected getEventStreamService(): EventStreamService {
+        return this.container.resolve(EventStreamServiceImpl);
+    }
+
+    private async onStatusEventReceived(event: StatusEvent): Promise<void> {
+        const mower = this.mowers.find(mower => mower.getUuid() === event.id);
+        if (mower !== undefined) {
+            await mower.onStatusEventReceived(event);
+        }
     }
 
     /**
@@ -62,6 +84,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     private async onShutdown(): Promise<void> {
         this.log.info('Shutting down...');
+
+        await this.eventStream?.stop();
 
         const tokenManager = this.getOAuthTokenManager();
         await tokenManager.logout();

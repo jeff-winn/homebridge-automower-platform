@@ -8,18 +8,9 @@ import {
     Position 
 } from './model';
 
-/**
- * Describes the types of events.
- */
-export enum AutomowerEventTypes {
-    STATUS = 'status-event',
-    POSITIONS = 'positions-event',
-    SETTINGS = 'settings-event'
-}
-
 export interface AutomowerEvent {
     id: string;
-    type: AutomowerEventTypes;
+    type: string;
 }
 
 export interface StatusEvent extends AutomowerEvent {
