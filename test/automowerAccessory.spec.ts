@@ -81,4 +81,34 @@ describe('automower accessory', () => {
         const result = target.getUuid();
         expect(result).toBe(uuid);
     });
+
+    it('does nothing when the status event is received', async () => {
+        await target.onStatusEventReceived({
+            id: '12345',
+            type: 'status-event',
+            attributes: {
+                battery: {
+                    batteryPercent: 100
+                },
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 0
+                },
+                mower: {
+                    activity: 'hello',
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: 'mode',
+                    state: 'state'
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: 'no'
+                    },
+                    restrictedReason: 'none'
+                }
+            }
+        });
+    });
 });
