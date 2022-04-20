@@ -7,7 +7,7 @@ import { AutomowerClientImpl } from '../clients/impl/automowerClientImpl';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
 import { AccessoryFactoryImpl } from './accessoryFactory';
 import { TimerImpl } from './timer';
-import { GetMowersServiceImpl } from '../services/automower/impl/getMowersServiceImpl';
+import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/impl/discoveryServiceImpl';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import * as constants from '../constants';
