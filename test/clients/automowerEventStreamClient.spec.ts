@@ -1,4 +1,4 @@
-import { AuthenticationClientImpl } from '../../src/clients/impl/authenticationClientImpl';
+import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
 import { OAuthToken } from '../../src/clients/model';
 import * as constants from '../../src/constants';

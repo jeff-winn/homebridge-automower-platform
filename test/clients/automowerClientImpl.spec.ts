@@ -1,7 +1,7 @@
-import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl';
-import { AutomowerClientImpl } from '../../../src/clients/impl/automowerClientImpl';
-import { OAuthToken } from '../../../src/clients/model';
-import * as constants from '../../../src/constants';
+import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
+import { AutomowerClientImpl } from '../../src/clients/impl/automowerClientImpl';
+import { OAuthToken } from '../../src/clients/model';
+import * as constants from '../../src/constants';
 
 describe('automower client', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
