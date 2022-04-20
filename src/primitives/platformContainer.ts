@@ -4,7 +4,7 @@ import { OAuthTokenManagerImpl } from '../authentication/impl/oauthTokenManagerI
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from '../clients/impl/automowerClientImpl';
-import { AutomowerEventStreamImpl } from '../clients/impl/automowerEventStreamImpl';
+import { AutomowerEventStreamImpl } from '../clients/automowerEventStream';
 import { DefaultAccessoryFactory } from './accessoryFactory';
 import { TimerImpl } from './timer';
 import { GetMowersServiceImpl } from '../services/automower/impl/getMowersServiceImpl';

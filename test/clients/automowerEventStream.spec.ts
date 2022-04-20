@@ -1,7 +1,7 @@
-import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl';
-import { AutomowerEventStreamImpl } from '../../../src/clients/impl/automowerEventStreamImpl';
-import { OAuthToken } from '../../../src/clients/model';
-import * as constants from '../../../src/constants';
+import { AuthenticationClientImpl } from '../../src/clients/impl/authenticationClientImpl';
+import { AutomowerEventStreamImpl } from '../../src/clients/automowerEventStream';
+import { OAuthToken } from '../../src/clients/model';
+import * as constants from '../../src/constants';
 
 describe('automower event stream', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
