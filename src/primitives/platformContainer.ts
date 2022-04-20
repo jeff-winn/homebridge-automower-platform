@@ -4,7 +4,7 @@ import { OAuthTokenManagerImpl } from '../authentication/impl/oauthTokenManagerI
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from '../clients/impl/automowerClientImpl';
-import { AutomowerEventStreamImpl } from '../clients/automowerEventStream';
+import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
 import { DefaultAccessoryFactory } from './accessoryFactory';
 import { TimerImpl } from './timer';
 import { GetMowersServiceImpl } from '../services/automower/impl/getMowersServiceImpl';
@@ -52,14 +52,14 @@ export class PlatformContainer {
                 context.resolve(DefaultAccessoryFactory))
         });
 
-        container.register(AutomowerEventStreamImpl, {
-            useFactory: () => new AutomowerEventStreamImpl(constants.AUTOMOWER_STREAM_API_BASE_URL)
+        container.register(AutomowerEventStreamClientImpl, {
+            useFactory: () => new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL)
         });
 
         container.register(EventStreamServiceImpl, {
             useFactory: (context) => new EventStreamServiceImpl(
                 context.resolve(OAuthTokenManagerImpl),
-                context.resolve(AutomowerEventStreamImpl),
+                context.resolve(AutomowerEventStreamClientImpl),
                 this.log,
                 context.resolve(TimerImpl))
         });

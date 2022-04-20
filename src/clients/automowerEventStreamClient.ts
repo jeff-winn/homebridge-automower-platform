@@ -5,7 +5,7 @@ import { OAuthToken } from './model';
 /**
  * A client which receives a stream of events for all mowers connected to the account.
  */
-export interface AutomowerEventStream {
+export interface AutomowerEventStreamClient {
     /**
      * Opens the stream.
      * @param token The token which will be used to authenticate.
@@ -29,7 +29,7 @@ export interface AutomowerEventStream {
     ping(): void;
 }
 
-export class AutomowerEventStreamImpl implements AutomowerEventStream {
+export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClient {
     private socket?: WebSocket;
     private onMessageReceivedCallback?: (payload: AutomowerEvent) => void;
 

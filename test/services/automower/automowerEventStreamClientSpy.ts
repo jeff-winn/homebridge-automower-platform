@@ -1,8 +1,8 @@
-import { AutomowerEventStream } from '../../../src/clients/automowerEventStream';
+import { AutomowerEventStreamClient } from '../../../src/clients/automowerEventStreamClient';
 import { AutomowerEvent } from '../../../src/clients/events';
 import { OAuthToken } from '../../../src/clients/model';
 
-export class AutomowerEventStreamSpy implements AutomowerEventStream {
+export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient {
     opened = false;
     closed = false;
     callbackSet = false;

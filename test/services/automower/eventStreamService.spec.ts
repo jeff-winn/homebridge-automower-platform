@@ -6,7 +6,7 @@ import { AutomowerEvent, StatusEvent } from '../../../src/clients/events';
 import { OAuthToken } from '../../../src/clients/model';
 import { Timer } from '../../../src/primitives/timer';
 import { EventStreamServiceImpl } from '../../../src/services/automower/eventStreamService';
-import { AutomowerEventStreamSpy } from './automowerEventStreamSpy';
+import { AutomowerEventStreamClientSpy } from './automowerEventStreamClientSpy';
 
 class EventStreamServiceImplSpy extends EventStreamServiceImpl {
     unsafeEventReceived(event: AutomowerEvent): Promise<void> {
@@ -20,7 +20,7 @@ class EventStreamServiceImplSpy extends EventStreamServiceImpl {
 
 describe('eventStreamService', () => {
     let tokenManager: Mock<OAuthTokenManager>;
-    let stream: AutomowerEventStreamSpy;
+    let stream: AutomowerEventStreamClientSpy;
     let log: Mock<Logging>;
     let timer: Mock<Timer>;
 
@@ -28,7 +28,7 @@ describe('eventStreamService', () => {
 
     beforeEach(() => {
         tokenManager = new Mock<OAuthTokenManager>();
-        stream = new AutomowerEventStreamSpy();
+        stream = new AutomowerEventStreamClientSpy();
         log = new Mock<Logging>();
         timer = new Mock<Timer>();
 

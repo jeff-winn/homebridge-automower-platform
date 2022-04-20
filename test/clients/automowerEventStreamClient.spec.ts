@@ -1,5 +1,5 @@
 import { AuthenticationClientImpl } from '../../src/clients/impl/authenticationClientImpl';
-import { AutomowerEventStreamImpl } from '../../src/clients/automowerEventStream';
+import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
 import { OAuthToken } from '../../src/clients/model';
 import * as constants from '../../src/constants';
 
@@ -9,12 +9,12 @@ describe('automower event stream', () => {
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
     const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || '';
 
-    let target: AutomowerEventStreamImpl;
+    let target: AutomowerEventStreamClientImpl;
     let authClient: AuthenticationClientImpl;
     let token: OAuthToken;
 
     beforeAll(async () => {
-        target = new AutomowerEventStreamImpl(constants.AUTOMOWER_STREAM_API_BASE_URL);
+        target = new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL);
         authClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
 
         if (USERNAME !== '' && PASSWORD !== '') {
