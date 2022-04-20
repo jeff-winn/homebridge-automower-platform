@@ -1,12 +1,12 @@
 import { Logging, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { GetMowersService } from '../../../src/services/automower/getMowersService';
-import { DiscoveryServiceImpl } from '../../../src/services/impl/discoveryServiceImpl';
-import { AutomowerPlatform } from '../../../src/automowerPlatform';
-import { AccessoryFactory } from '../../../src/primitives/accessoryFactory';
-import { AutomowerContext } from '../../../src/automowerAccessory';
-import { Mower } from '../../../src/clients/model';
+import { GetMowersService } from '../../src/services/automower/getMowersService';
+import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
+import { AutomowerPlatform } from '../../src/automowerPlatform';
+import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
+import { AutomowerContext } from '../../src/automowerAccessory';
+import { Mower } from '../../src/clients/model';
 
 describe('discovery service', () => {
     let getMowersService: Mock<GetMowersService>;

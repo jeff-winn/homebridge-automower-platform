@@ -1,5 +1,6 @@
 import { API, Logging } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
+
 import { OAuthTokenManagerImpl } from '../authentication/impl/oauthTokenManagerImpl';
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/impl/authenticationClientImpl';
@@ -8,7 +9,7 @@ import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamC
 import { AccessoryFactoryImpl } from './accessoryFactory';
 import { TimerImpl } from './timer';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
-import { DiscoveryServiceImpl } from '../services/impl/discoveryServiceImpl';
+import { DiscoveryServiceImpl } from '../services/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import * as constants from '../constants';
 

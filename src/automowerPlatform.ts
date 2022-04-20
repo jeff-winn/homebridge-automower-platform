@@ -5,8 +5,7 @@ import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
-import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
-import { DiscoveryService } from './services/discoveryService';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { StatusEvent } from './clients/events';
 
