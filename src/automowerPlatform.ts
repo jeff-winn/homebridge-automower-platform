@@ -3,7 +3,7 @@ import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerIm
 import { OAuthTokenManager } from './authentication/oauthTokenManager';
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
-import { AutomowerPlatformContainer } from './automowerPlatformContainer';
+import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import { DiscoveryService } from './services/discoveryService';
@@ -16,13 +16,12 @@ import { StatusEvent } from './clients/events';
 export class AutomowerPlatform implements DynamicPlatformPlugin {
     private readonly mowers: AutomowerAccessory[] = [];
     private readonly config: AutomowerPlatformConfig;
-    private readonly container: AutomowerPlatformContainer;        
 
+    private container?: PlatformContainer;
     private eventStream?: EventStreamService;
 
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
-        this.container = new AutomowerPlatformContainer(this.log, this.config, this.api);
 
         api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {            
             await this.onFinishedLaunching();
@@ -33,8 +32,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         });
     }
 
-    private async onFinishedLaunching(): Promise<void> {
-        this.container.registerEverything();
+    protected async onFinishedLaunching(): Promise<void> {
+        this.configureContainer();
 
         await this.discoverNewMowers();
         await this.startReceivingEvents();
@@ -42,12 +41,17 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         this.log.debug('onFinishLaunching');
     }
     
-    private async discoverNewMowers(): Promise<void> {
+    protected configureContainer(): void {
+        this.container = new PlatformContainer(this.log, this.config, this.api);
+        this.container.registerEverything();
+    }
+
+    protected async discoverNewMowers(): Promise<void> {
         const service = this.getDiscoveryService();
         await service.discoverMowers(this);
     }
 
-    private async startReceivingEvents(): Promise<void> {
+    protected async startReceivingEvents(): Promise<void> {
         this.eventStream = this.getEventStreamService();
         this.eventStream.onStatusEventReceived(this.onStatusEventReceived.bind(this));
         
@@ -55,7 +59,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     protected getEventStreamService(): EventStreamService {
-        return this.container.resolve(EventStreamServiceImpl);
+        return this.container!.resolve(EventStreamServiceImpl);
     }
 
     private async onStatusEventReceived(event: StatusEvent): Promise<void> {
@@ -70,7 +74,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * @returns The service instance.
      */
     protected getDiscoveryService(): DiscoveryService {
-        return this.container.resolve(DiscoveryServiceImpl);
+        return this.container!.resolve(DiscoveryServiceImpl);
     }
 
     /**
@@ -82,20 +86,26 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.mowers.some(accessory => accessory.getUuid() === uuid);
     }
 
-    private async onShutdown(): Promise<void> {
+    protected async onShutdown(): Promise<void> {
         this.log.info('Shutting down...');
 
         await this.eventStream?.stop();
 
         const tokenManager = this.getOAuthTokenManager();
-        await tokenManager.logout();
+        if (tokenManager !== undefined) {
+            await tokenManager.logout();
+        }
     }
 
     /**
      * Gets the {@link OAuthTokenManager}.
      * @returns The service instance.
      */
-    protected getOAuthTokenManager(): OAuthTokenManager {
+    protected getOAuthTokenManager(): OAuthTokenManager | undefined {
+        if (this.container === undefined) {
+            return undefined;
+        }
+
         return this.container.resolve(OAuthTokenManagerImpl);
     }
 

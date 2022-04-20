@@ -1,18 +1,18 @@
 import { API, Logging } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
-import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerImpl';
-import { AutomowerPlatformConfig } from './automowerPlatformConfig';
-import { AuthenticationClientImpl } from './clients/impl/authenticationClientImpl';
-import { AutomowerClientImpl } from './clients/impl/automowerClientImpl';
-import { AutomowerEventStreamImpl } from './clients/impl/automowerEventStreamImpl';
-import { DefaultAccessoryFactory } from './primitives/defaultAccessoryFactory';
-import { TimerImpl } from './primitives/timer';
-import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
-import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
-import { EventStreamServiceImpl } from './services/automower/eventStreamService';
-import * as constants from './constants';
+import { OAuthTokenManagerImpl } from '../authentication/impl/oauthTokenManagerImpl';
+import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
+import { AuthenticationClientImpl } from '../clients/impl/authenticationClientImpl';
+import { AutomowerClientImpl } from '../clients/impl/automowerClientImpl';
+import { AutomowerEventStreamImpl } from '../clients/impl/automowerEventStreamImpl';
+import { DefaultAccessoryFactory } from './accessoryFactory';
+import { TimerImpl } from './timer';
+import { GetMowersServiceImpl } from '../services/automower/impl/getMowersServiceImpl';
+import { DiscoveryServiceImpl } from '../services/impl/discoveryServiceImpl';
+import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
+import * as constants from '../constants';
 
-export class AutomowerPlatformContainer {
+export class PlatformContainer {
     constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
 
     registerEverything(): void {
