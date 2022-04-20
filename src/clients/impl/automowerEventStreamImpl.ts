@@ -29,7 +29,7 @@ export class AutomowerEventStreamImpl implements AutomowerEventStream {
         });
     }
 
-    public keepAlive(): void {
+    public ping(): void {
         this.socket?.ping('ping');
     }
 

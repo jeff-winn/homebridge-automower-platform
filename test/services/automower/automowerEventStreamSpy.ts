@@ -17,7 +17,7 @@ export class AutomowerEventStreamSpy implements AutomowerEventStream {
         this.closed = true;
     }
 
-    keepAlive(): void {
+    ping(): void {
         this.keptAlive = true;
     }
 

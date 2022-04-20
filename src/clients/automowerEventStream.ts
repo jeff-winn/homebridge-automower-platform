@@ -23,7 +23,7 @@ export interface AutomowerEventStream {
     on(callback: (event: AutomowerEvent) => Promise<void>): void;
 
     /**
-     * Keeps the stream alive. This method is meant to be called from a background thread.
+     * Pings the server.
      */
-    keepAlive(): void;
+    ping(): void;
 }
