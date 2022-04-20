@@ -1,9 +1,9 @@
 import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
-import { AutomowerClientImpl } from '../../src/clients/impl/automowerClientImpl';
+import { AutomowerClientImpl } from '../../src/clients/automowerClient';
 import { OAuthToken } from '../../src/clients/model';
 import * as constants from '../../src/constants';
 
-describe('automower client', () => {
+describe('automowerClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
     const APPKEY: string = process.env.HUSQVARNA_APPKEY || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
