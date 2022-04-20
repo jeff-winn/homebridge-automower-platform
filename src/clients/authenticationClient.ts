@@ -1,7 +1,7 @@
 import fetch, { Response } from 'node-fetch';
 
-import { NotAuthorizedError } from './notAuthorizedError';
-import { BadCredentialsError } from './badCredentialsError';
+import { NotAuthorizedError } from '../errors/notAuthorizedError';
+import { BadCredentialsError } from '../errors/badCredentialsError';
 import { OAuthToken } from './model';
 
 /**

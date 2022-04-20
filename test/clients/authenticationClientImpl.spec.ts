@@ -1,4 +1,4 @@
-import { BadCredentialsError } from '../../src/clients/badCredentialsError';
+import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
 import * as constants from '../../src/constants';
 

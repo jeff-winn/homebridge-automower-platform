@@ -1,7 +1,7 @@
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 import { Mower, OAuthToken } from './model';
-import { NotAuthorizedError } from './notAuthorizedError';
+import { NotAuthorizedError } from '../errors/notAuthorizedError';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
