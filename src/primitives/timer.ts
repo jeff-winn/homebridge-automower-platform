@@ -28,5 +28,6 @@ export class TimerImpl implements Timer {
         }
 
         clearTimeout(this.timeoutId);
+        this.timeoutId = undefined;
     }
 }
