@@ -19,7 +19,7 @@ export interface AccessoryFactory {
     create(displayName: string, uuid: string): PlatformAccessory<AutomowerContext>;
 }
 
-export class DefaultAccessoryFactory implements AccessoryFactory {
+export class AccessoryFactoryImpl implements AccessoryFactory {
     constructor(private api: API) { }
 
     generateUuid(data: string): string {

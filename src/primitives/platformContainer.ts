@@ -5,7 +5,7 @@ import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from '../clients/impl/automowerClientImpl';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
-import { DefaultAccessoryFactory } from './accessoryFactory';
+import { AccessoryFactoryImpl } from './accessoryFactory';
 import { TimerImpl } from './timer';
 import { GetMowersServiceImpl } from '../services/automower/impl/getMowersServiceImpl';
 import { DiscoveryServiceImpl } from '../services/impl/discoveryServiceImpl';
@@ -41,15 +41,15 @@ export class PlatformContainer {
             )
         });
 
-        container.register(DefaultAccessoryFactory, {
-            useFactory: () => new DefaultAccessoryFactory(this.api)
+        container.register(AccessoryFactoryImpl, {
+            useFactory: () => new AccessoryFactoryImpl(this.api)
         });
 
         container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
                 context.resolve(GetMowersServiceImpl),                
                 this.log,
-                context.resolve(DefaultAccessoryFactory))
+                context.resolve(AccessoryFactoryImpl))
         });
 
         container.register(AutomowerEventStreamClientImpl, {
