@@ -6,6 +6,7 @@ import { AuthenticationClientImpl } from './clients/impl/authenticationClientImp
 import { AutomowerClientImpl } from './clients/impl/automowerClientImpl';
 import { AutomowerEventStreamImpl } from './clients/impl/automowerEventStreamImpl';
 import { DefaultAccessoryFactory } from './primitives/defaultAccessoryFactory';
+import { TimerImpl } from './primitives/timer';
 import { GetMowersServiceImpl } from './services/automower/impl/getMowersServiceImpl';
 import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
 import { EventStreamServiceImpl } from './services/automower/eventStreamService';
@@ -21,6 +22,10 @@ export class AutomowerPlatformContainer {
             new AuthenticationClientImpl(this.config.appKey, constants.AUTHENTICATION_API_BASE_URL),
             this.config,
             this.log));
+
+        container.register(TimerImpl, {
+            useFactory: () => new TimerImpl()
+        });
 
         container.register(AutomowerClientImpl, {
             useValue: new AutomowerClientImpl(
@@ -55,7 +60,8 @@ export class AutomowerPlatformContainer {
             useFactory: (context) => new EventStreamServiceImpl(
                 context.resolve(OAuthTokenManagerImpl),
                 context.resolve(AutomowerEventStreamImpl),
-                this.log)
+                this.log,
+                context.resolve(TimerImpl))
         });
         
         this.log.debug('Completed DI container registrations.');

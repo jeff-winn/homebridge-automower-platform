@@ -4,6 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
 import { AutomowerEvent, StatusEvent } from '../../../src/clients/events';
 import { OAuthToken } from '../../../src/clients/model';
+import { Timer } from '../../../src/primitives/timer';
 import { EventStreamServiceImpl } from '../../../src/services/automower/eventStreamService';
 import { AutomowerEventStreamSpy } from './automowerEventStreamSpy';
 
@@ -11,12 +12,17 @@ class EventStreamServiceImplSpy extends EventStreamServiceImpl {
     unsafeEventReceived(event: AutomowerEvent): Promise<void> {
         return this.onEventReceived(event);
     }
+
+    unsafeKeepAlive(): void {
+        this.keepAlive();
+    }
 }
 
 describe('eventStreamService', () => {
     let tokenManager: Mock<OAuthTokenManager>;
     let stream: AutomowerEventStreamSpy;
     let log: Mock<Logging>;
+    let timer: Mock<Timer>;
 
     let target: EventStreamServiceImplSpy;
 
@@ -24,8 +30,9 @@ describe('eventStreamService', () => {
         tokenManager = new Mock<OAuthTokenManager>();
         stream = new AutomowerEventStreamSpy();
         log = new Mock<Logging>();
+        timer = new Mock<Timer>();
 
-        target = new EventStreamServiceImplSpy(tokenManager.object(), stream, log.object());
+        target = new EventStreamServiceImplSpy(tokenManager.object(), stream, log.object(), timer.object());
     });
 
     it('should get the token and login to the stream', async () => {
@@ -40,17 +47,34 @@ describe('eventStreamService', () => {
         };
 
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.start();
 
         expect(stream.opened).toBeTruthy();
         expect(stream.callbackSet).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     it('should close the stream', async () => {
+        timer.setup(o => o.stop()).returns(undefined);
+
         await target.stop();
 
         expect(stream.closed).toBeTruthy();
+
+        timer.verify(o => o.stop(), Times.Once());
+    });
+
+    it('should restart when keep alive is executed', () => {
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        target.unsafeKeepAlive();
+
+        expect(stream.keptAlive).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     it('should do nothing when settings-event is received', async () => {

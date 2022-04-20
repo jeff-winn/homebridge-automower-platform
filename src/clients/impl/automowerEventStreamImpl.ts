@@ -29,6 +29,10 @@ export class AutomowerEventStreamImpl implements AutomowerEventStream {
         });
     }
 
+    public keepAlive(): void {
+        this.socket?.ping('ping');
+    }
+
     public isConnected(): boolean {
         return this.connected;
     }

@@ -2,6 +2,7 @@ import { Logging } from 'homebridge';
 import { OAuthTokenManager } from '../../authentication/oauthTokenManager';
 import { AutomowerEventStream } from '../../clients/automowerEventStream';
 import { AutomowerEvent, StatusEvent } from '../../clients/events';
+import { Timer } from '../../primitives/timer';
 
 export interface EventStreamService {
     onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void;
@@ -12,9 +13,12 @@ export interface EventStreamService {
 }
 
 export class EventStreamServiceImpl implements EventStreamService {
+    private readonly KEEP_ALIVE_INTERVAL = 60000;
+
     private onStatusEventCallback?: (event: StatusEvent) => Promise<void>;
 
-    constructor(private tokenManager: OAuthTokenManager, private stream: AutomowerEventStream, private log: Logging) { }
+    constructor(private tokenManager: OAuthTokenManager, private stream: AutomowerEventStream, 
+        private log: Logging, private timer: Timer) { }
 
     onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
@@ -25,10 +29,27 @@ export class EventStreamServiceImpl implements EventStreamService {
 
         this.stream.on(this.onEventReceived.bind(this));
         this.stream.open(token);
+
+        this.startKeepAlive();
+    }
+
+    private startKeepAlive() {
+        this.timer.start(this.keepAlive.bind(this), this.KEEP_ALIVE_INTERVAL);
+    }
+    
+    protected keepAlive(): void {
+        try {
+            this.stream.keepAlive();
+        } finally {
+            // Restart the timer.
+            this.startKeepAlive();
+        }
     }
 
     stop(): Promise<void> {
         this.stream.close();
+        this.timer.stop();
+
         return Promise.resolve(undefined);
     }
 

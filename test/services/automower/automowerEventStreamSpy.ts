@@ -6,6 +6,7 @@ export class AutomowerEventStreamSpy implements AutomowerEventStream {
     opened = false;
     closed = false;
     callbackSet = false;
+    keptAlive = false;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     open(token: OAuthToken): void {
@@ -14,6 +15,10 @@ export class AutomowerEventStreamSpy implements AutomowerEventStream {
 
     close(): void {
         this.closed = true;
+    }
+
+    keepAlive(): void {
+        this.keptAlive = true;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
