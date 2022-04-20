@@ -1,6 +1,5 @@
 import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
-import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerImpl';
-import { OAuthTokenManager } from './authentication/oauthTokenManager';
+import { OAuthTokenManager, OAuthTokenManagerImpl } from './authentication/oauthTokenManager';
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { PlatformContainer } from './primitives/platformContainer';

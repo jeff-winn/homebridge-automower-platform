@@ -1,7 +1,7 @@
 import { API, Logging } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
-import { OAuthTokenManagerImpl } from '../authentication/impl/oauthTokenManagerImpl';
+import { OAuthTokenManagerImpl } from '../authentication/oauthTokenManager';
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/impl/authenticationClientImpl';
 import { AutomowerClientImpl } from '../clients/impl/automowerClientImpl';
