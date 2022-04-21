@@ -5,7 +5,7 @@ import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager
 import { StatusEvent } from '../../../src/clients/events';
 import { OAuthToken } from '../../../src/clients/model';
 import { Timer } from '../../../src/primitives/timer';
-import { AutomowerEventStreamClientSpy } from './automowerEventStreamClientSpy';
+import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
 
 describe('eventStreamService', () => {
