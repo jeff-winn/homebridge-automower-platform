@@ -32,6 +32,24 @@ describe('oauth token manager', () => {
         target = new OAuthTokenManagerImplSpy(client.object(), config, log.object());
     });
 
+    it('should not be logged in when the token is reset', () => {
+        target.unsafeSetCurrentToken({
+            access_token: 'abcd1234',
+            expires_in: 1,
+            provider: 'bob',
+            refresh_token: '123456',
+            scope: 'all the things',
+            token_type: 'yay',
+            user_id: 'me'
+        });
+
+        expect(target.hasAlreadyLoggedIn()).toBeTruthy();
+
+        target.unsafeResetToken();
+
+        expect(target.hasAlreadyLoggedIn()).toBeFalsy();
+    });
+
     it('should login when the token does not yet exist', async () => {
         const accessToken = 'abcd1234';
         const expiresIn = 1234;

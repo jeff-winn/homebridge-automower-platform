@@ -63,7 +63,7 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
         return (this.invalidated || (this.expires !== undefined && this.expires < now));
     }
 
-    protected hasAlreadyLoggedIn(): boolean {
+    public hasAlreadyLoggedIn(): boolean {
         return this.currentToken !== undefined;
     }
 

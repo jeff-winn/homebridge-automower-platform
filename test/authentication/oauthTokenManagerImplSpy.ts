@@ -47,4 +47,8 @@ export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
     public unsafeGetCurrentToken(): OAuthToken | undefined {
         return super.unsafeGetCurrentToken();
     }
+
+    public unsafeResetToken(): void {
+        this.resetToken();
+    }
 }
