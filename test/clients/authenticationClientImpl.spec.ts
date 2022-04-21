@@ -1,9 +1,9 @@
-import { BadCredentialsError } from '../../../src/clients/badCredentialsError';
-import { AuthenticationClientImpl } from '../../../src/clients/impl/authenticationClientImpl';
-import * as constants from '../../../src/constants';
+import { BadCredentialsError } from '../../src/errors/badCredentialsError';
+import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
+import * as constants from '../../src/constants';
 
-describe('authentication client', () => {
-    /* These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace. */
+describe('authenticationClientImpl', () => {
+    // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
     const APPKEY: string = process.env.HUSQVARNA_APPKEY || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
     const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || '';

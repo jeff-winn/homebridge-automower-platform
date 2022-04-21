@@ -1,8 +1,10 @@
-import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
-import { AutomowerPlatformConfig } from '../../../src/automowerPlatformConfig';
-import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
 import { Mock, It, Times } from 'moq.ts';
 import { Logging } from 'homebridge';
+
+import { AuthenticationClient } from '../../src/clients/authenticationClient';
+import { AutomowerPlatformConfig } from '../../src/automowerPlatformConfig';
+import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
+import { OAuthToken } from '../../src/clients/model';
 
 describe('oauth token manager', () => {
     let client: Mock<AuthenticationClient>;
@@ -28,6 +30,24 @@ describe('oauth token manager', () => {
         log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
 
         target = new OAuthTokenManagerImplSpy(client.object(), config, log.object());
+    });
+
+    it('should not be logged in when the token is reset', () => {
+        target.unsafeSetCurrentToken({
+            access_token: 'abcd1234',
+            expires_in: 1,
+            provider: 'bob',
+            refresh_token: '123456',
+            scope: 'all the things',
+            token_type: 'yay',
+            user_id: 'me'
+        });
+
+        expect(target.hasAlreadyLoggedIn()).toBeTruthy();
+
+        target.unsafeResetToken();
+
+        expect(target.hasAlreadyLoggedIn()).toBeFalsy();
     });
 
     it('should login when the token does not yet exist', async () => {

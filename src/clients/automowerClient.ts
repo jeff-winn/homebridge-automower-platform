@@ -1,4 +1,7 @@
-import { OAuthToken } from './authenticationClient';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
+
+import { Mower, OAuthToken } from './model';
+import { NotAuthorizedError } from '../errors/notAuthorizedError';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -26,95 +29,136 @@ export interface AutomowerClient {
     getMowers(token: OAuthToken): Promise<Mower[]>;
 }
 
+
 /**
- * Describes a mower.
+ * Describes the response while getting a specific mower.
  */
-export interface Mower {
-    type: string;
-    id: string;    
-    attributes: {
-        system: Device;
-        battery: Battery;
-        mower: MowerState;
-        calendar: Calendar;
-        planner: Planner;
-        metadata: MowerMetadata;
-        positions: Position[];
-    };
+ interface GetMowerResponse {
+    data: Mower;
 }
 
 /**
- * Describes the battery.
+ * Describes the response while getting all mowers.
  */
-export interface Battery {
-    batteryPercent: number;
+interface GetMowersResponse {
+    data: Mower[];
 }
 
 /**
- * Describes the calendar.
+ * Describes an error response.
  */
-export interface Calendar {
-    tasks: Task[];
+interface ErrorResponse {
+    errors: Error[];
 }
 
 /**
- * Describes the device.
+ * Describes an error.
  */
-export interface Device {
-    name: string;
-    model: string;
-    serialNumber: number;
+interface Error {
+    id: string;
+    status: string;
+    code: string;
+    title: string;
+    detail: string;
 }
 
-/**
- * Describes the additional metadata about a mower.
- */
-export interface MowerMetadata {
-    connected: boolean;
-    statusTimestamp: number;
-}
+export class AutomowerClientImpl implements AutomowerClient {
+    constructor(private appKey: string, private baseUrl: string) { }
 
-/**
- * Describes the mower state.
- */
-export interface MowerState {
-    mode: string;
-    activity: string;
-    state: string;
-    errorCode: number;
-    errorCodeTimestamp: number;
-}
+    getApplicationKey(): string {
+        return this.appKey;
+    }
 
-/**
- * Describes the mower planner.
- */
-export interface Planner {
-    nextStartTimestamp: number;
-    override: {
-        action: string;
-    };
-    restrictedReason: string;
-}
+    getBaseUrl(): string {
+        return this.baseUrl;
+    }
 
-/**
- * Describes the mower position.
- */
-export interface Position {
-    latitude: number;
-    longitude: number;
-}
+    async doAction(id: string, action: unknown, token: OAuthToken): Promise<void> {
+        if (id === '') {
+            throw new Error('id cannot be empty.');
+        }
 
-/**
- * Describes a task for the mower.
- */
-export interface Task {
-    start: number;
-    duration: number;
-    monday: boolean;
-    tuesday: boolean;
-    wednesday: boolean;
-    thursday: boolean;
-    friday: boolean;
-    saturday: boolean;
-    sunday: boolean;
+        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-Api-Key': this.appKey,
+                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization-Provider': token.provider
+            },
+            body: JSON.stringify({
+                data: action
+            }),
+        });
+
+        await this.throwIfStatusNotOk(res);
+    }
+
+    protected doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+        return fetch(url, init);
+    }
+
+    async getMower(id: string, token: OAuthToken): Promise<Mower | undefined> {
+        if (id === '') {
+            throw new Error('id cannot be empty.');
+        }
+
+        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+            method: 'GET',
+            headers: {
+                'X-Api-Key': this.appKey,
+                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization-Provider': token.provider
+            }
+        });
+
+        if (res.status === 404) {
+            return undefined;
+        }
+
+        await this.throwIfStatusNotOk(res);
+
+        const response = await res.json() as GetMowerResponse;
+        if (response !== undefined) {
+            return response.data;
+        }
+
+        return undefined;
+    }    
+
+    async getMowers(token: OAuthToken): Promise<Mower[]> {
+        const res = await this.doFetch(this.baseUrl + '/mowers', {
+            method: 'GET',
+            headers: {
+                'X-Api-Key': this.appKey,
+                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization-Provider': token.provider
+            }
+        });
+
+        await this.throwIfStatusNotOk(res);
+    
+        const response = await res.json() as GetMowersResponse;
+        if (response !== undefined) {
+            return response.data;
+        }
+
+        return [];
+    }
+
+    private async throwIfStatusNotOk(response: Response): Promise<void> {
+        if (response.status === 401) {
+            throw new NotAuthorizedError();
+        }
+
+        if (!response.ok) {
+            const errs = await response.json() as ErrorResponse;
+            if (errs?.errors[0] !== undefined) {
+                const err = errs.errors[0];
+
+                throw new Error(`ERR: [${err.code}] ${err.title}`);
+            } else {
+                throw new Error(`ERR: ${response.status}`);
+            }
+        }
+    }
 }

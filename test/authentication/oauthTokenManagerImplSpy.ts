@@ -1,5 +1,5 @@
-import { OAuthTokenManagerImpl } from '../../../src/authentication/impl/oauthTokenManagerImpl';
-import { OAuthToken } from '../../../src/clients/authenticationClient';
+import { OAuthTokenManagerImpl } from '../../src/authentication/oauthTokenManager';
+import { OAuthToken } from '../../src/clients/model';
 
 export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
     loggedIn = false;
@@ -46,5 +46,9 @@ export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
 
     public unsafeGetCurrentToken(): OAuthToken | undefined {
         return super.unsafeGetCurrentToken();
+    }
+
+    public unsafeResetToken(): void {
+        this.resetToken();
     }
 }

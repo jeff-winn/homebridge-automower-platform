@@ -1,25 +1,25 @@
 import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
-import { OAuthTokenManagerImpl } from './authentication/impl/oauthTokenManagerImpl';
-import { OAuthTokenManager } from './authentication/oauthTokenManager';
+import { OAuthTokenManager, OAuthTokenManagerImpl } from './authentication/oauthTokenManager';
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
-import { AutomowerPlatformContainer } from './automowerPlatformContainer';
+import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
-import { DiscoveryServiceImpl } from './services/impl/discoveryServiceImpl';
-import { DiscoveryService } from './services/discoveryService';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
+import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
+import { StatusEvent } from './clients/events';
 
 /**
  * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.
  */
 export class AutomowerPlatform implements DynamicPlatformPlugin {
     private readonly mowers: AutomowerAccessory[] = [];
-
     private readonly config: AutomowerPlatformConfig;
-    private readonly container: AutomowerPlatformContainer;        
+
+    private container?: PlatformContainer;
+    private eventStream?: EventStreamService;
 
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
-        this.container = new AutomowerPlatformContainer(this.log, this.config, this.api);
 
         api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {            
             await this.onFinishedLaunching();
@@ -30,17 +30,41 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         });
     }
 
-    private async onFinishedLaunching(): Promise<void> {
-        this.container.registerEverything();
+    protected async onFinishedLaunching(): Promise<void> {
+        this.configureContainer();
 
         await this.discoverNewMowers();
+        await this.startReceivingEvents();
 
         this.log.debug('onFinishLaunching');
     }
     
-    private async discoverNewMowers(): Promise<void> {
+    protected configureContainer(): void {
+        this.container = new PlatformContainer(this.log, this.config, this.api);
+        this.container.registerEverything();
+    }
+
+    protected async discoverNewMowers(): Promise<void> {
         const service = this.getDiscoveryService();
         await service.discoverMowers(this);
+    }
+
+    protected async startReceivingEvents(): Promise<void> {
+        this.eventStream = this.getEventStreamService();
+        this.eventStream.onStatusEventReceived(this.onStatusEventReceived.bind(this));
+        
+        await this.eventStream.start();
+    }
+
+    protected getEventStreamService(): EventStreamService {
+        return this.container!.resolve(EventStreamServiceImpl);
+    }
+
+    private async onStatusEventReceived(event: StatusEvent): Promise<void> {
+        const mower = this.mowers.find(o => o.getUuid() === event.id);
+        if (mower !== undefined) {
+            await mower.onStatusEventReceived(event);
+        }
     }
 
     /**
@@ -48,7 +72,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * @returns The service instance.
      */
     protected getDiscoveryService(): DiscoveryService {
-        return this.container.resolve(DiscoveryServiceImpl);
+        return this.container!.resolve(DiscoveryServiceImpl);
     }
 
     /**
@@ -60,18 +84,22 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.mowers.some(accessory => accessory.getUuid() === uuid);
     }
 
-    private async onShutdown(): Promise<void> {
+    protected async onShutdown(): Promise<void> {
         this.log.info('Shutting down...');
 
-        const tokenManager = this.getOAuthTokenManager();
-        await tokenManager.logout();
+        await this.eventStream?.stop();
+        await this.getOAuthTokenManager()?.logout();
     }
 
     /**
      * Gets the {@link OAuthTokenManager}.
      * @returns The service instance.
      */
-    protected getOAuthTokenManager(): OAuthTokenManager {
+    protected getOAuthTokenManager(): OAuthTokenManager | undefined {
+        if (this.container === undefined) {
+            return undefined;
+        }
+
         return this.container.resolve(OAuthTokenManagerImpl);
     }
 
@@ -92,9 +120,14 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
         this.log.info(`Configuring ${accessory.displayName}`);
 
+        const automower = this.createAutomowerAccessory(accessory);
+        this.mowers.push(automower);
+    }
+
+    protected createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
         const automower = new AutomowerAccessory(this, accessory, this.api, this.log);
         automower.init();
 
-        this.mowers.push(automower);
+        return automower;
     }
 }

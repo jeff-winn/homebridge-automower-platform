@@ -1,4 +1,4 @@
-import { BadCredentialsError} from '../../src/clients/badCredentialsError';
+import { BadCredentialsError} from '../../src/errors/badCredentialsError';
 
 describe('bad credentials error', () => {
     it('should create an instance', () => {

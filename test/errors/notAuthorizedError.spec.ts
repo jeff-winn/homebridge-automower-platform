@@ -1,4 +1,4 @@
-import { NotAuthorizedError } from '../../src/clients/notAuthorizedError';
+import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 
 describe('bad credentials error', () => {
     it('should create an instance', () => {

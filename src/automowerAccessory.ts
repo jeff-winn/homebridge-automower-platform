@@ -1,5 +1,6 @@
 import { API, Characteristic, Logging, PlatformAccessory, Service, UnknownContext } from 'homebridge';
 import { AutomowerPlatform } from './automowerPlatform';
+import { StatusEvent } from './clients/events';
 
 /**
  * Provides contextual information for an Automower accessory.
@@ -44,5 +45,10 @@ export class AutomowerAccessory {
 
     public getUuid(): string {
         return this.accessory.UUID;
+    }
+
+    public onStatusEventReceived(_event: StatusEvent): Promise<void> {
+        // TODO: Update the characteristics on the associated services.
+        return Promise.resolve(undefined);
     }
 }

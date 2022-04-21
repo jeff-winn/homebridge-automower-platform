@@ -1,3 +1,9 @@
+import fetch, { Response } from 'node-fetch';
+
+import { NotAuthorizedError } from '../errors/notAuthorizedError';
+import { BadCredentialsError } from '../errors/badCredentialsError';
+import { OAuthToken } from './model';
+
 /**
  * A client used to authenticate to the Husqvarna platform.
  */
@@ -22,42 +28,111 @@ export interface AuthenticationClient {
     refresh(token: OAuthToken): Promise<OAuthToken>;
 }
 
-/**
- * Describes an OAuth authentication token.
- */
-export interface OAuthToken {
-    /**
-     * The access token.
-     */
-    access_token: string;
+export class AuthenticationClientImpl implements AuthenticationClient {
+    constructor(private appKey: string, private baseUrl: string) { }
 
-    /**
-     * The scope.
-     */
-    scope: string;
+    getApplicationKey(): string {
+        return this.appKey;
+    }
 
-    /**
-     * The number of seconds until the token expires.
-     */
-    expires_in: number;
+    getBaseUrl(): string {
+        return this.baseUrl;
+    }
+
+    async login(username: string, password: string): Promise<OAuthToken> {
+        if (username === '') {
+            throw new Error('username cannot be empty.');
+        }
+
+        if (password === '') {
+            throw new Error('password cannot be empty.');
+        }
+
+        const body = this.encode({
+            client_id: this.appKey,
+            grant_type: 'password',
+            username: username,
+            password: password
+        });
+
+        const response = await fetch(this.baseUrl + '/oauth2/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: body
+        });
+
+        this.throwIfBadCredentials(response);
+        this.throwIfNotAuthorized(response);
+        this.throwIfStatusNotOk(response);
+
+        return await response.json() as OAuthToken;
+    }
+
+    private throwIfBadCredentials(response: Response): void {
+        if (response.status === 400) {
+            throw new BadCredentialsError('The username and/or password supplied were not valid.');
+        }
+    }
+
+    async logout(token: OAuthToken): Promise<void> {
+        const response = await fetch(this.baseUrl + '/token/' + token.access_token, {
+            method: 'DELETE',
+            headers: {
+                'x-api-key': this.appKey,
+                'authorization-provider': token.provider
+            }
+        });
+
+        this.throwIfNotAuthorized(response);
+        this.throwIfStatusNotOk(response);
+    }
+
+    async refresh(token: OAuthToken): Promise<OAuthToken> {
+        const body = this.encode({
+            client_id: this.appKey,
+            grant_type: 'refresh_token',
+            refresh_token: token.refresh_token
+        });
+
+        const response = await fetch(this.baseUrl + '/oauth2/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: body
+        });
+
+        this.throwIfNotAuthorized(response);
+        this.throwIfStatusNotOk(response);
+
+        return await response.json() as OAuthToken;
+    }
     
-    /**
-     * The token to use when refreshing the token.
-     */
-    refresh_token: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected encode(payload: any): string {
+        const result: string[] = [];
 
-    /**
-     * The provider.
-     */
-    provider: string;
+        for (const prop in payload) {
+            const key = encodeURIComponent(prop);
+            const value = encodeURIComponent(payload[prop]);
 
-    /**
-     * The user identifier.
-     */
-    user_id: string;
+            result.push(key + '=' + value);
+        }
 
-    /**
-     * The token type.
-     */
-    token_type: string;
+        return result.join('&');
+    }
+
+    private throwIfNotAuthorized(response: Response): void {
+        if (response.status === 401) {
+            throw new NotAuthorizedError();
+        }
+    }
+
+    private throwIfStatusNotOk(response: Response): void {        
+        if (!response.ok) {
+            throw new Error(`ERR: ${response.status}`);
+        }
+    }
 }
