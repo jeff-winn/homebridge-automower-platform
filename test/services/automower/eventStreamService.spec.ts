@@ -13,8 +13,16 @@ class EventStreamServiceImplSpy extends EventStreamServiceImpl {
         return this.onEventReceived(event);
     }
 
-    unsafeKeepAlive(): void {
-        this.keepAlive();
+    unsafeKeepAlive(): Promise<void> {
+        return this.keepAlive();
+    }
+    
+    unsafeSetLastEventReceived(value?: Date): void {
+        this.setLastEventReceived(value);
+    }
+
+    unsafeSetStarted(value?: Date): void {
+        this.setStarted(value);
     }
 }
 
@@ -67,12 +75,80 @@ describe('eventStreamService', () => {
         timer.verify(o => o.stop(), Times.Once());
     });
 
-    it('should restart when keep alive is executed', () => {
+    it('should ping the server when no event has been received yet', async () => {
+        const started = new Date(new Date().getTime() - (target.getReconnectInterval() - 100000));
+        target.unsafeSetLastEventReceived(undefined);
+        target.unsafeSetStarted(started);
+        
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        target.unsafeKeepAlive();
+        await target.unsafeKeepAlive();        
 
         expect(stream.keptAlive).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    it('should reconnect the client when never received event', async () => {
+        const started = new Date(new Date().getTime() - target.getReconnectInterval() - 1);
+        target.unsafeSetLastEventReceived(undefined);
+        target.unsafeSetStarted(started);
+        
+        const token: OAuthToken = { 
+            access_token: 'abcd1234',
+            expires_in: 1,
+            provider: 'bob',
+            refresh_token: '12345',
+            scope: 'all the things',
+            token_type: 'fancy',
+            user_id: 'me'
+        };
+        
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await target.unsafeKeepAlive();        
+
+        expect(stream.closed).toBeTruthy();        
+        expect(stream.opened).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    it('should ping the server when the last event has been recent', async () => {
+        const lastEventReceived = new Date(new Date().getTime() - (target.getReconnectInterval() - 100000));
+        target.unsafeSetLastEventReceived(lastEventReceived);
+        
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await target.unsafeKeepAlive();        
+
+        expect(stream.keptAlive).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    it('should reconnect the client when too long since last event received', async () => {
+        const lastReceivedDate = new Date(new Date().getTime() - target.getReconnectInterval() - 1);
+        target.unsafeSetLastEventReceived(lastReceivedDate);
+
+        const token: OAuthToken = { 
+            access_token: 'abcd1234',
+            expires_in: 1,
+            provider: 'bob',
+            refresh_token: '12345',
+            scope: 'all the things',
+            token_type: 'fancy',
+            user_id: 'me'
+        };
+        
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await target.unsafeKeepAlive();        
+
+        expect(stream.closed).toBeTruthy();        
+        expect(stream.opened).toBeTruthy();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });

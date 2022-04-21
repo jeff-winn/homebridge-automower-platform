@@ -37,12 +37,20 @@ export class EventStreamServiceImpl implements EventStreamService {
         await this.connect();
         this.startKeepAlive();
 
-        this.started = new Date();
+        this.setStarted(new Date());
+    }
+
+    protected setStarted(value?: Date): void {
+        this.started = value;
     }
 
     private async connect(): Promise<void> {
         const token = await this.tokenManager.getCurrentToken();
         this.stream.open(token);
+    }
+
+    public getReconnectInterval(): number {
+        return this.RECONNECT_INTERVAL;
     }
 
     private startKeepAlive() {
@@ -66,13 +74,13 @@ export class EventStreamServiceImpl implements EventStreamService {
         const now = new Date();
         
         if (this.lastEventReceived === undefined && this.started !== undefined && 
-            ((now.getTime() - this.started.getTime()) > this.RECONNECT_INTERVAL)) {
+            ((now.getTime() - this.started.getTime()) > this.getReconnectInterval())) {
             // No message has been received, and the client was started an hour ago.
             return true;
         }
 
         if (this.lastEventReceived !== undefined && 
-            ((now.getTime() - this.lastEventReceived.getTime()) > this.RECONNECT_INTERVAL)) {
+            ((now.getTime() - this.lastEventReceived.getTime()) > this.getReconnectInterval())) {
             // A message has not been received within the last hour.
             return true;
         }
@@ -84,7 +92,7 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.disconnect();
         await this.connect();
 
-        this.started = new Date();
+        this.setStarted(new Date());
     }
 
     protected pingOnce(): void {
@@ -106,8 +114,12 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.timer.stop();
     }
 
+    protected setLastEventReceived(value?: Date): void {
+        this.lastEventReceived = value;
+    }
+
     protected onEventReceived(event: AutomowerEvent): Promise<void> {
-        this.lastEventReceived = new Date();
+        this.setLastEventReceived(new Date());
 
         switch (event.type) {
         case 'settings-event':
