@@ -47,7 +47,7 @@ export class AutomowerAccessory {
         return this.accessory.UUID;
     }
 
-    public onStatusEventReceived(event: StatusEvent): Promise<void> {
+    public onStatusEventReceived(_event: StatusEvent): Promise<void> {
         // TODO: Update the characteristics on the associated services.
         return Promise.resolve(undefined);
     }
