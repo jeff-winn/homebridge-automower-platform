@@ -2,29 +2,11 @@ import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
-import { AutomowerEvent, StatusEvent } from '../../../src/clients/events';
+import { StatusEvent } from '../../../src/clients/events';
 import { OAuthToken } from '../../../src/clients/model';
 import { Timer } from '../../../src/primitives/timer';
-import { EventStreamServiceImpl } from '../../../src/services/automower/eventStreamService';
 import { AutomowerEventStreamClientSpy } from './automowerEventStreamClientSpy';
-
-class EventStreamServiceImplSpy extends EventStreamServiceImpl {
-    unsafeEventReceived(event: AutomowerEvent): Promise<void> {
-        return this.onEventReceived(event);
-    }
-
-    unsafeKeepAlive(): Promise<void> {
-        return this.keepAlive();
-    }
-    
-    unsafeSetLastEventReceived(value?: Date): void {
-        this.setLastEventReceived(value);
-    }
-
-    unsafeSetStarted(value?: Date): void {
-        this.setStarted(value);
-    }
-}
+import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
 
 describe('eventStreamService', () => {
     let tokenManager: Mock<OAuthTokenManager>;
