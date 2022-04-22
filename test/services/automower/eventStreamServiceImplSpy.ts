@@ -1,5 +1,5 @@
 import { EventStreamServiceImpl } from '../../../src/services/automower/eventStreamService';
-import { AutomowerEvent } from '../../../src/clients/events';
+import { AutomowerEvent } from '../../../src/events';
 
 export class EventStreamServiceImplSpy extends EventStreamServiceImpl {
     unsafeEventReceived(event: AutomowerEvent): Promise<void> {

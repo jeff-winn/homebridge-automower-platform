@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { AutomowerEvent } from './events';
+import { AutomowerEvent } from '../events';
 import { AccessToken } from './model';
 
 /**

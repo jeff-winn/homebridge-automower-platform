@@ -6,7 +6,7 @@ import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
-import { StatusEvent } from './clients/events';
+import { StatusEvent } from './events';
 
 /**
  * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.

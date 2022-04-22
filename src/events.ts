@@ -6,7 +6,7 @@ import {
     MowerState, 
     Planner, 
     Position 
-} from './model';
+} from './clients/model';
 
 export interface AutomowerEvent {
     id: string;

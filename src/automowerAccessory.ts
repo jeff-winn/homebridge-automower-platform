@@ -1,6 +1,6 @@
 import { API, Characteristic, Logging, PlatformAccessory, Service, UnknownContext } from 'homebridge';
 import { AutomowerPlatform } from './automowerPlatform';
-import { StatusEvent } from './clients/events';
+import { StatusEvent } from './events';
 
 /**
  * Provides contextual information for an Automower accessory.
