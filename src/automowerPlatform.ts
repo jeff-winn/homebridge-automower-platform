@@ -88,14 +88,14 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         this.log.info('Shutting down...');
 
         await this.eventStream?.stop();
-        await this.getOAuthTokenManager()?.logout();
+        await this.getTokenManager()?.logout();
     }
 
     /**
-     * Gets the {@link OAuthTokenManager}.
+     * Gets the token manager.
      * @returns The service instance.
      */
-    protected getOAuthTokenManager(): AccessTokenManager | undefined {
+    protected getTokenManager(): AccessTokenManager | undefined {
         if (this.container === undefined) {
             return undefined;
         }
