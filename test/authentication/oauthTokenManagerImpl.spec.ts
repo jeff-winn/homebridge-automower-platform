@@ -4,9 +4,9 @@ import { Logging } from 'homebridge';
 import { AuthenticationClient } from '../../src/clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../src/automowerPlatformConfig';
 import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
-import { OAuthToken } from '../../src/clients/model';
+import { OAuthToken } from '../../src/clients/authenticationClient';
 
-describe('oauth token manager', () => {
+describe('oauthTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
     let log: Mock<Logging>;
@@ -75,13 +75,8 @@ describe('oauth token manager', () => {
         expect(target.loggedIn).toBeTruthy();
 
         expect(token).toBeDefined();
-        expect(token.access_token).toBe(accessToken);
-        expect(token.expires_in).toBe(expiresIn);
+        expect(token.value).toBe(accessToken);
         expect(token.provider).toBe(provider);
-        expect(token.refresh_token).toBe(refreshToken);
-        expect(token.scope).toBe(scope);
-        expect(token.token_type).toBe(tokenType);
-        expect(token.user_id).toBe(userId);
     });
 
     it('should refresh the token when the token has been invalidated', async () => {
@@ -110,12 +105,14 @@ describe('oauth token manager', () => {
 
         const originalToken = await target.getCurrentToken();
 
-        expect(originalToken).toMatchObject(token1);
+        expect(originalToken.value).toBe(token1.access_token);
+        expect(originalToken.provider).toBe(token1.provider);
 
         target.flagAsInvalid();
         const refreshToken = await target.getCurrentToken();
 
-        expect(refreshToken).toMatchObject(token2);
+        expect(refreshToken.value).toBe(token2.access_token);
+        expect(refreshToken.provider).toBe(token2.provider);
     });
 
     it('should refresh the token when the token has expired', async () => {
@@ -144,11 +141,13 @@ describe('oauth token manager', () => {
 
         const originalToken = await target.getCurrentToken();
 
-        expect(originalToken).toMatchObject(token1);
+        expect(originalToken.value).toBe(token1.access_token);
+        expect(originalToken.provider).toBe(token1.provider);
 
         const refreshToken = await target.getCurrentToken();
 
-        expect(refreshToken).toMatchObject(token2);
+        expect(refreshToken.value).toBe(token2.access_token);
+        expect(refreshToken.provider).toBe(token2.provider);
     });
 
     it('should do nothing if the user is not logged in', async () => {

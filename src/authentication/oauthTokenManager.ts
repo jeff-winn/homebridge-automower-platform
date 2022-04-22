@@ -1,8 +1,8 @@
 import { Logging } from 'homebridge';
 
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
-import { AuthenticationClient } from '../clients/authenticationClient';
-import { OAuthToken } from '../clients/model';
+import { AuthenticationClient, OAuthToken } from '../clients/authenticationClient';
+import { AccessToken } from '../clients/model';
 
 /**
  * A mechanism which manages the retrieval and renewal of an OAuth token.
@@ -11,7 +11,7 @@ export interface OAuthTokenManager {
     /**
      * Gets the current token.
      */
-    getCurrentToken(): Promise<OAuthToken>;
+    getCurrentToken(): Promise<AccessToken>;
 
     /**
      * Flags the token as invalid, which will cause the next attempt to get a new token.
@@ -31,7 +31,7 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
 
     constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: Logging) { }
 
-    async getCurrentToken(): Promise<OAuthToken> {
+    async getCurrentToken(): Promise<AccessToken> {
         if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {
             let newToken: OAuthToken;
 
@@ -47,7 +47,14 @@ export class OAuthTokenManagerImpl implements OAuthTokenManager {
             this.flagAsValid();
         }
 
-        return this.currentToken!;
+        if (this.currentToken === undefined) {
+            throw new Error('The client is not logged in.');
+        }
+
+        return {
+            value: this.currentToken.access_token,
+            provider: this.currentToken.provider
+        };
     }    
 
     protected unsafeGetCurrentToken(): OAuthToken | undefined {

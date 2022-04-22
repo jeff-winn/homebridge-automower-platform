@@ -1,6 +1,5 @@
-import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
+import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
-import { OAuthToken } from '../../src/clients/model';
 import * as constants from '../../src/constants';
 
 describe('automowerEventStreamClientImpl', () => {
@@ -29,7 +28,10 @@ describe('automowerEventStreamClientImpl', () => {
     });
 
     it.skip('should open and close the stream', () => {
-        target.open(token);
+        target.open({
+            value: token.access_token,
+            provider: token.provider
+        });
 
         target.close();
     });

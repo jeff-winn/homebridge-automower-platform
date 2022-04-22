@@ -1,6 +1,6 @@
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
-import { Mower, OAuthToken } from './model';
+import { AccessToken, Mower } from './model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 
 /**
@@ -13,20 +13,20 @@ export interface AutomowerClient {
      * @param action The action payload (specific to the action being performed).
      * @param token The access token.
      */
-    doAction(id: string, action: unknown, token: OAuthToken): Promise<void>;
+    doAction(id: string, action: unknown, token: AccessToken): Promise<void>;
 
     /**
      * Gets a specific mower connected to the account.
      * @param id The id of the mower.
      * @param token The access token.
      */
-    getMower(id: string, token: OAuthToken): Promise<Mower | undefined>;
+    getMower(id: string, token: AccessToken): Promise<Mower | undefined>;
 
     /**
      * Gets all the mowers connected to the account.
      * @param token The access token.
      */
-    getMowers(token: OAuthToken): Promise<Mower[]>;
+    getMowers(token: AccessToken): Promise<Mower[]>;
 }
 
 
@@ -73,7 +73,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         return this.baseUrl;
     }
 
-    async doAction(id: string, action: unknown, token: OAuthToken): Promise<void> {
+    async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
         if (id === '') {
             throw new Error('id cannot be empty.');
         }
@@ -82,7 +82,7 @@ export class AutomowerClientImpl implements AutomowerClient {
             method: 'POST',
             headers: {
                 'X-Api-Key': this.appKey,
-                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             },
             body: JSON.stringify({
@@ -97,7 +97,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         return fetch(url, init);
     }
 
-    async getMower(id: string, token: OAuthToken): Promise<Mower | undefined> {
+    async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {
         if (id === '') {
             throw new Error('id cannot be empty.');
         }
@@ -106,7 +106,7 @@ export class AutomowerClientImpl implements AutomowerClient {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
-                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             }
         });
@@ -125,12 +125,12 @@ export class AutomowerClientImpl implements AutomowerClient {
         return undefined;
     }    
 
-    async getMowers(token: OAuthToken): Promise<Mower[]> {
+    async getMowers(token: AccessToken): Promise<Mower[]> {
         const res = await this.doFetch(this.baseUrl + '/mowers', {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
-                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             }
         });

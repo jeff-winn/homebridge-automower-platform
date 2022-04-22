@@ -1,5 +1,5 @@
 import { OAuthTokenManagerImpl } from '../../src/authentication/oauthTokenManager';
-import { OAuthToken } from '../../src/clients/model';
+import { OAuthToken } from '../../src/clients/authenticationClient';
 
 export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
     loggedIn = false;

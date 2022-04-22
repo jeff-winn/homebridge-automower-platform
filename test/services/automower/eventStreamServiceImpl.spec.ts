@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
 import { StatusEvent } from '../../../src/clients/events';
-import { OAuthToken } from '../../../src/clients/model';
+import { AccessToken } from '../../../src/clients/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
@@ -26,14 +26,9 @@ describe('eventStreamService', () => {
     });
 
     it('should get the token and login to the stream', async () => {
-        const token: OAuthToken = {
-            access_token: 'abcd1234',
-            expires_in: 1000,
-            provider: 'provider',
-            refresh_token: 'r12345',
-            scope: 'all the things',
-            token_type: 'super token',
-            user_id: 'bob'
+        const token: AccessToken = {
+            value: 'abcd1234',
+            provider: 'provider'
         };
 
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
@@ -76,14 +71,9 @@ describe('eventStreamService', () => {
         target.unsafeSetLastEventReceived(undefined);
         target.unsafeSetStarted(started);
         
-        const token: OAuthToken = { 
-            access_token: 'abcd1234',
-            expires_in: 1,
-            provider: 'bob',
-            refresh_token: '12345',
-            scope: 'all the things',
-            token_type: 'fancy',
-            user_id: 'me'
+        const token: AccessToken = { 
+            value: 'abcd1234',
+            provider: 'bob'
         };
         
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
@@ -114,14 +104,9 @@ describe('eventStreamService', () => {
         const lastReceivedDate = new Date(new Date().getTime() - target.getReconnectInterval() - 1);
         target.unsafeSetLastEventReceived(lastReceivedDate);
 
-        const token: OAuthToken = { 
-            access_token: 'abcd1234',
-            expires_in: 1,
-            provider: 'bob',
-            refresh_token: '12345',
-            scope: 'all the things',
-            token_type: 'fancy',
-            user_id: 'me'
+        const token: AccessToken = { 
+            value: 'abcd1234',
+            provider: 'bob'
         };
         
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
