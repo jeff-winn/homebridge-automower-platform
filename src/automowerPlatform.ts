@@ -1,11 +1,12 @@
 import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
-import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
+
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
+import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { StatusEvent } from './events';
 
 /**
