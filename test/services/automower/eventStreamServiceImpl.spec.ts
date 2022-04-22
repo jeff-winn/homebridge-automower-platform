@@ -1,9 +1,9 @@
 import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AccessTokenManager } from '../../../src/authentication/accessTokenManager';
-import { StatusEvent } from '../../../src/clients/events';
-import { AccessToken } from '../../../src/clients/model';
+import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
+import { StatusEvent } from '../../../src/events';
+import { AccessToken } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';

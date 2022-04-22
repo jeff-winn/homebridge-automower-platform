@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
-import { AutomowerEvent } from './events';
-import { AccessToken } from './model';
+import { AutomowerEvent } from '../events';
+import { AccessToken } from '../model';
 
 /**
  * A client which receives a stream of events for all mowers connected to the account.

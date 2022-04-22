@@ -1,10 +1,10 @@
 import { Mock, It, Times } from 'moq.ts';
 import { Logging } from 'homebridge';
 
-import { AuthenticationClient } from '../../src/clients/authenticationClient';
-import { AutomowerPlatformConfig } from '../../src/automowerPlatformConfig';
+import { AuthenticationClient } from '../../../src/clients/authenticationClient';
+import { AutomowerPlatformConfig } from '../../../src/automowerPlatformConfig';
 import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
-import { OAuthToken } from '../../src/clients/authenticationClient';
+import { OAuthToken } from '../../../src/clients/authenticationClient';
 
 describe('AccessTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;

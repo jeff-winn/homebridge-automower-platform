@@ -1,5 +1,5 @@
-import { AccessTokenManagerImpl } from '../../src/authentication/accessTokenManager';
-import { OAuthToken } from '../../src/clients/authenticationClient';
+import { AccessTokenManagerImpl } from '../../../src/services/authentication/accessTokenManager';
+import { OAuthToken } from '../../../src/clients/authenticationClient';
 
 export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     loggedIn = false;

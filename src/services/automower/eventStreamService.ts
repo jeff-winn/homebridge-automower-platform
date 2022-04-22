@@ -1,7 +1,7 @@
 import { Logging } from 'homebridge';
-import { AccessTokenManager } from '../../authentication/accessTokenManager';
+import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, StatusEvent } from '../../clients/events';
+import { AutomowerEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 
 export interface EventStreamService {
