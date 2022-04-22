@@ -1,7 +1,7 @@
 import { AccessTokenManager } from '../../authentication/accessTokenManager';
 import { AutomowerClient } from '../../clients/automowerClient';
 import { NotAuthorizedError } from '../../errors/notAuthorizedError';
-import { Mower } from '../../clients/model';
+import { Mower } from '../../model';
 
 /**
  * A service used to retrieve the mowers associated with a Husqvarna account.

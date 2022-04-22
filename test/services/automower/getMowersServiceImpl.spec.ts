@@ -3,7 +3,7 @@ import { Mock, Times } from 'moq.ts';
 import { AccessTokenManager } from '../../../src/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { Mower, AccessToken } from '../../../src/clients/model';
+import { Mower, AccessToken } from '../../../src/model';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
 describe('GetMowersServiceImpl', () => {

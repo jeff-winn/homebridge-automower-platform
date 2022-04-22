@@ -2,7 +2,7 @@ import { Logging } from 'homebridge';
 
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClient, OAuthToken } from '../clients/authenticationClient';
-import { AccessToken } from '../clients/model';
+import { AccessToken } from '../model';
 
 /**
  * A mechanism which manages the retrieval and renewal of an access token.

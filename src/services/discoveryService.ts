@@ -3,7 +3,7 @@ import { Logging, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 import { AutomowerPlatform } from '../automowerPlatform';
 import { GetMowersService } from './automower/getMowersService';
-import { Mower } from '../clients/model';
+import { Mower } from '../model';
 import { AccessoryFactory } from '../primitives/accessoryFactory';
 
 /**

@@ -1,6 +1,6 @@
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
-import { AccessToken, Mower } from './model';
+import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 
 /**

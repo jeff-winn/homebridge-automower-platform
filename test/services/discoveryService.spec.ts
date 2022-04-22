@@ -6,7 +6,7 @@ import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
 import { AutomowerPlatform } from '../../src/automowerPlatform';
 import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
 import { AutomowerContext } from '../../src/automowerAccessory';
-import { Mower } from '../../src/clients/model';
+import { Mower } from '../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
