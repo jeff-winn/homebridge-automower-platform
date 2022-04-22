@@ -5,7 +5,7 @@ import { AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerPlatform } from '../src/automowerPlatform';
 import { AutomowerAccessorySpy } from './automowerAccessorySpy';
 
-describe('automower accessory', () => {
+describe('AutomowerAccessory', () => {
     let service: typeof Service;
     let characteristic: typeof Characteristic;
 

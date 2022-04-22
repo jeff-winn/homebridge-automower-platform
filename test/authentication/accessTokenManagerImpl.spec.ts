@@ -6,7 +6,7 @@ import { AutomowerPlatformConfig } from '../../src/automowerPlatformConfig';
 import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
 import { OAuthToken } from '../../src/clients/authenticationClient';
 
-describe('oauthTokenManagerImpl', () => {
+describe('AccessTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
     let log: Mock<Logging>;

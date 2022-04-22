@@ -8,7 +8,7 @@ import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
 
-describe('eventStreamServiceImpl', () => {
+describe('EventStreamServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let stream: AutomowerEventStreamClientSpy;
     let log: Mock<Logging>;

@@ -6,7 +6,7 @@ import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
 import { Mower, AccessToken } from '../../../src/clients/model';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
-describe('getMowersServiceImpl', () => {
+describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
     let target: GetMowersServiceImpl;
