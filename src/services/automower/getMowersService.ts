@@ -1,4 +1,4 @@
-import { AccessTokenManager } from '../../authentication/accessTokenManager';
+import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerClient } from '../../clients/automowerClient';
 import { NotAuthorizedError } from '../../errors/notAuthorizedError';
 import { Mower } from '../../model';

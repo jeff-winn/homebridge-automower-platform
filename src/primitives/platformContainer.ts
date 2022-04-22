@@ -1,17 +1,18 @@
 import { API, Logging } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
-import { AccessTokenManagerImpl } from '../authentication/accessTokenManager';
-import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
-import { AccessoryFactoryImpl } from './accessoryFactory';
-import { TimerImpl } from './timer';
+import { AccessTokenManagerImpl } from '../services/authentication/accessTokenManager';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
+import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import * as constants from '../constants';
+
+import { AccessoryFactoryImpl } from './accessoryFactory';
+import { TimerImpl } from './timer';
 
 export class PlatformContainer {
     constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }

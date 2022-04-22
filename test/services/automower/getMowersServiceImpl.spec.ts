@@ -1,6 +1,6 @@
 import { Mock, Times } from 'moq.ts';
 
-import { AccessTokenManager } from '../../../src/authentication/accessTokenManager';
+import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
 import { Mower, AccessToken } from '../../../src/model';
