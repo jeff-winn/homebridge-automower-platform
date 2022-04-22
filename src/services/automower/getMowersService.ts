@@ -1,4 +1,4 @@
-import { OAuthTokenManager } from '../../authentication/oauthTokenManager';
+import { AccessTokenManager } from '../../authentication/accessTokenManager';
 import { AutomowerClient } from '../../clients/automowerClient';
 import { NotAuthorizedError } from '../../errors/notAuthorizedError';
 import { Mower } from '../../clients/model';
@@ -20,7 +20,7 @@ export interface GetMowersService {
 }
 
 export class GetMowersServiceImpl implements GetMowersService {
-    constructor(private tokenManager: OAuthTokenManager, private client: AutomowerClient) { }
+    constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
 
     async getMower(id: string): Promise<Mower | undefined> {
         try {

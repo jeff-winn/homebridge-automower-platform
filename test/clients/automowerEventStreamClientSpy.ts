@@ -1,6 +1,6 @@
 import { AutomowerEventStreamClient } from '../../src/clients/automowerEventStreamClient';
 import { AutomowerEvent } from '../../src/clients/events';
-import { OAuthToken } from '../../src/clients/model';
+import { AccessToken } from '../../src/clients/model';
 
 export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient {
     opened = false;
@@ -9,7 +9,7 @@ export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient
     keptAlive = false;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    open(token: OAuthToken): void {
+    open(token: AccessToken): void {
         this.opened = true;
     }
 
@@ -25,5 +25,4 @@ export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient
     on(callback: (event: AutomowerEvent) => Promise<void>): void {
         this.callbackSet = true;
     }
-
 }

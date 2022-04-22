@@ -1,7 +1,7 @@
 import { API, Logging } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
-import { OAuthTokenManagerImpl } from '../authentication/oauthTokenManager';
+import { AccessTokenManagerImpl } from '../authentication/accessTokenManager';
 import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
@@ -19,7 +19,7 @@ export class PlatformContainer {
     registerEverything(): void {
         this.log.debug('Registering classes to the DI container...');
 
-        container.registerInstance(OAuthTokenManagerImpl, new OAuthTokenManagerImpl(
+        container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             new AuthenticationClientImpl(this.config.appKey, constants.AUTHENTICATION_API_BASE_URL),
             this.config,
             this.log));
@@ -37,7 +37,7 @@ export class PlatformContainer {
 
         container.register(GetMowersServiceImpl, {
             useFactory: (context) => new GetMowersServiceImpl(
-                context.resolve(OAuthTokenManagerImpl),
+                context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerClientImpl)
             )
         });
@@ -59,7 +59,7 @@ export class PlatformContainer {
 
         container.register(EventStreamServiceImpl, {
             useFactory: (context) => new EventStreamServiceImpl(
-                context.resolve(OAuthTokenManagerImpl),
+                context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerEventStreamClientImpl),
                 this.log,
                 context.resolve(TimerImpl))

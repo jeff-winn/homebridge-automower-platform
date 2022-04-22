@@ -1,32 +1,27 @@
 import { Mock, Times } from 'moq.ts';
 
-import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
+import { AccessTokenManager } from '../../../src/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { Mower, OAuthToken } from '../../../src/clients/model';
+import { Mower, AccessToken } from '../../../src/clients/model';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
-describe('get mowers service', () => {
-    let tokenManager: Mock<OAuthTokenManager>;
+describe('GetMowersServiceImpl', () => {
+    let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
     let target: GetMowersServiceImpl;
 
     beforeEach(() => {        
-        tokenManager = new Mock<OAuthTokenManager>();
+        tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<AutomowerClient>();
 
         target = new GetMowersServiceImpl(tokenManager.object(), client.object());
     });
 
     it('should flag the token as invalid on getMower', async () => {
-        const token: OAuthToken = {
-            access_token: 'access token',
-            expires_in: 50000,
-            provider: 'provider',
-            refresh_token: '12345',
-            scope: '',
-            token_type: 'Bearer',
-            user_id: 'user id'
+        const token: AccessToken = {
+            value: 'access token',
+            provider: 'provider'
         };
 
         const mowerId = 'abcd1234';
@@ -47,14 +42,9 @@ describe('get mowers service', () => {
     });
 
     it('should flag the token as invalid on getMowers', async () => {
-        const token: OAuthToken = {
-            access_token: 'access token',
-            expires_in: 50000,
-            provider: 'provider',
-            refresh_token: '12345',
-            scope: '',
-            token_type: 'Bearer',
-            user_id: 'user id'
+        const token: AccessToken = {
+            value: 'access token',
+            provider: 'provider'
         };
         
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
@@ -73,14 +63,9 @@ describe('get mowers service', () => {
     });
 
     it('should get a single mower from the client', async () => {
-        const token: OAuthToken = {
-            access_token: 'access token',
-            expires_in: 50000,
-            provider: 'provider',
-            refresh_token: '12345',
-            scope: '',
-            token_type: 'Bearer',
-            user_id: 'user id'
+        const token: AccessToken = {
+            value: 'access token',
+            provider: 'provider'
         };
 
         const mowerId = 'abcd1234';
@@ -132,14 +117,9 @@ describe('get mowers service', () => {
     });
 
     it('should get all the mowers from the client', async () => {
-        const token: OAuthToken = {
-            access_token: 'access token',
-            expires_in: 50000,
-            provider: 'provider',
-            refresh_token: '12345',
-            scope: '',
-            token_type: 'Bearer',
-            user_id: 'user id'
+        const token: AccessToken = {
+            value: 'access token',
+            provider: 'provider'
         };
 
         const mower: Mower = {

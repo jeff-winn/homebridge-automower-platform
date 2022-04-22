@@ -1,9 +1,8 @@
-import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
+import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
-import { OAuthToken } from '../../src/clients/model';
 import * as constants from '../../src/constants';
 
-describe('automowerEventStreamClientImpl', () => {
+describe('AutomowerEventStreamClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
     const APPKEY: string = process.env.HUSQVARNA_APPKEY || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
@@ -29,7 +28,10 @@ describe('automowerEventStreamClientImpl', () => {
     });
 
     it.skip('should open and close the stream', () => {
-        target.open(token);
+        target.open({
+            value: token.access_token,
+            provider: token.provider
+        });
 
         target.close();
     });

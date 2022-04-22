@@ -2,7 +2,46 @@ import fetch, { Response } from 'node-fetch';
 
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { BadCredentialsError } from '../errors/badCredentialsError';
-import { OAuthToken } from './model';
+
+/**
+ * Describes an OAuth authentication token.
+ */
+export interface OAuthToken {
+    /**
+     * The access token.
+     */
+    access_token: string;
+
+    /**
+     * The scope.
+     */
+    scope: string;
+
+    /**
+     * The number of seconds until the token expires.
+     */
+    expires_in: number;
+    
+    /**
+     * The token to use when refreshing the token.
+     */
+    refresh_token: string;
+
+    /**
+     * The provider.
+     */
+    provider: string;
+
+    /**
+     * The user identifier.
+     */
+    user_id: string;
+
+    /**
+     * The token type.
+     */
+    token_type: string;
+}
 
 /**
  * A client used to authenticate to the Husqvarna platform.

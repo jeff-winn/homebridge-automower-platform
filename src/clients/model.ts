@@ -1,42 +1,9 @@
-
 /**
- * Describes an OAuth authentication token.
+ * Describes an access token.
  */
-export interface OAuthToken {
-    /**
-     * The access token.
-     */
-    access_token: string;
-
-    /**
-     * The scope.
-     */
-    scope: string;
-
-    /**
-     * The number of seconds until the token expires.
-     */
-    expires_in: number;
-    
-    /**
-     * The token to use when refreshing the token.
-     */
-    refresh_token: string;
-
-    /**
-     * The provider.
-     */
+export interface AccessToken {
+    value: string;
     provider: string;
-
-    /**
-     * The user identifier.
-     */
-    user_id: string;
-
-    /**
-     * The token type.
-     */
-    token_type: string;
 }
 
 /**

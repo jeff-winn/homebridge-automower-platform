@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { AutomowerEvent } from './events';
-import { OAuthToken } from './model';
+import { AccessToken } from './model';
 
 /**
  * A client which receives a stream of events for all mowers connected to the account.
@@ -10,7 +10,7 @@ export interface AutomowerEventStreamClient {
      * Opens the stream.
      * @param token The token which will be used to authenticate.
      */
-    open(token: OAuthToken): void;
+    open(token: AccessToken): void;
 
     /**
      * Closes the stream.
@@ -37,10 +37,10 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
 
     constructor(private baseUrl: string) { }
     
-    public open(token: OAuthToken): void {
+    public open(token: AccessToken): void {
         this.socket = new WebSocket(this.baseUrl, {
             headers: {
-                'Authorization': `Bearer ${token.access_token}`
+                'Authorization': `Bearer ${token.value}`
             }
         });
         

@@ -1,6 +1,6 @@
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 
-describe('bad credentials error', () => {
+describe('NotAuthorizedError', () => {
     it('should create an instance', () => {
         const target = new NotAuthorizedError('Ouch');
 

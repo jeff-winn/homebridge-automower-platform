@@ -1,9 +1,8 @@
-import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
+import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerClientImpl } from '../../src/clients/automowerClient';
-import { OAuthToken } from '../../src/clients/model';
 import * as constants from '../../src/constants';
 
-describe('automowerClientImpl', () => {
+describe('AutomowerClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
     const APPKEY: string = process.env.HUSQVARNA_APPKEY || '';
     const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
@@ -38,7 +37,10 @@ describe('automowerClientImpl', () => {
         let thrown = false;
 
         try {
-            await target.doAction('', { }, token);
+            await target.doAction('', { }, {
+                value: token.access_token,
+                provider: token.provider
+            });
         } catch (e) {
             thrown = true;
         }
@@ -50,7 +52,10 @@ describe('automowerClientImpl', () => {
         let thrown = false;
 
         try {
-            await target.getMower('', token);
+            await target.getMower('', {
+                value: token.access_token,
+                provider: token.provider
+            });
         } catch (e) {
             thrown = true;
         }
@@ -61,23 +66,35 @@ describe('automowerClientImpl', () => {
     it.skip('should pause the mower', async () => {
         await target.doAction(MOWER_ID, {
             type: 'Pause'
-        }, token);
+        }, {
+            value: token.access_token,
+            provider: token.provider
+        });
     });
 
     it.skip('should get all the mowers from the account', async () => {
-        const mowers = await target.getMowers(token);
+        const mowers = await target.getMowers({
+            value: token.access_token,
+            provider: token.provider
+        });
 
         expect(mowers).toBeDefined();
     });
 
     it.skip('should return undefined when the mower does not exist by id', async () => {
-        const mower = await target.getMower('000000', token);
+        const mower = await target.getMower('000000', {
+            value: token.access_token,
+            provider: token.provider
+        });
     
         expect(mower).toBeUndefined();
     });
 
     it.skip('should get a specific mower by the id', async () => {
-        const mower = await target.getMower(MOWER_ID, token);
+        const mower = await target.getMower(MOWER_ID, {
+            value: token.access_token,
+            provider: token.provider
+        });
     
         expect(mower).toBeDefined();
     });

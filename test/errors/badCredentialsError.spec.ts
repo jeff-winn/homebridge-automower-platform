@@ -1,6 +1,6 @@
-import { BadCredentialsError} from '../../src/errors/badCredentialsError';
+import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 
-describe('bad credentials error', () => {
+describe('BadCredentialsError', () => {
     it('should create an instance', () => {
         const target = new BadCredentialsError('Ouch');
 

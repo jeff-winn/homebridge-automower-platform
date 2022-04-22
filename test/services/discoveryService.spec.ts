@@ -8,7 +8,7 @@ import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { Mower } from '../../src/clients/model';
 
-describe('discovery service', () => {
+describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
     let log: Mock<Logging>;    
     let accessoryFactory: Mock<AccessoryFactory>;
