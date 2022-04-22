@@ -1,15 +1,15 @@
 import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
+import { AccessTokenManager } from '../../../src/authentication/accessTokenManager';
 import { StatusEvent } from '../../../src/clients/events';
 import { AccessToken } from '../../../src/clients/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
 
-describe('eventStreamService', () => {
-    let tokenManager: Mock<OAuthTokenManager>;
+describe('eventStreamServiceImpl', () => {
+    let tokenManager: Mock<AccessTokenManager>;
     let stream: AutomowerEventStreamClientSpy;
     let log: Mock<Logging>;
     let timer: Mock<Timer>;
@@ -17,7 +17,7 @@ describe('eventStreamService', () => {
     let target: EventStreamServiceImplSpy;
 
     beforeEach(() => {
-        tokenManager = new Mock<OAuthTokenManager>();
+        tokenManager = new Mock<AccessTokenManager>();
         stream = new AutomowerEventStreamClientSpy();
         log = new Mock<Logging>();
         timer = new Mock<Timer>();

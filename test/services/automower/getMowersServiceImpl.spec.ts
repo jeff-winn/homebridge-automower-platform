@@ -1,18 +1,18 @@
 import { Mock, Times } from 'moq.ts';
 
-import { OAuthTokenManager } from '../../../src/authentication/oauthTokenManager';
+import { AccessTokenManager } from '../../../src/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
 import { Mower, AccessToken } from '../../../src/clients/model';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
 describe('getMowersServiceImpl', () => {
-    let tokenManager: Mock<OAuthTokenManager>;
+    let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
     let target: GetMowersServiceImpl;
 
     beforeEach(() => {        
-        tokenManager = new Mock<OAuthTokenManager>();
+        tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<AutomowerClient>();
 
         target = new GetMowersServiceImpl(tokenManager.object(), client.object());

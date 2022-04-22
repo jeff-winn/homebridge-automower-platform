@@ -3,7 +3,7 @@ import { Logging } from 'homebridge';
 
 import { AuthenticationClient } from '../../src/clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../src/automowerPlatformConfig';
-import { OAuthTokenManagerImplSpy } from './oauthTokenManagerImplSpy';
+import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
 import { OAuthToken } from '../../src/clients/authenticationClient';
 
 describe('oauthTokenManagerImpl', () => {
@@ -15,7 +15,7 @@ describe('oauthTokenManagerImpl', () => {
     const password = 'password';
     const appKey = '12345';
 
-    let target: OAuthTokenManagerImplSpy;
+    let target: AccessTokenManagerImplSpy;
 
     beforeEach(() => {
         client = new Mock<AuthenticationClient>();        
@@ -29,7 +29,7 @@ describe('oauthTokenManagerImpl', () => {
         log.setup(x => x.debug(It.IsAny<string>())).returns(undefined);
         log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
 
-        target = new OAuthTokenManagerImplSpy(client.object(), config, log.object());
+        target = new AccessTokenManagerImplSpy(client.object(), config, log.object());
     });
 
     it('should not be logged in when the token is reset', () => {

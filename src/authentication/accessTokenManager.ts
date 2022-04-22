@@ -5,9 +5,9 @@ import { AuthenticationClient, OAuthToken } from '../clients/authenticationClien
 import { AccessToken } from '../clients/model';
 
 /**
- * A mechanism which manages the retrieval and renewal of an OAuth token.
+ * A mechanism which manages the retrieval and renewal of an access token.
  */
-export interface OAuthTokenManager {
+export interface AccessTokenManager {
     /**
      * Gets the current token.
      */
@@ -24,7 +24,7 @@ export interface OAuthTokenManager {
     logout(): Promise<void>;
 }
 
-export class OAuthTokenManagerImpl implements OAuthTokenManager {
+export class AccessTokenManagerImpl implements AccessTokenManager {
     private currentToken?: OAuthToken;
     private expires?: Date;
     private invalidated = false;    

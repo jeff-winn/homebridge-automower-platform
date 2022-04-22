@@ -1,5 +1,5 @@
 import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
-import { OAuthTokenManager, OAuthTokenManagerImpl } from './authentication/oauthTokenManager';
+import { AccessTokenManager, AccessTokenManagerImpl } from './authentication/accessTokenManager';
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -95,12 +95,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Gets the {@link OAuthTokenManager}.
      * @returns The service instance.
      */
-    protected getOAuthTokenManager(): OAuthTokenManager | undefined {
+    protected getOAuthTokenManager(): AccessTokenManager | undefined {
         if (this.container === undefined) {
             return undefined;
         }
 
-        return this.container.resolve(OAuthTokenManagerImpl);
+        return this.container.resolve(AccessTokenManagerImpl);
     }
 
     /**

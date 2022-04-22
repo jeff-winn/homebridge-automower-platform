@@ -1,5 +1,5 @@
 import { Logging } from 'homebridge';
-import { OAuthTokenManager } from '../../authentication/oauthTokenManager';
+import { AccessTokenManager } from '../../authentication/accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
 import { AutomowerEvent, StatusEvent } from '../../clients/events';
 import { Timer } from '../../primitives/timer';
@@ -21,7 +21,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     private lastEventReceived?: Date;
     private attached = false;
 
-    constructor(private tokenManager: OAuthTokenManager, private stream: AutomowerEventStreamClient, 
+    constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
         private log: Logging, private timer: Timer) { }
 
     onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {

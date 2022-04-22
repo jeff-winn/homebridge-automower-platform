@@ -1,7 +1,7 @@
-import { OAuthTokenManagerImpl } from '../../src/authentication/oauthTokenManager';
+import { AccessTokenManagerImpl } from '../../src/authentication/accessTokenManager';
 import { OAuthToken } from '../../src/clients/authenticationClient';
 
-export class OAuthTokenManagerImplSpy extends OAuthTokenManagerImpl {
+export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     loggedIn = false;
     refreshed = false;
     overrideInvalidated?: boolean;
