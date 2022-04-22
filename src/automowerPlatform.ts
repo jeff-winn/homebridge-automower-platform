@@ -22,30 +22,19 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
 
-        api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
-            try {
-                await this.onFinishedLaunching();
-            } catch (e) {
-                this.log.error('An unexpected error occurred while starting the plugin.', e);
-            }
-        });
-
-        api.on(APIEvent.SHUTDOWN, async () => {
-            try {
-                await this.onShutdown();
-            } catch (e) {
-                this.log.error('An unexpected error occurred while starting the plugin.', e);
-            }
-        });
+        api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunching.bind(this));
+        api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));
     }
 
     protected async onFinishedLaunching(): Promise<void> {
-        this.configureContainer();
+        try {
+            this.configureContainer();
 
-        await this.discoverNewMowers();
-        await this.startReceivingEvents();
-
-        this.log.debug('onFinishLaunching');
+            await this.discoverNewMowers();
+            await this.startReceivingEvents();
+        } catch (e) {
+            this.log.error('An unexpected error occurred while starting the plugin.', e);
+        }
     }
     
     protected configureContainer(): void {
@@ -94,10 +83,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     protected async onShutdown(): Promise<void> {
-        this.log.info('Shutting down...');
-
-        await this.eventStream?.stop();
-        await this.getTokenManager()?.logout();
+        try {
+            await this.eventStream?.stop();
+            await this.getTokenManager()?.logout();
+        } catch (e) {
+            this.log.error('An unexpected error occurred while starting the plugin.', e);
+        }
     }
 
     /**
