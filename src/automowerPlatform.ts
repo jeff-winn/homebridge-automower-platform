@@ -22,12 +22,20 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
 
-        api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {            
-            await this.onFinishedLaunching();
+        api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
+            try {
+                await this.onFinishedLaunching();
+            } catch (e) {
+                this.log.error('An unexpected error occurred while starting the plugin.', e);
+            }
         });
 
         api.on(APIEvent.SHUTDOWN, async () => {
-            await this.onShutdown();
+            try {
+                await this.onShutdown();
+            } catch (e) {
+                this.log.error('An unexpected error occurred while starting the plugin.', e);
+            }
         });
     }
 
@@ -119,10 +127,14 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * It should be used to setup event handlers for characteristics and update respective values.
      */
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
-        this.log.info(`Configuring ${accessory.displayName}`);
+        try {
+            this.log.info(`Configuring ${accessory.displayName}`);
 
-        const automower = this.createAutomowerAccessory(accessory);
-        this.mowers.push(automower);
+            const automower = this.createAutomowerAccessory(accessory);
+            this.mowers.push(automower);
+        } catch (e) {
+            this.log.error('An unexpected error occurred while configuring the accessory.', e);
+        }            
     }
 
     protected createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
