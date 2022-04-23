@@ -1,13 +1,21 @@
 import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { StatusEvent } from './events';
+
+/** 
+ * Describes the platform configuration settings.
+ */
+export interface AutomowerPlatformConfig extends PlatformConfig {    
+    username: string;
+    password: string;
+    appKey: string;    
+}
 
 /**
  * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.

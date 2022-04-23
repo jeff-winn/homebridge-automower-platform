@@ -8,7 +8,7 @@ import { AccessTokenManagerImpl } from '../services/authentication/accessTokenMa
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
-import { AutomowerPlatformConfig } from '../automowerPlatformConfig';
+import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../constants';
 
 import { AccessoryFactoryImpl } from './accessoryFactory';
