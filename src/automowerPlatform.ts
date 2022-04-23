@@ -25,7 +25,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private readonly config: AutomowerPlatformConfig;
 
     private container?: PlatformContainer;
-    private eventStream?: EventStreamService;
+    private eventService?: EventStreamService;
 
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
@@ -56,14 +56,19 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     protected async startReceivingEvents(): Promise<void> {
-        this.eventStream = this.getEventStreamService();
-        this.eventStream.onStatusEventReceived(this.onStatusEventReceived.bind(this));
+        const service = this.getEventService();
+        service.onStatusEventReceived(this.onStatusEventReceived.bind(this));
         
-        await this.eventStream.start();
+        await service.start();
     }
 
-    protected getEventStreamService(): EventStreamService {
-        return this.container!.resolve(EventStreamServiceImpl);
+    protected getEventService(): EventStreamService {
+        if (this.eventService !== undefined) {
+            return this.eventService;
+        }
+
+        this.eventService = this.container!.resolve(EventStreamServiceImpl);
+        return this.eventService;
     }
 
     private async onStatusEventReceived(event: StatusEvent): Promise<void> {
@@ -92,7 +97,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async onShutdown(): Promise<void> {
         try {
-            await this.eventStream?.stop();
+            await this.getEventService()?.stop();
             await this.getTokenManager()?.logout();
         } catch (e) {
             this.log.error('An unexpected error occurred while starting the plugin.', e);
