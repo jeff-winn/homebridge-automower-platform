@@ -33,7 +33,7 @@ export interface AutomowerClient {
 /**
  * Describes the response while getting a specific mower.
  */
- interface GetMowerResponse {
+interface GetMowerResponse {
     data: Mower;
 }
 
