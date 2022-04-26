@@ -1,4 +1,7 @@
-import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
+import { 
+    PlatformAccessory, API, DynamicPlatformPlugin, 
+    PlatformConfig, APIEvent, Logging 
+} from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { PlatformContainer } from './primitives/platformContainer';

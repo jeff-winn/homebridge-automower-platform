@@ -1,4 +1,8 @@
-import { API, Characteristic, Logging, PlatformAccessory, Service, UnknownContext } from 'homebridge';
+import { 
+    API, Characteristic, CharacteristicEventTypes, CharacteristicGetCallback, Logging, 
+    PlatformAccessory, Service, UnknownContext 
+} from 'homebridge';
+
 import { AutomowerPlatform } from './automowerPlatform';
 import { StatusEvent } from './events';
 
@@ -20,6 +24,9 @@ export class AutomowerAccessory {
     private readonly Service: typeof Service;
 
     private informationService?: Service;
+    private motionSensorService?: Service;
+
+    private motionDetected?: Characteristic;
 
     constructor(private platform: AutomowerPlatform, private accessory: PlatformAccessory<AutomowerContext>, 
         private api: API, private log: Logging) {
@@ -33,6 +40,7 @@ export class AutomowerAccessory {
      */
     public init(): void {
         this.initAccessoryInformation();
+        this.initMotionSensorService();
     }
     
     protected initAccessoryInformation(): void {
@@ -42,6 +50,30 @@ export class AutomowerAccessory {
             .setCharacteristic(this.Characteristic.Name, this.accessory.displayName)
             .setCharacteristic(this.Characteristic.SerialNumber, this.accessory.context.serialNumber);    
     }    
+
+    protected initMotionSensorService(): void {
+        this.motionSensorService = this.accessory.getService(this.Service.MotionSensor);
+        if (this.motionSensorService === undefined) {
+            this.motionSensorService = this.accessory.addService(this.Service.MotionSensor, this.accessory.displayName);
+        }
+
+        this.motionDetected = this.motionSensorService.getCharacteristic(this.Characteristic.MotionDetected);
+        if (this.motionDetected !== undefined) {
+            this.motionDetected.on(CharacteristicEventTypes.GET, this.onGetMotionDetected.bind(this));
+        }
+    }
+    
+    private onGetMotionDetected(callback: CharacteristicGetCallback): void {
+        callback(undefined, true);
+    }
+
+    private setMotionDetected(value: boolean): void {
+        if (this.motionDetected === undefined || this.motionDetected.value === value) {
+            return;
+        }
+
+        this.motionDetected.setValue(value);
+    }
 
     public getUuid(): string {
         return this.accessory.UUID;
