@@ -24,9 +24,11 @@ export class AutomowerAccessory {
     private readonly Service: typeof Service;
 
     private informationService?: Service;
-    private motionSensorService?: Service;
 
-    private motionDetected?: Characteristic;
+    private batteryService?: Service;
+    private lowBattery?: Characteristic;
+    private batteryLevel?: Characteristic;
+    private chargingState?: Characteristic;
 
     constructor(private platform: AutomowerPlatform, private accessory: PlatformAccessory<AutomowerContext>, 
         private api: API, private log: Logging) {
@@ -40,7 +42,7 @@ export class AutomowerAccessory {
      */
     public init(): void {
         this.initAccessoryInformation();
-        this.initMotionSensorService();
+        this.initBatteryService();
     }
     
     protected initAccessoryInformation(): void {
@@ -51,28 +53,38 @@ export class AutomowerAccessory {
             .setCharacteristic(this.Characteristic.SerialNumber, this.accessory.context.serialNumber);    
     }    
 
-    protected initMotionSensorService(): void {
-        this.motionSensorService = this.accessory.getService(this.Service.MotionSensor);
-        if (this.motionSensorService === undefined) {
-            this.motionSensorService = this.accessory.addService(this.Service.MotionSensor, this.accessory.displayName);
+    protected initBatteryService(): void {
+        this.batteryService = this.accessory.getService(this.Service.Battery);
+        if (this.batteryService === undefined) {
+            this.batteryService = this.accessory.addService(this.Service.Battery);
         }
 
-        this.motionDetected = this.motionSensorService.getCharacteristic(this.Characteristic.MotionDetected);
-        if (this.motionDetected !== undefined) {
-            this.motionDetected.on(CharacteristicEventTypes.GET, this.onGetMotionDetected.bind(this));
+        this.lowBattery = this.batteryService.getCharacteristic(this.Characteristic.StatusLowBattery);
+        if (this.lowBattery !== undefined) {
+            this.lowBattery.on(CharacteristicEventTypes.GET, this.onGetStatusLowBattery.bind(this));
         }
+
+        this.batteryLevel = this.batteryService.getCharacteristic(this.Characteristic.BatteryLevel);
+        if (this.batteryLevel !== undefined) {
+            this.batteryLevel.on(CharacteristicEventTypes.GET, this.onGetBatteryLevel.bind(this));
+        }
+
+        this.chargingState = this.batteryService.getCharacteristic(this.Characteristic.ChargingState);
+        if (this.chargingState !== undefined) {
+            this.chargingState.on(CharacteristicEventTypes.GET, this.onGetChargingState.bind(this));
+        }
+    }
+
+    private onGetChargingState(callback: CharacteristicGetCallback): void {
+        callback(undefined, this.Characteristic.ChargingState.CHARGING);
+    }
+
+    private onGetStatusLowBattery(callback: CharacteristicGetCallback): void {
+        callback(undefined, this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
     }
     
-    private onGetMotionDetected(callback: CharacteristicGetCallback): void {
-        callback(undefined, true);
-    }
-
-    private setMotionDetected(value: boolean): void {
-        if (this.motionDetected === undefined || this.motionDetected.value === value) {
-            return;
-        }
-
-        this.motionDetected.setValue(value);
+    private onGetBatteryLevel(callback: CharacteristicGetCallback): void {
+        callback(undefined, 100);
     }
 
     public getUuid(): string {
