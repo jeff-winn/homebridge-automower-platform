@@ -13,6 +13,7 @@ import * as constants from '../constants';
 
 import { AccessoryFactoryImpl } from './accessoryFactory';
 import { TimerImpl } from './timer';
+import { AccessoryServiceImpl } from '../services/accessoryService';
 
 export class PlatformContainer {
     constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
@@ -32,26 +33,31 @@ export class PlatformContainer {
         container.register(AutomowerClientImpl, {
             useValue: new AutomowerClientImpl(
                 this.config.appKey,
-                constants.AUTOMOWER_CONNECT_API_BASE_URL
-            )
+                constants.AUTOMOWER_CONNECT_API_BASE_URL)
         });
 
         container.register(GetMowersServiceImpl, {
             useFactory: (context) => new GetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(AutomowerClientImpl)
-            )
+                context.resolve(AutomowerClientImpl))
         });
 
         container.register(AccessoryFactoryImpl, {
             useFactory: () => new AccessoryFactoryImpl(this.api)
         });
 
+        container.register(AccessoryServiceImpl, {
+            useFactory: (context) => new AccessoryServiceImpl(
+                context.resolve(AccessoryFactoryImpl),
+                this.api,
+                this.log)
+        });
+
         container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
-                context.resolve(GetMowersServiceImpl),                
-                this.log,
-                context.resolve(AccessoryFactoryImpl))
+                context.resolve(GetMowersServiceImpl), 
+                context.resolve(AccessoryServiceImpl),               
+                this.log)
         });
 
         container.register(AutomowerEventStreamClientImpl, {

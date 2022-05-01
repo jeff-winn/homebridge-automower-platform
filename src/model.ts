@@ -50,7 +50,14 @@ export interface Device {
  * Describes the information about the headlight.
  */
 export interface Headlight {
-    mode: string;
+    mode: HeadlightMode;
+}
+
+export enum HeadlightMode {
+    'ALWAYS_ON',
+    'ALWAYS_OFF',
+    'EVENING_ONLY',
+    'EVENING_AND_NIGHT'
 }
 
 /**
@@ -65,11 +72,45 @@ export interface MowerMetadata {
  * Describes the mower state.
  */
 export interface MowerState {
-    mode: string;
-    activity: string;
-    state: string;
+    mode: Mode;
+    activity: Activity;
+    state: State;
     errorCode: number;
     errorCodeTimestamp: number;
+}
+
+export enum Mode {
+    'MAIN_AREA',
+    'SECONDARY_AREA',
+    'HOME',
+    'DEMO',
+    'UNKNOWN'
+}
+
+export enum Activity {
+    'UNKNOWN',
+    'NOT_APPLICABLE',
+    'MOWING',
+    'GOING_HOME',    
+    'CHARGING',
+    'LEAVING',
+    'PARKED_IN_CS',
+    'STOPPED_IN_GARDEN'
+}
+
+export enum State {
+    'UNKNOWN',
+    'NOT_APPLICABLE',
+    'PAUSED',
+    'IN_OPERATION',
+    'WAIT_UPDATING',
+    'WAIT_POWER_UP',
+    'RESTRICTED',
+    'OFF',
+    'STOPPED',
+    'ERROR',
+    'FATAL_ERROR',
+    'ERROR_AT_POWER_UP'
 }
 
 /**

@@ -1,7 +1,7 @@
 import { Logging } from 'homebridge';
 import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, StatusEvent } from '../../events';
+import { AutomowerEvent, AutomowerEventTypes, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 
 export interface EventStreamService {
@@ -122,11 +122,11 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.setLastEventReceived(new Date());
 
         switch (event.type) {
-        case 'settings-event':
-        case 'positions-event':
+        case AutomowerEventTypes.SETTINGS:
+        case AutomowerEventTypes.POSITIONS:
             return Promise.resolve(undefined);
 
-        case 'status-event':
+        case AutomowerEventTypes.STATUS:
             return this.onStatusEvent(event as StatusEvent);        
 
         default:

@@ -10,6 +10,7 @@ import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentic
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { StatusEvent } from './events';
+import { Mower } from './model';
 
 /** 
  * Describes the platform configuration settings.
@@ -41,7 +42,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         try {
             this.configureContainer();
 
-            await this.discoverNewMowers();
+            await this.discoverMowers();
             await this.startReceivingEvents();
         } catch (e) {
             this.log.error('An unexpected error occurred while starting the plugin.', e);
@@ -53,7 +54,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         this.container.registerEverything();
     }
 
-    protected async discoverNewMowers(): Promise<void> {
+    protected async discoverMowers(): Promise<void> {
         const service = this.getDiscoveryService();
         await service.discoverMowers(this);
     }
@@ -75,7 +76,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     private async onStatusEventReceived(event: StatusEvent): Promise<void> {
-        const mower = this.mowers.find(o => o.getUuid() === event.id);
+        const mower = this.mowers.find(o => o.getId() === event.id);
         if (mower !== undefined) {
             await mower.onStatusEventReceived(event);
         }
@@ -90,12 +91,23 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     /**
+     * Initializes the mower instance.
+     * @param data The mower data.
+     */
+    public initMower(data: Mower): void {
+        const mower = this.mowers.find(o => o.getId() === data.id);
+        if (mower !== undefined) {
+            mower.init(data);
+        }
+    }
+
+    /**
      * Checks whether a mower is configured.
-     * @param uuid The uuid to check.
+     * @param mowerId The mower id to check.
      * @returns true if the mower is already configured, otherwise false.
      */
-    public isMowerConfigured(uuid: string): boolean {
-        return this.mowers.some(accessory => accessory.getUuid() === uuid);
+    public isMowerConfigured(mowerId: string): boolean {
+        return this.mowers.some(accessory => accessory.getId() === mowerId);
     }
 
     protected async onShutdown(): Promise<void> {
@@ -123,10 +135,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Registers the accessories with the platform.
      * @param accessories The accessories to register.
      */
-    public registerMowers(mowers: PlatformAccessory<AutomowerContext>[]): void {
-        mowers.forEach(mower => this.configureAccessory(mower));
+    public registerMowers(mowers: AutomowerAccessory[]): void {
+        const accessories: PlatformAccessory<AutomowerContext>[] = [];
 
-        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, mowers);
+        mowers.forEach(mower => {
+            this.mowers.push(mower);
+            accessories.push(mower.getUnderlyingAccessory());
+        });
+
+        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }
 
     /*
@@ -137,17 +154,9 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         try {
             this.log.info(`Configuring ${accessory.displayName}`);
 
-            const automower = this.createAutomowerAccessory(accessory);
-            this.mowers.push(automower);
+            this.mowers.push(new AutomowerAccessory(accessory, this.api, this.log));
         } catch (e) {
             this.log.error('An unexpected error occurred while configuring the accessory.', e);
-        }            
-    }
-
-    protected createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
-        const automower = new AutomowerAccessory(this, accessory, this.api, this.log);
-        automower.init();
-
-        return automower;
+        }
     }
 }
