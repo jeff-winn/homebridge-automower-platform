@@ -3,7 +3,7 @@ import { Mock, Times } from 'moq.ts';
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { Mower, AccessToken } from '../../../src/model';
+import { Mower, AccessToken, Activity, Mode, State } from '../../../src/model';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
 describe('GetMowersServiceImpl', () => {
@@ -85,11 +85,11 @@ describe('GetMowersServiceImpl', () => {
                     statusTimestamp: 100
                 },
                 mower: {
-                    activity: 'activity',
+                    activity: Activity.MOWING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'online'
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -137,11 +137,11 @@ describe('GetMowersServiceImpl', () => {
                     statusTimestamp: 100
                 },
                 mower: {
-                    activity: 'activity',
+                    activity: Activity.MOWING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'online'
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,

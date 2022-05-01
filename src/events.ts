@@ -1,5 +1,5 @@
 import { 
-    Battery, 
+    Battery,
     Calendar, 
     Headlight, 
     MowerMetadata, 
@@ -14,6 +14,7 @@ export interface AutomowerEvent {
 }
 
 export enum AutomowerEventTypes {
+    UNKNOWN = 'unknown-event',
     STATUS = 'status-event',
     POSITIONS = 'positions-event',
     SETTINGS = 'settings-event'

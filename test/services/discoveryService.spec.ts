@@ -1,25 +1,25 @@
-import { Logging, PlatformAccessory } from 'homebridge';
+import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { GetMowersService } from '../../src/services/automower/getMowersService';
+import { AccessoryService } from '../../src/services/accessoryService';
 import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
 import { AutomowerPlatform } from '../../src/automowerPlatform';
-import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
-import { AutomowerContext } from '../../src/automowerAccessory';
-import { Mower } from '../../src/model';
+import { AutomowerAccessory } from '../../src/automowerAccessory';
+import { Activity, Mode, Mower, State } from '../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
+    let accessoryService: Mock<AccessoryService>;
     let log: Mock<Logging>;    
-    let accessoryFactory: Mock<AccessoryFactory>;
     let target: DiscoveryServiceImpl;
 
     beforeEach(() => {
         getMowersService = new Mock<GetMowersService>();
+        accessoryService = new Mock<AccessoryService>();
         log = new Mock<Logging>();
-        accessoryFactory = new Mock<AccessoryFactory>();
 
-        target = new DiscoveryServiceImpl(getMowersService.object(), log.object(), accessoryFactory.object());
+        target = new DiscoveryServiceImpl(getMowersService.object(), accessoryService.object(), log.object());
     });
     
     it('should do nothing when no mowers are found', async () => {
@@ -55,11 +55,11 @@ describe('DiscoveryServiceImpl', () => {
                     tasks: []
                 },
                 mower: {
-                    activity: 'activity',
+                    activity: Activity.CHARGING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'state'
+                    mode: Mode.HOME,
+                    state: State.RESTRICTED
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -92,11 +92,11 @@ describe('DiscoveryServiceImpl', () => {
                     tasks: []
                 },
                 mower: {
-                    activity: 'activity',
+                    activity: Activity.MOWING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'state'
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -118,26 +118,20 @@ describe('DiscoveryServiceImpl', () => {
             }
         };
 
-        const mower1Uuid = 'abcd1234';
-        const mower2Uuid = 'efgh5678';
-        
-        accessoryFactory.setup(x => x.generateUuid(mower1Id)).returns(mower1Uuid);
-        accessoryFactory.setup(x => x.generateUuid(mower2Id)).returns(mower2Uuid);
-
-        const mower1Accessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const mower1Accessory = new Mock<AutomowerAccessory>();
 
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
-        accessoryFactory.setup(x => x.create(mower1Name, mower1Uuid)).returns(mower1Accessory.object());
+        accessoryService.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
 
-        platform.setup(x => x.isMowerConfigured(mower1Uuid)).returns(false);
-        platform.setup(x => x.isMowerConfigured(mower2Uuid)).returns(true);
-        platform.setup(x => x.registerMowers(It.IsAny<PlatformAccessory[]>())).returns(undefined);
-        
+        platform.setup(x => x.isMowerConfigured(mower1Id)).returns(false);
+        platform.setup(x => x.isMowerConfigured(mower2Id)).returns(true);
+        platform.setup(x => x.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
+        platform.setup(o => o.initMower(mower2)).returns(undefined);
         await target.discoverMowers(platform.object());
 
-        platform.verify(x => x.registerMowers(It.Is<PlatformAccessory[]>(x => 
+        platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(x => 
             x.length === 1 && x[0] === mower1Accessory.object()))
         , Times.Once());
     });
@@ -162,11 +156,11 @@ describe('DiscoveryServiceImpl', () => {
                     tasks: []
                 },
                 mower: {
-                    activity: 'activity',
+                    activity: Activity.MOWING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'state'
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -199,11 +193,11 @@ describe('DiscoveryServiceImpl', () => {
                     tasks: []
                 },
                 mower: {
-                    activity: 'activity',
+                    activity: Activity.MOWING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'state'
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -225,28 +219,22 @@ describe('DiscoveryServiceImpl', () => {
             }
         };
 
-        const mower1Uuid = 'abcd1234';
-        const mower2Uuid = 'efgh5678';
-        
-        accessoryFactory.setup(x => x.generateUuid(mower1Id)).returns(mower1Uuid);
-        accessoryFactory.setup(x => x.generateUuid(mower2Id)).returns(mower2Uuid);
-
-        const mower1Accessory = new Mock<PlatformAccessory<AutomowerContext>>();
-        const mower2Accessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const mower1Accessory = new Mock<AutomowerAccessory>();
+        const mower2Accessory = new Mock<AutomowerAccessory>();
 
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
-        accessoryFactory.setup(x => x.create(mower1Name, mower1Uuid)).returns(mower1Accessory.object());
-        accessoryFactory.setup(x => x.create(mower2Name, mower2Uuid)).returns(mower2Accessory.object());
+        accessoryService.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
+        accessoryService.setup(o => o.createAccessory(mower2)).returns(mower2Accessory.object());
 
-        platform.setup(x => x.isMowerConfigured(mower1Uuid)).returns(false);
-        platform.setup(x => x.isMowerConfigured(mower2Uuid)).returns(false);
-        platform.setup(x => x.registerMowers(It.IsAny<PlatformAccessory[]>())).returns(undefined);
+        platform.setup(x => x.isMowerConfigured(mower1Id)).returns(false);
+        platform.setup(x => x.isMowerConfigured(mower2Id)).returns(false);
+        platform.setup(x => x.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
         
         await target.discoverMowers(platform.object());
 
-        platform.verify(x => x.registerMowers(It.Is<PlatformAccessory[]>(x => 
+        platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(x => 
             x.length === 2 && x[0] === mower1Accessory.object() && x[1] === mower2Accessory.object()))
         , Times.Once());
     });
