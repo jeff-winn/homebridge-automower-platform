@@ -1,7 +1,7 @@
 import { AccessoryFactory } from '../primitives/accessoryFactory';
-import { AutomowerAccessory } from '../automowerAccessory';
+import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
-import { API, Logging } from 'homebridge';
+import { API, Logging, PlatformAccessory } from 'homebridge';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -38,10 +38,14 @@ export class AccessoryServiceImpl implements AccessoryService {
             serialNumber: mower.attributes.system.serialNumber.toString()
         };
 
-        const result = new AutomowerAccessory(accessory, this.api, this.log);
+        const result = this.createAutomowerAccessory(accessory);
         result.init(mower);
         
         return result;
+    }
+
+    protected createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+        return new AutomowerAccessory(accessory, this.api, this.log);
     }
 
     private parseModelInformation(value: string): ModelInformation {
