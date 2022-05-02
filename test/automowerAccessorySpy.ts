@@ -26,4 +26,8 @@ export class AutomowerAccessorySpy extends AutomowerAccessory {
     unsafeInitAccessoryInformation(): void {
         this.initAccessoryInformation();
     }
+
+    unsafeInitBatteryService(data: Mower): void {
+        this.initBatteryService(data);
+    }
 }

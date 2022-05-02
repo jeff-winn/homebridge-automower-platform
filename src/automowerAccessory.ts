@@ -57,13 +57,19 @@ export class AutomowerAccessory {
             .setCharacteristic(this.Characteristic.Model, this.accessory.context.model)
             .setCharacteristic(this.Characteristic.Name, this.accessory.displayName)
             .setCharacteristic(this.Characteristic.SerialNumber, this.accessory.context.serialNumber);    
-    }    
+    }
+    
+    protected getBatteryService(): Service {
+        let result = this.accessory.getService(this.Service.Battery);
+        if (result === undefined) {
+            result = this.accessory.addService(this.Service.Battery);
+        }
+
+        return result;
+    }
 
     protected initBatteryService(data: Mower): void {
-        this.batteryService = this.accessory.getService(this.Service.Battery);
-        if (this.batteryService === undefined) {
-            this.batteryService = this.accessory.addService(this.Service.Battery);
-        }
+        this.batteryService = this.getBatteryService();
 
         this.lowBattery = this.batteryService.getCharacteristic(this.Characteristic.StatusLowBattery);
         this.batteryLevel = this.batteryService.getCharacteristic(this.Characteristic.BatteryLevel);

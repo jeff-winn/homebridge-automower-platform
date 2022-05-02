@@ -1,6 +1,6 @@
-import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
+import { API, HAP, Logging, PlatformAccessory, CharacteristicValue } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
-import { Mock, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 import { AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerAccessorySpy } from './automowerAccessorySpy';
 import { AutomowerEventTypes } from '../src/events';
@@ -31,6 +31,12 @@ describe('AutomowerAccessory', () => {
         hap.setup(x => x.Service).returns(service);
 
         target = new AutomowerAccessorySpy(accessory.object(), api.object(), log.object());
+    });
+
+    it('should return the underlying platform accessory', () => {
+        const actual = target.getUnderlyingAccessory();
+
+        expect(actual).toBe(accessory.object());
     });
 
     it('should initialize all services', () => {
@@ -76,6 +82,128 @@ describe('AutomowerAccessory', () => {
 
         expect(target.accessoryInformationInitialized).toBeTruthy();
         expect(target.batteryServiceInitialized).toBeTruthy();
+    });
+
+    it('initializes the battery service as charging with low battery and 20 percent', () => {
+        const serviceInstance = new Mock<Service>();
+        
+        const lowBattery = new Mock<Characteristic>();
+        lowBattery.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+
+        const batteryLevel = new Mock<Characteristic>();
+        batteryLevel.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+
+        const chargingState = new Mock<Characteristic>();
+        chargingState.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+
+        accessory.setup(o => o.getService(service.Battery)).returns(serviceInstance.object());
+        
+        serviceInstance.setup(o => o.getCharacteristic(characteristic.StatusLowBattery)).returns(lowBattery.object());
+        serviceInstance.setup(o => o.getCharacteristic(characteristic.BatteryLevel)).returns(batteryLevel.object());
+        serviceInstance.setup(o => o.getCharacteristic(characteristic.ChargingState)).returns(chargingState.object());
+    
+        target.unsafeInitBatteryService({
+            id: '12345',
+            type: '',
+            attributes: {
+                battery: {
+                    batteryPercent: 20
+                },
+                calendar: {
+                    tasks: []
+                },
+                metadata: {
+                    connected: false,
+                    statusTimestamp: 0
+                },
+                mower: {
+                    activity: Activity.CHARGING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.HOME,
+                    state: State.OFF
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: ''
+                    },
+                    restrictedReason: ''
+                },
+                positions: [                    
+                ],
+                system: {
+                    name: '',
+                    model: '',
+                    serialNumber: 1
+                }
+            }
+        });
+
+        lowBattery.verify(o => o.setValue(characteristic.StatusLowBattery.BATTERY_LEVEL_LOW), Times.Once());
+        batteryLevel.verify(o => o.setValue(20), Times.Once());
+        chargingState.verify(o => o.setValue(characteristic.ChargingState.CHARGING), Times.Once());
+    });
+
+    it('initializes the battery service as not charging with normal battery and 100 percent', () => {
+        const serviceInstance = new Mock<Service>();
+        
+        const lowBattery = new Mock<Characteristic>();
+        lowBattery.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+
+        const batteryLevel = new Mock<Characteristic>();
+        batteryLevel.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+
+        const chargingState = new Mock<Characteristic>();
+        chargingState.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+
+        accessory.setup(o => o.getService(service.Battery)).returns(serviceInstance.object());
+        
+        serviceInstance.setup(o => o.getCharacteristic(characteristic.StatusLowBattery)).returns(lowBattery.object());
+        serviceInstance.setup(o => o.getCharacteristic(characteristic.BatteryLevel)).returns(batteryLevel.object());
+        serviceInstance.setup(o => o.getCharacteristic(characteristic.ChargingState)).returns(chargingState.object());
+    
+        target.unsafeInitBatteryService({
+            id: '12345',
+            type: '',
+            attributes: {
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: []
+                },
+                metadata: {
+                    connected: false,
+                    statusTimestamp: 0
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.HOME,
+                    state: State.OFF
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: ''
+                    },
+                    restrictedReason: ''
+                },
+                positions: [                    
+                ],
+                system: {
+                    name: '',
+                    model: '',
+                    serialNumber: 1
+                }
+            }
+        });
+
+        lowBattery.verify(o => o.setValue(characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL), Times.Once());
+        batteryLevel.verify(o => o.setValue(100), Times.Once());
+        chargingState.verify(o => o.setValue(characteristic.ChargingState.NOT_CHARGING), Times.Once());
     });
 
     it('initializes the accessory information correctly', () => {
