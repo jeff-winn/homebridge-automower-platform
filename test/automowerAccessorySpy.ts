@@ -1,3 +1,4 @@
+import { Service } from 'homebridge';
 import { AutomowerAccessory } from '../src/automowerAccessory';
 import { Mower } from '../src/model';
 
@@ -29,5 +30,9 @@ export class AutomowerAccessorySpy extends AutomowerAccessory {
 
     unsafeInitBatteryService(data: Mower): void {
         this.initBatteryService(data);
+    }
+
+    unsafeGetBatteryService(): Service {
+        return this.getBatteryService();
     }
 }

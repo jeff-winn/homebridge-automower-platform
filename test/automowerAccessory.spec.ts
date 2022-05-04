@@ -39,6 +39,17 @@ describe('AutomowerAccessory', () => {
         expect(actual).toBe(accessory.object());
     });
 
+    it('should automatically create a battery service if not existing', () => {
+        const batteryService = new Mock<Service>();
+        
+        accessory.setup(o => o.getService(service.Battery)).returns(undefined);
+        accessory.setup(o => o.addService(service.Battery)).returns(batteryService.object());
+
+        const actual = target.unsafeGetBatteryService();
+
+        expect(actual).toBe(batteryService.object());
+    });
+
     it('should initialize all services', () => {
         target.shouldRun = false;
 
