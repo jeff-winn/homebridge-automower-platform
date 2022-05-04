@@ -1,13 +1,25 @@
-import { PlatformAccessory, API, DynamicPlatformPlugin, PlatformConfig, APIEvent, Logging } from 'homebridge';
+import { 
+    PlatformAccessory, API, DynamicPlatformPlugin, 
+    PlatformConfig, APIEvent, Logging 
+} from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { AutomowerPlatformConfig } from './automowerPlatformConfig';
 import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { StatusEvent } from './events';
+import { Mower } from './model';
+
+/** 
+ * Describes the platform configuration settings.
+ */
+export interface AutomowerPlatformConfig extends PlatformConfig {    
+    username: string;
+    password: string;
+    appKey: string;    
+}
 
 /**
  * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.
@@ -17,35 +29,24 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private readonly config: AutomowerPlatformConfig;
 
     private container?: PlatformContainer;
-    private eventStream?: EventStreamService;
+    private eventService?: EventStreamService;
 
     constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
 
-        api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
-            try {
-                await this.onFinishedLaunching();
-            } catch (e) {
-                this.log.error('An unexpected error occurred while starting the plugin.', e);
-            }
-        });
-
-        api.on(APIEvent.SHUTDOWN, async () => {
-            try {
-                await this.onShutdown();
-            } catch (e) {
-                this.log.error('An unexpected error occurred while starting the plugin.', e);
-            }
-        });
+        api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunching.bind(this));
+        api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));
     }
 
     protected async onFinishedLaunching(): Promise<void> {
-        this.configureContainer();
+        try {
+            this.configureContainer();
 
-        await this.discoverNewMowers();
-        await this.startReceivingEvents();
-
-        this.log.debug('onFinishLaunching');
+            await this.discoverMowers();
+            await this.startReceivingEvents();
+        } catch (e) {
+            this.log.error('An unexpected error occurred while starting the plugin.', e);
+        }
     }
     
     protected configureContainer(): void {
@@ -53,27 +54,34 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         this.container.registerEverything();
     }
 
-    protected async discoverNewMowers(): Promise<void> {
+    protected async discoverMowers(): Promise<void> {
         const service = this.getDiscoveryService();
         await service.discoverMowers(this);
     }
 
     protected async startReceivingEvents(): Promise<void> {
-        this.eventStream = this.getEventStreamService();
-        this.eventStream.onStatusEventReceived(this.onStatusEventReceived.bind(this));
+        const service = this.getEventService();
+        service.onStatusEventReceived(this.onStatusEventReceived.bind(this));
         
-        await this.eventStream.start();
+        await service.start();
     }
 
-    protected getEventStreamService(): EventStreamService {
-        return this.container!.resolve(EventStreamServiceImpl);
+    protected getEventService(): EventStreamService {
+        if (this.eventService !== undefined) {
+            return this.eventService;
+        }
+
+        this.eventService = this.container!.resolve(EventStreamServiceImpl);
+        return this.eventService;
     }
 
     private async onStatusEventReceived(event: StatusEvent): Promise<void> {
-        const mower = this.mowers.find(o => o.getUuid() === event.id);
+        const mower = this.mowers.find(o => o.getId() === event.id);
         if (mower !== undefined) {
-            await mower.onStatusEventReceived(event);
+            mower.onStatusEventReceived(event);
         }
+
+        return Promise.resolve(undefined);
     }
 
     /**
@@ -85,19 +93,32 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     /**
+     * Initializes the mower instance.
+     * @param data The mower data.
+     */
+    public initMower(data: Mower): void {
+        const mower = this.mowers.find(o => o.getId() === data.id);
+        if (mower !== undefined) {
+            mower.init(data);
+        }
+    }
+
+    /**
      * Checks whether a mower is configured.
-     * @param uuid The uuid to check.
+     * @param mowerId The mower id to check.
      * @returns true if the mower is already configured, otherwise false.
      */
-    public isMowerConfigured(uuid: string): boolean {
-        return this.mowers.some(accessory => accessory.getUuid() === uuid);
+    public isMowerConfigured(mowerId: string): boolean {
+        return this.mowers.some(accessory => accessory.getId() === mowerId);
     }
 
     protected async onShutdown(): Promise<void> {
-        this.log.info('Shutting down...');
-
-        await this.eventStream?.stop();
-        await this.getTokenManager()?.logout();
+        try {
+            await this.getEventService()?.stop();
+            await this.getTokenManager()?.logout();
+        } catch (e) {
+            this.log.error('An unexpected error occurred while starting the plugin.', e);
+        }
     }
 
     /**
@@ -116,10 +137,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Registers the accessories with the platform.
      * @param accessories The accessories to register.
      */
-    public registerMowers(mowers: PlatformAccessory<AutomowerContext>[]): void {
-        mowers.forEach(mower => this.configureAccessory(mower));
+    public registerMowers(mowers: AutomowerAccessory[]): void {
+        const accessories: PlatformAccessory<AutomowerContext>[] = [];
 
-        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, mowers);
+        mowers.forEach(mower => {
+            this.mowers.push(mower);
+            accessories.push(mower.getUnderlyingAccessory());
+        });
+
+        this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }
 
     /*
@@ -130,17 +156,9 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         try {
             this.log.info(`Configuring ${accessory.displayName}`);
 
-            const automower = this.createAutomowerAccessory(accessory);
-            this.mowers.push(automower);
+            this.mowers.push(new AutomowerAccessory(accessory, this.api, this.log));
         } catch (e) {
             this.log.error('An unexpected error occurred while configuring the accessory.', e);
-        }            
-    }
-
-    protected createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
-        const automower = new AutomowerAccessory(this, accessory, this.api, this.log);
-        automower.init();
-
-        return automower;
+        }
     }
 }

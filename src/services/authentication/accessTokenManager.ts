@@ -1,7 +1,7 @@
 import { Logging } from 'homebridge';
 
-import { AutomowerPlatformConfig } from '../../automowerPlatformConfig';
 import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
+import { AutomowerPlatformConfig } from '../../automowerPlatform';
 import { AccessToken } from '../../model';
 
 /**

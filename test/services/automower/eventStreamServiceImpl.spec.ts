@@ -2,8 +2,8 @@ import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
-import { StatusEvent } from '../../../src/events';
-import { AccessToken } from '../../../src/model';
+import { AutomowerEventTypes, StatusEvent } from '../../../src/events';
+import { AccessToken, Activity, Mode, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
@@ -123,21 +123,21 @@ describe('EventStreamServiceImpl', () => {
     it('should do nothing when settings-event is received', async () => {
         await target.unsafeEventReceived({
             id: '12345',
-            type: 'settings-event'
+            type: AutomowerEventTypes.SETTINGS
         });
     });
 
     it('should do nothing when positions-event is received', async () => {
         await target.unsafeEventReceived({
             id: '12345',
-            type: 'settings-event'
+            type: AutomowerEventTypes.SETTINGS
         });
     });
 
     it('should do nothing when status-event is received with no callback', async () => {
         await target.unsafeEventReceived({
             id: '12345',
-            type: 'status-event'
+            type: AutomowerEventTypes.STATUS
         });
     });
 
@@ -145,7 +145,7 @@ describe('EventStreamServiceImpl', () => {
         let executed = false;
         const event: StatusEvent = {
             id: '12345',
-            type: 'status-event',
+            type: AutomowerEventTypes.STATUS,
             attributes: {
                 battery: {
                     batteryPercent: 100
@@ -155,11 +155,11 @@ describe('EventStreamServiceImpl', () => {
                     statusTimestamp: 0
                 },
                 mower: {
-                    activity: 'hello',
+                    activity: Activity.MOWING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: 'mode',
-                    state: 'state'
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -186,7 +186,7 @@ describe('EventStreamServiceImpl', () => {
         
         await target.unsafeEventReceived({
             id: '12345',
-            type: 'unknown'
+            type: AutomowerEventTypes.UNKNOWN
         });        
 
         log.verify(o => o.warn(It.IsAny<string>()), Times.Once());

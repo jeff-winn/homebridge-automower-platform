@@ -1,10 +1,9 @@
-import { Logging, PlatformAccessory } from 'homebridge';
+import { Logging } from 'homebridge';
 
-import { AutomowerContext } from '../automowerAccessory';
+import { AutomowerAccessory } from '../automowerAccessory';
 import { AutomowerPlatform } from '../automowerPlatform';
 import { GetMowersService } from './automower/getMowersService';
-import { Mower } from '../model';
-import { AccessoryFactory } from '../primitives/accessoryFactory';
+import { AccessoryService } from './accessoryService';
 
 /**
  * A mechanism to discover any automowers associated with an account.
@@ -17,27 +16,24 @@ export interface DiscoveryService {
     discoverMowers(platform: AutomowerPlatform): Promise<void>;
 }
 
-interface ModelInformation {
-    manufacturer: string;
-    model: string;
-}
-
 /**
  * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
  */
 export class DiscoveryServiceImpl implements DiscoveryService {
-    constructor(private mowerService: GetMowersService, private log: Logging, private accessoryFactory: AccessoryFactory) { }
+    constructor(private mowerService: GetMowersService, private accessoryService: AccessoryService, private log: Logging) { }
 
     async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');
 
-        const found: PlatformAccessory<AutomowerContext>[] = [];
+        const found: AutomowerAccessory[] = [];
         const mowers = await this.mowerService.getMowers();
         
         mowers.forEach(mower => {
-            const uuid = this.accessoryFactory.generateUuid(mower.id);
-            if (!platform.isMowerConfigured(uuid)) {
-                const accessory = this.createAccessory(uuid, mower);
+            if (platform.isMowerConfigured(mower.id)) {
+                // The mower was reloaded from cache, it will need to be re-initialized with the mower data.
+                platform.initMower(mower);
+            } else {
+                const accessory = this.accessoryService.createAccessory(mower);
                 found.push(accessory);
             }
         });
@@ -47,30 +43,5 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         }
 
         this.log.info(`Completed mower discovery, ${found.length} new mower(s) found.`);
-    }
-
-    private createAccessory(uuid: string, mower: Mower): PlatformAccessory<AutomowerContext> {
-        const displayName = mower.attributes.system.name;
-        const modelInformation = this.parseModelInformation(mower.attributes.system.model);
-        
-        const accessory = this.accessoryFactory.create(displayName, uuid);
-
-        accessory.context = {
-            mowerId: mower.id,
-            manufacturer: modelInformation.manufacturer,
-            model: modelInformation.model,
-            serialNumber: mower.attributes.system.serialNumber.toString()
-        };
-        
-        return accessory;
-    }
-
-    private parseModelInformation(value: string): ModelInformation {
-        const firstIndex = value.indexOf(' ');
-
-        return {
-            manufacturer: value.substring(0, firstIndex),
-            model: value.substring(firstIndex + 1)
-        };
     }
 }
