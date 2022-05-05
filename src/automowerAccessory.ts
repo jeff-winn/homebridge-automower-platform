@@ -44,11 +44,19 @@ export class AutomowerAccessory {
 
     /**
      * Initializes the accessory information.
+     */
+    public init(): void {
+        this.initAccessoryInformation();
+        this.initBatteryService();
+    }
+
+    /**
+     * Refreshes the mower values.
      * @param data The mower data.
      */
-    public init(data: Mower): void {
-        this.initAccessoryInformation();
-        this.initBatteryService(data);
+    public update(data: Mower): void {
+        this.setBatteryLevel(data.attributes.battery);
+        this.setChargingState(data.attributes.mower);
     }
     
     protected initAccessoryInformation(): void {
@@ -68,18 +76,15 @@ export class AutomowerAccessory {
         return result;
     }
 
-    protected initBatteryService(data: Mower): void {
+    protected initBatteryService(): void {
         this.batteryService = this.getBatteryService();
 
         this.lowBattery = this.batteryService.getCharacteristic(this.Characteristic.StatusLowBattery);
         this.batteryLevel = this.batteryService.getCharacteristic(this.Characteristic.BatteryLevel);
         this.chargingState = this.batteryService.getCharacteristic(this.Characteristic.ChargingState);
-
-        this.setBatteryLevel(data.attributes.battery);
-        this.setChargingState(data.attributes.mower);
     }
 
-    private setChargingState(state: MowerState) {  
+    protected setChargingState(state: MowerState) {  
         if (this.chargingState === undefined) {        
             return;
         }
@@ -91,7 +96,7 @@ export class AutomowerAccessory {
         }
     }
 
-    private setBatteryLevel(battery: Battery): void {
+    protected setBatteryLevel(battery: Battery): void {
         if (this.batteryLevel !== undefined) {
             this.batteryLevel.setValue(battery.batteryPercent);  
         }

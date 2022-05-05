@@ -128,7 +128,7 @@ describe('DiscoveryServiceImpl', () => {
         platform.setup(x => x.isMowerConfigured(mower1Id)).returns(false);
         platform.setup(x => x.isMowerConfigured(mower2Id)).returns(true);
         platform.setup(x => x.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
-        platform.setup(o => o.initMower(mower2)).returns(undefined);
+        platform.setup(o => o.updateMower(mower2)).returns(undefined);
         await target.discoverMowers(platform.object());
 
         platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(x => 

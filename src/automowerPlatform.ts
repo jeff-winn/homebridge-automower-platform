@@ -96,10 +96,10 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Initializes the mower instance.
      * @param data The mower data.
      */
-    public initMower(data: Mower): void {
+    public updateMower(data: Mower): void {
         const mower = this.mowers.find(o => o.getId() === data.id);
         if (mower !== undefined) {
-            mower.init(data);
+            mower.update(data);
         }
     }
 
@@ -156,7 +156,10 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         try {
             this.log.info(`Configuring ${accessory.displayName}`);
 
-            this.mowers.push(new AutomowerAccessory(accessory, this.api, this.log));
+            const automower = new AutomowerAccessory(accessory, this.api, this.log);
+            automower.init();
+
+            this.mowers.push(automower);
         } catch (e) {
             this.log.error('An unexpected error occurred while configuring the accessory.', e);
         }

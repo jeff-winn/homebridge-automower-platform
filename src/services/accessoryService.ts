@@ -39,7 +39,9 @@ export class AccessoryServiceImpl implements AccessoryService {
         };
 
         const result = this.createAutomowerAccessory(accessory);
-        result.init(mower);
+        
+        result.init();
+        result.update(mower);
         
         return result;
     }

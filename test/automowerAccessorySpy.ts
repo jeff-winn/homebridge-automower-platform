@@ -1,6 +1,6 @@
 import { Service } from 'homebridge';
 import { AutomowerAccessory } from '../src/automowerAccessory';
-import { Mower } from '../src/model';
+import { Battery, Mower, MowerState } from '../src/model';
 
 export class AutomowerAccessorySpy extends AutomowerAccessory {
     shouldRun = true;
@@ -16,20 +16,28 @@ export class AutomowerAccessorySpy extends AutomowerAccessory {
         }        
     }
 
-    protected initBatteryService(data: Mower): void {
+    protected initBatteryService(): void {
         this.batteryServiceInitialized = true;
 
         if (this.shouldRun) {
-            super.initBatteryService(data);
+            super.initBatteryService();
         }
+    }
+
+    unsafeSetBatteryLevel(battery: Battery): void {
+        this.setBatteryLevel(battery);
+    }
+
+    unsafeSetChargingState(state: MowerState): void {
+        this.setChargingState(state);
     }
 
     unsafeInitAccessoryInformation(): void {
         this.initAccessoryInformation();
     }
 
-    unsafeInitBatteryService(data: Mower): void {
-        this.initBatteryService(data);
+    unsafeInitBatteryService(): void {
+        this.initBatteryService();
     }
 
     unsafeGetBatteryService(): Service {
