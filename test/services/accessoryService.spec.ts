@@ -45,7 +45,6 @@ describe('AccessoryService', () => {
         
         const newAccessory = new Mock<AutomowerAccessory>();
         newAccessory.setup(o => o.init()).returns(undefined);
-        newAccessory.setup(o => o.update(It.IsAny<Mower>())).returns(undefined);
         newAccessory.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
 
         target.newAccessory = newAccessory.object();
@@ -100,6 +99,5 @@ describe('AccessoryService', () => {
         expect(ra.context.serialNumber).toBe(serialNumber.toString());
 
         newAccessory.verify(o => o.init(), Times.Once());
-        newAccessory.verify(o => o.update(It.IsAny<Mower>()), Times.Once());
     });
 });

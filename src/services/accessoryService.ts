@@ -38,10 +38,8 @@ export class AccessoryServiceImpl implements AccessoryService {
             serialNumber: mower.attributes.system.serialNumber.toString()
         };
 
-        const result = this.createAutomowerAccessory(accessory);
-        
+        const result = this.createAutomowerAccessory(accessory);        
         result.init();
-        result.update(mower);
         
         return result;
     }

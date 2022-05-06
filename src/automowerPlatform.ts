@@ -10,7 +10,6 @@ import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentic
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { StatusEvent } from './events';
-import { Mower } from './model';
 
 /** 
  * Describes the platform configuration settings.
@@ -93,23 +92,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     /**
-     * Initializes the mower instance.
-     * @param data The mower data.
+     * Gets a mower which has already been registered.
+     * @param mowerId The mower id.
+     * @returns The accessory instance.
      */
-    public updateMower(data: Mower): void {
-        const mower = this.mowers.find(o => o.getId() === data.id);
-        if (mower !== undefined) {
-            mower.update(data);
-        }
-    }
-
-    /**
-     * Checks whether a mower is configured.
-     * @param mowerId The mower id to check.
-     * @returns true if the mower is already configured, otherwise false.
-     */
-    public isMowerConfigured(mowerId: string): boolean {
-        return this.mowers.some(accessory => accessory.getId() === mowerId);
+    public getMower(mowerId: string): AutomowerAccessory | undefined {
+        return this.mowers.find(o => o.getId() === mowerId);
     }
 
     protected async onShutdown(): Promise<void> {

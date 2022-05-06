@@ -29,13 +29,14 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         const mowers = await this.mowerService.getMowers();
         
         mowers.forEach(mower => {
-            if (platform.isMowerConfigured(mower.id)) {
-                // The mower was reloaded from cache, it will need to be re-initialized with the mower data.
-                platform.updateMower(mower);
-            } else {
-                const accessory = this.accessoryService.createAccessory(mower);
+            let accessory = platform.getMower(mower.id);
+            if (accessory === undefined) {
+                // The mower was not already present, create a new accessory instance.
+                accessory = this.accessoryService.createAccessory(mower);
                 found.push(accessory);
             }
+
+            accessory.update(mower);
         });
 
         if (found.length > 0) {

@@ -32,10 +32,10 @@ describe('AutomowerPlatform', () => {
         target = new AutomowerPlatformSpy(log.object(), config, api.object());
     });
 
-    it('should return false when the mower id has not been created', () => {
-        const result = target.isMowerConfigured('does not exist');
+    it('should return undefined when the mower has not been created', () => {
+        const result = target.getMower('does not exist');
 
-        expect(result).toBeFalsy();
+        expect(result).toBeUndefined();
     });
 
     /** Required for compliance with homebridge verified status */
