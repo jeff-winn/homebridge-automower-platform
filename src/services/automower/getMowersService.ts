@@ -1,3 +1,5 @@
+import { Logging } from 'homebridge';
+
 import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerClient } from '../../clients/automowerClient';
 import { NotAuthorizedError } from '../../errors/notAuthorizedError';
@@ -20,13 +22,16 @@ export interface GetMowersService {
 }
 
 export class GetMowersServiceImpl implements GetMowersService {
-    constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
+    constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: Logging) { }
 
     async getMower(id: string): Promise<Mower | undefined> {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
-            return await this.client.getMower(id, token);
+            const result = await this.client.getMower(id, token);
+            this.log.debug(`Retrieved mower ${id} from endpoint.\r\n`, JSON.stringify(result));
+
+            return result;
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();
@@ -40,7 +45,10 @@ export class GetMowersServiceImpl implements GetMowersService {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
-            return await this.client.getMowers(token);    
+            const result = await this.client.getMowers(token);
+            this.log.debug('Retrieved mowers from endpoint...\r\n', JSON.stringify(result));
+
+            return result;
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();

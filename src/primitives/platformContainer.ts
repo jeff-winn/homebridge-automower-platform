@@ -39,7 +39,8 @@ export class PlatformContainer {
         container.register(GetMowersServiceImpl, {
             useFactory: (context) => new GetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(AutomowerClientImpl))
+                context.resolve(AutomowerClientImpl),
+                this.log)
         });
 
         container.register(AccessoryFactoryImpl, {
