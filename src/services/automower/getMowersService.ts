@@ -26,7 +26,7 @@ export class GetMowersServiceImpl implements GetMowersService {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
-            return this.client.getMower(id, token);
+            return await this.client.getMower(id, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();
@@ -40,7 +40,7 @@ export class GetMowersServiceImpl implements GetMowersService {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
-            return this.client.getMowers(token);    
+            return await this.client.getMowers(token);    
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();
