@@ -1,5 +1,6 @@
+import { Logging } from 'homebridge';
 import { WebSocket } from 'ws';
-import { AutomowerEvent } from '../events';
+import { AutomowerEvent, ConnectedEvent } from '../events';
 import { AccessToken } from '../model';
 
 /**
@@ -34,8 +35,9 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     private onMessageReceivedCallback?: (payload: AutomowerEvent) => void;
 
     private connected = false;
+    private connectionId?: string;
 
-    constructor(private baseUrl: string) { }
+    constructor(private baseUrl: string, private log: Logging) { }
     
     public open(token: AccessToken): void {
         this.socket = new WebSocket(this.baseUrl, {
@@ -45,11 +47,8 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         });
         
         this.socket.on('message', this.onMessageReceived.bind(this));
-        this.socket.on('open', () => {
-            this.connected = true;
-        });
-
         this.socket.on('close', () => {
+            this.log.info('Disconnected!');
             this.connected = false;
         });
     }
@@ -62,14 +61,26 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         return this.connected;
     }
 
-    private onMessageReceived(data: Buffer): void {
-        if (data.length === 0) {
+    private onMessageReceived(buffer: Buffer): void {
+        if (buffer.length === 0) {
             return;
         }
 
-        const payload = JSON.parse(data.toString()) as AutomowerEvent;
-        if (this.onMessageReceivedCallback !== undefined && payload.type !== undefined) {
-            this.onMessageReceivedCallback(payload);
+        const data = JSON.parse(buffer.toString());
+        this.log.debug('Received message:\r\n', JSON.stringify(data));
+
+        const connectedEvent = data as ConnectedEvent;
+        if (connectedEvent !== undefined && connectedEvent.connectionId !== undefined) {
+            this.connectionId = connectedEvent.connectionId;
+            this.connected = true;
+
+            this.log.debug(`Established connection id: ${this.connectionId}`);
+            this.log.info('Connected!');
+        } else {
+            const mowerEvent = data as AutomowerEvent;
+            if (this.onMessageReceivedCallback !== undefined && mowerEvent.type !== undefined) {
+                this.onMessageReceivedCallback(mowerEvent);
+            }
         }
     }
 

@@ -119,7 +119,7 @@ export enum State {
 export interface Planner {
     nextStartTimestamp: number;
     override: {
-        action: string;
+        action?: string;
     };
     restrictedReason: string;
 }

@@ -8,6 +8,11 @@ import {
     Position 
 } from './model';
 
+export interface ConnectedEvent {
+    connectionId: string;
+    connected: boolean;
+}
+
 export interface AutomowerEvent {
     id: string;
     type: AutomowerEventTypes;

@@ -62,7 +62,9 @@ export class PlatformContainer {
         });
 
         container.register(AutomowerEventStreamClientImpl, {
-            useFactory: () => new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL)
+            useFactory: () => new AutomowerEventStreamClientImpl(
+                constants.AUTOMOWER_STREAM_API_BASE_URL, 
+                this.log)
         });
 
         container.register(EventStreamServiceImpl, {
