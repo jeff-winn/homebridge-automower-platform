@@ -77,6 +77,7 @@ describe('EventStreamServiceImpl', () => {
             provider: 'bob'
         };
         
+        stream.opened = true;
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
@@ -110,7 +111,8 @@ describe('EventStreamServiceImpl', () => {
             value: 'abcd1234',
             provider: 'bob'
         };
-        
+
+        stream.opened = true;
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
