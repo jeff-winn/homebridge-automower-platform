@@ -20,9 +20,9 @@ export interface AccessoryFactory {
 }
 
 export class AccessoryFactoryImpl implements AccessoryFactory {
-    constructor(private api: API) { }
+    public constructor(private api: API) { }
 
-    generateUuid(data: string): string {
+    public generateUuid(data: string): string {
         return this.api.hap.uuid.generate(data);
     }
 
