@@ -67,6 +67,24 @@ describe('EventStreamServiceImpl', () => {
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
+    it('should reconnect the client when disconnected', async () => {       
+        const token: AccessToken = { 
+            value: 'abcd1234',
+            provider: 'bob'
+        };
+        
+        stream.opened = false;
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await target.unsafeKeepAlive();        
+
+        expect(stream.closed).toBeTruthy();        
+        expect(stream.opened).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
     it('should reconnect the client when never received event', async () => {
         const started = new Date(new Date().getTime() - target.getReconnectInterval() - 1);
         target.unsafeSetLastEventReceived(undefined);
