@@ -4,11 +4,24 @@ import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamCl
 import { AutomowerEvent, AutomowerEventTypes, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 
+/**
+ * A mechanism which is capable of streaming events for the Husqvarna account.
+ */
 export interface EventStreamService {
+    /**
+     * Occurs when a {@link StatusEvent} has been received.
+     * @param callback The callback to execute.
+     */
     onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void;
     
+    /**
+     * Starts streaming events.
+     */
     start(): Promise<void>;
     
+    /**
+     * Stops streaming events.
+     */
     stop(): Promise<void>;
 }
 
@@ -24,11 +37,11 @@ export class EventStreamServiceImpl implements EventStreamService {
     constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
         private log: Logging, private timer: Timer) { }
 
-    onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
+    public onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
     }
 
-    async start(): Promise<void> {
+    public async start(): Promise<void> {
         if (!this.attached) {
             this.stream.on(this.onEventReceived.bind(this));
             this.attached = true;
@@ -71,6 +84,11 @@ export class EventStreamServiceImpl implements EventStreamService {
     }    
 
     protected shouldReconnect(): boolean {
+        if (!this.stream.isConnected()) {
+            // The client somehow got disconnected, just attempt to reconnect.
+            return true;
+        }
+
         const now = new Date();
         
         if (this.lastEventReceived === undefined && this.started !== undefined && 

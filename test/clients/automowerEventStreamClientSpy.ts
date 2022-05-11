@@ -8,16 +8,20 @@ export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient
     callbackSet = false;
     keptAlive = false;
 
+    public isConnected(): boolean {
+        return this.opened;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    open(token: AccessToken): void {
+    public open(token: AccessToken): void {
         this.opened = true;
     }
 
-    close(): void {
+    public close(): void {
         this.closed = true;
     }
 
-    ping(): void {
+    public ping(): void {
         this.keptAlive = true;
     }
 
