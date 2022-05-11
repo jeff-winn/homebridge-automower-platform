@@ -2,19 +2,19 @@ import { EventStreamServiceImpl } from '../../../src/services/automower/eventStr
 import { AutomowerEvent } from '../../../src/events';
 
 export class EventStreamServiceImplSpy extends EventStreamServiceImpl {
-    unsafeEventReceived(event: AutomowerEvent): Promise<void> {
+    public unsafeEventReceived(event: AutomowerEvent): Promise<void> {
         return this.onEventReceived(event);
     }
 
-    unsafeKeepAlive(): Promise<void> {
+    public unsafeKeepAlive(): Promise<void> {
         return this.keepAlive();
     }
     
-    unsafeSetLastEventReceived(value?: Date): void {
+    public unsafeSetLastEventReceived(value?: Date): void {
         this.setLastEventReceived(value);
     }
 
-    unsafeSetStarted(value?: Date): void {
+    public unsafeSetStarted(value?: Date): void {
         this.setStarted(value);
     }
 }

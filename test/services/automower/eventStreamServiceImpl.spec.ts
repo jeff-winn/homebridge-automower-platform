@@ -57,9 +57,10 @@ describe('EventStreamServiceImpl', () => {
         target.unsafeSetLastEventReceived(undefined);
         target.unsafeSetStarted(started);
         
+        stream.opened = true;
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();        
+        await target.unsafeKeepAlive();
 
         expect(stream.keptAlive).toBeTruthy();
 
@@ -91,6 +92,7 @@ describe('EventStreamServiceImpl', () => {
         const lastEventReceived = new Date(new Date().getTime() - (target.getReconnectInterval() - 100000));
         target.unsafeSetLastEventReceived(lastEventReceived);
         
+        stream.opened = true;
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.unsafeKeepAlive();        
