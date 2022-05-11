@@ -34,7 +34,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     private lastEventReceived?: Date;
     private attached = false;
 
-    constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
+    public constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
         private log: Logging, private timer: Timer) { }
 
     public onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
@@ -117,7 +117,7 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.stream.ping();
     }
 
-    stop(): Promise<void> {
+    public stop(): Promise<void> {
         this.disconnect();
         this.stopKeepAlive();
 

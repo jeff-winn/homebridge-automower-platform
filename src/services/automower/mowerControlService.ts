@@ -30,9 +30,9 @@ export interface Action {
 }
 
 export class MowerControlServiceImpl implements MowerControlService {
-    constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
+    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
 
-    async resumeSchedule(mowerId: string): Promise<void> {
+    public async resumeSchedule(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'ResumeSchedule'
@@ -49,7 +49,7 @@ export class MowerControlServiceImpl implements MowerControlService {
         }
     }
 
-    async parkUntilFurtherNotice(mowerId: string): Promise<void> {
+    public async parkUntilFurtherNotice(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'ParkUntilFurtherNotice'

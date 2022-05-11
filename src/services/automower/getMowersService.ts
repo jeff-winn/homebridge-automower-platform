@@ -22,9 +22,9 @@ export interface GetMowersService {
 }
 
 export class GetMowersServiceImpl implements GetMowersService {
-    constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: Logging) { }
+    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: Logging) { }
 
-    async getMower(id: string): Promise<Mower | undefined> {
+    public async getMower(id: string): Promise<Mower | undefined> {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
@@ -41,7 +41,7 @@ export class GetMowersServiceImpl implements GetMowersService {
         }
     }
 
-    async getMowers(): Promise<Mower[]> {
+    public async getMowers(): Promise<Mower[]> {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
