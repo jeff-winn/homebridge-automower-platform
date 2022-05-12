@@ -110,7 +110,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             await this.getEventService()?.stop();
             await this.getTokenManager()?.logout();
         } catch (e) {
-            this.log.error('An unexpected error occurred while starting the plugin.', e);
+            this.log.error('An unexpected error occurred while shutting down the plugin.', e);
         }
     }
 
