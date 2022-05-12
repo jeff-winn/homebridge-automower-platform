@@ -1,6 +1,6 @@
 import { API, Logging, PlatformAccessory } from 'homebridge';
 
-import { AccessoryFactory } from '../primitives/accessoryFactory';
+import { PlatformAccessoryFactory } from '../primitives/platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
 import { BatteryService, BatteryServiceImpl } from './batteryService';
@@ -32,7 +32,7 @@ interface ModelInformation {
 }
 
 export class AccessoryServiceImpl implements AccessoryService {
-    public constructor(private factory: AccessoryFactory, private api: API, private log: Logging) { }
+    public constructor(private factory: PlatformAccessoryFactory, private api: API, private log: Logging) { }
 
     public createAccessory(mower: Mower): AutomowerAccessory {
         const displayName = mower.attributes.system.name;

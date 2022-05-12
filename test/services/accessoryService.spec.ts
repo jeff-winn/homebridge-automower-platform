@@ -4,14 +4,14 @@ import { Mock } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/model';
-import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
+import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
 import { AccessoryServiceImplSpy } from './accessoryServiceImplSpy';
 
 describe('AccessoryService', () => {
     let service: typeof Service;
     let characteristic: typeof Characteristic;
 
-    let factory: Mock<AccessoryFactory>;
+    let factory: Mock<PlatformAccessoryFactory>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<Logging>;
@@ -19,7 +19,7 @@ describe('AccessoryService', () => {
     let target: AccessoryServiceImplSpy;
 
     beforeEach(() => {
-        factory = new Mock<AccessoryFactory>();
+        factory = new Mock<PlatformAccessoryFactory>();
         api = new Mock<API>();
         hap = new Mock<HAP>();
         log = new Mock<Logging>();

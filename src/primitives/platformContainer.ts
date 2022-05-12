@@ -11,7 +11,7 @@ import { EventStreamServiceImpl } from '../services/automower/eventStreamService
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../constants';
 
-import { AccessoryFactoryImpl } from './accessoryFactory';
+import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
 import { AccessoryServiceImpl } from '../services/accessoryService';
 
@@ -43,13 +43,13 @@ export class PlatformContainer {
                 this.log)
         });
 
-        container.register(AccessoryFactoryImpl, {
-            useFactory: () => new AccessoryFactoryImpl(this.api)
+        container.register(PlatformAccessoryFactoryImpl, {
+            useFactory: () => new PlatformAccessoryFactoryImpl(this.api)
         });
 
         container.register(AccessoryServiceImpl, {
             useFactory: (context) => new AccessoryServiceImpl(
-                context.resolve(AccessoryFactoryImpl),
+                context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
                 this.log)
         });

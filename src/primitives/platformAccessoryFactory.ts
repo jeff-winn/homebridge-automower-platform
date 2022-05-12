@@ -4,7 +4,7 @@ import { AutomowerContext } from '../automowerAccessory';
 /**
  * A mechanism capable of creating platform accessories.
  */
-export interface AccessoryFactory {
+export interface PlatformAccessoryFactory {
     /**
      * Generates a UUID based on the data provided.
      * @param data The data to use while generating the id.
@@ -19,7 +19,7 @@ export interface AccessoryFactory {
     create(displayName: string, uuid: string): PlatformAccessory<AutomowerContext>;
 }
 
-export class AccessoryFactoryImpl implements AccessoryFactory {
+export class PlatformAccessoryFactoryImpl implements PlatformAccessoryFactory {
     public constructor(private api: API) { }
 
     public generateUuid(data: string): string {
