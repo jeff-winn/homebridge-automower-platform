@@ -4,33 +4,32 @@ import { EventStreamService } from '../src/services/automower/eventStreamService
 import { DiscoveryService } from '../src/services/discoveryService';
 
 export class AutomowerPlatformSpy extends AutomowerPlatform {
-    discoveryService?: DiscoveryService;
-    eventStreamService?: EventStreamService;
-    tokenManager?: AccessTokenManager;
+    public discoveryService?: DiscoveryService;
+    public eventStreamService?: EventStreamService;
+    public tokenManager?: AccessTokenManager;
+    public containerConfigured = false;
 
-    containerConfigured = false;
-
-    unsafeOnFinishedLaunching(): Promise<void> {
+    public unsafeOnFinishedLaunching(): Promise<void> {
         return this.onFinishedLaunching();
     }
 
-    unsafeOnShutdown(): Promise<void> {
+    public unsafeOnShutdown(): Promise<void> {
         return this.onShutdown();
     }
     
-    protected configureContainer(): void {
+    protected override ensureContainerIsInitialized(): void {
         this.containerConfigured = true;
     }
 
-    protected getDiscoveryService(): DiscoveryService {
+    protected override getDiscoveryService(): DiscoveryService {
         return this.discoveryService!;
     }
 
-    protected getEventService(): EventStreamService {
+    protected override getEventService(): EventStreamService {
         return this.eventStreamService!;
     }
 
-    protected getTokenManager(): AccessTokenManager {
+    protected override getTokenManager(): AccessTokenManager {
         return this.tokenManager!;
     }
 }

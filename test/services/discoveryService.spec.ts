@@ -130,13 +130,13 @@ describe('DiscoveryServiceImpl', () => {
         platform.setup(o => o.getMower(mower2Id)).returns(mower2Accessory.object());
         platform.setup(o => o.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
 
-        mower1Accessory.setup(o => o.update(mower1)).returns(undefined);
-        mower2Accessory.setup(o => o.update(mower2)).returns(undefined);
+        mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
+        mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
 
         await target.discoverMowers(platform.object());
 
-        mower1Accessory.verify(o => o.update(mower1), Times.Once());
-        mower2Accessory.verify(o => o.update(mower2), Times.Once());
+        mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
+        mower2Accessory.verify(o => o.refresh(mower2), Times.Once());
         platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(o => 
             o.length === 1 && o[0] === mower1Accessory.object()))
         , Times.Once());
@@ -237,13 +237,13 @@ describe('DiscoveryServiceImpl', () => {
         platform.setup(x => x.getMower(mower1Id)).returns(undefined);
         platform.setup(x => x.getMower(mower2Id)).returns(undefined);
         platform.setup(x => x.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
-        mower1Accessory.setup(o => o.update(mower1)).returns(undefined);
-        mower2Accessory.setup(o => o.update(mower2)).returns(undefined);
+        mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
+        mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
 
         await target.discoverMowers(platform.object());
 
-        mower1Accessory.verify(o => o.update(mower1), Times.Once());
-        mower2Accessory.verify(o => o.update(mower2), Times.Once());
+        mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
+        mower2Accessory.verify(o => o.refresh(mower2), Times.Once());
         platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(x => 
             x.length === 2 && x[0] === mower1Accessory.object() && x[1] === mower2Accessory.object()))
         , Times.Once());

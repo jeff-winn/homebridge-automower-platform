@@ -1,9 +1,9 @@
 import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
-import { It, Mock, Times } from 'moq.ts';
-import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, Mower, State } from '../../src/model';
+import { Mock } from 'moq.ts';
 
+import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
+import { Activity, Mode, State } from '../../src/model';
 import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
 import { AccessoryServiceImplSpy } from './accessoryServiceImplSpy';
 
@@ -97,7 +97,5 @@ describe('AccessoryService', () => {
         expect(ra.context.manufacturer).toBe('HUSQVARNA');
         expect(ra.context.model).toBe('AUTOMOWER 430XH');
         expect(ra.context.serialNumber).toBe(serialNumber.toString());
-
-        newAccessory.verify(o => o.init(), Times.Once());
     });
 });

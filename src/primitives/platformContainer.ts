@@ -16,9 +16,9 @@ import { TimerImpl } from './timer';
 import { AccessoryServiceImpl } from '../services/accessoryService';
 
 export class PlatformContainer {
-    constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
+    public constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
 
-    registerEverything(): void {
+    public registerEverything(): void {
         this.log.debug('Registering classes to the DI container...');
 
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
@@ -78,7 +78,7 @@ export class PlatformContainer {
         this.log.debug('Completed DI container registrations.');
     }
 
-    resolve<T>(token: InjectionToken<T>): T {
+    public resolve<T>(token: InjectionToken<T>): T {
         return container.resolve(token);
     }
 }

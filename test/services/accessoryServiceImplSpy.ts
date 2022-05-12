@@ -2,9 +2,9 @@ import { AutomowerAccessory } from '../../src/automowerAccessory';
 import { AccessoryServiceImpl } from '../../src/services/accessoryService';
 
 export class AccessoryServiceImplSpy extends AccessoryServiceImpl {
-    newAccessory?: AutomowerAccessory;
+    public newAccessory?: AutomowerAccessory;
 
-    protected createAutomowerAccessory(): AutomowerAccessory {
+    public override createAutomowerAccessory(): AutomowerAccessory {
         return this.newAccessory!;    
     }
 }
