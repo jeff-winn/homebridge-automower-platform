@@ -4,7 +4,7 @@ import { AutomowerContext } from '../automowerAccessory';
 /**
  * An abstract class which represents a base accessory service.
  */
-export abstract class BaseAccessoryService {
+export abstract class AccessoryService {
     protected readonly Characteristic: typeof Characteristic;
     protected readonly Service: typeof Service;
 

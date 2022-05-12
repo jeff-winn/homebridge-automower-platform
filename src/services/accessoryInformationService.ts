@@ -1,5 +1,5 @@
 import { Service } from 'homebridge';
-import { BaseAccessoryService } from './baseAccessoryService';
+import { AccessoryService } from './accessoryService';
 
 /**
  * A service which manages battery state.
@@ -11,7 +11,7 @@ export interface AccessoryInformationService {
     init(): void;
 }
 
-export class AccessoryInformationServiceImpl extends BaseAccessoryService implements AccessoryInformationService {
+export class AccessoryInformationServiceImpl extends AccessoryService implements AccessoryInformationService {
     private informationService?: Service;
 
     public init(): void {
