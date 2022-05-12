@@ -2,7 +2,7 @@ import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { GetMowersService } from '../../src/services/automower/getMowersService';
-import { AccessoryService } from '../../src/services/accessoryService';
+import { AccessoryFactory } from '../../src/services/accessoryFactory';
 import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
 import { AutomowerPlatform } from '../../src/automowerPlatform';
 import { AutomowerAccessory } from '../../src/automowerAccessory';
@@ -10,16 +10,16 @@ import { Activity, Mode, Mower, State } from '../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
-    let accessoryService: Mock<AccessoryService>;
+    let factory: Mock<AccessoryFactory>;
     let log: Mock<Logging>;    
     let target: DiscoveryServiceImpl;
 
     beforeEach(() => {
         getMowersService = new Mock<GetMowersService>();
-        accessoryService = new Mock<AccessoryService>();
+        factory = new Mock<AccessoryFactory>();
         log = new Mock<Logging>();
 
-        target = new DiscoveryServiceImpl(getMowersService.object(), accessoryService.object(), log.object());
+        target = new DiscoveryServiceImpl(getMowersService.object(), factory.object(), log.object());
     });
     
     it('should do nothing when no mowers are found', async () => {
@@ -124,7 +124,7 @@ describe('DiscoveryServiceImpl', () => {
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         getMowersService.setup(o => o.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
-        accessoryService.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
+        factory.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
 
         platform.setup(o => o.getMower(mower1Id)).returns(undefined);
         platform.setup(o => o.getMower(mower2Id)).returns(mower2Accessory.object());
@@ -231,8 +231,8 @@ describe('DiscoveryServiceImpl', () => {
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
-        accessoryService.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
-        accessoryService.setup(o => o.createAccessory(mower2)).returns(mower2Accessory.object());
+        factory.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
+        factory.setup(o => o.createAccessory(mower2)).returns(mower2Accessory.object());
 
         platform.setup(x => x.getMower(mower1Id)).returns(undefined);
         platform.setup(x => x.getMower(mower2Id)).returns(undefined);

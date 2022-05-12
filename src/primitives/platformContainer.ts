@@ -10,10 +10,9 @@ import { DiscoveryServiceImpl } from '../services/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../constants';
-
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { AccessoryServiceImpl } from '../services/accessoryService';
+import { AccessoryFactoryImpl } from '../services/accessoryFactory';
 
 export class PlatformContainer {
     public constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
@@ -47,8 +46,8 @@ export class PlatformContainer {
             useFactory: () => new PlatformAccessoryFactoryImpl(this.api)
         });
 
-        container.register(AccessoryServiceImpl, {
-            useFactory: (context) => new AccessoryServiceImpl(
+        container.register(AccessoryFactoryImpl, {
+            useFactory: (context) => new AccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
                 this.log)
@@ -57,7 +56,7 @@ export class PlatformContainer {
         container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
                 context.resolve(GetMowersServiceImpl), 
-                context.resolve(AccessoryServiceImpl),               
+                context.resolve(AccessoryFactoryImpl),               
                 this.log)
         });
 

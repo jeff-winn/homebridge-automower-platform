@@ -3,7 +3,7 @@ import { Logging } from 'homebridge';
 import { AutomowerAccessory } from '../automowerAccessory';
 import { AutomowerPlatform } from '../automowerPlatform';
 import { GetMowersService } from './automower/getMowersService';
-import { AccessoryService } from './accessoryService';
+import { AccessoryFactory } from './accessoryFactory';
 
 /**
  * A mechanism to discover any automowers associated with an account.
@@ -20,7 +20,7 @@ export interface DiscoveryService {
  * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
  */
 export class DiscoveryServiceImpl implements DiscoveryService {
-    public constructor(private mowerService: GetMowersService, private accessoryService: AccessoryService, private log: Logging) { }
+    public constructor(private mowerService: GetMowersService, private factory: AccessoryFactory, private log: Logging) { }
 
     public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');
@@ -32,7 +32,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
             let accessory = platform.getMower(mower.id);
             if (accessory === undefined) {
                 // The mower was not already present, create a new accessory instance.
-                accessory = this.accessoryService.createAccessory(mower);
+                accessory = this.factory.createAccessory(mower);
                 found.push(accessory);
             }
 

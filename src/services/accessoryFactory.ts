@@ -3,13 +3,13 @@ import { API, Logging, PlatformAccessory } from 'homebridge';
 import { PlatformAccessoryFactory } from '../primitives/platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
-import { BatteryService, BatteryServiceImpl } from './batteryService';
 import { AccessoryInformationService, AccessoryInformationServiceImpl } from './accessoryInformationService';
+import { BatteryService, BatteryServiceImpl } from './batteryService';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
  */
-export interface AccessoryService {
+export interface AccessoryFactory {
     /**
      * Creates an accessory instance.
      * @param data The mower data.
@@ -31,7 +31,7 @@ interface ModelInformation {
     model: string;
 }
 
-export class AccessoryServiceImpl implements AccessoryService {
+export class AccessoryFactoryImpl implements AccessoryFactory {
     public constructor(private factory: PlatformAccessoryFactory, private api: API, private log: Logging) { }
 
     public createAccessory(mower: Mower): AutomowerAccessory {

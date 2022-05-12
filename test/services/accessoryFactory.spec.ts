@@ -5,9 +5,9 @@ import { Mock } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/model';
 import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
-import { AccessoryServiceImplSpy } from './accessoryServiceImplSpy';
+import { AccessoryFactoryImplSpy } from './accessoryFactoryImplSpy';
 
-describe('AccessoryService', () => {
+describe('AccessoryFactoryImpl', () => {
     let service: typeof Service;
     let characteristic: typeof Characteristic;
 
@@ -16,7 +16,7 @@ describe('AccessoryService', () => {
     let hap: Mock<HAP>;
     let log: Mock<Logging>;
 
-    let target: AccessoryServiceImplSpy;
+    let target: AccessoryFactoryImplSpy;
 
     beforeEach(() => {
         factory = new Mock<PlatformAccessoryFactory>();
@@ -31,7 +31,7 @@ describe('AccessoryService', () => {
         hap.setup(x => x.Characteristic).returns(characteristic);
         hap.setup(x => x.Service).returns(service);
 
-        target = new AccessoryServiceImplSpy(factory.object(), api.object(), log.object());
+        target = new AccessoryFactoryImplSpy(factory.object(), api.object(), log.object());
     });
 
     it('should initialize and return a new accessory', () => {

@@ -10,7 +10,7 @@ import { StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
-import { AccessoryService, AccessoryServiceImpl } from './services/accessoryService';
+import { AccessoryFactory, AccessoryFactoryImpl } from './services/accessoryFactory';
 
 /** 
  * Describes the platform configuration settings.
@@ -150,14 +150,14 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             this.ensureContainerIsInitialized();
             this.log.info(`Configuring '${accessory.displayName}' from the accessory cache.`);
 
-            const automower = this.getAccessoryService().createAutomowerAccessory(accessory);
+            const automower = this.getAccessoryFactory().createAutomowerAccessory(accessory);
             this.mowers.push(automower);
         } catch (e) {
             this.log.error('An unexpected error occurred while configuring the accessory.', e);
         }
     }
 
-    protected getAccessoryService(): AccessoryService {
-        return this.container!.resolve(AccessoryServiceImpl);
+    protected getAccessoryFactory(): AccessoryFactory {
+        return this.container!.resolve(AccessoryFactoryImpl);
     }
 }

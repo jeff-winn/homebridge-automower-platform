@@ -1,7 +1,7 @@
 import { AutomowerAccessory } from '../../src/automowerAccessory';
-import { AccessoryServiceImpl } from '../../src/services/accessoryService';
+import { AccessoryFactoryImpl } from '../../src/services/accessoryFactory';
 
-export class AccessoryServiceImplSpy extends AccessoryServiceImpl {
+export class AccessoryFactoryImplSpy extends AccessoryFactoryImpl {
     public newAccessory?: AutomowerAccessory;
 
     public override createAutomowerAccessory(): AutomowerAccessory {
