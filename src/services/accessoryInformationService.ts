@@ -1,5 +1,5 @@
-import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
-import { AutomowerContext } from '../automowerAccessory';
+import { Service } from 'homebridge';
+import { BaseAccessoryService } from './baseAccessoryService';
 
 /**
  * A service which manages battery state.
@@ -11,16 +11,8 @@ export interface AccessoryInformationService {
     init(): void;
 }
 
-export class AccessoryInformationServiceImpl implements AccessoryInformationService {
-    private readonly Characteristic: typeof Characteristic;
-    private readonly Service: typeof Service;
-
+export class AccessoryInformationServiceImpl extends BaseAccessoryService implements AccessoryInformationService {
     private informationService?: Service;
-
-    public constructor(private accessory: PlatformAccessory<AutomowerContext>, private api: API) {
-        this.Characteristic = this.api.hap.Characteristic;
-        this.Service = this.api.hap.Service;
-    }
 
     public init(): void {
         this.informationService = this.accessory.getService(this.Service.AccessoryInformation);

@@ -1,10 +1,7 @@
-import { 
-    API,
-    Characteristic, PlatformAccessory, Service 
-} from 'homebridge';
-import { AutomowerContext } from '../automowerAccessory';
+import { Characteristic, Service } from 'homebridge';
 
 import { Activity, Battery, MowerState } from '../model';
+import { BaseAccessoryService } from './baseAccessoryService';
 
 /**
  * A service which manages battery state.
@@ -28,19 +25,11 @@ export interface BatteryService {
     setChargingState(state: MowerState): void;
 }
 
-export class BatteryServiceImpl implements BatteryService {
-    private readonly Characteristic: typeof Characteristic;
-    private readonly Service: typeof Service;
-        
+export class BatteryServiceImpl extends BaseAccessoryService implements BatteryService {        
     private batteryService?: Service;
     private lowBattery?: Characteristic;
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
-
-    public constructor(private accessory: PlatformAccessory<AutomowerContext>, private api: API) {
-        this.Characteristic = this.api.hap.Characteristic;
-        this.Service = this.api.hap.Service;
-    }
 
     public getUnderlyingService(): Service | undefined {
         return this.batteryService;
