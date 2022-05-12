@@ -1,9 +1,11 @@
 import { 
-    API, Characteristic, Logging, PlatformAccessory, Service, UnknownContext 
+    PlatformAccessory, UnknownContext 
 } from 'homebridge';
 
 import { StatusEvent } from './events';
-import { Activity, Battery, Mower, MowerState } from './model';
+import { Mower } from './model';
+import { AccessoryInformationService } from './services/accessoryInformationService';
+import { BatteryService } from './services/batteryService';
 
 /**
  * Provides contextual information for an Automower accessory.
@@ -19,19 +21,8 @@ export interface AutomowerContext extends UnknownContext {
  * Represents an automower accessory.
  */
 export class AutomowerAccessory {
-    private readonly Characteristic: typeof Characteristic;
-    private readonly Service: typeof Service;
-
-    private informationService?: Service;
-
-    private batteryService?: Service;
-    private lowBattery?: Characteristic;
-    private batteryLevel?: Characteristic;
-    private chargingState?: Characteristic;
-
-    constructor(private accessory: PlatformAccessory<AutomowerContext>, private api: API, private log: Logging) {        
-        this.Characteristic = this.api.hap.Characteristic;
-        this.Service = this.api.hap.Service;
+    public constructor(private accessory: PlatformAccessory<AutomowerContext>, 
+        private batteryService: BatteryService, private informationService: AccessoryInformationService) { 
     }
 
     /**
@@ -46,76 +37,33 @@ export class AutomowerAccessory {
      * Initializes the accessory information.
      */
     public init(): void {
-        this.initAccessoryInformation();
-        this.initBatteryService();
+        this.informationService.init();
+        this.batteryService.init();
     }
 
     /**
      * Refreshes the mower values.
      * @param data The mower data.
      */
-    public update(data: Mower): void {
-        this.setBatteryLevel(data.attributes.battery);
-        this.setChargingState(data.attributes.mower);
+    public refresh(data: Mower): void {
+        this.batteryService.setBatteryLevel(data.attributes.battery);
+        this.batteryService.setChargingState(data.attributes.mower);
     }
     
-    protected initAccessoryInformation(): void {
-        this.informationService = this.accessory.getService(this.Service.AccessoryInformation)!
-            .setCharacteristic(this.Characteristic.Manufacturer, this.accessory.context.manufacturer)
-            .setCharacteristic(this.Characteristic.Model, this.accessory.context.model)
-            .setCharacteristic(this.Characteristic.Name, this.accessory.displayName)
-            .setCharacteristic(this.Characteristic.SerialNumber, this.accessory.context.serialNumber);    
-    }
-    
-    protected getBatteryService(): Service {
-        let result = this.accessory.getService(this.Service.Battery);
-        if (result === undefined) {
-            result = this.accessory.addService(this.Service.Battery);
-        }
-
-        return result;
-    }
-
-    protected initBatteryService(): void {
-        this.batteryService = this.getBatteryService();
-
-        this.lowBattery = this.batteryService.getCharacteristic(this.Characteristic.StatusLowBattery);
-        this.batteryLevel = this.batteryService.getCharacteristic(this.Characteristic.BatteryLevel);
-        this.chargingState = this.batteryService.getCharacteristic(this.Characteristic.ChargingState);
-    }
-
-    protected setChargingState(state: MowerState) {  
-        if (this.chargingState === undefined) {        
-            return;
-        }
-
-        if (state.activity === Activity.CHARGING) {
-            this.chargingState.setValue(this.Characteristic.ChargingState.CHARGING);
-        } else {
-            this.chargingState.setValue(this.Characteristic.ChargingState.NOT_CHARGING);
-        }
-    }
-
-    protected setBatteryLevel(battery: Battery): void {
-        if (this.batteryLevel !== undefined) {
-            this.batteryLevel.setValue(battery.batteryPercent);  
-        }
-        
-        if (this.lowBattery !== undefined) {
-            if (battery.batteryPercent <= 20) {
-                this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
-            } else {
-                this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-            }
-        }
-    }
-
+    /**
+     * Gets the mower id.
+     * @returns The mower id.
+     */
     public getId(): string {
         return this.accessory.context.mowerId;
     }
 
+    /**
+     * Occurs when a {@link StatusEvent} has been received from the event stream.
+     * @param event The event data.
+     */
     public onStatusEventReceived(event: StatusEvent): void {
-        this.setBatteryLevel(event.attributes.battery);
-        this.setChargingState(event.attributes.mower);
+        this.batteryService.setBatteryLevel(event.attributes.battery);
+        this.batteryService.setChargingState(event.attributes.mower);
     }
 }

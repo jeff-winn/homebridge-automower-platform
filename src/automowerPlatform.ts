@@ -6,10 +6,11 @@ import {
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { PlatformContainer } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
+import { StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
-import { StatusEvent } from './events';
+import { AccessoryService, AccessoryServiceImpl } from './services/accessoryService';
 
 /** 
  * Describes the platform configuration settings.
@@ -30,7 +31,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private container?: PlatformContainer;
     private eventService?: EventStreamService;
 
-    constructor(private log: Logging, config: PlatformConfig, private api: API) {
+    public constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
 
         api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunching.bind(this));
@@ -39,7 +40,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async onFinishedLaunching(): Promise<void> {
         try {
-            this.configureContainer();
+            this.ensureContainerIsInitialized();
 
             await this.discoverMowers();
             await this.startReceivingEvents();
@@ -48,7 +49,11 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }
     }
     
-    protected configureContainer(): void {
+    protected ensureContainerIsInitialized(): void {
+        if (this.container !== undefined) {
+            return;
+        }
+
         this.container = new PlatformContainer(this.log, this.config, this.api);
         this.container.registerEverything();
     }
@@ -142,14 +147,17 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      */
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
         try {
+            this.ensureContainerIsInitialized();
             this.log.info(`Configuring ${accessory.displayName}`);
 
-            const automower = new AutomowerAccessory(accessory, this.api, this.log);
-            automower.init();
-
+            const automower = this.getAccessoryService().createAutomowerAccessory(accessory);
             this.mowers.push(automower);
         } catch (e) {
             this.log.error('An unexpected error occurred while configuring the accessory.', e);
         }
+    }
+
+    protected getAccessoryService(): AccessoryService {
+        return this.container!.resolve(AccessoryServiceImpl);
     }
 }

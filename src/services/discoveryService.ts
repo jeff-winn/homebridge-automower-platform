@@ -20,9 +20,9 @@ export interface DiscoveryService {
  * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
  */
 export class DiscoveryServiceImpl implements DiscoveryService {
-    constructor(private mowerService: GetMowersService, private accessoryService: AccessoryService, private log: Logging) { }
+    public constructor(private mowerService: GetMowersService, private accessoryService: AccessoryService, private log: Logging) { }
 
-    async discoverMowers(platform: AutomowerPlatform): Promise<void> {
+    public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');
 
         const found: AutomowerAccessory[] = [];
@@ -36,7 +36,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
                 found.push(accessory);
             }
 
-            accessory.update(mower);
+            accessory.refresh(mower);
         });
 
         if (found.length > 0) {

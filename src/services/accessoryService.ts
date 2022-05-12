@@ -1,7 +1,10 @@
+import { API, Logging, PlatformAccessory } from 'homebridge';
+
 import { AccessoryFactory } from '../primitives/accessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
-import { API, Logging, PlatformAccessory } from 'homebridge';
+import { BatteryService, BatteryServiceImpl } from './batteryService';
+import { AccessoryInformationService, AccessoryInformationServiceImpl } from './accessoryInformationService';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -12,6 +15,12 @@ export interface AccessoryService {
      * @param data The mower data.
      */
     createAccessory(data: Mower): AutomowerAccessory;
+
+    /**
+     * Creates an accessory instance.
+     * @param accessory The platform accessory.
+     */
+    createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory;
 }
 
 /**
@@ -23,9 +32,9 @@ interface ModelInformation {
 }
 
 export class AccessoryServiceImpl implements AccessoryService {
-    constructor(private factory: AccessoryFactory, private api: API, private log: Logging) { }
+    public constructor(private factory: AccessoryFactory, private api: API, private log: Logging) { }
 
-    createAccessory(mower: Mower): AutomowerAccessory {
+    public createAccessory(mower: Mower): AutomowerAccessory {
         const displayName = mower.attributes.system.name;
         const modelInformation = this.parseModelInformation(mower.attributes.system.model);
 
@@ -38,14 +47,25 @@ export class AccessoryServiceImpl implements AccessoryService {
             serialNumber: mower.attributes.system.serialNumber.toString()
         };
 
-        const result = this.createAutomowerAccessory(accessory);        
+        return this.createAutomowerAccessory(accessory);
+    }
+
+    public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+        const result = new AutomowerAccessory(accessory, 
+            this.createBatteryService(accessory), 
+            this.createAccessoryInformationService(accessory));
+
         result.init();
-        
+
         return result;
     }
 
-    protected createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
-        return new AutomowerAccessory(accessory, this.api, this.log);
+    protected createBatteryService(accessory: PlatformAccessory<AutomowerContext>): BatteryService {
+        return new BatteryServiceImpl(accessory, this.api);       
+    }
+
+    protected createAccessoryInformationService(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformationService {
+        return new AccessoryInformationServiceImpl(accessory, this.api);
     }
 
     private parseModelInformation(value: string): ModelInformation {
