@@ -63,17 +63,17 @@ interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    constructor(private appKey: string, private baseUrl: string) { }
+    public constructor(private appKey: string, private baseUrl: string) { }
 
-    getApplicationKey(): string {
+    public getApplicationKey(): string {
         return this.appKey;
     }
 
-    getBaseUrl(): string {
+    public getBaseUrl(): string {
         return this.baseUrl;
     }
 
-    async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
+    public async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
         if (id === '') {
             throw new Error('id cannot be empty.');
         }
@@ -97,7 +97,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         return fetch(url, init);
     }
 
-    async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {
+    public async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {
         if (id === '') {
             throw new Error('id cannot be empty.');
         }
@@ -125,7 +125,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         return undefined;
     }    
 
-    async getMowers(token: AccessToken): Promise<Mower[]> {
+    public async getMowers(token: AccessToken): Promise<Mower[]> {
         const res = await this.doFetch(this.baseUrl + '/mowers', {
             method: 'GET',
             headers: {

@@ -43,7 +43,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     private connected = false;
     private connectionId?: string;
 
-    constructor(private baseUrl: string, private log: Logging) { }
+    public constructor(private baseUrl: string, private log: Logging) { }
     
     public open(token: AccessToken): void {
         if (this.socket !== undefined) {
