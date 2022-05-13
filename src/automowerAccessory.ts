@@ -6,6 +6,7 @@ import { StatusEvent } from './events';
 import { Mower } from './model';
 import { AccessoryInformationService } from './services/accessoryInformationService';
 import { BatteryService } from './services/batteryService';
+import { ScheduleService } from './services/scheduleService';
 
 /**
  * Provides contextual information for an Automower accessory.
@@ -21,8 +22,11 @@ export interface AutomowerContext extends UnknownContext {
  * Represents an automower accessory.
  */
 export class AutomowerAccessory {
-    public constructor(private accessory: PlatformAccessory<AutomowerContext>, 
-        private batteryService: BatteryService, private informationService: AccessoryInformationService) { 
+    public constructor(
+        private accessory: PlatformAccessory<AutomowerContext>, 
+        private batteryService: BatteryService, 
+        private informationService: AccessoryInformationService, 
+        private scheduleService: ScheduleService) { 
     }
 
     /**
@@ -39,6 +43,7 @@ export class AutomowerAccessory {
     public init(): void {
         this.informationService.init();
         this.batteryService.init();
+        this.scheduleService.init();
     }
 
     /**

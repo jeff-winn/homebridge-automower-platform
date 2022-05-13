@@ -13,8 +13,15 @@ import * as constants from '../constants';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
 import { AccessoryFactoryImpl } from '../services/accessoryFactory';
+import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 
-export class PlatformContainer {
+export interface PlatformContainer {
+    registerEverything(): void;
+    
+    resolve<T>(token: InjectionToken<T>): T;
+}
+
+export class PlatformContainerImpl implements PlatformContainer {
     public constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
 
     public registerEverything(): void {
@@ -42,6 +49,12 @@ export class PlatformContainer {
                 this.log)
         });
 
+        container.register(MowerControlServiceImpl, {
+            useFactory: (context) => new MowerControlServiceImpl(
+                context.resolve(AccessTokenManagerImpl),
+                context.resolve(AutomowerClientImpl)) 
+        });
+
         container.register(PlatformAccessoryFactoryImpl, {
             useFactory: () => new PlatformAccessoryFactoryImpl(this.api)
         });
@@ -50,7 +63,7 @@ export class PlatformContainer {
             useFactory: (context) => new AccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
-                this.log)
+                this)
         });
 
         container.register(DiscoveryServiceImpl, {

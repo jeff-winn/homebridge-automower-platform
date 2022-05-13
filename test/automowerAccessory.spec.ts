@@ -6,11 +6,13 @@ import { AutomowerEventTypes, StatusEvent } from '../src/events';
 import { Activity, Battery, Mode, Mower, MowerState, State } from '../src/model';
 import { BatteryService } from '../src/services/batteryService';
 import { AccessoryInformationService } from '../src/services/accessoryInformationService';
+import { ScheduleService } from '../src/services/scheduleService';
 
 describe('AutomowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let batteryService: Mock<BatteryService>;
     let informationService: Mock<AccessoryInformationService>;
+    let scheduleService: Mock<ScheduleService>;
 
     let target: AutomowerAccessory;
 
@@ -18,8 +20,10 @@ describe('AutomowerAccessory', () => {
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
         batteryService = new Mock<BatteryService>();
         informationService = new Mock<AccessoryInformationService>();    
+        scheduleService = new Mock<ScheduleService>();
     
-        target = new AutomowerAccessory(accessory.object(), batteryService.object(), informationService.object());
+        target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
+            informationService.object(), scheduleService.object());
     });
 
     it('should return the underlying platform accessory', () => {
@@ -31,11 +35,13 @@ describe('AutomowerAccessory', () => {
     it('should initialize all services', () => {
         batteryService.setup(o => o.init()).returns(undefined);
         informationService.setup(o => o.init()).returns(undefined);
+        scheduleService.setup(o => o.init()).returns(undefined);
 
         target.init();
         
         batteryService.verify(o => o.init(), Times.Once());
         informationService.verify(o => o.init(), Times.Once());
+        scheduleService.verify(o => o.init(), Times.Once());
     });
 
     it('should refresh the services', () => {

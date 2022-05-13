@@ -4,7 +4,7 @@ import {
 } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { PlatformContainer } from './primitives/platformContainer';
+import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
 import { StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
@@ -54,7 +54,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             return;
         }
 
-        this.container = new PlatformContainer(this.log, this.config, this.api);
+        this.container = new PlatformContainerImpl(this.log, this.config, this.api);
         this.container.registerEverything();
     }
 

@@ -5,6 +5,9 @@ import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
 import { AccessoryInformationService, AccessoryInformationServiceImpl } from './accessoryInformationService';
 import { BatteryService, BatteryServiceImpl } from './batteryService';
+import { ScheduleService, ScheduleServiceImpl } from './scheduleService';
+import { PlatformContainer } from '../primitives/platformContainer';
+import { MowerControlServiceImpl } from './automower/mowerControlService';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -32,7 +35,10 @@ interface ModelInformation {
 }
 
 export class AccessoryFactoryImpl implements AccessoryFactory {
-    public constructor(private factory: PlatformAccessoryFactory, private api: API, private log: Logging) { }
+    public constructor(
+        private factory: PlatformAccessoryFactory, 
+        private api: API, 
+        private container: PlatformContainer) { }
 
     public createAccessory(mower: Mower): AutomowerAccessory {
         const displayName = mower.attributes.system.name;
@@ -53,7 +59,8 @@ export class AccessoryFactoryImpl implements AccessoryFactory {
     public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
         const result = new AutomowerAccessory(accessory, 
             this.createBatteryService(accessory), 
-            this.createAccessoryInformationService(accessory));
+            this.createAccessoryInformationService(accessory),
+            this.createScheduleService(accessory));
 
         result.init();
 
@@ -68,6 +75,9 @@ export class AccessoryFactoryImpl implements AccessoryFactory {
         return new AccessoryInformationServiceImpl(accessory, this.api);
     }
 
+    protected createScheduleService(accessory: PlatformAccessory<AutomowerContext>): ScheduleService {
+        return new ScheduleServiceImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api);
+    }
     private parseModelInformation(value: string): ModelInformation {
         const firstIndex = value.indexOf(' ');
 

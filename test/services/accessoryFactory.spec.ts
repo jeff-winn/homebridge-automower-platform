@@ -1,4 +1,4 @@
-import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
+import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
 import { Mock } from 'moq.ts';
 
@@ -6,6 +6,7 @@ import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccesso
 import { Activity, Mode, State } from '../../src/model';
 import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
 import { AccessoryFactoryImplSpy } from './accessoryFactoryImplSpy';
+import { PlatformContainer } from '../../src/primitives/platformContainer';
 
 describe('AccessoryFactoryImpl', () => {
     let service: typeof Service;
@@ -14,7 +15,7 @@ describe('AccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
-    let log: Mock<Logging>;
+    let container: Mock<PlatformContainer>;
 
     let target: AccessoryFactoryImplSpy;
 
@@ -22,7 +23,7 @@ describe('AccessoryFactoryImpl', () => {
         factory = new Mock<PlatformAccessoryFactory>();
         api = new Mock<API>();
         hap = new Mock<HAP>();
-        log = new Mock<Logging>();
+        container = new Mock<PlatformContainer>();
 
         service = Service;
         characteristic = Characteristic;
@@ -31,7 +32,7 @@ describe('AccessoryFactoryImpl', () => {
         hap.setup(x => x.Characteristic).returns(characteristic);
         hap.setup(x => x.Service).returns(service);
 
-        target = new AccessoryFactoryImplSpy(factory.object(), api.object(), log.object());
+        target = new AccessoryFactoryImplSpy(factory.object(), api.object(), container.object());
     });
 
     it('should initialize and return a new accessory', () => {
