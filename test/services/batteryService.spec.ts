@@ -5,6 +5,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { BatteryServiceImpl } from '../../src/services/batteryService';
 import { Activity, Mode, State } from '../../src/model';
+import { InvalidStateError } from '../../src/errors/invalidStateError';
 
 describe('BatteryServiceImpl', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
@@ -24,6 +25,42 @@ describe('BatteryServiceImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         
         target = new BatteryServiceImpl(accessory.object(), api.object());
+    });
+
+    it('should throw an error when not initialized on set battery level', () => {
+        let thrown = false;
+
+        try {
+            target.setBatteryLevel({
+                batteryPercent: 99
+            });
+        } catch (e) {
+            if (e instanceof InvalidStateError) {
+                thrown = true;
+            }
+        }
+    
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when not initialized on set battery level', () => {
+        let thrown = false;
+
+        try {
+            target.setChargingState({
+                activity: Activity.MOWING,
+                errorCode: 0,
+                errorCodeTimestamp: 0,
+                mode: Mode.MAIN_AREA,
+                state: State.NOT_APPLICABLE
+            });
+        } catch (e) {
+            if (e instanceof InvalidStateError) {
+                thrown = true;
+            }
+        }
+    
+        expect(thrown).toBeTruthy();
     });
 
     it('should use the existing battery service', () => {

@@ -1,4 +1,5 @@
 import { Characteristic, Service } from 'homebridge';
+import { InvalidStateError } from '../errors/invalidStateError';
 
 import { Activity, Battery, MowerState } from '../model';
 import { AccessoryService } from './accessoryService';
@@ -48,7 +49,7 @@ export class BatteryServiceImpl extends AccessoryService implements BatteryServi
     
     public setChargingState(state: MowerState) {  
         if (this.chargingState === undefined) {        
-            return;
+            throw new InvalidStateError('The service has not been initialized.');
         }
 
         if (state.activity === Activity.CHARGING) {
@@ -59,16 +60,16 @@ export class BatteryServiceImpl extends AccessoryService implements BatteryServi
     }
 
     public setBatteryLevel(battery: Battery): void {
-        if (this.batteryLevel !== undefined) {
-            this.batteryLevel.setValue(battery.batteryPercent);  
+        if (this.batteryLevel === undefined || this.lowBattery === undefined) {
+            throw new InvalidStateError('The service has not been initialized.');
         }
-        
-        if (this.lowBattery !== undefined) {
-            if (battery.batteryPercent <= 20) {
-                this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
-            } else {
-                this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-            }
+
+        this.batteryLevel.setValue(battery.batteryPercent);          
+
+        if (battery.batteryPercent <= 20) {
+            this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
+        } else {
+            this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
         }
     }
 }
