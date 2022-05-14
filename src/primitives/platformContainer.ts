@@ -12,7 +12,7 @@ import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../constants';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { AccessoryFactoryImpl } from '../services/accessoryFactory';
+import { AutomowerAccessoryFactoryImpl } from '../services/automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 
 export interface PlatformContainer {
@@ -59,8 +59,8 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: () => new PlatformAccessoryFactoryImpl(this.api)
         });
 
-        container.register(AccessoryFactoryImpl, {
-            useFactory: (context) => new AccessoryFactoryImpl(
+        container.register(AutomowerAccessoryFactoryImpl, {
+            useFactory: (context) => new AutomowerAccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
                 this)
@@ -69,7 +69,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
                 context.resolve(GetMowersServiceImpl), 
-                context.resolve(AccessoryFactoryImpl),               
+                context.resolve(AutomowerAccessoryFactoryImpl),               
                 this.log)
         });
 

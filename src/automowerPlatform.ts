@@ -10,7 +10,7 @@ import { StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
-import { AccessoryFactory, AccessoryFactoryImpl } from './services/accessoryFactory';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './services/automowerAccessoryFactory';
 
 /** 
  * Describes the platform configuration settings.
@@ -157,7 +157,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }
     }
 
-    protected getAccessoryFactory(): AccessoryFactory {
-        return this.container!.resolve(AccessoryFactoryImpl);
+    protected getAccessoryFactory(): AutomowerAccessoryFactory {
+        return this.container!.resolve(AutomowerAccessoryFactoryImpl);
     }
 }

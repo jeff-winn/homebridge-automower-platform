@@ -5,10 +5,10 @@ import { Mock } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/model';
 import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
-import { AccessoryFactoryImplSpy } from './accessoryFactoryImplSpy';
+import { AutomowerAccessoryFactoryImplSpy } from './automowerAccessoryFactoryImplSpy';
 import { PlatformContainer } from '../../src/primitives/platformContainer';
 
-describe('AccessoryFactoryImpl', () => {
+describe('AutomowerAccessoryFactoryImpl', () => {
     let service: typeof Service;
     let characteristic: typeof Characteristic;
 
@@ -17,7 +17,7 @@ describe('AccessoryFactoryImpl', () => {
     let hap: Mock<HAP>;
     let container: Mock<PlatformContainer>;
 
-    let target: AccessoryFactoryImplSpy;
+    let target: AutomowerAccessoryFactoryImplSpy;
 
     beforeEach(() => {
         factory = new Mock<PlatformAccessoryFactory>();
@@ -32,7 +32,7 @@ describe('AccessoryFactoryImpl', () => {
         hap.setup(x => x.Characteristic).returns(characteristic);
         hap.setup(x => x.Service).returns(service);
 
-        target = new AccessoryFactoryImplSpy(factory.object(), api.object(), container.object());
+        target = new AutomowerAccessoryFactoryImplSpy(factory.object(), api.object(), container.object());
     });
 
     it('should initialize and return a new accessory', () => {

@@ -12,7 +12,7 @@ import { MowerControlServiceImpl } from './automower/mowerControlService';
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
  */
-export interface AccessoryFactory {
+export interface AutomowerAccessoryFactory {
     /**
      * Creates an accessory instance.
      * @param data The mower data.
@@ -34,7 +34,7 @@ interface ModelInformation {
     model: string;
 }
 
-export class AccessoryFactoryImpl implements AccessoryFactory {
+export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory {
     public constructor(
         private factory: PlatformAccessoryFactory, 
         private api: API, 

@@ -2,7 +2,7 @@ import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { GetMowersService } from '../../src/services/automower/getMowersService';
-import { AccessoryFactory } from '../../src/services/accessoryFactory';
+import { AutomowerAccessoryFactory } from '../../src/services/automowerAccessoryFactory';
 import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
 import { AutomowerPlatform } from '../../src/automowerPlatform';
 import { AutomowerAccessory } from '../../src/automowerAccessory';
@@ -10,13 +10,13 @@ import { Activity, Mode, Mower, State } from '../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
-    let factory: Mock<AccessoryFactory>;
+    let factory: Mock<AutomowerAccessoryFactory>;
     let log: Mock<Logging>;    
     let target: DiscoveryServiceImpl;
 
     beforeEach(() => {
         getMowersService = new Mock<GetMowersService>();
-        factory = new Mock<AccessoryFactory>();
+        factory = new Mock<AutomowerAccessoryFactory>();
         log = new Mock<Logging>();
 
         target = new DiscoveryServiceImpl(getMowersService.object(), factory.object(), log.object());
