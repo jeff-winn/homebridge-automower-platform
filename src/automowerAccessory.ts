@@ -43,7 +43,9 @@ export class AutomowerAccessory {
     public init(): void {
         this.informationService.init();
         this.batteryService.init();
-        this.scheduleService.init();
+
+        // The display name should be prepended, unless there are multiple switches available.
+        this.scheduleService.init(true);
     }
 
     /**

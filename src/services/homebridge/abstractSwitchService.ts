@@ -20,10 +20,15 @@ export abstract class AbstractSwitchService extends AbstractAccessoryService {
         return this.switchService;
     }
 
-    public init(): void {
+    public init(prepend: boolean): void {
         this.switchService = this.accessory.getServiceById(this.Service.Switch, this.name);
         if (this.switchService === undefined) {
-            this.switchService = new this.Service.Switch(`${this.accessory.displayName} ${this.name}`, this.name);
+            let displayName = this.name;
+            if (prepend) {
+                displayName = `${this.accessory.displayName} ${this.name}`;
+            }
+
+            this.switchService = new this.Service.Switch(displayName, this.name);
             this.accessory.addService(this.switchService);
         }
 

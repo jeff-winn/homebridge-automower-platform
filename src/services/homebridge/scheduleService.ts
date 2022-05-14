@@ -10,8 +10,9 @@ import { AbstractSwitchService } from './abstractSwitchService';
 export interface ScheduleService {
     /**
      * Initializes the service.
+     * @param prepend true to prepend the display name, otherwise false.
      */
-    init(): void;
+    init(prepend: boolean): void;
 }
 
 export class ScheduleServiceImpl extends AbstractSwitchService implements ScheduleService {    
