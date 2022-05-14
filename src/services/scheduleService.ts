@@ -1,8 +1,8 @@
-import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
+import { API, CharacteristicSetCallback, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 
-import { AccessoryService } from './accessoryService';
 import { MowerControlService } from './automower/mowerControlService';
+import { SwitchService } from './switchService';
 
 /**
  * A service which manages the schedule enablement of an automower.
@@ -14,30 +14,14 @@ export interface ScheduleService {
     init(): void;
 }
 
-export class ScheduleServiceImpl extends AccessoryService implements ScheduleService {
-    /**
-     * Defines the name of the switch.
-     */
-    private readonly name: string = 'Schedule';
-
-    private switchService?: Service;
-    private on?: Characteristic;
-
+export class ScheduleServiceImpl extends SwitchService implements ScheduleService {    
     public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, api: API) {
-        super(accessory, api);
-    }    
-
-    public getUnderlyingService(): Service | undefined {
-        return this.switchService;
+        super('Schedule', accessory, api);
     }
 
-    public init(): void {
-        this.switchService = this.accessory.getServiceById(this.Service.Switch, this.name);
-        if (this.switchService === undefined) {
-            this.switchService = new this.Service.Switch(`${this.accessory.displayName} ${this.name}`, this.name);
-            this.accessory.addService(this.switchService);
-        }
+    protected onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+        callback();
 
-        this.on = this.switchService.getCharacteristic(this.Characteristic.On);
+        return Promise.resolve(undefined);
     }
 }
