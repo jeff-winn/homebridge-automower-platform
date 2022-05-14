@@ -1,7 +1,7 @@
 import { Characteristic, Service } from 'homebridge';
-import { AccessoryService } from '../../src/services/accessoryService';
+import { AbstractAccessoryService } from '../../../src/services/homebridge/abstractAccessoryService';
 
-export class AccessoryServiceSpy extends AccessoryService {
+export class AccessoryServiceSpy extends AbstractAccessoryService {
     public getCharacteristicType(): typeof Characteristic {
         return this.Characteristic;
     }

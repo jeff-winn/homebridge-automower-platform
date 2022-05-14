@@ -2,13 +2,13 @@ import { API, Characteristic, CharacteristicEventTypes,
     CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service 
 } from 'homebridge';
 
-import { AutomowerContext } from '../automowerAccessory';
-import { AccessoryService } from './accessoryService';
+import { AutomowerContext } from '../../automowerAccessory';
+import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
  * An abstract class which supports an accessory switch.
  */
-export abstract class SwitchService extends AccessoryService {
+export abstract class AbstractSwitchService extends AbstractAccessoryService {
     private switchService?: Service;
     private on?: Characteristic;
 

@@ -1,8 +1,8 @@
 import { Characteristic, Service } from 'homebridge';
-import { InvalidStateError } from '../errors/invalidStateError';
+import { InvalidStateError } from '../../errors/invalidStateError';
 
-import { Activity, Battery, MowerState } from '../model';
-import { AccessoryService } from './accessoryService';
+import { Activity, Battery, MowerState } from '../../model';
+import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
  * A service which manages battery state.
@@ -26,7 +26,7 @@ export interface BatteryService {
     setChargingState(state: MowerState): void;
 }
 
-export class BatteryServiceImpl extends AccessoryService implements BatteryService {        
+export class BatteryServiceImpl extends AbstractAccessoryService implements BatteryService {        
     private batteryService?: Service;
     private lowBattery?: Characteristic;
     private batteryLevel?: Characteristic;

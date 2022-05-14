@@ -4,9 +4,9 @@ import {
 
 import { StatusEvent } from './events';
 import { Mower } from './model';
-import { AccessoryInformationService } from './services/accessoryInformationService';
-import { BatteryService } from './services/batteryService';
-import { ScheduleService } from './services/scheduleService';
+import { AccessoryInformationService } from './services/homebridge/accessoryInformationService';
+import { BatteryService } from './services/homebridge/batteryService';
+import { ScheduleService } from './services/homebridge/scheduleService';
 
 /**
  * Provides contextual information for an Automower accessory.

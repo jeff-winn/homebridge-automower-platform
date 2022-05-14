@@ -1,11 +1,11 @@
-import { API, Logging, PlatformAccessory } from 'homebridge';
+import { API, PlatformAccessory } from 'homebridge';
 
 import { PlatformAccessoryFactory } from '../primitives/platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
-import { AccessoryInformationService, AccessoryInformationServiceImpl } from './accessoryInformationService';
-import { BatteryService, BatteryServiceImpl } from './batteryService';
-import { ScheduleService, ScheduleServiceImpl } from './scheduleService';
+import { AccessoryInformationService, AccessoryInformationServiceImpl } from './homebridge/accessoryInformationService';
+import { BatteryService, BatteryServiceImpl } from './homebridge/batteryService';
+import { ScheduleService, ScheduleServiceImpl } from './homebridge/scheduleService';
 import { PlatformContainer } from '../primitives/platformContainer';
 import { MowerControlServiceImpl } from './automower/mowerControlService';
 
@@ -78,6 +78,7 @@ export class AccessoryFactoryImpl implements AccessoryFactory {
     protected createScheduleService(accessory: PlatformAccessory<AutomowerContext>): ScheduleService {
         return new ScheduleServiceImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api);
     }
+    
     private parseModelInformation(value: string): ModelInformation {
         const firstIndex = value.indexOf(' ');
 
