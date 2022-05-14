@@ -2,6 +2,7 @@ import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
+import { UnexpectedServerError } from '../errors/unexpectedServerError';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -150,14 +151,14 @@ export class AutomowerClientImpl implements AutomowerClient {
             throw new NotAuthorizedError();
         }
 
-        if (!response.ok) {
+        if (response.status === 500) {                        
             const errs = await response.json() as ErrorResponse;
             if (errs?.errors[0] !== undefined) {
                 const err = errs.errors[0];
 
-                throw new Error(`ERR: [${err.code}] ${err.title}`);
+                throw new UnexpectedServerError(`ERR: [${err.code}] ${err.title}`);
             } else {
-                throw new Error(`ERR: ${response.status}`);
+                throw new UnexpectedServerError(`ERR: ${response.status}`);
             }
         }
     }

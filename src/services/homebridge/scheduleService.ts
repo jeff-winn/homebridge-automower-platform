@@ -1,4 +1,4 @@
-import { API, CharacteristicSetCallback, PlatformAccessory } from 'homebridge';
+import { API, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../../automowerAccessory';
 
 import { MowerControlService } from '../automower/mowerControlService';
@@ -15,14 +15,24 @@ export interface ScheduleService {
     init(prepend: boolean): void;
 }
 
-export class ScheduleServiceImpl extends AbstractSwitchService implements ScheduleService {    
+export class ScheduleServiceImpl extends AbstractSwitchService implements ScheduleService {
     public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, api: API) {
         super('Schedule', accessory, api);
     }
 
-    protected onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
-        callback();
+    protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+        let status: HAPStatus | undefined = undefined;
 
-        return Promise.resolve(undefined);
+        try {
+            if (on) {
+                await this.controlService.resumeSchedule(this.accessory.context.mowerId);
+            } else {
+                await this.controlService.parkUntilFurtherNotice(this.accessory.context.mowerId);
+            }
+        } catch (e) {
+            status = HAPStatus.SERVICE_COMMUNICATION_FAILURE;
+        } finally {
+            callback(status);
+        }
     }
 }

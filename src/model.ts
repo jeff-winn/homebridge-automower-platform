@@ -119,9 +119,33 @@ export enum State {
 export interface Planner {
     nextStartTimestamp: number;
     override: {
-        action?: string;
+        action?: OverrideAction;
     };
-    restrictedReason: string;
+    restrictedReason?: RestrictedReason;
+}
+
+/**
+ * Defines the possible reasons a mower may be restricted from operation.
+ */
+export enum RestrictedReason {
+    'NONE',
+    'WEEK_SCHEDULE',
+    'PARK_OVERRIDE',
+    'SENSOR',
+    'DAILY_LIMIT',
+    'FOTA',
+    'FROST',
+    'NOT_APPLICABLE'
+}
+
+/**
+ * Defines the possible reasons mower behavior may be overridden.
+ */
+export enum OverrideAction {
+    'NOT_ACTIVE',
+    'NO_SOURCE',
+    'FORCE_PARK',
+    'FORCE_MOW'
 }
 
 /**
