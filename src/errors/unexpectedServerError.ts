@@ -1,7 +1,7 @@
 /**
  * Thrown when an unexpected error occurs within the Husqvarna servers.
  */
- export class UnexpectedServerError extends Error {
+export class UnexpectedServerError extends Error {
     public constructor(message?: string | undefined) {
         super(message);
 
