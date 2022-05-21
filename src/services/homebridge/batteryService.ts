@@ -53,9 +53,9 @@ export class BatteryServiceImpl extends AbstractAccessoryService implements Batt
         }
 
         if (state.activity === Activity.CHARGING) {
-            this.chargingState.setValue(this.Characteristic.ChargingState.CHARGING);
+            this.chargingState.updateValue(this.Characteristic.ChargingState.CHARGING);
         } else {
-            this.chargingState.setValue(this.Characteristic.ChargingState.NOT_CHARGING);
+            this.chargingState.updateValue(this.Characteristic.ChargingState.NOT_CHARGING);
         }
     }
 
@@ -64,12 +64,12 @@ export class BatteryServiceImpl extends AbstractAccessoryService implements Batt
             throw new InvalidStateError('The service has not been initialized.');
         }
 
-        this.batteryLevel.setValue(battery.batteryPercent);          
+        this.batteryLevel.updateValue(battery.batteryPercent);          
 
         if (battery.batteryPercent <= 20) {
-            this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
+            this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
         } else {
-            this.lowBattery.setValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
+            this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
         }
     }
 }

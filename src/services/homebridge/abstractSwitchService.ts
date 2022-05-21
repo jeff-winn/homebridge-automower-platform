@@ -10,7 +10,7 @@ import { AbstractAccessoryService } from './abstractAccessoryService';
  */
 export abstract class AbstractSwitchService extends AbstractAccessoryService {
     private switchService?: Service;
-    private on?: Characteristic;
+    protected on?: Characteristic;
 
     public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API) {
         super(accessory, api);
