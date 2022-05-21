@@ -79,10 +79,15 @@ export class AutomowerClientImpl implements AutomowerClient {
             throw new Error('id cannot be empty.');
         }
 
-        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+        if (action === undefined) {
+            throw new Error('action cannot be undefined.');
+        }
+
+        const res = await this.doFetch(`${this.baseUrl}/mowers/${id}/actions`, {
             method: 'POST',
             headers: {
                 'X-Api-Key': this.appKey,
+                'Content-Type': 'application/vnd.api+json',
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             },
@@ -103,7 +108,7 @@ export class AutomowerClientImpl implements AutomowerClient {
             throw new Error('id cannot be empty.');
         }
 
-        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+        const res = await this.doFetch(`${this.baseUrl}/mowers/${id}`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -127,7 +132,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     }    
 
     public async getMowers(token: AccessToken): Promise<Mower[]> {
-        const res = await this.doFetch(this.baseUrl + '/mowers', {
+        const res = await this.doFetch(`${this.baseUrl}/mowers`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
