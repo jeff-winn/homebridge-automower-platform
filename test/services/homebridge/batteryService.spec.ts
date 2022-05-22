@@ -104,13 +104,13 @@ describe('BatteryServiceImpl', () => {
         const serviceInstance = new Mock<Service>();
         
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
 
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
 
         const chargingState = new Mock<Characteristic>();
-        chargingState.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+        chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
 
@@ -124,21 +124,21 @@ describe('BatteryServiceImpl', () => {
             batteryPercent: 20
         });
 
-        lowBattery.verify(o => o.setValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW), Times.Once());
-        batteryLevel.verify(o => o.setValue(20), Times.Once());
+        lowBattery.verify(o => o.updateValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW), Times.Once());
+        batteryLevel.verify(o => o.updateValue(20), Times.Once());
     });
 
     it('sets the battery service as normal battery with 100 percent', () => {
         const serviceInstance = new Mock<Service>();
         
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
 
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
 
         const chargingState = new Mock<Characteristic>();
-        chargingState.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+        chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
 
@@ -152,21 +152,21 @@ describe('BatteryServiceImpl', () => {
             batteryPercent: 100
         });
 
-        lowBattery.verify(o => o.setValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL), Times.Once());
-        batteryLevel.verify(o => o.setValue(100), Times.Once());
+        lowBattery.verify(o => o.updateValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL), Times.Once());
+        batteryLevel.verify(o => o.updateValue(100), Times.Once());
     });
 
     it('sets the battery service as charging', () => {
         const serviceInstance = new Mock<Service>();
         
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
 
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
 
         const chargingState = new Mock<Characteristic>();
-        chargingState.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+        chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
 
@@ -184,20 +184,20 @@ describe('BatteryServiceImpl', () => {
             state: State.OFF
         });
 
-        chargingState.verify(o => o.setValue(Characteristic.ChargingState.CHARGING), Times.Once());
+        chargingState.verify(o => o.updateValue(Characteristic.ChargingState.CHARGING), Times.Once());
     });
 
     it('sets the battery service as not charging', () => {
         const serviceInstance = new Mock<Service>();
         
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
 
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
 
         const chargingState = new Mock<Characteristic>();
-        chargingState.setup(o => o.setValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+        chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
 
@@ -215,6 +215,6 @@ describe('BatteryServiceImpl', () => {
             state: State.OFF
         });
 
-        chargingState.verify(o => o.setValue(Characteristic.ChargingState.NOT_CHARGING), Times.Once());
+        chargingState.verify(o => o.updateValue(Characteristic.ChargingState.NOT_CHARGING), Times.Once());
     });
 });

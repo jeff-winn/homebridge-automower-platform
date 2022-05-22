@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
 import { AutomowerEventTypes, StatusEvent } from '../../../src/events';
-import { AccessToken, Activity, Mode, State } from '../../../src/model';
+import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
@@ -186,9 +186,9 @@ describe('EventStreamServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NO_SOURCE
                     },
-                    restrictedReason: 'none'
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 }
             }
         };

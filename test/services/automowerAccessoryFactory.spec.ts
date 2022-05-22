@@ -3,7 +3,7 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { Mock } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, State } from '../../src/model';
+import { Activity, Mode, OverrideAction, RestrictedReason, State } from '../../src/model';
 import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
 import { AutomowerAccessoryFactoryImplSpy } from './automowerAccessoryFactoryImplSpy';
 import { PlatformContainer } from '../../src/primitives/platformContainer';
@@ -77,9 +77,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: ''
+                        action: OverrideAction.NO_SOURCE
                     },
-                    restrictedReason: ''
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 system: {

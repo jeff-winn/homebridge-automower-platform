@@ -3,7 +3,7 @@ import { Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
-import { Activity, Battery, Mode, Mower, MowerState, State } from '../src/model';
+import { Activity, Battery, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
 import { BatteryService } from '../src/services/homebridge/batteryService';
 import { AccessoryInformationService } from '../src/services/homebridge/accessoryInformationService';
 import { ScheduleService } from '../src/services/homebridge/scheduleService';
@@ -35,13 +35,13 @@ describe('AutomowerAccessory', () => {
     it('should initialize all services', () => {
         batteryService.setup(o => o.init()).returns(undefined);
         informationService.setup(o => o.init()).returns(undefined);
-        scheduleService.setup(o => o.init()).returns(undefined);
+        scheduleService.setup(o => o.init(true)).returns(undefined);
 
         target.init();
         
         batteryService.verify(o => o.init(), Times.Once());
         informationService.verify(o => o.init(), Times.Once());
-        scheduleService.verify(o => o.init(), Times.Once());
+        scheduleService.verify(o => o.init(true), Times.Once());
     });
 
     it('should refresh the services', () => {
@@ -57,6 +57,14 @@ describe('AutomowerAccessory', () => {
             state: State.NOT_APPLICABLE
         };
 
+        const planner: Planner = {
+            nextStartTimestamp: 0,
+            override: {
+                action: OverrideAction.NOT_ACTIVE
+            },
+            restrictedReason: RestrictedReason.NOT_APPLICABLE
+        };
+
         const mower: Mower = {
             id: '12345',
             type: 'abcd1234',
@@ -70,13 +78,7 @@ describe('AutomowerAccessory', () => {
                     statusTimestamp: 1
                 },
                 mower: state,
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: 'nope'
-                    },
-                    restrictedReason: ''
-                },
+                planner: planner,
                 positions: [],
                 system: {
                     model: 'model',
@@ -88,11 +90,13 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
+        scheduleService.setup(o => o.setScheduleState(planner)).returns(undefined);
 
         target.refresh(mower);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
+        scheduleService.verify(o => o.setScheduleState(planner), Times.Once());
     });
     
     it('returns the accessory uuid', () => {
@@ -117,6 +121,12 @@ describe('AutomowerAccessory', () => {
             state: State.NOT_APPLICABLE
         };
 
+        const planner: Planner = {
+            nextStartTimestamp: 0,
+            override: { },
+            restrictedReason: RestrictedReason.NONE
+        };
+
         const event: StatusEvent = {
             id: '12345',
             type: AutomowerEventTypes.STATUS,
@@ -127,20 +137,18 @@ describe('AutomowerAccessory', () => {
                     statusTimestamp: 1
                 },
                 mower: state,
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: { },
-                    restrictedReason: ''
-                }
+                planner: planner
             }
         };
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
+        scheduleService.setup(o => o.setScheduleState(planner)).returns(undefined);
 
         target.onStatusEventReceived(event);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
+        scheduleService.verify(o => o.setScheduleState(planner), Times.Once());
     });
 });

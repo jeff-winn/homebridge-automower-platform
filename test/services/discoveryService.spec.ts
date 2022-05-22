@@ -6,7 +6,7 @@ import { AutomowerAccessoryFactory } from '../../src/services/automowerAccessory
 import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
 import { AutomowerPlatform } from '../../src/automowerPlatform';
 import { AutomowerAccessory } from '../../src/automowerAccessory';
-import { Activity, Mode, Mower, State } from '../../src/model';
+import { Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
@@ -64,9 +64,9 @@ describe('DiscoveryServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NO_SOURCE
                     },
-                    restrictedReason: 'none'
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 system: {
@@ -101,9 +101,9 @@ describe('DiscoveryServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NOT_ACTIVE
                     },
-                    restrictedReason: 'none'
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 system: {
@@ -171,9 +171,9 @@ describe('DiscoveryServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NOT_ACTIVE
                     },
-                    restrictedReason: 'none'
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 system: {
@@ -208,9 +208,9 @@ describe('DiscoveryServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NOT_ACTIVE
                     },
-                    restrictedReason: 'none'
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 system: {
