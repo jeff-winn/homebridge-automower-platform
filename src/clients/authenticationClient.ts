@@ -119,8 +119,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         const response = await fetch(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
-                'x-api-key': this.appKey,
-                'authorization-provider': token.provider
+                'X-Api-Key': this.appKey,
+                'Authorization-Provider': token.provider
             }
         });
 
