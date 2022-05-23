@@ -43,7 +43,7 @@ describe('BatteryServiceImpl', () => {
         expect(thrown).toBeTruthy();
     });
 
-    it('should throw an error when not initialized on set battery level', () => {
+    it('should throw an error when not initialized on set charging state', () => {
         let thrown = false;
 
         try {
