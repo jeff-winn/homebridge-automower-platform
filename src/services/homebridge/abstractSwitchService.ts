@@ -28,7 +28,7 @@ export abstract class AbstractSwitchService extends AbstractAccessoryService {
                 displayName = `${this.accessory.displayName} ${this.name}`;
             }
 
-            this.switchService = new this.Service.Switch(displayName, this.name);
+            this.switchService = this.createService(displayName);
             this.accessory.addService(this.switchService);
         }
 
@@ -36,10 +36,14 @@ export abstract class AbstractSwitchService extends AbstractAccessoryService {
             .on(CharacteristicEventTypes.SET, this.onSetCallback.bind(this));
     }
 
-    private onSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
+    protected onSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
         const actualValue = value as boolean;
         return this.onSet(actualValue, callback);
     }
 
     protected abstract onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void>;
+
+    protected createService(displayName: string): Service {
+        return new this.Service.Switch(displayName, this.name);
+    }
 }

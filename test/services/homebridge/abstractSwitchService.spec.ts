@@ -1,6 +1,6 @@
 import { API, PlatformAccessory } from 'homebridge';
-import { Service, Characteristic } from 'hap-nodejs';
-import { Mock } from 'moq.ts';
+import { Service, Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue } from 'hap-nodejs';
+import { It, Mock } from 'moq.ts';
 
 import { AutomowerContext } from '../../../src/automowerAccessory';
 import { SwitchServiceSpy } from './switchServiceSpy';
@@ -13,7 +13,7 @@ describe('AbstractSwitchService', () => {
     let target: SwitchServiceSpy;
 
     beforeEach(() => {
-        name = 'hello';
+        name = 'Switch';
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
         api = new Mock<API>();
 
@@ -27,5 +27,57 @@ describe('AbstractSwitchService', () => {
         const result = target.getUnderlyingService();
 
         expect(result).toBeUndefined();
+    });
+
+    it('should initialize without the name prepended', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+
+        const displayName = 'Hello';
+
+        accessory.setup(o => o.displayName).returns(displayName);
+        accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(undefined);
+        accessory.setup(o => o.addService(It.IsAny<Service>())).callback(({ args: [service]}) => {
+            return service;
+        });
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        target.service = service.object();
+        target.init(false);
+
+        expect(target.serviceName).toBe(name);
+    });
+
+    it('should initialize with the name prepended', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+
+        const displayName = 'Hello';
+
+        accessory.setup(o => o.displayName).returns(displayName);
+        accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(undefined);
+        accessory.setup(o => o.addService(It.IsAny<Service>())).callback(({ args: [service]}) => {
+            return service;
+        });
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        target.service = service.object();
+        target.init(true);
+
+        expect(target.serviceName).toBe(`${displayName} ${name}`);
+    });
+
+    it('should call set when callback is executed', async () => {
+        await target.unsafeOnSetCallback(true, () => { 
+            // Do nothing
+        });
+
+        expect(target.onSetCalled).toBeTruthy();
     });
 });
