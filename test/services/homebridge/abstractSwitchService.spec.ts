@@ -80,4 +80,13 @@ describe('AbstractSwitchService', () => {
 
         expect(target.onSetCalled).toBeTruthy();
     });
+    
+    it('should create the service instance', () => {
+        const displayName = 'hello world';
+
+        const result = target.unsafeCreateService(displayName);
+
+        expect(result).toBeDefined();
+        expect(result.displayName).toBe(displayName);
+    });
 });

@@ -17,6 +17,14 @@ export class SwitchServiceSpy extends AbstractSwitchService {
 
     protected override createService(displayName: string): Service {
         this.serviceName = displayName;
-        return this.service!;
+        if (this.service !== undefined) {
+            return this.service;
+        }
+
+        return super.createService(displayName);
+    }
+
+    public unsafeCreateService(displayName: string): Service {
+        return this.createService(displayName);
     }
 }
