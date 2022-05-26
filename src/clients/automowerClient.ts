@@ -4,6 +4,7 @@ import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { UnexpectedServerError } from '../errors/unexpectedServerError';
 import { Logging } from 'homebridge';
+import { v4 as uuid } from 'uuid';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -101,7 +102,9 @@ export class AutomowerClientImpl implements AutomowerClient {
     }
 
     protected async doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        this.log.debug('Sending web request:\r\n', JSON.stringify({
+        const id = uuid();
+
+        this.log.debug(`Sending web request: ${id}\r\n`, JSON.stringify({
             url: url,
             method: init?.method,
             headers: init?.headers,
@@ -111,7 +114,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         const response = await fetch(url, init);
         const buffer = await response.buffer();
 
-        this.log.debug('Received response:\r\n', JSON.stringify({
+        this.log.debug(`Received response: ${id}\r\n`, JSON.stringify({
             status: response.status,
             statusText: response.statusText,
             headers: response.headers.raw,
