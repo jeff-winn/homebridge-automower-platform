@@ -11,14 +11,15 @@ import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentic
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './services/automowerAccessoryFactory';
+import { BadConfigurationError } from './errors/badConfigurationError';
 
 /** 
  * Describes the platform configuration settings.
  */
 export interface AutomowerPlatformConfig extends PlatformConfig {    
-    username: string;
-    password: string;
-    appKey: string;    
+    username: string | undefined;
+    password: string | undefined;
+    appKey: string | undefined;
 }
 
 /**
@@ -45,7 +46,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             await this.discoverMowers();
             await this.startReceivingEvents();
         } catch (e) {
-            this.log.error('An unexpected error occurred while starting the plugin.', e);
+            if (e instanceof BadConfigurationError) {
+                // The message should be in a format that is readable to an end user, just display that instead.
+                this.log.error(e.message);
+            } else {
+                this.log.error('An unexpected error occurred while starting the plugin.', e);
+            }
         }
     }
     

@@ -1,10 +1,11 @@
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
+import { Logging } from 'homebridge';
+import { v4 as uuid } from 'uuid';
 
 import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { UnexpectedServerError } from '../errors/unexpectedServerError';
-import { Logging } from 'homebridge';
-import { v4 as uuid } from 'uuid';
+import { BadConfigurationError } from '../errors/badConfigurationError';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -66,14 +67,20 @@ interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string, private baseUrl: string, private log: Logging) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string, private log: Logging) { }
 
-    public getApplicationKey(): string {
+    public getApplicationKey(): string | undefined {
         return this.appKey;
     }
 
     public getBaseUrl(): string {
         return this.baseUrl;
+    }
+
+    protected guardAppKeyMustBeProvided(): void {
+        if (this.appKey === undefined || this.appKey === '') {
+            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.');
+        }
     }
 
     public async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
@@ -85,10 +92,12 @@ export class AutomowerClientImpl implements AutomowerClient {
             throw new Error('action cannot be undefined.');
         }
 
+        this.guardAppKeyMustBeProvided();
+        
         const res = await this.doFetch(`${this.baseUrl}/mowers/${id}/actions`, {
             method: 'POST',
             headers: {
-                'X-Api-Key': this.appKey,
+                'X-Api-Key': this.appKey!,
                 'Content-Type': 'application/vnd.api+json',
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
@@ -137,10 +146,12 @@ export class AutomowerClientImpl implements AutomowerClient {
             throw new Error('id cannot be empty.');
         }
 
+        this.guardAppKeyMustBeProvided();
+
         const res = await this.doFetch(`${this.baseUrl}/mowers/${id}`, {
             method: 'GET',
             headers: {
-                'X-Api-Key': this.appKey,
+                'X-Api-Key': this.appKey!,
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             }
@@ -161,10 +172,12 @@ export class AutomowerClientImpl implements AutomowerClient {
     }    
 
     public async getMowers(token: AccessToken): Promise<Mower[]> {
+        this.guardAppKeyMustBeProvided();
+
         const res = await this.doFetch(`${this.baseUrl}/mowers`, {
             method: 'GET',
             headers: {
-                'X-Api-Key': this.appKey,
+                'X-Api-Key': this.appKey!,
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             }
