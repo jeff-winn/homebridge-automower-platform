@@ -79,7 +79,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         const result = await this.client.login(this.config.username, this.config.password);
 
-        this.log.debug('Connected!');
+        this.log.debug('Logged in!');
         return result;
     }
 
@@ -125,11 +125,11 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
             return;
         }
 
-        this.log.info('Logging out of the Husqvarna platform...');
+        this.log.debug('Logging out of the Husqvarna platform...');
 
         await this.client.logout(token);
         this.currentToken = undefined;
 
-        this.log.info('Disconnected!');
+        this.log.debug('Logged out!');
     }
 }

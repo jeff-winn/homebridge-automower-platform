@@ -1,3 +1,5 @@
+import { Logging } from 'homebridge';
+import { Mock } from 'moq.ts'; 
 import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
 import * as constants from '../../src/constants';
@@ -10,10 +12,12 @@ describe('AutomowerEventStreamClientImpl', () => {
 
     let target: AutomowerEventStreamClientImpl;
     let authClient: AuthenticationClientImpl;
+    let log: Mock<Logging>;
     let token: OAuthToken;
 
     beforeAll(async () => {
-        target = new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL);
+        log = new Mock<Logging>();
+        target = new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL, log.object());
         authClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
 
         if (USERNAME !== '' && PASSWORD !== '') {

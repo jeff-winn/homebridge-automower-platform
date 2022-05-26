@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
 import { AutomowerEventTypes, StatusEvent } from '../../../src/events';
-import { AccessToken, Activity, Mode, State } from '../../../src/model';
+import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
@@ -57,11 +57,30 @@ describe('EventStreamServiceImpl', () => {
         target.unsafeSetLastEventReceived(undefined);
         target.unsafeSetStarted(started);
         
+        stream.opened = true;
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await target.unsafeKeepAlive();
+
+        expect(stream.keptAlive).toBeTruthy();
+
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    it('should reconnect the client when disconnected', async () => {       
+        const token: AccessToken = { 
+            value: 'abcd1234',
+            provider: 'bob'
+        };
+        
+        stream.opened = false;
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.unsafeKeepAlive();        
 
-        expect(stream.keptAlive).toBeTruthy();
+        expect(stream.closed).toBeTruthy();        
+        expect(stream.opened).toBeTruthy();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
@@ -76,6 +95,7 @@ describe('EventStreamServiceImpl', () => {
             provider: 'bob'
         };
         
+        stream.opened = true;
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
@@ -91,6 +111,7 @@ describe('EventStreamServiceImpl', () => {
         const lastEventReceived = new Date(new Date().getTime() - (target.getReconnectInterval() - 100000));
         target.unsafeSetLastEventReceived(lastEventReceived);
         
+        stream.opened = true;
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.unsafeKeepAlive();        
@@ -108,7 +129,8 @@ describe('EventStreamServiceImpl', () => {
             value: 'abcd1234',
             provider: 'bob'
         };
-        
+
+        stream.opened = true;
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
@@ -164,9 +186,9 @@ describe('EventStreamServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NO_SOURCE
                     },
-                    restrictedReason: 'none'
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 }
             }
         };

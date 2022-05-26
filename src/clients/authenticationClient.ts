@@ -68,17 +68,17 @@ export interface AuthenticationClient {
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
-    constructor(private appKey: string, private baseUrl: string) { }
+    public constructor(private appKey: string, private baseUrl: string) { }
 
-    getApplicationKey(): string {
+    public getApplicationKey(): string {
         return this.appKey;
     }
 
-    getBaseUrl(): string {
+    public getBaseUrl(): string {
         return this.baseUrl;
     }
 
-    async login(username: string, password: string): Promise<OAuthToken> {
+    public async login(username: string, password: string): Promise<OAuthToken> {
         if (username === '') {
             throw new Error('username cannot be empty.');
         }
@@ -115,12 +115,12 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    async logout(token: OAuthToken): Promise<void> {
+    public async logout(token: OAuthToken): Promise<void> {
         const response = await fetch(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
-                'x-api-key': this.appKey,
-                'authorization-provider': token.provider
+                'X-Api-Key': this.appKey,
+                'Authorization-Provider': token.provider
             }
         });
 
@@ -128,7 +128,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         this.throwIfStatusNotOk(response);
     }
 
-    async refresh(token: OAuthToken): Promise<OAuthToken> {
+    public async refresh(token: OAuthToken): Promise<OAuthToken> {
         const body = this.encode({
             client_id: this.appKey,
             grant_type: 'refresh_token',

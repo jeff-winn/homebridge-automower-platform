@@ -10,15 +10,21 @@ import { DiscoveryServiceImpl } from '../services/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../constants';
-
-import { AccessoryFactoryImpl } from './accessoryFactory';
+import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { AccessoryServiceImpl } from '../services/accessoryService';
+import { AutomowerAccessoryFactoryImpl } from '../services/automowerAccessoryFactory';
+import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 
-export class PlatformContainer {
-    constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
+export interface PlatformContainer {
+    registerEverything(): void;
+    
+    resolve<T>(token: InjectionToken<T>): T;
+}
 
-    registerEverything(): void {
+export class PlatformContainerImpl implements PlatformContainer {
+    public constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
+
+    public registerEverything(): void {
         this.log.debug('Registering classes to the DI container...');
 
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
@@ -33,7 +39,8 @@ export class PlatformContainer {
         container.register(AutomowerClientImpl, {
             useValue: new AutomowerClientImpl(
                 this.config.appKey,
-                constants.AUTOMOWER_CONNECT_API_BASE_URL)
+                constants.AUTOMOWER_CONNECT_API_BASE_URL,
+                this.log)
         });
 
         container.register(GetMowersServiceImpl, {
@@ -42,26 +49,35 @@ export class PlatformContainer {
                 context.resolve(AutomowerClientImpl))
         });
 
-        container.register(AccessoryFactoryImpl, {
-            useFactory: () => new AccessoryFactoryImpl(this.api)
+        container.register(MowerControlServiceImpl, {
+            useFactory: (context) => new MowerControlServiceImpl(
+                context.resolve(AccessTokenManagerImpl),
+                context.resolve(AutomowerClientImpl)) 
         });
 
-        container.register(AccessoryServiceImpl, {
-            useFactory: (context) => new AccessoryServiceImpl(
-                context.resolve(AccessoryFactoryImpl),
+        container.register(PlatformAccessoryFactoryImpl, {
+            useFactory: () => new PlatformAccessoryFactoryImpl(this.api)
+        });
+
+        container.register(AutomowerAccessoryFactoryImpl, {
+            useFactory: (context) => new AutomowerAccessoryFactoryImpl(
+                context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
-                this.log)
+                this.log,
+                this)
         });
 
         container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
                 context.resolve(GetMowersServiceImpl), 
-                context.resolve(AccessoryServiceImpl),               
+                context.resolve(AutomowerAccessoryFactoryImpl),               
                 this.log)
         });
 
         container.register(AutomowerEventStreamClientImpl, {
-            useFactory: () => new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL)
+            useFactory: () => new AutomowerEventStreamClientImpl(
+                constants.AUTOMOWER_STREAM_API_BASE_URL, 
+                this.log)
         });
 
         container.register(EventStreamServiceImpl, {
@@ -75,7 +91,7 @@ export class PlatformContainer {
         this.log.debug('Completed DI container registrations.');
     }
 
-    resolve<T>(token: InjectionToken<T>): T {
+    public resolve<T>(token: InjectionToken<T>): T {
         return container.resolve(token);
     }
 }

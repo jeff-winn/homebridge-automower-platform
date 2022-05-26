@@ -54,10 +54,10 @@ export interface Headlight {
 }
 
 export enum HeadlightMode {
-    'ALWAYS_ON',
-    'ALWAYS_OFF',
-    'EVENING_ONLY',
-    'EVENING_AND_NIGHT'
+    ALWAYS_ON = 'ALWAYS_ON',
+    ALWAYS_OFF = 'ALWAYS_OFF',
+    EVENING_ONLY = 'EVENING_ONLY',
+    EVENING_AND_NIGHT = 'EVENING_AND_NIGHT'
 }
 
 /**
@@ -80,37 +80,37 @@ export interface MowerState {
 }
 
 export enum Mode {
-    'MAIN_AREA',
-    'SECONDARY_AREA',
-    'HOME',
-    'DEMO',
-    'UNKNOWN'
+    MAIN_AREA = 'MAIN_AREA',
+    SECONDARY_AREA = 'SECONDARY_AREA',
+    HOME = 'HOME',
+    DEMO = 'DEMO',
+    UNKNOWN = 'UNKNOWN'
 }
 
 export enum Activity {
-    'UNKNOWN',
-    'NOT_APPLICABLE',
-    'MOWING',
-    'GOING_HOME',    
-    'CHARGING',
-    'LEAVING',
-    'PARKED_IN_CS',
-    'STOPPED_IN_GARDEN'
+    UNKNOWN = 'UNKNOWN',
+    NOT_APPLICABLE = 'NOT_APPLICABLE',
+    MOWING = 'MOWING',
+    GOING_HOME = 'GOING_HOME',    
+    CHARGING = 'CHARGING',
+    LEAVING = 'LEAVING',
+    PARKED_IN_CS = 'PARKED_IN_CS',
+    STOPPED_IN_GARDEN = 'STOPPED_IN_GARDEN'
 }
 
 export enum State {
-    'UNKNOWN',
-    'NOT_APPLICABLE',
-    'PAUSED',
-    'IN_OPERATION',
-    'WAIT_UPDATING',
-    'WAIT_POWER_UP',
-    'RESTRICTED',
-    'OFF',
-    'STOPPED',
-    'ERROR',
-    'FATAL_ERROR',
-    'ERROR_AT_POWER_UP'
+    UNKNOWN = 'UNKNOWN',
+    NOT_APPLICABLE = 'NOT_APPLICABLE',
+    PAUSED = 'PAUSED',
+    IN_OPERATION = 'IN_OPERATION',
+    WAIT_UPDATING = 'WAIT_UPDATING',
+    WAIT_POWER_UP = 'WAIT_POWER_UP',
+    RESTRICTED = 'RESTRICTED',
+    OFF = 'OFF',
+    STOPPED = 'STOPPED',
+    ERROR = 'ERROR',
+    FATAL_ERROR = 'FATAL_ERROR',
+    ERROR_AT_POWER_UP = 'ERROR_AT_POWER_UP'
 }
 
 /**
@@ -119,9 +119,33 @@ export enum State {
 export interface Planner {
     nextStartTimestamp: number;
     override: {
-        action: string;
+        action?: OverrideAction;
     };
-    restrictedReason: string;
+    restrictedReason?: RestrictedReason;
+}
+
+/**
+ * Defines the possible reasons a mower may be restricted from operation.
+ */
+export enum RestrictedReason {
+    NONE = 'NONE',
+    WEEK_SCHEDULE = 'WEEK_SCHEDULE',
+    PARK_OVERRIDE = 'PARK_OVERRIDE',
+    SENSOR = 'SENSOR',
+    DAILY_LIMIT = 'DAILY_LIMIT',
+    FOTA = 'FOTA',
+    FROST = 'FROST',
+    NOT_APPLICABLE = 'NOT_APPLICABLE'
+}
+
+/**
+ * Defines the possible reasons mower behavior may be overridden.
+ */
+export enum OverrideAction {
+    NOT_ACTIVE = 'NOT_ACTIVE',
+    NO_SOURCE = 'NO_SOURCE',
+    FORCE_PARK = 'FORCE_PARK',
+    FORCE_MOW = 'FORCE_MOW'
 }
 
 /**

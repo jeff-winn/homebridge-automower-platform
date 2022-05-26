@@ -4,13 +4,13 @@ import {
 } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { PlatformContainer } from './primitives/platformContainer';
+import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
+import { SettingsEvent, StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
-import { StatusEvent } from './events';
-import { Mower } from './model';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './services/automowerAccessoryFactory';
 
 /** 
  * Describes the platform configuration settings.
@@ -31,7 +31,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private container?: PlatformContainer;
     private eventService?: EventStreamService;
 
-    constructor(private log: Logging, config: PlatformConfig, private api: API) {
+    public constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = config as AutomowerPlatformConfig;
 
         api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunching.bind(this));
@@ -40,7 +40,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async onFinishedLaunching(): Promise<void> {
         try {
-            this.configureContainer();
+            this.ensureContainerIsInitialized();
 
             await this.discoverMowers();
             await this.startReceivingEvents();
@@ -49,8 +49,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }
     }
     
-    protected configureContainer(): void {
-        this.container = new PlatformContainer(this.log, this.config, this.api);
+    protected ensureContainerIsInitialized(): void {
+        if (this.container !== undefined) {
+            return;
+        }
+
+        this.container = new PlatformContainerImpl(this.log, this.config, this.api);
         this.container.registerEverything();
     }
 
@@ -61,7 +65,9 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async startReceivingEvents(): Promise<void> {
         const service = this.getEventService();
+        
         service.onStatusEventReceived(this.onStatusEventReceived.bind(this));
+        service.onSettingsEventReceived(this.onSettingsEventReceived.bind(this));
         
         await service.start();
     }
@@ -84,6 +90,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
+    private async onSettingsEventReceived(event: SettingsEvent): Promise<void> {
+        const mower = this.getMower(event.id);
+        if (mower !== undefined) {
+            mower.onSettingsEventReceived(event);
+        }
+
+        return Promise.resolve(undefined);
+    }
+
     /**
      * Gets {@link DiscoveryService}.
      * @returns The service instance.
@@ -93,23 +108,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     /**
-     * Initializes the mower instance.
-     * @param data The mower data.
+     * Gets a mower which has already been registered.
+     * @param mowerId The mower id.
+     * @returns The accessory instance.
      */
-    public initMower(data: Mower): void {
-        const mower = this.mowers.find(o => o.getId() === data.id);
-        if (mower !== undefined) {
-            mower.init(data);
-        }
-    }
-
-    /**
-     * Checks whether a mower is configured.
-     * @param mowerId The mower id to check.
-     * @returns true if the mower is already configured, otherwise false.
-     */
-    public isMowerConfigured(mowerId: string): boolean {
-        return this.mowers.some(accessory => accessory.getId() === mowerId);
+    public getMower(mowerId: string): AutomowerAccessory | undefined {
+        return this.mowers.find(o => o.getId() === mowerId);
     }
 
     protected async onShutdown(): Promise<void> {
@@ -117,7 +121,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             await this.getEventService()?.stop();
             await this.getTokenManager()?.logout();
         } catch (e) {
-            this.log.error('An unexpected error occurred while starting the plugin.', e);
+            this.log.error('An unexpected error occurred while shutting down the plugin.', e);
         }
     }
 
@@ -154,11 +158,17 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      */
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
         try {
-            this.log.info(`Configuring ${accessory.displayName}`);
+            this.ensureContainerIsInitialized();
+            this.log.info(`Configuring '${accessory.displayName}' from the accessory cache.`);
 
-            this.mowers.push(new AutomowerAccessory(accessory, this.api, this.log));
+            const automower = this.getAccessoryFactory().createAutomowerAccessory(accessory);
+            this.mowers.push(automower);
         } catch (e) {
             this.log.error('An unexpected error occurred while configuring the accessory.', e);
         }
+    }
+
+    protected getAccessoryFactory(): AutomowerAccessoryFactory {
+        return this.container!.resolve(AutomowerAccessoryFactoryImpl);
     }
 }

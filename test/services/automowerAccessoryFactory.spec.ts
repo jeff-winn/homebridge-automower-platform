@@ -1,28 +1,31 @@
 import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
-import { It, Mock, Times } from 'moq.ts';
+import { Mock } from 'moq.ts';
+
 import { AutomowerAccessory, AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, Mower, State } from '../../src/model';
+import { Activity, Mode, OverrideAction, RestrictedReason, State } from '../../src/model';
+import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
+import { AutomowerAccessoryFactoryImplSpy } from './automowerAccessoryFactoryImplSpy';
+import { PlatformContainer } from '../../src/primitives/platformContainer';
 
-import { AccessoryFactory } from '../../src/primitives/accessoryFactory';
-import { AccessoryServiceImplSpy } from './accessoryServiceImplSpy';
-
-describe('AccessoryService', () => {
+describe('AutomowerAccessoryFactoryImpl', () => {
     let service: typeof Service;
     let characteristic: typeof Characteristic;
 
-    let factory: Mock<AccessoryFactory>;
+    let factory: Mock<PlatformAccessoryFactory>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<Logging>;
+    let container: Mock<PlatformContainer>;
 
-    let target: AccessoryServiceImplSpy;
+    let target: AutomowerAccessoryFactoryImplSpy;
 
     beforeEach(() => {
-        factory = new Mock<AccessoryFactory>();
+        factory = new Mock<PlatformAccessoryFactory>();
         api = new Mock<API>();
         hap = new Mock<HAP>();
         log = new Mock<Logging>();
+        container = new Mock<PlatformContainer>();
 
         service = Service;
         characteristic = Characteristic;
@@ -31,7 +34,7 @@ describe('AccessoryService', () => {
         hap.setup(x => x.Characteristic).returns(characteristic);
         hap.setup(x => x.Service).returns(service);
 
-        target = new AccessoryServiceImplSpy(factory.object(), api.object(), log.object());
+        target = new AutomowerAccessoryFactoryImplSpy(factory.object(), api.object(), log.object(), container.object());
     });
 
     it('should initialize and return a new accessory', () => {
@@ -44,7 +47,7 @@ describe('AccessoryService', () => {
         const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
         
         const newAccessory = new Mock<AutomowerAccessory>();
-        newAccessory.setup(o => o.init(It.IsAny<Mower>())).returns(undefined);
+        newAccessory.setup(o => o.init()).returns(undefined);
         newAccessory.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
 
         target.newAccessory = newAccessory.object();
@@ -76,9 +79,9 @@ describe('AccessoryService', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: ''
+                        action: OverrideAction.NO_SOURCE
                     },
-                    restrictedReason: ''
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 system: {
@@ -97,7 +100,5 @@ describe('AccessoryService', () => {
         expect(ra.context.manufacturer).toBe('HUSQVARNA');
         expect(ra.context.model).toBe('AUTOMOWER 430XH');
         expect(ra.context.serialNumber).toBe(serialNumber.toString());
-
-        newAccessory.verify(o => o.init(mower), Times.Once());
     });
 });

@@ -2,6 +2,9 @@ import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
+import { UnexpectedServerError } from '../errors/unexpectedServerError';
+import { Logging } from 'homebridge';
+import { v4 as uuid } from 'uuid';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -63,25 +66,30 @@ interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    constructor(private appKey: string, private baseUrl: string) { }
+    public constructor(private appKey: string, private baseUrl: string, private log: Logging) { }
 
-    getApplicationKey(): string {
+    public getApplicationKey(): string {
         return this.appKey;
     }
 
-    getBaseUrl(): string {
+    public getBaseUrl(): string {
         return this.baseUrl;
     }
 
-    async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
+    public async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
         if (id === '') {
             throw new Error('id cannot be empty.');
         }
 
-        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+        if (action === undefined) {
+            throw new Error('action cannot be undefined.');
+        }
+
+        const res = await this.doFetch(`${this.baseUrl}/mowers/${id}/actions`, {
             method: 'POST',
             headers: {
                 'X-Api-Key': this.appKey,
+                'Content-Type': 'application/vnd.api+json',
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
             },
@@ -93,16 +101,43 @@ export class AutomowerClientImpl implements AutomowerClient {
         await this.throwIfStatusNotOk(res);
     }
 
-    protected doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        return fetch(url, init);
+    protected async doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+        const id = uuid();
+
+        this.log.debug(`Sending web request: ${id}\r\n`, JSON.stringify({
+            url: url,
+            method: init?.method,
+            headers: init?.headers,
+            body: init?.body        
+        }));
+
+        const response = await fetch(url, init);
+        const buffer = await response.buffer();
+
+        this.log.debug(`Received response: ${id}\r\n`, JSON.stringify({
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers.raw,
+            body: JSON.parse(buffer.toString('utf-8'))
+        }));
+
+        // Recreate the response since the buffer has already been used.
+        return new Response(buffer, {
+            headers: response.headers,
+            size: response.size,
+            status: response.status,
+            statusText: response.statusText,
+            timeout: response.timeout,
+            url: response.url
+        });
     }
 
-    async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {
+    public async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {
         if (id === '') {
             throw new Error('id cannot be empty.');
         }
 
-        const res = await this.doFetch(this.baseUrl + `/mowers/${id}`, {
+        const res = await this.doFetch(`${this.baseUrl}/mowers/${id}`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -125,8 +160,8 @@ export class AutomowerClientImpl implements AutomowerClient {
         return undefined;
     }    
 
-    async getMowers(token: AccessToken): Promise<Mower[]> {
-        const res = await this.doFetch(this.baseUrl + '/mowers', {
+    public async getMowers(token: AccessToken): Promise<Mower[]> {
+        const res = await this.doFetch(`${this.baseUrl}/mowers`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey,
@@ -150,14 +185,14 @@ export class AutomowerClientImpl implements AutomowerClient {
             throw new NotAuthorizedError();
         }
 
-        if (!response.ok) {
+        if (response.status === 500) {                        
             const errs = await response.json() as ErrorResponse;
             if (errs?.errors[0] !== undefined) {
                 const err = errs.errors[0];
 
-                throw new Error(`ERR: [${err.code}] ${err.title}`);
+                throw new UnexpectedServerError(`ERR: [${err.code}] ${err.title}`);
             } else {
-                throw new Error(`ERR: ${response.status}`);
+                throw new UnexpectedServerError(`ERR: ${response.status}`);
             }
         }
     }

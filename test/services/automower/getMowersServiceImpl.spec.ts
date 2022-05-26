@@ -1,9 +1,10 @@
-import { Mock, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
+import { Logging } from 'homebridge';
 
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { Mower, AccessToken, Activity, Mode, State } from '../../../src/model';
+import { Mower, AccessToken, Activity, Mode, State, OverrideAction, RestrictedReason } from '../../../src/model';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
 describe('GetMowersServiceImpl', () => {
@@ -94,9 +95,9 @@ describe('GetMowersServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NOT_ACTIVE
                     },
-                    restrictedReason: 'none'    
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [ ],
                 system: {
@@ -146,9 +147,9 @@ describe('GetMowersServiceImpl', () => {
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
-                        action: 'no'
+                        action: OverrideAction.NO_SOURCE
                     },
-                    restrictedReason: 'none'    
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [ ],
                 system: {
@@ -161,7 +162,7 @@ describe('GetMowersServiceImpl', () => {
     
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         client.setup(x => x.getMowers(token)).returns(Promise.resolve([ mower ]));
-        
+
         const result = await target.getMowers();
 
         expect(result).toBeDefined();
