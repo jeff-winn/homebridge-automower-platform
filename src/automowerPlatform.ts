@@ -6,7 +6,7 @@ import {
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './constants';
-import { StatusEvent } from './events';
+import { SettingsEvent, StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
@@ -65,7 +65,9 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async startReceivingEvents(): Promise<void> {
         const service = this.getEventService();
+        
         service.onStatusEventReceived(this.onStatusEventReceived.bind(this));
+        service.onSettingsEventReceived(this.onSettingsEventReceived.bind(this));
         
         await service.start();
     }
@@ -83,6 +85,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         const mower = this.mowers.find(o => o.getId() === event.id);
         if (mower !== undefined) {
             mower.onStatusEventReceived(event);
+        }
+
+        return Promise.resolve(undefined);
+    }
+
+    private async onSettingsEventReceived(event: SettingsEvent): Promise<void> {
+        const mower = this.getMower(event.id);
+        if (mower !== undefined) {
+            mower.onSettingsEventReceived(event);
         }
 
         return Promise.resolve(undefined);

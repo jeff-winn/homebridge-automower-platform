@@ -11,14 +11,12 @@ describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
     let target: GetMowersServiceImpl;
-    let log: Mock<Logging>;
 
     beforeEach(() => {        
         tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<AutomowerClient>();
-        log = new Mock<Logging>();
 
-        target = new GetMowersServiceImpl(tokenManager.object(), client.object(), log.object());
+        target = new GetMowersServiceImpl(tokenManager.object(), client.object());
     });
 
     it('should flag the token as invalid on getMower', async () => {
@@ -31,7 +29,6 @@ describe('GetMowersServiceImpl', () => {
         
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
-        log.setup(o => o.debug(It.IsAny<string>(), It.IsAny())).returns(undefined);
         client.setup(x => x.getMower(mowerId, token)).throws(new NotAuthorizedError());
 
         let threw = false;
@@ -53,7 +50,6 @@ describe('GetMowersServiceImpl', () => {
         
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
-        log.setup(o => o.debug(It.IsAny<string>(), It.IsAny())).returns(undefined);
         client.setup(x => x.getMowers(token)).throws(new NotAuthorizedError());
 
         let threw = false;
@@ -114,7 +110,6 @@ describe('GetMowersServiceImpl', () => {
     
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         client.setup(x => x.getMower(mowerId, token)).returns(Promise.resolve(mower));
-        log.setup(o => o.debug(It.IsAny<string>(), It.IsAny())).returns(undefined);
         
         const actual = await target.getMower(mowerId);
 
@@ -167,7 +162,6 @@ describe('GetMowersServiceImpl', () => {
     
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         client.setup(x => x.getMowers(token)).returns(Promise.resolve([ mower ]));
-        log.setup(o => o.debug(It.IsAny<string>(), It.IsAny())).returns(undefined);
 
         const result = await target.getMowers();
 

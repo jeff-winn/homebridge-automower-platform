@@ -39,14 +39,14 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(AutomowerClientImpl, {
             useValue: new AutomowerClientImpl(
                 this.config.appKey,
-                constants.AUTOMOWER_CONNECT_API_BASE_URL)
+                constants.AUTOMOWER_CONNECT_API_BASE_URL,
+                this.log)
         });
 
         container.register(GetMowersServiceImpl, {
             useFactory: (context) => new GetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(AutomowerClientImpl),
-                this.log)
+                context.resolve(AutomowerClientImpl))
         });
 
         container.register(MowerControlServiceImpl, {
@@ -63,6 +63,7 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: (context) => new AutomowerAccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
+                this.log,
                 this)
         });
 

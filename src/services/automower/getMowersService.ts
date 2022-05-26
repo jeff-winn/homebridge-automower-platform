@@ -22,16 +22,12 @@ export interface GetMowersService {
 }
 
 export class GetMowersServiceImpl implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: Logging) { }
+    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
 
     public async getMower(id: string): Promise<Mower | undefined> {
         try {
             const token = await this.tokenManager.getCurrentToken();
-
-            const result = await this.client.getMower(id, token);
-            this.log.debug(`Retrieved mower ${id} from endpoint.\r\n`, JSON.stringify(result));
-
-            return result;
+            return await this.client.getMower(id, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();
@@ -44,11 +40,7 @@ export class GetMowersServiceImpl implements GetMowersService {
     public async getMowers(): Promise<Mower[]> {
         try {
             const token = await this.tokenManager.getCurrentToken();
-
-            const result = await this.client.getMowers(token);
-            this.log.debug('Retrieved mowers from endpoint...\r\n', JSON.stringify(result));
-
-            return result;
+            return await this.client.getMowers(token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();

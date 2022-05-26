@@ -3,6 +3,7 @@ import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { UnexpectedServerError } from '../errors/unexpectedServerError';
+import { Logging } from 'homebridge';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -64,7 +65,7 @@ interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string, private baseUrl: string) { }
+    public constructor(private appKey: string, private baseUrl: string, private log: Logging) { }
 
     public getApplicationKey(): string {
         return this.appKey;
@@ -99,8 +100,33 @@ export class AutomowerClientImpl implements AutomowerClient {
         await this.throwIfStatusNotOk(res);
     }
 
-    protected doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        return fetch(url, init);
+    protected async doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+        this.log.debug('Sending web request:\r\n', JSON.stringify({
+            url: url,
+            method: init?.method,
+            headers: init?.headers,
+            body: init?.body        
+        }));
+
+        const response = await fetch(url, init);
+        const buffer = await response.buffer();
+
+        this.log.debug('Received response:\r\n', JSON.stringify({
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers.raw,
+            body: JSON.parse(buffer.toString('utf-8'))
+        }));
+
+        // Recreate the response since the buffer has already been used.
+        return new Response(buffer, {
+            headers: response.headers,
+            size: response.size,
+            status: response.status,
+            statusText: response.statusText,
+            timeout: response.timeout,
+            url: response.url
+        });
     }
 
     public async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {

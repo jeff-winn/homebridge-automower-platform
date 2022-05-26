@@ -58,6 +58,7 @@ describe('AutomowerPlatform', () => {
 
         const eventStreamService = new Mock<EventStreamService>();
         eventStreamService.setup(o => o.onStatusEventReceived(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
+        eventStreamService.setup(o => o.onSettingsEventReceived(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
         eventStreamService.setup(o => o.start()).returns(Promise.resolve(undefined));
 
         target.eventStreamService = eventStreamService.object();

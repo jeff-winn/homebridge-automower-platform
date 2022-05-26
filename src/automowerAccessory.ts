@@ -2,7 +2,7 @@ import {
     PlatformAccessory, UnknownContext 
 } from 'homebridge';
 
-import { StatusEvent } from './events';
+import { SettingsEvent, StatusEvent } from './events';
 import { Mower } from './model';
 import { AccessoryInformationService } from './services/homebridge/accessoryInformationService';
 import { BatteryService } from './services/homebridge/batteryService';
@@ -55,7 +55,8 @@ export class AutomowerAccessory {
     public refresh(data: Mower): void {
         this.batteryService.setBatteryLevel(data.attributes.battery);
         this.batteryService.setChargingState(data.attributes.mower);
-        this.scheduleService.setScheduleState(data.attributes.planner);
+        this.scheduleService.setCalendar(data.attributes.calendar);
+        this.scheduleService.setPlanner(data.attributes.planner);
     }
     
     /**
@@ -73,6 +74,17 @@ export class AutomowerAccessory {
     public onStatusEventReceived(event: StatusEvent): void {
         this.batteryService.setBatteryLevel(event.attributes.battery);
         this.batteryService.setChargingState(event.attributes.mower);
-        this.scheduleService.setScheduleState(event.attributes.planner);
+        
+        this.scheduleService.setPlanner(event.attributes.planner);
+    }
+
+    /**
+     * Occurs when a {@link SettingsEvent} has been received from the event stream.
+     * @param event The event data.
+     */
+    public onSettingsEventReceived(event: SettingsEvent): void {
+        if (event.attributes.calendar !== undefined) {
+            this.scheduleService.setCalendar(event.attributes.calendar);
+        }
     }
 }

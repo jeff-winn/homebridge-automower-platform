@@ -1,10 +1,10 @@
 import { API, CharacteristicSetCallback, 
-    HAPStatus, PlatformAccessory 
+    HAPStatus, Logging, PlatformAccessory 
 } from 'homebridge';
 
 import { AutomowerContext } from '../../automowerAccessory';
 import { InvalidStateError } from '../../errors/invalidStateError';
-import { Planner } from '../../model';
+import { Calendar, OverrideAction, Planner, RestrictedReason } from '../../model';
 import { MowerControlService } from '../automower/mowerControlService';
 import { AbstractSwitchService } from './abstractSwitchService';
 
@@ -19,14 +19,24 @@ export interface ScheduleService {
     init(prepend: boolean): void;
 
     /**
-     * Sets the schedule state.
+     * Sets the calendar.
+     * @param calendar The calendar.
+     */
+    setCalendar(calendar: Calendar): void;
+
+    /**
+     * Sets the planner.
      * @param planner The planner.
      */
-    setScheduleState(planner: Planner): void;
+    setPlanner(planner: Planner): void;
 }
 
 export class ScheduleServiceImpl extends AbstractSwitchService implements ScheduleService {
-    public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, api: API) {
+    private calendar?: Calendar;
+    private planner?: Planner;
+
+    public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, 
+        api: API, private log: Logging) {
         super('Schedule', accessory, api);
     }
 
@@ -40,11 +50,39 @@ export class ScheduleServiceImpl extends AbstractSwitchService implements Schedu
         callback(HAPStatus.SUCCESS);
     }
 
-    public setScheduleState(planner: Planner): void {
+    public setCalendar(calendar: Calendar): void {    
+        this.calendar = calendar;
+        this.refreshCharacteristic();
+    }
+
+    public setPlanner(planner: Planner): void {
+        this.planner = planner;
+        this.refreshCharacteristic();
+    }
+
+    /**
+     * Refreshes the characteristic value based on the deterministic calculation of whether the schedule is currently enabled.
+     */
+    protected refreshCharacteristic() {
         if (this.on === undefined) {
             throw new InvalidStateError('The service has not been initialized.');            
         }
 
-        this.on.updateValue(planner.nextStartTimestamp > 0);
+        if (this.calendar === undefined || this.planner === undefined) {
+            // Don't actually do anything if both pieces of information to make the decision are not available.
+            return;
+        }
+
+        let anyDaysEnabled = false;        
+        this.calendar.tasks.forEach(task => {
+            if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
+                anyDaysEnabled = true;
+            }
+        });
+ 
+        const value = anyDaysEnabled && this.planner.restrictedReason !== RestrictedReason.NOT_APPLICABLE;
+        this.log.debug(`Setting the ${this.name} switch to: ${value}`);
+
+        this.on.updateValue(value);
     }
 }

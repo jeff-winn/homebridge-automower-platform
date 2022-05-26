@@ -3,7 +3,7 @@ import { Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
-import { Activity, Battery, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
+import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
 import { BatteryService } from '../src/services/homebridge/batteryService';
 import { AccessoryInformationService } from '../src/services/homebridge/accessoryInformationService';
 import { ScheduleService } from '../src/services/homebridge/scheduleService';
@@ -57,6 +57,22 @@ describe('AutomowerAccessory', () => {
             state: State.NOT_APPLICABLE
         };
 
+        const calendar: Calendar = {
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: false,
+                    monday: false,
+                    tuesday: false,
+                    wednesday: false,
+                    thursday: false,
+                    friday: false,
+                    saturday: false
+                }
+            ]
+        };
+
         const planner: Planner = {
             nextStartTimestamp: 0,
             override: {
@@ -70,9 +86,7 @@ describe('AutomowerAccessory', () => {
             type: 'abcd1234',
             attributes: {
                 battery: battery,
-                calendar: {
-                    tasks: []
-                },
+                calendar: calendar,
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -90,13 +104,15 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-        scheduleService.setup(o => o.setScheduleState(planner)).returns(undefined);
+        scheduleService.setup(o => o.setPlanner(planner)).returns(undefined);
+        scheduleService.setup(o => o.setCalendar(calendar)).returns(undefined);
 
         target.refresh(mower);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
-        scheduleService.verify(o => o.setScheduleState(planner), Times.Once());
+        scheduleService.verify(o => o.setPlanner(planner), Times.Once());
+        scheduleService.verify(o => o.setCalendar(calendar), Times.Once());
     });
     
     it('returns the accessory uuid', () => {
@@ -143,12 +159,12 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-        scheduleService.setup(o => o.setScheduleState(planner)).returns(undefined);
+        scheduleService.setup(o => o.setPlanner(planner)).returns(undefined);
 
         target.onStatusEventReceived(event);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
-        scheduleService.verify(o => o.setScheduleState(planner), Times.Once());
+        scheduleService.verify(o => o.setPlanner(planner), Times.Once());
     });
 });

@@ -1,4 +1,4 @@
-import { API, HAP, PlatformAccessory } from 'homebridge';
+import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicEventTypes, CharacteristicValue, CharacteristicSetCallback, HAPStatus } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
@@ -13,6 +13,7 @@ describe('ScheduleServiceImpl', () => {
     let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
+    let log: Mock<Logging>;
 
     let target: ScheduleServiceImplSpy;
 
@@ -26,8 +27,9 @@ describe('ScheduleServiceImpl', () => {
         
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object());
+        log = new Mock<Logging>();        
 
-        target = new ScheduleServiceImplSpy(mowerControlService.object(), platformAccessory.object(), api.object());
+        target = new ScheduleServiceImplSpy(mowerControlService.object(), platformAccessory.object(), api.object(), log.object());
     });
 
     it('should be initialized with existing service', () => {
@@ -92,7 +94,7 @@ describe('ScheduleServiceImpl', () => {
         let thrown = false;
 
         try {
-            target.setScheduleState({
+            target.setPlanner({
                 nextStartTimestamp: 0,
                 override: { },
                 restrictedReason: RestrictedReason.NOT_APPLICABLE
@@ -106,42 +108,154 @@ describe('ScheduleServiceImpl', () => {
         expect(thrown).toBeTruthy();
     });
 
-    it('should update the characteristic as true when planner is scheduled to start', () => {
+    it('should update the characteristic as true when scheduled to start', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-
+        
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(true);
 
-        target.setScheduleState({
-            nextStartTimestamp: 1,
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true
+                }
+            ]
+        });
+
+        target.setPlanner({
+            nextStartTimestamp: 12345,
             override: { },
-            restrictedReason: RestrictedReason.NOT_APPLICABLE
+            restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
 
         c.verify(o => o.updateValue(true), Times.Once());
     });
 
-    it('should update the characteristic as false when planner not scheduled to start', () => {
+    it('should update the characteristic as false when planner is not scheduled to start', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-
+        
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(true);
 
-        target.setScheduleState({
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true
+                }
+            ]
+        });
+
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { },
+            restrictedReason: RestrictedReason.NOT_APPLICABLE
+        });
+
+        c.verify(o => o.updateValue(false), Times.Once());
+    });
+
+    it('should update the characteristic as false when calendar is not scheduled to start', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.init(true);
+
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: false,
+                    monday: false,
+                    tuesday: false,
+                    wednesday: false,
+                    thursday: false,
+                    friday: false,
+                    saturday: false
+                }
+            ]
+        });
+
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { },
+            restrictedReason: RestrictedReason.WEEK_SCHEDULE
+        });
+
+        c.verify(o => o.updateValue(false), Times.Once());
+    });
+
+    it('should update the characteristic as false when calendar and planner is not scheduled to start', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.init(true);
+
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: false,
+                    monday: false,
+                    tuesday: false,
+                    wednesday: false,
+                    thursday: false,
+                    friday: false,
+                    saturday: false
+                }
+            ]
+        });
+
+        target.setPlanner({
             nextStartTimestamp: 0,
             override: { },
             restrictedReason: RestrictedReason.NOT_APPLICABLE

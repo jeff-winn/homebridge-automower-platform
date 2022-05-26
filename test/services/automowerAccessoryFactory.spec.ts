@@ -1,4 +1,4 @@
-import { API, HAP, PlatformAccessory } from 'homebridge';
+import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
 import { Mock } from 'moq.ts';
 
@@ -15,6 +15,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
+    let log: Mock<Logging>;
     let container: Mock<PlatformContainer>;
 
     let target: AutomowerAccessoryFactoryImplSpy;
@@ -23,6 +24,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         factory = new Mock<PlatformAccessoryFactory>();
         api = new Mock<API>();
         hap = new Mock<HAP>();
+        log = new Mock<Logging>();
         container = new Mock<PlatformContainer>();
 
         service = Service;
@@ -32,7 +34,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         hap.setup(x => x.Characteristic).returns(characteristic);
         hap.setup(x => x.Service).returns(service);
 
-        target = new AutomowerAccessoryFactoryImplSpy(factory.object(), api.object(), container.object());
+        target = new AutomowerAccessoryFactoryImplSpy(factory.object(), api.object(), log.object(), container.object());
     });
 
     it('should initialize and return a new accessory', () => {

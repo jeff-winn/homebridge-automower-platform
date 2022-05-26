@@ -1,7 +1,7 @@
 import { Logging } from 'homebridge';
 import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, AutomowerEventTypes, StatusEvent } from '../../events';
+import { AutomowerEvent, AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 
 /**
@@ -14,6 +14,12 @@ export interface EventStreamService {
      */
     onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void;
     
+    /**
+     * Occurs when a {@link SettingsEvent} has been received.
+     * @param callback The callback to execute.
+     */
+    onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void;
+
     /**
      * Starts streaming events.
      */
@@ -30,12 +36,18 @@ export class EventStreamServiceImpl implements EventStreamService {
     private readonly RECONNECT_INTERVAL = 3600000; // One hour
 
     private onStatusEventCallback?: (event: StatusEvent) => Promise<void>;
+    private onSettingsEventCallback?: (event: SettingsEvent) => Promise<void>;
     private started?: Date;
     private lastEventReceived?: Date;
     private attached = false;
 
     public constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
         private log: Logging, private timer: Timer) { }
+
+
+    public onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void {
+        this.onSettingsEventCallback = callback;        
+    }
 
     public onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
@@ -140,9 +152,11 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.setLastEventReceived(new Date());
 
         switch (event.type) {
-        case AutomowerEventTypes.SETTINGS:
         case AutomowerEventTypes.POSITIONS:
             return Promise.resolve(undefined);
+
+        case AutomowerEventTypes.SETTINGS:
+            return this.onSettingsEvent(event as SettingsEvent);
 
         case AutomowerEventTypes.STATUS:
             return this.onStatusEvent(event as StatusEvent);        
@@ -151,6 +165,14 @@ export class EventStreamServiceImpl implements EventStreamService {
             this.log.warn(`Received unknown event: ${event.type}`);
             return Promise.resolve(undefined);
         }
+    }
+
+    protected onSettingsEvent(event: SettingsEvent): Promise<void> {
+        if (this.onSettingsEventCallback === undefined) {
+            return Promise.resolve(undefined);
+        }
+
+        return this.onSettingsEventCallback(event);
     }
 
     protected onStatusEvent(event: StatusEvent): Promise<void> {

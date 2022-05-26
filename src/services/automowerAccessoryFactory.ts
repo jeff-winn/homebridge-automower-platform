@@ -1,4 +1,4 @@
-import { API, PlatformAccessory } from 'homebridge';
+import { API, Logging, PlatformAccessory } from 'homebridge';
 
 import { PlatformAccessoryFactory } from '../primitives/platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
@@ -38,6 +38,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     public constructor(
         private factory: PlatformAccessoryFactory, 
         private api: API, 
+        private log: Logging,
         private container: PlatformContainer) { }
 
     public createAccessory(mower: Mower): AutomowerAccessory {
@@ -76,7 +77,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected createScheduleService(accessory: PlatformAccessory<AutomowerContext>): ScheduleService {
-        return new ScheduleServiceImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api);
+        return new ScheduleServiceImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api, this.log);
     }
     
     private parseModelInformation(value: string): ModelInformation {
