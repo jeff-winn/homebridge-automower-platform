@@ -64,7 +64,7 @@ describe('AccessTokenManagerImpl', () => {
     });
 
     it('should throw an error when the config password is undefined', async () => {
-        config.username = undefined;
+        config.password = undefined;
 
         let thrown = false;
         try {
@@ -79,7 +79,7 @@ describe('AccessTokenManagerImpl', () => {
     });
 
     it('should throw an error when the config password is empty', async () => {
-        config.username = '';
+        config.password = '';
 
         let thrown = false;
         try {
