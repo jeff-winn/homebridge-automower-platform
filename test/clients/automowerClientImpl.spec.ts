@@ -40,14 +40,14 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is undefined on doAction', async () => {
-        const t = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await t.doAction('12345', { }, {
-                value: token.access_token,
-                provider: token.provider
+            await target.doAction('12345', { }, {
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
             if (e instanceof BadConfigurationError) {
@@ -59,14 +59,14 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is empty on doAction', async () => {
-        const t = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await t.doAction('12345', { }, {
-                value: token.access_token,
-                provider: token.provider
+            await target.doAction('12345', { }, {
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
             if (e instanceof BadConfigurationError) {
@@ -77,69 +77,77 @@ describe('AutomowerClientImpl', () => {
         expect(thrown).toBeTruthy();
     });
 
-    it('should throw an error when the app key is undefined on doAction', async () => {
-        const t = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+    it('should throw an error when the app key is undefined on getMower', async () => {
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await t.doAction('12345', { }, {
-                value: token.access_token,
-                provider: token.provider
+            await target.getMower('12345', {
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
-            thrown = true;
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
         }
 
         expect(thrown).toBeTruthy();
     });
 
     it('should throw an error when the app key is empty on getMower', async () => {
-        const t = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;       
 
         try {
-            await t.getMower('12345', {
-                value: token.access_token,
-                provider: token.provider
+            await target.getMower('12345', {
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
-            thrown = true;
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
         }
 
         expect(thrown).toBeTruthy();
     });
 
     it('should throw an error when the app key is undefined on getMowers', async () => {
-        const t = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await t.getMowers({
-                value: token.access_token,
-                provider: token.provider
+            await target.getMowers({
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
-            thrown = true;
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
         }
 
         expect(thrown).toBeTruthy();
     });
 
     it('should throw an error when the app key is empty on getMowers', async () => {
-        const t = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;       
 
         try {
-            await t.getMowers({
-                value: token.access_token,
-                provider: token.provider
+            await target.getMowers({
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
-            thrown = true;
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
         }
 
         expect(thrown).toBeTruthy();
@@ -150,8 +158,8 @@ describe('AutomowerClientImpl', () => {
 
         try {
             await target.doAction('', { }, {
-                value: token.access_token,
-                provider: token.provider
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
             thrown = true;
@@ -165,8 +173,8 @@ describe('AutomowerClientImpl', () => {
 
         try {
             await target.getMower('', {
-                value: token.access_token,
-                provider: token.provider
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
             thrown = true;
