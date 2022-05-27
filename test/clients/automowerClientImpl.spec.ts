@@ -40,12 +40,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is undefined on doAction', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        const t = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await target.doAction('12345', { }, {
+            await t.doAction('12345', { }, {
                 value: token.access_token,
                 provider: token.provider
             });
@@ -59,11 +59,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is empty on doAction', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        const t = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
+
         try {
-            await target.doAction('12345', { }, {
+            await t.doAction('12345', { }, {
                 value: token.access_token,
                 provider: token.provider
             });
@@ -77,12 +78,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is undefined on doAction', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        const t = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await target.doAction('12345', { }, {
+            await t.doAction('12345', { }, {
                 value: token.access_token,
                 provider: token.provider
             });
@@ -94,12 +95,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is empty on getMower', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        const t = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;       
 
         try {
-            await target.getMower('12345', {
+            await t.getMower('12345', {
                 value: token.access_token,
                 provider: token.provider
             });
@@ -111,12 +112,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is undefined on getMowers', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        const t = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;
 
         try {
-            await target.getMowers({
+            await t.getMowers({
                 value: token.access_token,
                 provider: token.provider
             });
@@ -128,12 +129,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is empty on getMowers', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        const t = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
 
         let thrown = false;       
 
         try {
-            await target.getMowers({
+            await t.getMowers({
                 value: token.access_token,
                 provider: token.provider
             });
