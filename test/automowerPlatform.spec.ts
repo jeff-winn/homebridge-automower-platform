@@ -8,6 +8,7 @@ import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 import { AutomowerPlatform, AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { DiscoveryService } from '../src/services/discoveryService';
 import { EventStreamService } from '../src/services/automower/eventStreamService';
+import { BadConfigurationError } from '../src/errors/badConfigurationError';
 
 describe('AutomowerPlatform', () => {
     let log: Mock<Logging>;
@@ -36,6 +37,19 @@ describe('AutomowerPlatform', () => {
         const result = target.getMower('does not exist');
 
         expect(result).toBeUndefined();
+    });
+
+    it('should catch configuration errors that occur while finishing launching', async () => {
+        log.setup(o => o.error(It.IsAny<string>(), It.IsAny<Error>())).returns(undefined);
+
+        const discoveryService = new Mock<DiscoveryService>();
+        discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).throws(new BadConfigurationError('Ouch'));
+
+        target.discoveryService = discoveryService.object();
+
+        await target.unsafeOnFinishedLaunching();
+
+        log.verify(o => o.error('Ouch'), Times.Once());
     });
 
     /** Required for compliance with homebridge verified status */

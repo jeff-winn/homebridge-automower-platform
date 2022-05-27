@@ -36,6 +36,10 @@ export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
         return super.isTokenInvalidated();
     }
 
+    public unsafeDoLogin(): Promise<OAuthToken> {
+        return super.doLogin();
+    }
+
     public unsafeRefreshToken(): Promise<OAuthToken> {
         return super.doRefreshToken();
     }

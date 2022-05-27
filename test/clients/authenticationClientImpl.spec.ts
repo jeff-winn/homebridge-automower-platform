@@ -1,6 +1,7 @@
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
 import * as constants from '../../src/constants';
+import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 
 describe('AuthenticationClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
@@ -17,6 +18,86 @@ describe('AuthenticationClientImpl', () => {
     it('should initalize correctly', () => {
         expect(target.getApplicationKey()).toBe(APPKEY);
         expect(target.getBaseUrl()).toBe(constants.AUTHENTICATION_API_BASE_URL);
+    });
+
+    it('should throw an error when app key is undefined on login', async () => {
+        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL);
+
+        let thrown = false;
+
+        try {
+            await target.login('username', 'password');
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when app key is empty on login', async () => {
+        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL);
+
+        let thrown = false;
+
+        try {
+            await target.login('username', 'password');
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when app key is undefined on logout', async () => {
+        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL);
+
+        let thrown = false;
+
+        try {
+            await target.logout({
+                access_token: '12345',
+                expires_in: 1,
+                provider: 'hello',
+                refresh_token: 'abcd1234',
+                scope: 'everything',
+                token_type: 'fancy',
+                user_id: 'me'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when app key is empty on logout', async () => {
+        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL);
+
+        let thrown = false;
+
+        try {
+            await target.logout({
+                access_token: '12345',
+                expires_in: 1,
+                provider: 'hello',
+                refresh_token: 'abcd1234',
+                scope: 'everything',
+                token_type: 'fancy',
+                user_id: 'me'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
     });
 
     it('should throw an error when username is empty', async () => {

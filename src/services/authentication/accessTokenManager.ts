@@ -3,6 +3,7 @@ import { Logging } from 'homebridge';
 import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../automowerPlatform';
 import { AccessToken } from '../../model';
+import { BadConfigurationError } from '../../errors/badConfigurationError';
 
 /**
  * A mechanism which manages the retrieval and renewal of an access token.
@@ -29,9 +30,9 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private expires?: Date;
     private invalidated = false;    
 
-    constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: Logging) { }
+    public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: Logging) { }
 
-    async getCurrentToken(): Promise<AccessToken> {
+    public async getCurrentToken(): Promise<AccessToken> {
         if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {
             let newToken: OAuthToken;
 
@@ -77,6 +78,16 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doLogin(): Promise<OAuthToken> {
         this.log.debug('Logging into the Husqvarna platform...');
 
+        if (this.config.username === undefined || this.config.username === '') {
+            throw new BadConfigurationError(
+                'The username (aka email address) setting is missing, please check your configuration and try again.');
+        }
+
+        if (this.config.password === undefined || this.config.password === '') {
+            throw new BadConfigurationError(
+                'The password setting is missing, please check your configuration and try again.');
+        }
+
         const result = await this.client.login(this.config.username, this.config.password);
 
         this.log.debug('Logged in!');
@@ -111,7 +122,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         this.expires = expires;
     }
 
-    flagAsInvalid(): void {
+    public flagAsInvalid(): void {
         this.invalidated = true;
     }
 
@@ -119,7 +130,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         this.invalidated = false;
     }
 
-    async logout(): Promise<void> {
+    public async logout(): Promise<void> {
         const token = this.unsafeGetCurrentToken();
         if (token === undefined) {
             return;

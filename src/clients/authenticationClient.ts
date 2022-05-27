@@ -2,6 +2,7 @@ import fetch, { Response } from 'node-fetch';
 
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { BadCredentialsError } from '../errors/badCredentialsError';
+import { BadConfigurationError } from '../errors/badConfigurationError';
 
 /**
  * Describes an OAuth authentication token.
@@ -68,9 +69,9 @@ export interface AuthenticationClient {
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
-    public constructor(private appKey: string, private baseUrl: string) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string) { }
 
-    public getApplicationKey(): string {
+    public getApplicationKey(): string | undefined {
         return this.appKey;
     }
 
@@ -87,8 +88,10 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             throw new Error('password cannot be empty.');
         }
 
+        this.guardAppKeyMustBeProvided();
+
         const body = this.encode({
-            client_id: this.appKey,
+            client_id: this.appKey!,
             grant_type: 'password',
             username: username,
             password: password
@@ -111,15 +114,18 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfBadCredentials(response: Response): void {
         if (response.status === 400) {
-            throw new BadCredentialsError('The username and/or password supplied were not valid.');
+            throw new BadCredentialsError(
+                'The username and/or password supplied were not valid, please check your configuration and try again.');
         }
     }
 
     public async logout(token: OAuthToken): Promise<void> {
+        this.guardAppKeyMustBeProvided();
+
         const response = await fetch(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
-                'X-Api-Key': this.appKey,
+                'X-Api-Key': this.appKey!,
                 'Authorization-Provider': token.provider
             }
         });
@@ -128,9 +134,17 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         this.throwIfStatusNotOk(response);
     }
 
+    protected guardAppKeyMustBeProvided(): void {
+        if (this.appKey === undefined || this.appKey === '') {
+            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.');
+        }
+    }
+
     public async refresh(token: OAuthToken): Promise<OAuthToken> {
+        this.guardAppKeyMustBeProvided();
+
         const body = this.encode({
-            client_id: this.appKey,
+            client_id: this.appKey!,
             grant_type: 'refresh_token',
             refresh_token: token.refresh_token
         });

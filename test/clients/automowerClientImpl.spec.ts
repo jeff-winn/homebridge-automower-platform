@@ -4,6 +4,7 @@ import { Mock } from 'moq.ts';
 import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerClientImpl } from '../../src/clients/automowerClient';
 import * as constants from '../../src/constants';
+import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 
 describe('AutomowerClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
@@ -38,13 +39,127 @@ describe('AutomowerClientImpl', () => {
         expect(target.getBaseUrl()).toBe(constants.AUTOMOWER_CONNECT_API_BASE_URL);
     });
 
+    it('should throw an error when app key is undefined on doAction', async () => {
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+
+        let thrown = false;
+
+        try {
+            await target.doAction('12345', { }, {
+                value: 'value',
+                provider: 'provider'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when app key is empty on doAction', async () => {
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+
+        let thrown = false;
+
+        try {
+            await target.doAction('12345', { }, {
+                value: 'value',
+                provider: 'provider'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when the app key is undefined on getMower', async () => {
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+
+        let thrown = false;
+
+        try {
+            await target.getMower('12345', {
+                value: 'value',
+                provider: 'provider'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when the app key is empty on getMower', async () => {
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+
+        let thrown = false;       
+
+        try {
+            await target.getMower('12345', {
+                value: 'value',
+                provider: 'provider'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when the app key is undefined on getMowers', async () => {
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+
+        let thrown = false;
+
+        try {
+            await target.getMowers({
+                value: 'value',
+                provider: 'provider'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when the app key is empty on getMowers', async () => {
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+
+        let thrown = false;       
+
+        try {
+            await target.getMowers({
+                value: 'value',
+                provider: 'provider'
+            });
+        } catch (e) {
+            if (e instanceof BadConfigurationError) {
+                thrown = true;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
     it('should throw an error when the mower id is empty on doAction', async () => {
         let thrown = false;
 
         try {
             await target.doAction('', { }, {
-                value: token.access_token,
-                provider: token.provider
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
             thrown = true;
@@ -58,8 +173,8 @@ describe('AutomowerClientImpl', () => {
 
         try {
             await target.getMower('', {
-                value: token.access_token,
-                provider: token.provider
+                value: 'value',
+                provider: 'provider'
             });
         } catch (e) {
             thrown = true;

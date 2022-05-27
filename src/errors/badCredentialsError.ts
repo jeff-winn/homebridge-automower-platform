@@ -1,7 +1,9 @@
+import { BadConfigurationError } from './badConfigurationError';
+
 /**
  * Thrown when bad credentials are used while trying to authenticate.
  */
-export class BadCredentialsError extends Error {
+export class BadCredentialsError extends BadConfigurationError {
     public constructor(message?: string | undefined) {
         super(message);
 
