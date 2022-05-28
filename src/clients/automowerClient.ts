@@ -113,7 +113,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     protected async doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
         const id = uuid();
 
-        this.log.debug(`Sending web request: ${id}\r\n`, JSON.stringify({
+        this.log.debug(`Sending request: ${id}\r\n`, JSON.stringify({
             url: url,
             method: init?.method,
             headers: init?.headers,
