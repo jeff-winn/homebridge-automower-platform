@@ -12,6 +12,8 @@
 			],
 			"type": "pwa-node",
 			"preLaunchTask": "build",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "openOnSessionStart",			
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
 				"args": [
