@@ -20,6 +20,7 @@ export interface AutomowerPlatformConfig extends PlatformConfig {
     username: string | undefined;
     password: string | undefined;
     appKey: string | undefined;
+    logLevel: string | undefined;
 }
 
 /**

@@ -24,6 +24,39 @@
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
           "required": true
+        },
+        "logLevel": {
+          "title": "Log Level",
+          "type": "string",
+          "description": "The logging level in use by this platform instance, will not affect other plugins.",
+          "required": true,
+          "default": "info",
+          "oneOf": [
+            {
+              "title": "Debug",
+              "enum": [
+                "debug"
+              ]
+            },
+            {
+              "title": "Information (Default)",
+              "enum": [
+                "info"
+              ]
+            },
+            {
+              "title": "Warning",
+              "enum": [
+                "warn"
+              ]
+            },
+            {
+              "title": "Error",
+              "enum": [
+                "error"
+              ]
+            }
+          ]
         }
       }
     },
@@ -33,9 +66,10 @@
       {
         "type": "fieldset",
         "title": "Advanced Settings",
-        "description": "Changing any settings in here will likely break your plugin, proceed with caution.",
+        "description": "Changing any settings in here could break the platform instance, proceed with caution.",
         "expandable": true,
         "items": [
+          "logLevel",
           "appKey"
         ]
       }
