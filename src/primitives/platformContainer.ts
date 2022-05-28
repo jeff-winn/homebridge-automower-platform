@@ -9,7 +9,7 @@ import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
-import * as constants from '../constants';
+import * as constants from '../settings';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
 import { AutomowerAccessoryFactoryImpl } from '../services/automowerAccessoryFactory';
