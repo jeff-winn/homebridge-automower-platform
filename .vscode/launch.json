@@ -6,19 +6,18 @@
 	"configurations": [
 		{
 			"name": "Launch Homebridge",
-			"request": "launch",			
+			"request": "launch",
 			"skipFiles": [
 				"<node_internals>/**"
 			],
 			"type": "pwa-node",
 			"preLaunchTask": "build",
-			"console": "integratedTerminal",			
-			"internalConsoleOptions": "neverOpen",			
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
 				"args": [
-					"DEBUG=homebridge-automower-platform",
-					"-D"					
+					"-D"
 				]
 			}
 		}
