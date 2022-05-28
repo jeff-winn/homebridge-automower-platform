@@ -5,12 +5,12 @@ import { API, CharacteristicSetCallback,
 import { AutomowerContext } from '../../automowerAccessory';
 import { Calendar, Planner, RestrictedReason } from '../../model';
 import { MowerControlService } from '../automower/mowerControlService';
-import { AbstractSwitchService } from './abstractSwitchService';
+import { AbstractSwitch } from './abstractSwitch';
 
 /**
- * A service which manages the schedule enablement of an automower.
+ * A service which encapsulates the schedule switch for an automower.
  */
-export interface ScheduleService {
+export interface ScheduleSwitch {
     /**
      * Initializes the service.
      * @param prepend true to prepend the display name, otherwise false.
@@ -30,7 +30,7 @@ export interface ScheduleService {
     setPlanner(planner: Planner): void;
 }
 
-export class ScheduleServiceImpl extends AbstractSwitchService implements ScheduleService {
+export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
     private calendar?: Calendar;
     private planner?: Planner;
 

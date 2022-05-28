@@ -4,18 +4,17 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { MowerControlService } from '../../../src/services/automower/mowerControlService';
 import { AutomowerContext } from '../../../src/automowerAccessory';
-import { ScheduleServiceImplSpy } from './scheduleServiceImplSpy';
+import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
 import { RestrictedReason } from '../../../src/model';
-import { InvalidStateError } from '../../../src/errors/invalidStateError';
 
-describe('ScheduleServiceImpl', () => {
+describe('ScheduleSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
     let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<Logging>;
 
-    let target: ScheduleServiceImplSpy;
+    let target: ScheduleSwitchImplSpy;
 
     beforeEach(() => {
         mowerControlService = new Mock<MowerControlService>();
@@ -29,7 +28,7 @@ describe('ScheduleServiceImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         log = new Mock<Logging>();        
 
-        target = new ScheduleServiceImplSpy(mowerControlService.object(), platformAccessory.object(), api.object(), log.object());
+        target = new ScheduleSwitchImplSpy(mowerControlService.object(), platformAccessory.object(), api.object(), log.object());
     });
 
     it('should be initialized with existing service', () => {

@@ -7,9 +7,9 @@ import { InvalidStateError } from '../../errors/invalidStateError';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
- * An abstract class which supports an accessory switch.
+ * An abstract class which encapsulates an accessory switch.
  */
-export abstract class AbstractSwitchService extends AbstractAccessoryService {
+export abstract class AbstractSwitch extends AbstractAccessoryService {
     private switchService?: Service;
     private on?: Characteristic;
     

@@ -3,15 +3,15 @@ import { Service, Characteristic, CharacteristicEventTypes, CharacteristicSetCal
 import { It, Mock } from 'moq.ts';
 
 import { AutomowerContext } from '../../../src/automowerAccessory';
-import { SwitchServiceSpy } from './switchServiceSpy';
+import { SwitchSpy } from './switchSpy';
 
-describe('AbstractSwitchService', () => {
+describe('AbstractSwitch', () => {
     let name: string;
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let log: Mock<Logging>;
 
-    let target: SwitchServiceSpy;
+    let target: SwitchSpy;
 
     beforeEach(() => {
         name = 'Switch';
@@ -22,7 +22,7 @@ describe('AbstractSwitchService', () => {
         api.setup(o => o.hap.Characteristic).returns(Characteristic);
         api.setup(o => o.hap.Service).returns(Service);
 
-        target = new SwitchServiceSpy(name, accessory.object(), api.object(), log.object());
+        target = new SwitchSpy(name, accessory.object(), api.object(), log.object());
     });
 
     it('should return undefined when not initialized', () => {

@@ -5,7 +5,7 @@ import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
 import { AccessoryInformationService, AccessoryInformationServiceImpl } from './homebridge/accessoryInformationService';
 import { BatteryService, BatteryServiceImpl } from './homebridge/batteryService';
-import { ScheduleService, ScheduleServiceImpl } from './homebridge/scheduleService';
+import { ScheduleSwitch, ScheduleSwitchImpl } from './homebridge/scheduleSwitch';
 import { PlatformContainer } from '../primitives/platformContainer';
 import { MowerControlServiceImpl } from './automower/mowerControlService';
 
@@ -61,7 +61,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         const result = new AutomowerAccessory(accessory, 
             this.createBatteryService(accessory), 
             this.createAccessoryInformationService(accessory),
-            this.createScheduleService(accessory));
+            this.createScheduleSwitch(accessory));
 
         result.init();
 
@@ -76,8 +76,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return new AccessoryInformationServiceImpl(accessory, this.api);
     }
 
-    protected createScheduleService(accessory: PlatformAccessory<AutomowerContext>): ScheduleService {
-        return new ScheduleServiceImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api, this.log);
+    protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
+        return new ScheduleSwitchImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api, this.log);
     }
     
     private parseModelInformation(value: string): ModelInformation {
