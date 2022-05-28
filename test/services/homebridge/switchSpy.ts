@@ -27,4 +27,12 @@ export class SwitchSpy extends AbstractSwitch {
     public unsafeCreateService(displayName: string): Service {
         return this.createService(displayName);
     }
+
+    public unsafeUpdateValue(on: boolean): void {
+        this.updateValue(on);
+    }
+
+    public unsafeSetLastValue(value: boolean): void {
+        this.setLastValue(value);
+    }
 }

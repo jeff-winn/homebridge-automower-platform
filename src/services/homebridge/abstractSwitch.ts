@@ -59,7 +59,11 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
 
         if (this.lastValue !== on) {
             this.log.info(`Changed '${this.name}' switch for '${this.accessory.displayName}': ${on ? 'ON' : 'OFF'}`);
-            this.lastValue = on;
+            this.setLastValue(on);
         }
+    }
+
+    protected setLastValue(value: boolean): void {
+        this.lastValue = value;
     }
 }
