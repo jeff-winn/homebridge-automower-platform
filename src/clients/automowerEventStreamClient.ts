@@ -97,7 +97,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
             this.connecting = false;
             this.connected = true;
             
-            this.log.info(`Connected! ${this.connectionId}`);
+            this.log.info('Connected!');
         } else {
             const mowerEvent = data as AutomowerEvent;
             if (this.onMessageReceivedCallback !== undefined && mowerEvent.type !== undefined) {
