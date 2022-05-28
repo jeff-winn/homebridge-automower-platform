@@ -1,4 +1,4 @@
-import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
+import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
 import { Mock } from 'moq.ts';
 
@@ -7,6 +7,7 @@ import { Activity, Mode, OverrideAction, RestrictedReason, State } from '../../s
 import { PlatformAccessoryFactory } from '../../src/primitives/platformAccessoryFactory';
 import { AutomowerAccessoryFactoryImplSpy } from './automowerAccessoryFactoryImplSpy';
 import { PlatformContainer } from '../../src/primitives/platformContainer';
+import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 
 describe('AutomowerAccessoryFactoryImpl', () => {
     let service: typeof Service;
@@ -15,7 +16,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
-    let log: Mock<Logging>;
+    let log: Mock<PlatformLogger>;
     let container: Mock<PlatformContainer>;
 
     let target: AutomowerAccessoryFactoryImplSpy;
@@ -24,7 +25,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         factory = new Mock<PlatformAccessoryFactory>();
         api = new Mock<API>();
         hap = new Mock<HAP>();
-        log = new Mock<Logging>();
+        log = new Mock<PlatformLogger>();
         container = new Mock<PlatformContainer>();
 
         service = Service;

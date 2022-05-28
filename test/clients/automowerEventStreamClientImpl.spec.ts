@@ -1,8 +1,8 @@
-import { Logging } from 'homebridge';
 import { Mock } from 'moq.ts'; 
 import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
-import * as constants from '../../src/constants';
+import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import * as constants from '../../src/settings';
 
 describe('AutomowerEventStreamClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
@@ -12,11 +12,11 @@ describe('AutomowerEventStreamClientImpl', () => {
 
     let target: AutomowerEventStreamClientImpl;
     let authClient: AuthenticationClientImpl;
-    let log: Mock<Logging>;
+    let log: Mock<PlatformLogger>;
     let token: OAuthToken;
 
     beforeAll(async () => {
-        log = new Mock<Logging>();
+        log = new Mock<PlatformLogger>();
         target = new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL, log.object());
         authClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
 

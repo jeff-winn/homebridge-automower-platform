@@ -28,7 +28,7 @@
         "logLevel": {
           "title": "Log Level",
           "type": "string",
-          "description": "The logging level in use by this platform instance, will not affect other plugins.",
+          "description": "The logging level for accessories registered by this platform instance, changing this setting will <b>not</b> effect any other plugins on your Homebridge server.",
           "required": true,
           "default": "info",
           "oneOf": [

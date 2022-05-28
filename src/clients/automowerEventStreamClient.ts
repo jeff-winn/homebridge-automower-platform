@@ -1,5 +1,5 @@
-import { Logging } from 'homebridge';
 import { ErrorEvent, WebSocket } from 'ws';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AutomowerEvent, ConnectedEvent } from '../events';
 import { AccessToken } from '../model';
 
@@ -43,7 +43,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     private connected = false;
     private connectionId?: string;
 
-    public constructor(private baseUrl: string, private log: Logging) { }
+    public constructor(private baseUrl: string, private log: PlatformLogger) { }
     
     public open(token: AccessToken): void {
         if (this.socket !== undefined) {

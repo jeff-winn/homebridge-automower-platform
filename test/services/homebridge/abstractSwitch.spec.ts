@@ -1,16 +1,17 @@
-import { API, Logging, PlatformAccessory } from 'homebridge';
+import { API, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../../src/automowerAccessory';
 import { SwitchSpy } from './switchSpy';
 import { InvalidStateError } from '../../../src/errors/invalidStateError';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('AbstractSwitch', () => {
     let name: string;
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
-    let log: Mock<Logging>;
+    let log: Mock<PlatformLogger>;
 
     let target: SwitchSpy;
 
@@ -18,7 +19,7 @@ describe('AbstractSwitch', () => {
         name = 'Switch';
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
         api = new Mock<API>();
-        log = new Mock<Logging>();
+        log = new Mock<PlatformLogger>();
 
         api.setup(o => o.hap.Characteristic).returns(Characteristic);
         api.setup(o => o.hap.Service).returns(Service);

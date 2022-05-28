@@ -1,4 +1,4 @@
-import * as constants from '../src/constants';
+import * as constants from '../src/settings';
 
 describe('constants', () => {
     it('should be the platform name', () => {

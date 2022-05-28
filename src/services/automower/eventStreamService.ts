@@ -1,8 +1,8 @@
-import { Logging } from 'homebridge';
 import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
 import { AutomowerEvent, AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
+import { PlatformLogger } from '../../diagnostics/platformLogger';
 
 /**
  * A mechanism which is capable of streaming events for the Husqvarna account.
@@ -42,7 +42,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     private attached = false;
 
     public constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
-        private log: Logging, private timer: Timer) { }
+        private log: PlatformLogger, private timer: Timer) { }
 
 
     public onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void {

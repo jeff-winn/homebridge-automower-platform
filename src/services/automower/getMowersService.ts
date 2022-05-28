@@ -1,5 +1,3 @@
-import { Logging } from 'homebridge';
-
 import { AccessTokenManager } from '../authentication/accessTokenManager';
 import { AutomowerClient } from '../../clients/automowerClient';
 import { NotAuthorizedError } from '../../errors/notAuthorizedError';

@@ -15,10 +15,7 @@
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
 			"windows": {
-				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
-				"args": [
-					"-D"
-				]
+				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge"
 			}
 		}
 	]

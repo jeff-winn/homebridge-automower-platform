@@ -1,6 +1,6 @@
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
-import * as constants from '../../src/constants';
+import * as constants from '../../src/settings';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 
 describe('AuthenticationClientImpl', () => {

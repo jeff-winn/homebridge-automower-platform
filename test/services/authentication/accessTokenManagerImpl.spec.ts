@@ -1,16 +1,16 @@
 import { Mock, It, Times } from 'moq.ts';
-import { Logging } from 'homebridge';
 
 import { AuthenticationClient } from '../../../src/clients/authenticationClient';
 import { OAuthToken } from '../../../src/clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatform';
 import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
 import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('AccessTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
-    let log: Mock<Logging>;
+    let log: Mock<PlatformLogger>;
 
     const username = 'username';
     const password = 'password';
@@ -26,7 +26,7 @@ describe('AccessTokenManagerImpl', () => {
             appKey: appKey
         } as AutomowerPlatformConfig;
 
-        log = new Mock<Logging>();
+        log = new Mock<PlatformLogger>();
         log.setup(x => x.debug(It.IsAny<string>())).returns(undefined);
         log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
 

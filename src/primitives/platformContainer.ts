@@ -1,4 +1,4 @@
-import { API, Logging } from 'homebridge';
+import { API } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
@@ -14,6 +14,7 @@ import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
 import { AutomowerAccessoryFactoryImpl } from '../services/automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -22,7 +23,7 @@ export interface PlatformContainer {
 }
 
 export class PlatformContainerImpl implements PlatformContainer {
-    public constructor(private log: Logging, private config: AutomowerPlatformConfig, private api: API) { }
+    public constructor(private log: PlatformLogger, private config: AutomowerPlatformConfig, private api: API) { }
 
     public registerEverything(): void {
         this.log.debug('Registering classes to the DI container...');
