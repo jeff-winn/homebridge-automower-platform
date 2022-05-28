@@ -1,5 +1,5 @@
 import { PlatformAccessory } from 'homebridge';
-import { Mock, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
@@ -122,6 +122,58 @@ describe('AutomowerAccessory', () => {
 
         const result = target.getId();
         expect(result).toBe(id);
+    });
+
+    it('should not refresh the calendar when settings event is received with no calendar data', () => {
+        batteryService.setup(o => o.init()).returns(undefined);
+        informationService.setup(o => o.init()).returns(undefined);
+        scheduleService.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleService.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
+
+        target.init();
+        target.onSettingsEventReceived({
+            id: '1234',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                calendar: undefined
+            }
+        });
+        
+        scheduleService.verify(o => o.setCalendar(It.IsAny()), Times.Never());
+    });
+
+    it('should refresh the calendar when settings event is received', () => {
+        const calendar: Calendar = {
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true                    
+                }
+            ]
+        };
+
+        batteryService.setup(o => o.init()).returns(undefined);
+        informationService.setup(o => o.init()).returns(undefined);
+        scheduleService.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleService.setup(o => o.setCalendar(calendar)).returns(undefined);
+
+        target.init();
+        target.onSettingsEventReceived({
+            id: '1234',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                calendar: calendar
+            }
+        });
+        
+        scheduleService.verify(o => o.setCalendar(calendar), Times.Once());
     });
 
     it('should refresh all services when status event is received', () => {
