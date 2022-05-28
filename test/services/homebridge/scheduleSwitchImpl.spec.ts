@@ -4,18 +4,17 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { MowerControlService } from '../../../src/services/automower/mowerControlService';
 import { AutomowerContext } from '../../../src/automowerAccessory';
-import { ScheduleServiceImplSpy } from './scheduleServiceImplSpy';
+import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
 import { RestrictedReason } from '../../../src/model';
-import { InvalidStateError } from '../../../src/errors/invalidStateError';
 
-describe('ScheduleServiceImpl', () => {
+describe('ScheduleSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
     let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<Logging>;
 
-    let target: ScheduleServiceImplSpy;
+    let target: ScheduleSwitchImplSpy;
 
     beforeEach(() => {
         mowerControlService = new Mock<MowerControlService>();
@@ -29,7 +28,7 @@ describe('ScheduleServiceImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         log = new Mock<Logging>();        
 
-        target = new ScheduleServiceImplSpy(mowerControlService.object(), platformAccessory.object(), api.object(), log.object());
+        target = new ScheduleSwitchImplSpy(mowerControlService.object(), platformAccessory.object(), api.object(), log.object());
     });
 
     it('should be initialized with existing service', () => {
@@ -90,24 +89,6 @@ describe('ScheduleServiceImpl', () => {
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
-    it('should throw an error when not initialized', () => {
-        let thrown = false;
-
-        try {
-            target.setPlanner({
-                nextStartTimestamp: 0,
-                override: { },
-                restrictedReason: RestrictedReason.NOT_APPLICABLE
-            });
-        } catch (e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
-    });
-
     it('should update the characteristic as true when scheduled to start', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
@@ -118,7 +99,7 @@ describe('ScheduleServiceImpl', () => {
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(true);
 

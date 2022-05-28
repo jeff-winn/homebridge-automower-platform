@@ -6,7 +6,7 @@ import { SettingsEvent, StatusEvent } from './events';
 import { Mower } from './model';
 import { AccessoryInformationService } from './services/homebridge/accessoryInformationService';
 import { BatteryService } from './services/homebridge/batteryService';
-import { ScheduleService } from './services/homebridge/scheduleService';
+import { ScheduleSwitch } from './services/homebridge/scheduleSwitch';
 
 /**
  * Provides contextual information for an Automower accessory.
@@ -26,7 +26,7 @@ export class AutomowerAccessory {
         private accessory: PlatformAccessory<AutomowerContext>, 
         private batteryService: BatteryService, 
         private informationService: AccessoryInformationService, 
-        private scheduleService: ScheduleService) { 
+        private scheduleSwitch: ScheduleSwitch) { 
     }
 
     /**
@@ -45,7 +45,7 @@ export class AutomowerAccessory {
         this.batteryService.init();
 
         // The display name should be prepended, unless there are multiple switches available.
-        this.scheduleService.init(true);
+        this.scheduleSwitch.init(true);
     }
 
     /**
@@ -55,8 +55,8 @@ export class AutomowerAccessory {
     public refresh(data: Mower): void {
         this.batteryService.setBatteryLevel(data.attributes.battery);
         this.batteryService.setChargingState(data.attributes.mower);
-        this.scheduleService.setCalendar(data.attributes.calendar);
-        this.scheduleService.setPlanner(data.attributes.planner);
+        this.scheduleSwitch.setCalendar(data.attributes.calendar);
+        this.scheduleSwitch.setPlanner(data.attributes.planner);
     }
     
     /**
@@ -75,7 +75,7 @@ export class AutomowerAccessory {
         this.batteryService.setBatteryLevel(event.attributes.battery);
         this.batteryService.setChargingState(event.attributes.mower);
         
-        this.scheduleService.setPlanner(event.attributes.planner);
+        this.scheduleSwitch.setPlanner(event.attributes.planner);
     }
 
     /**
@@ -84,7 +84,7 @@ export class AutomowerAccessory {
      */
     public onSettingsEventReceived(event: SettingsEvent): void {
         if (event.attributes.calendar !== undefined) {
-            this.scheduleService.setCalendar(event.attributes.calendar);
+            this.scheduleSwitch.setCalendar(event.attributes.calendar);
         }
     }
 }

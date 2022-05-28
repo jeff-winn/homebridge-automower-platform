@@ -1,32 +1,51 @@
-import { API, PlatformAccessory } from 'homebridge';
+import { API, Logging, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue } from 'hap-nodejs';
-import { It, Mock } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../../src/automowerAccessory';
-import { SwitchServiceSpy } from './switchServiceSpy';
+import { SwitchSpy } from './switchSpy';
+import { InvalidStateError } from '../../../src/errors/invalidStateError';
 
-describe('AbstractSwitchService', () => {
+describe('AbstractSwitch', () => {
     let name: string;
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
+    let log: Mock<Logging>;
 
-    let target: SwitchServiceSpy;
+    let target: SwitchSpy;
 
     beforeEach(() => {
         name = 'Switch';
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
         api = new Mock<API>();
+        log = new Mock<Logging>();
 
         api.setup(o => o.hap.Characteristic).returns(Characteristic);
         api.setup(o => o.hap.Service).returns(Service);
 
-        target = new SwitchServiceSpy(name, accessory.object(), api.object());
+        target = new SwitchSpy(name, accessory.object(), api.object(), log.object());
     });
 
     it('should return undefined when not initialized', () => {
         const result = target.getUnderlyingService();
 
         expect(result).toBeUndefined();
+    });
+    
+    it('should throw an error when not initialized', () => {
+        let thrown = false;
+
+        try {
+            target.unsafeUpdateValue(true);
+        } catch(e) {
+            if (e instanceof InvalidStateError) {
+                thrown = true;
+            } else {
+                throw e;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
     });
 
     it('should initialize without the name prepended', () => {
@@ -88,5 +107,51 @@ describe('AbstractSwitchService', () => {
 
         expect(result).toBeDefined();
         expect(result.displayName).toBe(displayName);
+    });
+
+    it('should log the value when changed from false to true', () => {
+        const displayName = 'hello world';
+        accessory.setup(o => o.displayName).returns(displayName);
+
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        c.setup(o => o.updateValue(It.IsAny())).returns(c.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        target.init(false);
+        target.unsafeUpdateValue(true);
+
+        log.verify(o => o.info('Changed \'Switch\' switch for \'hello world\': ON'), Times.Once());
+        c.verify(o => o.updateValue(true), Times.Once());
+    });
+
+    it('should log the value when changed from true to false', () => {
+        const displayName = 'hello world';
+        accessory.setup(o => o.displayName).returns(displayName);
+
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        c.setup(o => o.updateValue(It.IsAny())).returns(c.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        
+        target.init(false);        
+        target.unsafeSetLastValue(true);
+        
+        target.unsafeUpdateValue(false);
+
+        log.verify(o => o.info('Changed \'Switch\' switch for \'hello world\': OFF'), Times.Once());
+        c.verify(o => o.updateValue(false), Times.Once());
     });
 });

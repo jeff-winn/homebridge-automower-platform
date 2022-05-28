@@ -1,18 +1,18 @@
 import { PlatformAccessory } from 'homebridge';
-import { Mock, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
 import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
 import { BatteryService } from '../src/services/homebridge/batteryService';
 import { AccessoryInformationService } from '../src/services/homebridge/accessoryInformationService';
-import { ScheduleService } from '../src/services/homebridge/scheduleService';
+import { ScheduleSwitch } from '../src/services/homebridge/scheduleSwitch';
 
 describe('AutomowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let batteryService: Mock<BatteryService>;
     let informationService: Mock<AccessoryInformationService>;
-    let scheduleService: Mock<ScheduleService>;
+    let scheduleService: Mock<ScheduleSwitch>;
 
     let target: AutomowerAccessory;
 
@@ -20,7 +20,7 @@ describe('AutomowerAccessory', () => {
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
         batteryService = new Mock<BatteryService>();
         informationService = new Mock<AccessoryInformationService>();    
-        scheduleService = new Mock<ScheduleService>();
+        scheduleService = new Mock<ScheduleSwitch>();
     
         target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
             informationService.object(), scheduleService.object());
@@ -122,6 +122,58 @@ describe('AutomowerAccessory', () => {
 
         const result = target.getId();
         expect(result).toBe(id);
+    });
+
+    it('should not refresh the calendar when settings event is received with no calendar data', () => {
+        batteryService.setup(o => o.init()).returns(undefined);
+        informationService.setup(o => o.init()).returns(undefined);
+        scheduleService.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleService.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
+
+        target.init();
+        target.onSettingsEventReceived({
+            id: '1234',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                calendar: undefined
+            }
+        });
+        
+        scheduleService.verify(o => o.setCalendar(It.IsAny()), Times.Never());
+    });
+
+    it('should refresh the calendar when settings event is received', () => {
+        const calendar: Calendar = {
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true                    
+                }
+            ]
+        };
+
+        batteryService.setup(o => o.init()).returns(undefined);
+        informationService.setup(o => o.init()).returns(undefined);
+        scheduleService.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleService.setup(o => o.setCalendar(calendar)).returns(undefined);
+
+        target.init();
+        target.onSettingsEventReceived({
+            id: '1234',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                calendar: calendar
+            }
+        });
+        
+        scheduleService.verify(o => o.setCalendar(calendar), Times.Once());
     });
 
     it('should refresh all services when status event is received', () => {

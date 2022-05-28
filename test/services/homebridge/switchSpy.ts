@@ -1,7 +1,7 @@
 import { CharacteristicSetCallback, CharacteristicValue, Service } from 'homebridge';
-import { AbstractSwitchService } from '../../../src/services/homebridge/abstractSwitchService';
+import { AbstractSwitch } from '../../../src/services/homebridge/abstractSwitch';
 
-export class SwitchServiceSpy extends AbstractSwitchService {
+export class SwitchSpy extends AbstractSwitch {
     public serviceName: string | undefined;
     public service: Service | undefined;
     public onSetCalled = false;
@@ -26,5 +26,13 @@ export class SwitchServiceSpy extends AbstractSwitchService {
 
     public unsafeCreateService(displayName: string): Service {
         return this.createService(displayName);
+    }
+
+    public unsafeUpdateValue(on: boolean): void {
+        this.updateValue(on);
+    }
+
+    public unsafeSetLastValue(value: boolean): void {
+        this.setLastValue(value);
     }
 }
