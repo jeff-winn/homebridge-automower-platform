@@ -1,9 +1,8 @@
-import { Logging } from 'homebridge';
-
 import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../automowerPlatform';
 import { AccessToken } from '../../model';
 import { BadConfigurationError } from '../../errors/badConfigurationError';
+import { PlatformLogger } from '../../diagnostics/platformLogger';
 
 /**
  * A mechanism which manages the retrieval and renewal of an access token.
@@ -30,7 +29,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private expires?: Date;
     private invalidated = false;    
 
-    public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: Logging) { }
+    public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: PlatformLogger) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
         if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {

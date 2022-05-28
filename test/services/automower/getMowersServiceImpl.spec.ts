@@ -1,5 +1,4 @@
-import { It, Mock, Times } from 'moq.ts';
-import { Logging } from 'homebridge';
+import { Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';

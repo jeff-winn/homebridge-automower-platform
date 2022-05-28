@@ -1,7 +1,6 @@
-import { Logging } from 'homebridge';
-
 import { AutomowerAccessory } from '../automowerAccessory';
 import { AutomowerPlatform } from '../automowerPlatform';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 import { GetMowersService } from './automower/getMowersService';
 import { AutomowerAccessoryFactory } from './automowerAccessoryFactory';
 
@@ -20,7 +19,7 @@ export interface DiscoveryService {
  * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
  */
 export class DiscoveryServiceImpl implements DiscoveryService {
-    public constructor(private mowerService: GetMowersService, private factory: AutomowerAccessoryFactory, private log: Logging) { }
+    public constructor(private mowerService: GetMowersService, private factory: AutomowerAccessoryFactory, private log: PlatformLogger) { }
 
     public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('Discovering new mowers...');

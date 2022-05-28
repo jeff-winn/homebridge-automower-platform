@@ -1,4 +1,4 @@
-import { API, Logging, PlatformAccessory } from 'homebridge';
+import { API, PlatformAccessory } from 'homebridge';
 
 import { PlatformAccessoryFactory } from '../primitives/platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
@@ -8,6 +8,7 @@ import { BatteryService, BatteryServiceImpl } from './homebridge/batteryService'
 import { ScheduleSwitch, ScheduleSwitchImpl } from './homebridge/scheduleSwitch';
 import { PlatformContainer } from '../primitives/platformContainer';
 import { MowerControlServiceImpl } from './automower/mowerControlService';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -38,7 +39,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     public constructor(
         private factory: PlatformAccessoryFactory, 
         private api: API, 
-        private log: Logging,
+        private log: PlatformLogger,
         private container: PlatformContainer) { }
 
     public createAccessory(mower: Mower): AutomowerAccessory {

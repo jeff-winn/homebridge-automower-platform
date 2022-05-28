@@ -1,4 +1,3 @@
-import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
@@ -7,11 +6,12 @@ import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } 
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('EventStreamServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let stream: AutomowerEventStreamClientSpy;
-    let log: Mock<Logging>;
+    let log: Mock<PlatformLogger>;
     let timer: Mock<Timer>;
 
     let target: EventStreamServiceImplSpy;
@@ -19,7 +19,7 @@ describe('EventStreamServiceImpl', () => {
     beforeEach(() => {
         tokenManager = new Mock<AccessTokenManager>();
         stream = new AutomowerEventStreamClientSpy();
-        log = new Mock<Logging>();
+        log = new Mock<PlatformLogger>();
         timer = new Mock<Timer>();
 
         target = new EventStreamServiceImplSpy(tokenManager.object(), stream, log.object(), timer.object());

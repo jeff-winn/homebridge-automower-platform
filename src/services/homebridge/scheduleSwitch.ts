@@ -1,8 +1,9 @@
 import { API, CharacteristicSetCallback, 
-    HAPStatus, Logging, PlatformAccessory 
+    HAPStatus, PlatformAccessory 
 } from 'homebridge';
 
 import { AutomowerContext } from '../../automowerAccessory';
+import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { Calendar, Planner, RestrictedReason } from '../../model';
 import { MowerControlService } from '../automower/mowerControlService';
 import { AbstractSwitch } from './abstractSwitch';
@@ -35,7 +36,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     private planner?: Planner;
 
     public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, 
-        api: API, log: Logging) {
+        api: API, log: PlatformLogger) {
         super('Schedule', accessory, api, log);
     }
 

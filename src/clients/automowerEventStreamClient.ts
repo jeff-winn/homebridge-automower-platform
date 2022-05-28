@@ -1,5 +1,5 @@
-import { Logging } from 'homebridge';
 import { ErrorEvent, WebSocket } from 'ws';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AutomowerEvent, ConnectedEvent } from '../events';
 import { AccessToken } from '../model';
 
@@ -43,7 +43,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     private connected = false;
     private connectionId?: string;
 
-    public constructor(private baseUrl: string, private log: Logging) { }
+    public constructor(private baseUrl: string, private log: PlatformLogger) { }
     
     public open(token: AccessToken): void {
         if (this.socket !== undefined) {
@@ -89,7 +89,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         }
 
         const data = JSON.parse(buffer.toString());
-        this.log.debug('Received message:\r\n', JSON.stringify(data));
+        this.log.debug('Received event:\r\n', JSON.stringify(data));
 
         const connectedEvent = data as ConnectedEvent;
         if (connectedEvent !== undefined && connectedEvent.connectionId !== undefined) {
@@ -97,7 +97,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
             this.connecting = false;
             this.connected = true;
             
-            this.log.info(`Connected! ${this.connectionId}`);
+            this.log.info('Connected!');
         } else {
             const mowerEvent = data as AutomowerEvent;
             if (this.onMessageReceivedCallback !== undefined && mowerEvent.type !== undefined) {

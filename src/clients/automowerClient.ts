@@ -1,11 +1,11 @@
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
-import { Logging } from 'homebridge';
 import { v4 as uuid } from 'uuid';
 
 import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { UnexpectedServerError } from '../errors/unexpectedServerError';
 import { BadConfigurationError } from '../errors/badConfigurationError';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -67,7 +67,7 @@ interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, private log: Logging) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string, private log: PlatformLogger) { }
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
@@ -113,7 +113,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     protected async doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
         const id = uuid();
 
-        this.log.debug(`Sending web request: ${id}\r\n`, JSON.stringify({
+        this.log.debug(`Sending request: ${id}\r\n`, JSON.stringify({
             url: url,
             method: init?.method,
             headers: init?.headers,

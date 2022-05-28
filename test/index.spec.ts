@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { API } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 import { AutomowerPlatform } from '../src/automowerPlatform';
-import { PLATFORM_NAME } from '../src/constants';
+import { PLATFORM_NAME } from '../src/settings';
 import * as index from '../src/index';
 
 describe('index', () => {

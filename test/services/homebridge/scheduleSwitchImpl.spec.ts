@@ -1,4 +1,4 @@
-import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
+import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicEventTypes, CharacteristicValue, CharacteristicSetCallback, HAPStatus } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
@@ -6,13 +6,14 @@ import { MowerControlService } from '../../../src/services/automower/mowerContro
 import { AutomowerContext } from '../../../src/automowerAccessory';
 import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
 import { RestrictedReason } from '../../../src/model';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('ScheduleSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
     let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
-    let log: Mock<Logging>;
+    let log: Mock<PlatformLogger>;
 
     let target: ScheduleSwitchImplSpy;
 
@@ -26,7 +27,7 @@ describe('ScheduleSwitchImpl', () => {
         
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object());
-        log = new Mock<Logging>();        
+        log = new Mock<PlatformLogger>();        
 
         target = new ScheduleSwitchImplSpy(mowerControlService.object(), platformAccessory.object(), api.object(), log.object());
     });
