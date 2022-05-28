@@ -89,7 +89,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         }
 
         const data = JSON.parse(buffer.toString());
-        this.log.debug('Received message:\r\n', JSON.stringify(data));
+        this.log.debug('Received event:\r\n', JSON.stringify(data));
 
         const connectedEvent = data as ConnectedEvent;
         if (connectedEvent !== undefined && connectedEvent.connectionId !== undefined) {
