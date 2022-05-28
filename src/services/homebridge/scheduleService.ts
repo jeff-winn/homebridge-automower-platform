@@ -3,8 +3,7 @@ import { API, CharacteristicSetCallback,
 } from 'homebridge';
 
 import { AutomowerContext } from '../../automowerAccessory';
-import { InvalidStateError } from '../../errors/invalidStateError';
-import { Calendar, OverrideAction, Planner, RestrictedReason } from '../../model';
+import { Calendar, Planner, RestrictedReason } from '../../model';
 import { MowerControlService } from '../automower/mowerControlService';
 import { AbstractSwitchService } from './abstractSwitchService';
 
@@ -36,8 +35,8 @@ export class ScheduleServiceImpl extends AbstractSwitchService implements Schedu
     private planner?: Planner;
 
     public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, 
-        api: API, private log: Logging) {
-        super('Schedule', accessory, api);
+        api: API, log: Logging) {
+        super('Schedule', accessory, api, log);
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
@@ -64,10 +63,6 @@ export class ScheduleServiceImpl extends AbstractSwitchService implements Schedu
      * Refreshes the characteristic value based on the deterministic calculation of whether the schedule is currently enabled.
      */
     protected refreshCharacteristic() {
-        if (this.on === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');            
-        }
-
         if (this.calendar === undefined || this.planner === undefined) {
             // Don't actually do anything if both pieces of information to make the decision are not available.
             return;
@@ -80,9 +75,7 @@ export class ScheduleServiceImpl extends AbstractSwitchService implements Schedu
             }
         });
  
-        const value = anyDaysEnabled && this.planner.restrictedReason !== RestrictedReason.NOT_APPLICABLE;
-        this.log.debug(`Setting the ${this.name} switch to: ${value}`);
-
-        this.on.updateValue(value);
+        const newValue = anyDaysEnabled && this.planner.restrictedReason !== RestrictedReason.NOT_APPLICABLE;
+        this.updateValue(newValue);
     }
 }

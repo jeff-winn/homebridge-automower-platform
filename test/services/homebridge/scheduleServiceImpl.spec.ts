@@ -90,24 +90,6 @@ describe('ScheduleServiceImpl', () => {
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
-    it('should throw an error when not initialized', () => {
-        let thrown = false;
-
-        try {
-            target.setPlanner({
-                nextStartTimestamp: 0,
-                override: { },
-                restrictedReason: RestrictedReason.NOT_APPLICABLE
-            });
-        } catch (e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
-    });
-
     it('should update the characteristic as true when scheduled to start', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
@@ -118,7 +100,7 @@ describe('ScheduleServiceImpl', () => {
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(true);
 
