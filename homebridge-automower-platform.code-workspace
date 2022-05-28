@@ -5,6 +5,7 @@
 		}
 	],	
 	"settings": {
+		"debug.terminal.clearBeforeReusing": true,
 		"typescript.preferences.quoteStyle": "single",
 		"eslint.enable": true,
 		"editor.tabSize": 4,

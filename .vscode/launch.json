@@ -6,14 +6,14 @@
 	"configurations": [
 		{
 			"name": "Launch Homebridge",
-			"request": "launch",
+			"request": "launch",			
 			"skipFiles": [
 				"<node_internals>/**"
 			],
 			"type": "pwa-node",
 			"preLaunchTask": "build",
-			"console": "integratedTerminal",
-			"internalConsoleOptions": "openOnSessionStart",			
+			"console": "integratedTerminal",			
+			"internalConsoleOptions": "neverOpen",			
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
 				"args": [
