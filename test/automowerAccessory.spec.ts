@@ -106,6 +106,7 @@ describe('AutomowerAccessory', () => {
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
         scheduleService.setup(o => o.setPlanner(planner)).returns(undefined);
         scheduleService.setup(o => o.setCalendar(calendar)).returns(undefined);
+        scheduleService.setup(o => o.setMowerState(state)).returns(undefined);
 
         target.refresh(mower);
 
@@ -113,6 +114,7 @@ describe('AutomowerAccessory', () => {
         batteryService.verify(o => o.setChargingState(state), Times.Once());
         scheduleService.verify(o => o.setPlanner(planner), Times.Once());
         scheduleService.verify(o => o.setCalendar(calendar), Times.Once());
+        scheduleService.verify(o => o.setMowerState(state), Times.Once());
     });
     
     it('returns the accessory uuid', () => {
@@ -212,11 +214,13 @@ describe('AutomowerAccessory', () => {
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
         scheduleService.setup(o => o.setPlanner(planner)).returns(undefined);
+        scheduleService.setup(o => o.setMowerState(state)).returns(undefined);
 
         target.onStatusEventReceived(event);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
         scheduleService.verify(o => o.setPlanner(planner), Times.Once());
+        scheduleService.verify(o => o.setMowerState(state), Times.Once());
     });
 });
