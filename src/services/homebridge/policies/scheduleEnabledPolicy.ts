@@ -1,5 +1,5 @@
 import { InvalidStateError } from '../../../errors/invalidStateError';
-import { Calendar, MowerState, OverrideAction, Planner, RestrictedReason } from '../../../model';
+import { Calendar, MowerState, Planner, RestrictedReason } from '../../../model';
 
 export interface ScheduleEnabledPolicy {
     /**
@@ -49,13 +49,13 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
         }
         
         let anyDaysEnabled = false;        
-        this.calendar!.tasks.forEach(task => {
+        this.calendar.tasks.forEach(task => {
             if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
                 anyDaysEnabled = true;
             }
         });
     
-        return anyDaysEnabled && this.planner!.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
+        return anyDaysEnabled && this.planner.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
     }
     
     public setCalendar(calendar: Calendar): void {
