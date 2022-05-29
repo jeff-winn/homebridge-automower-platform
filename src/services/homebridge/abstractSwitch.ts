@@ -53,15 +53,18 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
 
     protected updateValue(on: boolean): void {
         if (this.on === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');            
+            throw new InvalidStateError('The service has not been initialized.');
+        }
+
+        if (this.lastValue === on) {
+            // The value is already set to what is requested, don't change anything.
+            return;
         }
 
         this.on.updateValue(on);
 
-        if (this.lastValue !== on) {
-            this.log.info(`Changed '${this.name}' switch for '${this.accessory.displayName}': ${on ? 'ON' : 'OFF'}`);
-            this.setLastValue(on);
-        }
+        this.log.info(`Changed '${this.name}' switch for '${this.accessory.displayName}': ${on ? 'ON' : 'OFF'}`);
+        this.setLastValue(on);
     }
 
     protected setLastValue(value: boolean): void {

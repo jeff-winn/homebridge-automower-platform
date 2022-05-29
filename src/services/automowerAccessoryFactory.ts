@@ -9,6 +9,7 @@ import { ScheduleSwitch, ScheduleSwitchImpl } from './homebridge/scheduleSwitch'
 import { PlatformContainer } from '../primitives/platformContainer';
 import { MowerControlServiceImpl } from './automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
+import { DeterministicScheduleEnabledPolicy } from './homebridge/policies/scheduleEnabledPolicy';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -78,7 +79,10 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
-        return new ScheduleSwitchImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api, this.log);
+        return new ScheduleSwitchImpl(
+            this.container.resolve(MowerControlServiceImpl), 
+            this.container.resolve(DeterministicScheduleEnabledPolicy),
+            accessory, this.api, this.log);
     }
     
     private parseModelInformation(value: string): ModelInformation {

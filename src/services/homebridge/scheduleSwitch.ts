@@ -4,9 +4,10 @@ import { API, CharacteristicSetCallback,
 
 import { AutomowerContext } from '../../automowerAccessory';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
-import { Calendar, Planner, RestrictedReason } from '../../model';
+import { Calendar, MowerState, Planner } from '../../model';
 import { MowerControlService } from '../automower/mowerControlService';
 import { AbstractSwitch } from './abstractSwitch';
+import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 
 /**
  * A service which encapsulates the schedule switch for an automower.
@@ -29,14 +30,18 @@ export interface ScheduleSwitch {
      * @param planner The planner.
      */
     setPlanner(planner: Planner): void;
+
+    /**
+     * Sets the state of the mower.
+     * @param state The mower state.
+     */
+    setMowerState(state: MowerState): void;
 }
 
 export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
-    private calendar?: Calendar;
-    private planner?: Planner;
 
-    public constructor(private controlService: MowerControlService, accessory: PlatformAccessory<AutomowerContext>, 
-        api: API, log: PlatformLogger) {
+    public constructor(private controlService: MowerControlService, private policy: ScheduleEnabledPolicy, 
+        accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super('Schedule', accessory, api, log);
     }
 
@@ -51,12 +56,17 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     }
 
     public setCalendar(calendar: Calendar): void {    
-        this.calendar = calendar;
+        this.policy.setCalendar(calendar);
         this.refreshCharacteristic();
     }
 
     public setPlanner(planner: Planner): void {
-        this.planner = planner;
+        this.policy.setPlanner(planner);
+        this.refreshCharacteristic();
+    }
+
+    public setMowerState(state: MowerState): void {
+        this.policy.setMowerState(state);
         this.refreshCharacteristic();
     }
 
@@ -64,19 +74,9 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
      * Refreshes the characteristic value based on the deterministic calculation of whether the schedule is currently enabled.
      */
     protected refreshCharacteristic() {
-        if (this.calendar === undefined || this.planner === undefined) {
-            // Don't actually do anything if both pieces of information to make the decision are not available.
-            return;
+        if (this.policy.shouldApply()) {
+            const newValue = this.policy.apply();
+            this.updateValue(newValue);        
         }
-
-        let anyDaysEnabled = false;        
-        this.calendar.tasks.forEach(task => {
-            if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
-                anyDaysEnabled = true;
-            }
-        });
- 
-        const newValue = anyDaysEnabled && this.planner.restrictedReason !== RestrictedReason.NOT_APPLICABLE;
-        this.updateValue(newValue);
     }
 }
