@@ -5,7 +5,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { MowerControlService } from '../../../src/services/automower/mowerControlService';
 import { AutomowerContext } from '../../../src/automowerAccessory';
 import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
-import { Calendar, Planner, RestrictedReason } from '../../../src/model';
+import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../../src/model';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { ScheduleEnabledPolicy } from '../../../src/services/homebridge/policies/scheduleEnabledPolicy';
 
@@ -34,6 +34,63 @@ describe('ScheduleSwitchImpl', () => {
 
         target = new ScheduleSwitchImplSpy(mowerControlService.object(), policy.object(), 
             platformAccessory.object(), api.object(), log.object());
+    });
+
+    it('should set the policy calendar', () => {
+        const calendar: Calendar = {
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true
+                }
+            ]
+        };
+
+        policy.setup(o => o.shouldApply()).returns(false);
+        policy.setup(o => o.setCalendar(calendar)).returns(undefined);
+
+        target.setCalendar(calendar);
+
+        policy.verify(o => o.setCalendar(calendar), Times.Once());
+    });
+
+    it('should set the policy mower state', () => {
+        const mowerState: MowerState = {
+            activity: Activity.MOWING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.HOME,
+            state: State.NOT_APPLICABLE
+        };
+
+        policy.setup(o => o.shouldApply()).returns(false);
+        policy.setup(o => o.setMowerState(mowerState)).returns(undefined);
+
+        target.setMowerState(mowerState);
+
+        policy.verify(o => o.setMowerState(mowerState), Times.Once());
+    });
+
+    it('should set the policy planner', () => {
+        const planner: Planner = {
+            nextStartTimestamp: 12345,
+            override: { },
+            restrictedReason: RestrictedReason.WEEK_SCHEDULE
+        };
+
+        policy.setup(o => o.shouldApply()).returns(false);
+        policy.setup(o => o.setPlanner(planner)).returns(undefined);
+
+        target.setPlanner(planner);
+
+        policy.verify(o => o.setPlanner(planner), Times.Once());
     });
 
     it('should be initialized with existing service', () => {
