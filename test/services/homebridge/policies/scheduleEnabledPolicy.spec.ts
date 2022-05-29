@@ -1,3 +1,4 @@
+import { InvalidStateError } from '../../../../src/errors/invalidStateError';
 import { Calendar, RestrictedReason } from '../../../../src/model';
 import { DeterministicScheduleEnabledPolicy } from '../../../../src/services/homebridge/policies/scheduleEnabledPolicy';
 
@@ -104,5 +105,57 @@ describe('DeterministicScheduleEnabledPolicy', () => {
         const result = target.apply();
 
         expect(result).toBeFalsy();
+    });
+
+    it('should throw an error when calendar is undefined', () => {
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { },
+            restrictedReason: RestrictedReason.NONE
+        });
+
+        let thrown = false;
+        try {
+            target.apply();
+        } catch (e) {
+            if (e instanceof InvalidStateError) {
+                thrown = true;
+            } else {
+                throw e;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
+    });
+
+    it('should throw an error when planner is undefined', () => {
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 1,
+                    duration: 1,
+                    sunday: false,
+                    monday: false,
+                    tuesday: false,
+                    wednesday: false,
+                    thursday: false,
+                    friday: false,
+                    saturday: false
+                }
+            ]
+        });
+
+        let thrown = false;
+        try {
+            target.apply();
+        } catch (e) {
+            if (e instanceof InvalidStateError) {
+                thrown = true;
+            } else {
+                throw e;
+            }
+        }
+
+        expect(thrown).toBeTruthy();
     });
 });
