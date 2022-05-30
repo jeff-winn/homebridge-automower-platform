@@ -12,7 +12,7 @@ import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../settings';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { AutomowerAccessoryFactoryImpl } from '../services/automowerAccessoryFactory';
+import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { DeterministicScheduleEnabledPolicy } from '../services/homebridge/policies/scheduleEnabledPolicy';

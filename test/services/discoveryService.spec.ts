@@ -1,7 +1,7 @@
 import { It, Mock, Times } from 'moq.ts';
 
 import { GetMowersService } from '../../src/services/automower/getMowersService';
-import { AutomowerAccessoryFactory } from '../../src/services/automowerAccessoryFactory';
+import { AutomowerAccessoryFactory } from '../../src/primitives/automowerAccessoryFactory';
 import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
 import { AutomowerPlatform } from '../../src/automowerPlatform';
 import { AutomowerAccessory } from '../../src/automowerAccessory';
