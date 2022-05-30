@@ -55,8 +55,10 @@ export class AutomowerAccessory {
     public refresh(data: Mower): void {
         this.batteryService.setBatteryLevel(data.attributes.battery);
         this.batteryService.setChargingState(data.attributes.mower);
+
+        this.scheduleSwitch.setMowerState(data.attributes.mower);
         this.scheduleSwitch.setCalendar(data.attributes.calendar);
-        this.scheduleSwitch.setPlanner(data.attributes.planner);
+        this.scheduleSwitch.setPlanner(data.attributes.planner);        
     }
     
     /**
@@ -75,6 +77,7 @@ export class AutomowerAccessory {
         this.batteryService.setBatteryLevel(event.attributes.battery);
         this.batteryService.setChargingState(event.attributes.mower);
         
+        this.scheduleSwitch.setMowerState(event.attributes.mower);
         this.scheduleSwitch.setPlanner(event.attributes.planner);
     }
 

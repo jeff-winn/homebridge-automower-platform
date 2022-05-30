@@ -1,14 +1,15 @@
 import { API, PlatformAccessory } from 'homebridge';
 
-import { PlatformAccessoryFactory } from '../primitives/platformAccessoryFactory';
+import { PlatformAccessoryFactory } from './platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
-import { AccessoryInformationService, AccessoryInformationServiceImpl } from './homebridge/accessoryInformationService';
-import { BatteryService, BatteryServiceImpl } from './homebridge/batteryService';
-import { ScheduleSwitch, ScheduleSwitchImpl } from './homebridge/scheduleSwitch';
-import { PlatformContainer } from '../primitives/platformContainer';
-import { MowerControlServiceImpl } from './automower/mowerControlService';
+import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/homebridge/accessoryInformationService';
+import { BatteryService, BatteryServiceImpl } from '../services/homebridge/batteryService';
+import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/homebridge/scheduleSwitch';
+import { PlatformContainer } from './platformContainer';
+import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
+import { DeterministicScheduleEnabledPolicy } from '../services/homebridge/policies/scheduleEnabledPolicy';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -78,7 +79,10 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
-        return new ScheduleSwitchImpl(this.container.resolve(MowerControlServiceImpl), accessory, this.api, this.log);
+        return new ScheduleSwitchImpl(
+            this.container.resolve(MowerControlServiceImpl), 
+            this.container.resolve(DeterministicScheduleEnabledPolicy),
+            accessory, this.api, this.log);
     }
     
     private parseModelInformation(value: string): ModelInformation {

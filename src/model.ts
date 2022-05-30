@@ -145,7 +145,8 @@ export enum OverrideAction {
     NOT_ACTIVE = 'NOT_ACTIVE',
     NO_SOURCE = 'NO_SOURCE',
     FORCE_PARK = 'FORCE_PARK',
-    FORCE_MOW = 'FORCE_MOW'
+    FORCE_MOW = 'FORCE_MOW',
+    WEEK_TIMER = 'WEEK_TIMER'
 }
 
 /**

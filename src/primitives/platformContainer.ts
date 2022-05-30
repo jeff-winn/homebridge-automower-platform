@@ -12,9 +12,10 @@ import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../settings';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { AutomowerAccessoryFactoryImpl } from '../services/automowerAccessoryFactory';
+import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
+import { DeterministicScheduleEnabledPolicy } from '../services/homebridge/policies/scheduleEnabledPolicy';
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -42,6 +43,10 @@ export class PlatformContainerImpl implements PlatformContainer {
                 this.config.appKey,
                 constants.AUTOMOWER_CONNECT_API_BASE_URL,
                 this.log)
+        });
+
+        container.register(DeterministicScheduleEnabledPolicy, {
+            useValue: new DeterministicScheduleEnabledPolicy()
         });
 
         container.register(GetMowersServiceImpl, {

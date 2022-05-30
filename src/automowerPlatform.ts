@@ -10,7 +10,7 @@ import { SettingsEvent, StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './services/automowerAccessoryFactory';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { PlatformLogger, HomebridgeImitationLogger } from './diagnostics/platformLogger';
 import { ConsoleWrapper, ConsoleWrapperImpl } from './diagnostics/primitives/consoleWrapper';
