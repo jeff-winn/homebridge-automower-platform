@@ -187,7 +187,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
         });
 
         target.setPlanner({
-            nextStartTimestamp: 0,
+            nextStartTimestamp: 1653984000000,
             override: { },
             restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
@@ -226,7 +226,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
         });
 
         target.setPlanner({
-            nextStartTimestamp: 0,
+            nextStartTimestamp: 1653984000000,
             override: { },
             restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
