@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as color from 'colorette';
 import util from 'util';
 import { LogLevel } from 'homebridge';
 
@@ -74,23 +74,25 @@ export class HomebridgeImitationLogger implements PlatformLogger {
 
         switch (level) {
         case LogLevel.DEBUG:
-            msg = chalk.gray(msg);
+            msg = color.gray(msg);            
             break;
+
         case LogLevel.ERROR:
-            msg = chalk.red(msg);
+            msg = color.red(msg);
             println = this.console.stderr;
             break;
+
         case LogLevel.WARN:
-            msg = chalk.yellow(msg);
+            msg = color.yellow(msg);
             println = this.console.stderr;
             break;
         }
 
         if (this.platformName !== undefined) {
-            msg = chalk.cyan(`[${this.platformName}] `) + msg;
+            msg = color.cyan(`[${this.platformName}] `) + msg;
         }
 
-        msg = chalk.white(`[${new Date().toLocaleString()}] `) + msg;        
+        msg = color.white(`[${new Date().toLocaleString()}] `) + msg;        
         println(msg);
     }
 
