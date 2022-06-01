@@ -3,6 +3,7 @@ import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamCl
 import { AutomowerEvent, AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { BadCredentialsError } from '../../errors/badCredentialsError';
 
 /**
  * A mechanism which is capable of streaming events for the Husqvarna account.
@@ -70,8 +71,16 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     private async connect(): Promise<void> {
-        const token = await this.tokenManager.getCurrentToken();
-        this.stream.open(token);
+        try {
+            const token = await this.tokenManager.getCurrentToken();
+            this.stream.open(token);
+        } catch (e) {
+            if (e instanceof BadCredentialsError) {
+                this.tokenManager.flagAsInvalid();
+            } else {
+                throw e;
+            }
+        }
     }
 
     public getReconnectInterval(): number {
