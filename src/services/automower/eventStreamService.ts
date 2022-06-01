@@ -1,4 +1,4 @@
-import { AccessTokenManager } from '../authentication/accessTokenManager';
+import { AccessTokenManager } from './accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
 import { AutomowerEvent, AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';

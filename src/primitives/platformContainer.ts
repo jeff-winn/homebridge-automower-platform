@@ -4,7 +4,7 @@ import { container, InjectionToken } from 'tsyringe';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
-import { AccessTokenManagerImpl } from '../services/authentication/accessTokenManager';
+import { AccessTokenManagerImpl } from '../services/automower/accessTokenManager';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';

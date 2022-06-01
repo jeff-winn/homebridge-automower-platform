@@ -1,6 +1,6 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
+import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
 import { AutomowerEventTypes, StatusEvent } from '../../../src/events';
 import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
