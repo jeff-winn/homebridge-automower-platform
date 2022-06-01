@@ -2,9 +2,9 @@ import { API, Characteristic, CharacteristicEventTypes,
     CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service 
 } from 'homebridge';
 
-import { AutomowerContext } from '../../automowerAccessory';
-import { PlatformLogger } from '../../diagnostics/platformLogger';
-import { InvalidStateError } from '../../errors/invalidStateError';
+import { AutomowerContext } from '../automowerAccessory';
+import { PlatformLogger } from '../diagnostics/platformLogger';
+import { InvalidStateError } from '../errors/invalidStateError';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
@@ -16,7 +16,7 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
     
     private lastValue = false;
 
-    public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API, private log: PlatformLogger) {
+    public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API, protected log: PlatformLogger) {
         super(accessory, api);
     }
     

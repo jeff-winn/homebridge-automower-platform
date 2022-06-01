@@ -2,10 +2,10 @@ import { API, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../../src/automowerAccessory';
+import { AutomowerContext } from '../../src/automowerAccessory';
 import { SwitchSpy } from './switchSpy';
-import { InvalidStateError } from '../../../src/errors/invalidStateError';
-import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { InvalidStateError } from '../../src/errors/invalidStateError';
+import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 
 describe('AbstractSwitch', () => {
     let name: string;

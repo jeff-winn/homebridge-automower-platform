@@ -1,5 +1,5 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
-import { AutomowerContext } from '../../automowerAccessory';
+import { AutomowerContext } from '../automowerAccessory';
 
 /**
  * An abstract class which represents a base accessory service.

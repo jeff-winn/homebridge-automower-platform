@@ -12,8 +12,6 @@
 			],
 			"type": "pwa-node",
 			"preLaunchTask": "build",
-			"console": "integratedTerminal",
-			"internalConsoleOptions": "neverOpen",
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge"
 			}

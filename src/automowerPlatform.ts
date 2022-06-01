@@ -9,7 +9,7 @@ import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 import { SettingsEvent, StatusEvent } from './events';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/discoveryService';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { PlatformLogger, HomebridgeImitationLogger } from './diagnostics/platformLogger';

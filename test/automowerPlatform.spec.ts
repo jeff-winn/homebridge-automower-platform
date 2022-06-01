@@ -6,7 +6,7 @@ import { Mock, It, Times } from 'moq.ts';
 import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
 import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 import { AutomowerPlatform, AutomowerPlatformConfig } from '../src/automowerPlatform';
-import { DiscoveryService } from '../src/services/discoveryService';
+import { DiscoveryService } from '../src/services/automower/discoveryService';
 import { EventStreamService } from '../src/services/automower/eventStreamService';
 import { BadConfigurationError } from '../src/errors/badConfigurationError';
 

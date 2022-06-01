@@ -6,7 +6,7 @@ import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
 import { AccessTokenManagerImpl } from '../services/authentication/accessTokenManager';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
-import { DiscoveryServiceImpl } from '../services/discoveryService';
+import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../settings';
@@ -15,7 +15,7 @@ import { TimerImpl } from './timer';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { DeterministicScheduleEnabledPolicy } from '../services/homebridge/policies/scheduleEnabledPolicy';
+import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 
 export interface PlatformContainer {
     registerEverything(): void;
