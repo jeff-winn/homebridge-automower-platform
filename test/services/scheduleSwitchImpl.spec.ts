@@ -2,12 +2,12 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicEventTypes, CharacteristicValue, CharacteristicSetCallback, HAPStatus } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerControlService } from '../../../src/services/automower/mowerControlService';
-import { AutomowerContext } from '../../../src/automowerAccessory';
+import { MowerControlService } from '../../src/services/automower/mowerControlService';
+import { AutomowerContext } from '../../src/automowerAccessory';
 import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
-import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../../src/model';
-import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { ScheduleEnabledPolicy } from '../../../src/services/homebridge/policies/scheduleEnabledPolicy';
+import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../src/model';
+import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
 
 describe('ScheduleSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;

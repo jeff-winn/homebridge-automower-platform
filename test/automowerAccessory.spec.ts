@@ -4,9 +4,9 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
 import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
-import { BatteryService } from '../src/services/homebridge/batteryService';
-import { AccessoryInformationService } from '../src/services/homebridge/accessoryInformationService';
-import { ScheduleSwitch } from '../src/services/homebridge/scheduleSwitch';
+import { BatteryService } from '../src/services/batteryService';
+import { AccessoryInformationService } from '../src/services/accessoryInformationService';
+import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
 describe('AutomowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;

@@ -3,13 +3,13 @@ import { API, PlatformAccessory } from 'homebridge';
 import { PlatformAccessoryFactory } from './platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { Mower } from '../model';
-import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/homebridge/accessoryInformationService';
-import { BatteryService, BatteryServiceImpl } from '../services/homebridge/batteryService';
-import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/homebridge/scheduleSwitch';
+import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/accessoryInformationService';
+import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
+import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
 import { PlatformContainer } from './platformContainer';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { DeterministicScheduleEnabledPolicy } from '../services/homebridge/policies/scheduleEnabledPolicy';
+import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.

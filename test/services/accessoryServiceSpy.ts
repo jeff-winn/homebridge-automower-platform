@@ -1,5 +1,5 @@
 import { Characteristic, Service } from 'homebridge';
-import { AbstractAccessoryService } from '../../../src/services/homebridge/abstractAccessoryService';
+import { AbstractAccessoryService } from '../../src/services/abstractAccessoryService';
 
 export class AccessoryServiceSpy extends AbstractAccessoryService {
     public getCharacteristicType(): typeof Characteristic {

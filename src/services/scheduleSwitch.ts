@@ -2,10 +2,10 @@ import { API, CharacteristicSetCallback,
     HAPStatus, PlatformAccessory 
 } from 'homebridge';
 
-import { AutomowerContext } from '../../automowerAccessory';
-import { PlatformLogger } from '../../diagnostics/platformLogger';
-import { Calendar, MowerState, Planner } from '../../model';
-import { MowerControlService } from '../automower/mowerControlService';
+import { AutomowerContext } from '../automowerAccessory';
+import { PlatformLogger } from '../diagnostics/platformLogger';
+import { Calendar, MowerState, Planner } from '../model';
+import { MowerControlService } from './automower/mowerControlService';
 import { AbstractSwitch } from './abstractSwitch';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 

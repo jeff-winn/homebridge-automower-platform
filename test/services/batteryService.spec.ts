@@ -2,10 +2,10 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Service, Characteristic, CharacteristicValue } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../../src/automowerAccessory';
-import { Activity, Mode, State } from '../../../src/model';
-import { InvalidStateError } from '../../../src/errors/invalidStateError';
-import { BatteryServiceImpl } from '../../../src/services/homebridge/batteryService';
+import { AutomowerContext } from '../../src/automowerAccessory';
+import { Activity, Mode, State } from '../../src/model';
+import { InvalidStateError } from '../../src/errors/invalidStateError';
+import { BatteryServiceImpl } from '../../src/services/batteryService';
 
 describe('BatteryServiceImpl', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;

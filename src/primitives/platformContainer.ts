@@ -15,7 +15,7 @@ import { TimerImpl } from './timer';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { DeterministicScheduleEnabledPolicy } from '../services/homebridge/policies/scheduleEnabledPolicy';
+import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 
 export interface PlatformContainer {
     registerEverything(): void;

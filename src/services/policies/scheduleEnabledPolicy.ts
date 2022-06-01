@@ -1,5 +1,5 @@
-import { InvalidStateError } from '../../../errors/invalidStateError';
-import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../../model';
+import { InvalidStateError } from '../../errors/invalidStateError';
+import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../model';
 
 /**
  * A policy which decides whether the mower schedule is enabled.

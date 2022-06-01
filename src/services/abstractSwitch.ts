@@ -2,9 +2,9 @@ import { API, Characteristic, CharacteristicEventTypes,
     CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service 
 } from 'homebridge';
 
-import { AutomowerContext } from '../../automowerAccessory';
-import { PlatformLogger } from '../../diagnostics/platformLogger';
-import { InvalidStateError } from '../../errors/invalidStateError';
+import { AutomowerContext } from '../automowerAccessory';
+import { PlatformLogger } from '../diagnostics/platformLogger';
+import { InvalidStateError } from '../errors/invalidStateError';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**

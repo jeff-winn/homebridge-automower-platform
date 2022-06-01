@@ -1,5 +1,5 @@
 import { CharacteristicSetCallback } from 'homebridge';
-import { ScheduleSwitchImpl } from '../../../src/services/homebridge/scheduleSwitch';
+import { ScheduleSwitchImpl } from '../../src/services/scheduleSwitch';
 
 export class ScheduleSwitchImplSpy extends ScheduleSwitchImpl {
     public unsafeOnSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
