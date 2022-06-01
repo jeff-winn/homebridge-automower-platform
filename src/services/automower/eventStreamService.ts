@@ -89,6 +89,8 @@ export class EventStreamServiceImpl implements EventStreamService {
             } else {
                 this.pingOnce();
             }
+        } catch (e) {
+            this.log.error('An unexpected error occurred while keeping the client stream alive.', e);
         } finally {
             // Restart the timer.
             this.startKeepAlive();

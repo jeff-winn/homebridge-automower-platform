@@ -67,6 +67,28 @@ describe('EventStreamServiceImpl', () => {
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
+    // WARNING: throwing errors while reconnecting will cause the process running homebridge to be restarted
+    // as it occurrs on a background thread.
+    it('should not throw errors when reconnecting', async () => {
+        stream.opened = false;
+
+        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Unable to authenticate'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        let thrown = false;
+        try {
+            await target.unsafeKeepAlive();
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeFalsy();
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
     it('should reconnect the client when disconnected', async () => {       
         const token: AccessToken = { 
             value: 'abcd1234',
