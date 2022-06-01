@@ -151,6 +151,52 @@ describe('ScheduleSwitchImpl', () => {
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
+    it('should handle errors while resuming schedule', async () => {
+        const mowerId = '12345';
+
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
+
+        mowerControlService.setup(o => o.resumeSchedule(mowerId)).throws(new Error('hello'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(true, (e) => {
+            status = e;
+        });
+
+        mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+    });
+
+    it('should handle errors while parking until further notice', async () => {
+        const mowerId = '12345';
+
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
+
+        mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).throws(new Error('hello'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(false, (e) => {
+            status = e;
+        });
+
+        mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+    });
+
     it('should update the characteristic as true when scheduled to start', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());

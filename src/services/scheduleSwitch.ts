@@ -14,7 +14,7 @@ import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
  */
 export interface ScheduleSwitch {
     /**
-     * Initializes the service.
+     * Initializes the switch.
      * @param prepend true to prepend the display name, otherwise false.
      */
     init(prepend: boolean): void;
@@ -39,20 +39,26 @@ export interface ScheduleSwitch {
 }
 
 export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
-
     public constructor(private controlService: MowerControlService, private policy: ScheduleEnabledPolicy, 
         accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super('Schedule', accessory, api, log);
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
-        if (on) {
-            await this.controlService.resumeSchedule(this.accessory.context.mowerId);
-        } else {
-            await this.controlService.parkUntilFurtherNotice(this.accessory.context.mowerId);
-        }
-        
-        callback(HAPStatus.SUCCESS);
+        try {
+            if (on) {
+                await this.controlService.resumeSchedule(this.accessory.context.mowerId);
+            } else {
+                await this.controlService.parkUntilFurtherNotice(this.accessory.context.mowerId);
+            }    
+
+            callback(HAPStatus.SUCCESS);
+        } catch (e) {
+            this.log.error(
+                `An unexpected error occurred while attempting to set the '${this.name}' switch for '${this.accessory.displayName}'.`, e);
+
+            callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+        }        
     }
 
     public setCalendar(calendar: Calendar): void {    

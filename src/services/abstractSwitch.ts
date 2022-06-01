@@ -16,7 +16,7 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
     
     private lastValue = false;
 
-    public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API, private log: PlatformLogger) {
+    public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API, protected log: PlatformLogger) {
         super(accessory, api);
     }
     
