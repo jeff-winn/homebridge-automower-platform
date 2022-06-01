@@ -6,7 +6,7 @@ import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
 import { AccessTokenManagerImpl } from '../services/authentication/accessTokenManager';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
-import { DiscoveryServiceImpl } from '../services/discoveryService';
+import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import * as constants from '../settings';

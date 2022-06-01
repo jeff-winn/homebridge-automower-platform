@@ -1,12 +1,12 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { GetMowersService } from '../../src/services/automower/getMowersService';
-import { AutomowerAccessoryFactory } from '../../src/primitives/automowerAccessoryFactory';
-import { DiscoveryServiceImpl } from '../../src/services/discoveryService';
-import { AutomowerPlatform } from '../../src/automowerPlatform';
-import { AutomowerAccessory } from '../../src/automowerAccessory';
-import { Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../src/model';
-import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { GetMowersService } from '../../../src/services/automower/getMowersService';
+import { AutomowerAccessoryFactory } from '../../../src/primitives/automowerAccessoryFactory';
+import { DiscoveryServiceImpl } from '../../../src/services/automower/discoveryService';
+import { AutomowerPlatform } from '../../../src/automowerPlatform';
+import { AutomowerAccessory } from '../../../src/automowerAccessory';
+import { Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../src/model';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
