@@ -26,7 +26,11 @@ describe('RetryerFetchClient', () => {
         });
         
         const result = await target.execute(url, {
-            method: 'GET'
+            method: 'POST',
+            headers: {
+                'X-Api-Key': '12345'
+            },
+            body: 'hello'
         });
 
         expect(result.status).toBe(429);
@@ -60,7 +64,7 @@ describe('RetryerFetchClient', () => {
     it('should not retry on 503 when retry attempts is zero', async () => {
         const target = new RetryerFetchClientSpy(log.object(), 0, 1000);
         
-        target.responseCallback = () => new Response(undefined, {
+        target.responseCallback = () => new Response('{ "hello": "world" }', {
             headers: { },
             size: 0,
             status: 503,
@@ -69,9 +73,7 @@ describe('RetryerFetchClient', () => {
             url: url,
         });
         
-        const result = await target.execute(url, {
-            method: 'GET'
-        });
+        const result = await target.execute(url, { });
 
         expect(result.status).toBe(503);
         expect(target.waited).toBeTruthy();
