@@ -1,7 +1,7 @@
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { BadCredentialsError } from '../errors/badCredentialsError';
 import { BadConfigurationError } from '../errors/badConfigurationError';
-import { FetchClient, Response } from '../primitives/fetchClient';
+import { FetchClient, Response } from './fetchClient';
 
 /**
  * Describes an OAuth authentication token.

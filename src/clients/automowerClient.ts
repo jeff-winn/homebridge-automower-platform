@@ -2,7 +2,7 @@ import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { UnexpectedServerError } from '../errors/unexpectedServerError';
 import { BadConfigurationError } from '../errors/badConfigurationError';
-import { FetchClient, Response } from '../primitives/fetchClient';
+import { FetchClient, Response } from './fetchClient';
 
 /**
  * A client used to retrieve information about automowers connected to the account.

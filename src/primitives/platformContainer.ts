@@ -16,7 +16,17 @@ import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
-import { DefaultFetchClient } from './fetchClient';
+import { RetryerFetchClient } from '../clients/fetchClient';
+
+/**
+ * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
+ */
+const DEFAULT_MAX_RETRY_ATTEMPTS = 5;
+    
+/**
+ * Defines the maximum delay needed between retry attempts, which according to Husqvarna this limitation is enforced per second.
+ */
+const DEFAULT_MAX_DELAY_IN_MILLIS = 1000;
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -30,8 +40,8 @@ export class PlatformContainerImpl implements PlatformContainer {
     public registerEverything(): void {
         this.log.debug('Registering classes to the DI container...');
 
-        container.register(DefaultFetchClient, {
-            useValue: new DefaultFetchClient(this.log)
+        container.register(RetryerFetchClient, {
+            useValue: new RetryerFetchClient(this.log, DEFAULT_MAX_RETRY_ATTEMPTS, DEFAULT_MAX_DELAY_IN_MILLIS)
         });
 
         container.register(TimerImpl, {
@@ -41,7 +51,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(AuthenticationClientImpl, {
             useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
                 constants.AUTHENTICATION_API_BASE_URL,
-                context.resolve(DefaultFetchClient))
+                context.resolve(RetryerFetchClient))
         });
 
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
@@ -53,7 +63,7 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: (context) => new AutomowerClientImpl(
                 this.config.appKey,
                 constants.AUTOMOWER_CONNECT_API_BASE_URL,
-                context.resolve(DefaultFetchClient))
+                context.resolve(RetryerFetchClient))
         });
 
         container.register(DeterministicScheduleEnabledPolicy, {

@@ -1,8 +1,8 @@
 import { Mock } from 'moq.ts';
 
 import { AutomowerClientImpl } from '../../src/clients/automowerClient';
+import { FetchClient } from '../../src/clients/fetchClient';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
-import { FetchClient } from '../../src/primitives/fetchClient';
 import * as constants from '../../src/settings';
 
 describe('AutomowerClientImpl', () => {
