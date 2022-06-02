@@ -18,11 +18,11 @@ export interface Timer {
 export class TimerImpl implements Timer {
     private timeoutId?: NodeJS.Timeout;
 
-    start(callback: () => void, delay?: number): void {
+    public start(callback: () => void, delay?: number): void {
         this.timeoutId = setTimeout(callback, delay);
     }
 
-    stop(): void {
+    public stop(): void {
         if (this.timeoutId === undefined) {
             return;
         }
