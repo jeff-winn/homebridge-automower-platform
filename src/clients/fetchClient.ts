@@ -78,15 +78,15 @@ export class RetryerFetchClient implements FetchClient {
         );
     }
 
-    private sleep(ms: number): Promise<unknown> {
+    protected async wait(): Promise<void> {
+        const delay = this.rand(0, this.maxDelayInMillis);
+        await this.waitMilliseconds(delay);
+    }
+
+    protected waitMilliseconds(ms: number): Promise<unknown> {
         return new Promise((resolve) => {
             setTimeout(resolve, ms);
         });
-    }
-
-    protected async wait(): Promise<void> {
-        const delay = this.rand(0, this.maxDelayInMillis);
-        await this.sleep(delay);
     }
 
     protected async executeCore(id: string, attempt: number, url: RequestInfo, init?: RequestInit): Promise<Response> {
@@ -100,11 +100,18 @@ export class RetryerFetchClient implements FetchClient {
         const response = await this.doFetch(url, init);
         const buffer = await response.buffer();
 
+        let body: string | undefined;
+
+        const b = buffer.toString('utf-8');
+        if (b !== undefined && b !== '') {
+            body = JSON.parse(b);
+        }
+
         this.log.debug(`Received response: ${id}\r\n`, JSON.stringify({
             status: response.status,
             statusText: response.statusText,
             headers: response.headers.raw,
-            body: JSON.parse(buffer.toString('utf-8'))
+            body: body
         }));
 
         // Recreate the response since the buffer has already been used.
