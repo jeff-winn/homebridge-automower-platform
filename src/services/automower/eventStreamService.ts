@@ -1,6 +1,6 @@
 import { AccessTokenManager } from './accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../events';
+import { AutomowerEvent, AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
@@ -9,6 +9,12 @@ import { BadCredentialsError } from '../../errors/badCredentialsError';
  * A mechanism which is capable of streaming events for the Husqvarna account.
  */
 export interface EventStreamService {
+    /**
+     * Occurs when a {@link PositionsEvent} has been received.
+     * @param callback The callback to execute.
+     */
+    onPositionsEventReceived(callback: (event: PositionsEvent) => Promise<void>): void;
+
     /**
      * Occurs when a {@link StatusEvent} has been received.
      * @param callback The callback to execute.
@@ -38,6 +44,8 @@ export class EventStreamServiceImpl implements EventStreamService {
 
     private onStatusEventCallback?: (event: StatusEvent) => Promise<void>;
     private onSettingsEventCallback?: (event: SettingsEvent) => Promise<void>;
+    private onPositionsEventCallback?: (event: PositionsEvent) => Promise<void>;
+
     private started?: Date;
     private lastEventReceived?: Date;
     private attached = false;
@@ -45,6 +53,10 @@ export class EventStreamServiceImpl implements EventStreamService {
     public constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
         private log: PlatformLogger, private timer: Timer) { }
 
+
+    public onPositionsEventReceived(callback: (event: PositionsEvent) => Promise<void>): void {
+        this.onPositionsEventCallback = callback;        
+    }
 
     public onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void {
         this.onSettingsEventCallback = callback;        
@@ -71,15 +83,19 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     private async connect(): Promise<void> {
+        this.log.debug('Attempting to open a connection to the stream...');
+
         try {
             const token = await this.tokenManager.getCurrentToken();
             this.stream.open(token);
+
+            this.log.debug('Stream connection opened successfully.');
         } catch (e) {
             if (e instanceof BadCredentialsError) {
                 this.tokenManager.flagAsInvalid();
-            } else {
-                throw e;
             }
+            
+            throw e;
         }
     }
 
@@ -92,12 +108,16 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
     
     protected async keepAlive(): Promise<void> {
-        try {           
+        this.log.debug('Checking keep alive for the client stream...');
+
+        try {        
             if (this.shouldReconnect()) {
                 await this.reconnect();
             } else {
                 this.pingOnce();
             }
+
+            this.log.debug('Completed keep alive successfully.');
         } catch (e) {
             this.log.error('An unexpected error occurred while keeping the client stream alive.', e);
         } finally {
@@ -107,26 +127,27 @@ export class EventStreamServiceImpl implements EventStreamService {
     }    
 
     protected shouldReconnect(): boolean {
+        this.log.debug('Attempting to decide whether the event stream should be reconnected...');        
+        let result = false;
+
         if (!this.stream.isConnected()) {
-            // The client somehow got disconnected, just attempt to reconnect.
-            return true;
+            this.log.debug('The stream somehow got disconnected; proceed with reconnect.');
+            result = true;
+        } else {
+            const now = new Date();
+            
+            if (this.lastEventReceived === undefined && this.started !== undefined && 
+                ((now.getTime() - this.started.getTime()) > this.getReconnectInterval())) {
+                this.log.debug('No message has been received, and the client was started an hour ago; proceed with reconnect.');
+                result = true;
+            } else if (this.lastEventReceived !== undefined && 
+                ((now.getTime() - this.lastEventReceived.getTime()) > this.getReconnectInterval())) {
+                this.log.debug('A message has not been received within the last hour; proceed with reconnect.');
+                result = true;
+            }
         }
 
-        const now = new Date();
-        
-        if (this.lastEventReceived === undefined && this.started !== undefined && 
-            ((now.getTime() - this.started.getTime()) > this.getReconnectInterval())) {
-            // No message has been received, and the client was started an hour ago.
-            return true;
-        }
-
-        if (this.lastEventReceived !== undefined && 
-            ((now.getTime() - this.lastEventReceived.getTime()) > this.getReconnectInterval())) {
-            // A message has not been received within the last hour.
-            return true;
-        }
-
-        return false;
+        return result;
     }
 
     protected async reconnect(): Promise<void> {
@@ -148,7 +169,11 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected disconnect(): void {
+        this.log.debug('Closing the stream...');
+
         this.stream.close();
+
+        this.log.debug('Stream closed.');
     }
     
     protected stopKeepAlive(): void {
@@ -164,7 +189,7 @@ export class EventStreamServiceImpl implements EventStreamService {
 
         switch (event.type) {
         case AutomowerEventTypes.POSITIONS:
-            return Promise.resolve(undefined);
+            return this.onPositionsEvent(event as PositionsEvent);
 
         case AutomowerEventTypes.SETTINGS:
             return this.onSettingsEvent(event as SettingsEvent);
@@ -176,6 +201,14 @@ export class EventStreamServiceImpl implements EventStreamService {
             this.log.warn(`Received unknown event: ${event.type}`);
             return Promise.resolve(undefined);
         }
+    }
+
+    protected onPositionsEvent(event: PositionsEvent): Promise<void> {
+        if (this.onPositionsEventCallback === undefined) {
+            return Promise.resolve(undefined);
+        }
+
+        return this.onPositionsEventCallback(event);
     }
 
     protected onSettingsEvent(event: SettingsEvent): Promise<void> {
