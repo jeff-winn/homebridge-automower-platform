@@ -17,33 +17,59 @@ export interface FetchClient {
 }
 
 /**
+ * When too many requests have been received within the alloted time window.
+ */
+const TOO_MANY_REQUESTS = 429;
+
+/**
+ * When the service is down (eg. normal maintenance window).
+ */
+const SERVICE_UNAVAILABLE = 503;
+
+/**
  * A client which uses node-fetch to perform HTTP requests and includes retryer support.
  */
 export class RetryerFetchClient implements FetchClient {
     public constructor(private log: PlatformLogger, private maxRetryAttempts: number, private maxDelayInMillis: number) { }
 
     public async execute(url: RequestInfo, init?: RequestInit): Promise<Response> {
-        let retry = false;
         let response: Response;
-        let attempts = 0;
+        let retry: boolean;
+
+        let attempt = 0;
+        const id = uuid();
 
         do {
             retry = false;
-            attempts++;
+            attempt++;
 
-            response = await this.executeCore(url, init);
-            if (response.status === 429) {
-                await this.onTooManyRequests();
-                retry = true;
+            response = await this.executeCore(id, attempt, url, init);
+            if (response.status === TOO_MANY_REQUESTS) {
+                retry = await this.onTooManyRequests();
+            } else if (response.status === SERVICE_UNAVAILABLE) {
+                retry = await this.onServiceUnavailable();
             }
-        } while (retry && attempts <= this.maxRetryAttempts);
+        } while (retry && attempt <= this.maxRetryAttempts);
         
         return response;
     }
 
-    private async onTooManyRequests(): Promise<void> {
-        const delay = this.rand(0, this.maxDelayInMillis);
-        await this.sleep(delay);
+    /**
+     * Occurs when too many requests have been received by the server within the alloted time window.
+     * @returns The promise to await.
+     */
+    protected async onTooManyRequests(): Promise<boolean> {
+        await this.wait();
+        return true;
+    }
+
+    /**
+     * Occurs when the service is unavailable.
+     * @returns The promise to await.
+     */
+    protected async onServiceUnavailable(): Promise<boolean> {
+        await this.wait();
+        return true;
     }
 
     private rand(min: number, max: number) {
@@ -58,10 +84,13 @@ export class RetryerFetchClient implements FetchClient {
         });
     }
 
-    protected async executeCore(url: RequestInfo, init?: RequestInit): Promise<Response> {
-        const id = uuid();
+    protected async wait(): Promise<void> {
+        const delay = this.rand(0, this.maxDelayInMillis);
+        await this.sleep(delay);
+    }
 
-        this.log.debug(`Sending request: ${id}\r\n`, JSON.stringify({
+    protected async executeCore(id: string, attempt: number, url: RequestInfo, init?: RequestInit): Promise<Response> {
+        this.log.debug(`Sending request [${attempt}/${this.maxRetryAttempts}]: ${id}\r\n`, JSON.stringify({
             url: url,
             method: init?.method,
             headers: init?.headers,

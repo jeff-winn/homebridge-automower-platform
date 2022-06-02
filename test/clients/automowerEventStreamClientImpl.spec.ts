@@ -2,8 +2,8 @@ import { Mock } from 'moq.ts';
 
 import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
+import { FetchClient, RetryerFetchClient } from '../../src/clients/fetchClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { DefaultFetchClient, FetchClient } from '../../src/primitives/fetchClient';
 import * as constants from '../../src/settings';
 
 describe('AutomowerEventStreamClientImpl', () => {
@@ -21,7 +21,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
     beforeAll(async () => {
         log = new Mock<PlatformLogger>();
-        fetch = new DefaultFetchClient(log.object());
+        fetch = new RetryerFetchClient(log.object(), 3, 1000);
 
         target = new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL, log.object());
         authClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL, fetch);
