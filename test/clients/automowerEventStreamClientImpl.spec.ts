@@ -1,7 +1,9 @@
 import { Mock } from 'moq.ts'; 
+
 import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { DefaultFetchClient, FetchClient } from '../../src/primitives/fetchClient';
 import * as constants from '../../src/settings';
 
 describe('AutomowerEventStreamClientImpl', () => {
@@ -12,13 +14,17 @@ describe('AutomowerEventStreamClientImpl', () => {
 
     let target: AutomowerEventStreamClientImpl;
     let authClient: AuthenticationClientImpl;
+    let fetch: FetchClient;
+
     let log: Mock<PlatformLogger>;
     let token: OAuthToken;
 
     beforeAll(async () => {
         log = new Mock<PlatformLogger>();
+        fetch = new DefaultFetchClient(log.object());
+
         target = new AutomowerEventStreamClientImpl(constants.AUTOMOWER_STREAM_API_BASE_URL, log.object());
-        authClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
+        authClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL, fetch);
 
         if (USERNAME !== '' && PASSWORD !== '') {
             token = await authClient.login(USERNAME, PASSWORD);

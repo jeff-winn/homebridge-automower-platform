@@ -1,8 +1,7 @@
-import fetch, { Response } from 'node-fetch';
-
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { BadCredentialsError } from '../errors/badCredentialsError';
 import { BadConfigurationError } from '../errors/badConfigurationError';
+import { FetchClient, Response } from '../primitives/fetchClient';
 
 /**
  * Describes an OAuth authentication token.
@@ -69,7 +68,7 @@ export interface AuthenticationClient {
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient) { }
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
@@ -97,7 +96,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             password: password
         });
 
-        const response = await fetch(this.baseUrl + '/oauth2/token', {
+        const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -107,7 +106,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
         this.throwIfBadCredentials(response);
         this.throwIfNotAuthorized(response);
-        this.throwIfStatusNotOk(response);
+        await this.throwIfStatusNotOk(response);
 
         return await response.json() as OAuthToken;
     }
@@ -122,7 +121,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     public async logout(token: OAuthToken): Promise<void> {
         this.guardAppKeyMustBeProvided();
 
-        const response = await fetch(this.baseUrl + '/token/' + token.access_token, {
+        const response = await this.fetch.execute(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
                 'X-Api-Key': this.appKey!,
@@ -131,7 +130,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         });
 
         this.throwIfNotAuthorized(response);
-        this.throwIfStatusNotOk(response);
+        await this.throwIfStatusNotOk(response);
     }
 
     protected guardAppKeyMustBeProvided(): void {
@@ -149,7 +148,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             refresh_token: token.refresh_token
         });
 
-        const response = await fetch(this.baseUrl + '/oauth2/token', {
+        const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -157,10 +156,17 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             body: body
         });
 
+        this.throwIfBadToken(response);
         this.throwIfNotAuthorized(response);
-        this.throwIfStatusNotOk(response);
+        await this.throwIfStatusNotOk(response);
 
         return await response.json() as OAuthToken;
+    }
+
+    private throwIfBadToken(response: Response): void {
+        if (response.status === 400) {
+            throw new BadCredentialsError('The access token supplied was invalid.');
+        }
     }
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -183,9 +189,10 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    private throwIfStatusNotOk(response: Response): void {        
+    private async throwIfStatusNotOk(response: Response): Promise<void> {        
         if (!response.ok) {
-            throw new Error(`ERR: ${response.status}`);
+            const msg = await response.text();
+            throw new Error(`ERR: ${response.status} -> ${msg}`);
         }
     }
 }

@@ -7,7 +7,7 @@ import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 import { SettingsEvent, StatusEvent } from './events';
-import { AccessTokenManager, AccessTokenManagerImpl } from './services/authentication/accessTokenManager';
+import { AccessTokenManager, AccessTokenManagerImpl } from './services/automower/accessTokenManager';
 import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';

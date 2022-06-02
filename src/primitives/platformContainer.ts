@@ -4,7 +4,7 @@ import { container, InjectionToken } from 'tsyringe';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
-import { AccessTokenManagerImpl } from '../services/authentication/accessTokenManager';
+import { AccessTokenManagerImpl } from '../services/automower/accessTokenManager';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
@@ -16,6 +16,7 @@ import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
+import { DefaultFetchClient } from './fetchClient';
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -29,20 +30,30 @@ export class PlatformContainerImpl implements PlatformContainer {
     public registerEverything(): void {
         this.log.debug('Registering classes to the DI container...');
 
-        container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
-            new AuthenticationClientImpl(this.config.appKey, constants.AUTHENTICATION_API_BASE_URL),
-            this.config,
-            this.log));
+        container.register(DefaultFetchClient, {
+            useValue: new DefaultFetchClient(this.log)
+        });
 
         container.register(TimerImpl, {
             useFactory: () => new TimerImpl()
         });
 
+        container.register(AuthenticationClientImpl, {
+            useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
+                constants.AUTHENTICATION_API_BASE_URL,
+                context.resolve(DefaultFetchClient))
+        });
+
+        container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
+            container.resolve(AuthenticationClientImpl),
+            this.config,
+            this.log));
+
         container.register(AutomowerClientImpl, {
-            useValue: new AutomowerClientImpl(
+            useFactory: (context) => new AutomowerClientImpl(
                 this.config.appKey,
                 constants.AUTOMOWER_CONNECT_API_BASE_URL,
-                this.log)
+                context.resolve(DefaultFetchClient))
         });
 
         container.register(DeterministicScheduleEnabledPolicy, {

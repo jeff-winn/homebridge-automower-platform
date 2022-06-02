@@ -1,7 +1,8 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { AccessTokenManager } from '../../../src/services/authentication/accessTokenManager';
-import { AutomowerEventTypes, StatusEvent } from '../../../src/events';
+import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
+import { AutomowerEventTypes, PositionsEvent, StatusEvent } from '../../../src/events';
+import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
 import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
@@ -19,8 +20,10 @@ describe('EventStreamServiceImpl', () => {
     beforeEach(() => {
         tokenManager = new Mock<AccessTokenManager>();
         stream = new AutomowerEventStreamClientSpy();
-        log = new Mock<PlatformLogger>();
         timer = new Mock<Timer>();
+
+        log = new Mock<PlatformLogger>();
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         target = new EventStreamServiceImplSpy(tokenManager.object(), stream, log.object(), timer.object());
     });
@@ -64,6 +67,50 @@ describe('EventStreamServiceImpl', () => {
 
         expect(stream.keptAlive).toBeTruthy();
 
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    it('should flag the token as invalid when failing to authenticate', async () => {
+        stream.opened = false;
+
+        tokenManager.setup(o => o.getCurrentToken()).throws(new BadCredentialsError('Unable to authenticate'));
+        tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        let thrown = false;
+        try {
+            await target.unsafeKeepAlive();
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeFalsy();
+
+        tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    // WARNING: throwing errors while reconnecting will cause the process running homebridge to be restarted
+    // as it occurrs on a background thread.
+    it('should not throw errors when reconnecting', async () => {
+        stream.opened = false;
+
+        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Unable to authenticate'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        let thrown = false;
+        try {
+            await target.unsafeKeepAlive();
+        } catch (e) {
+            thrown = true;
+        }
+
+        expect(thrown).toBeFalsy();
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
@@ -152,7 +199,7 @@ describe('EventStreamServiceImpl', () => {
     it('should do nothing when positions-event is received', async () => {
         await target.unsafeEventReceived({
             id: '12345',
-            type: AutomowerEventTypes.SETTINGS
+            type: AutomowerEventTypes.POSITIONS
         });
     });
 
@@ -161,6 +208,31 @@ describe('EventStreamServiceImpl', () => {
             id: '12345',
             type: AutomowerEventTypes.STATUS
         });
+    });
+
+    it('should run the callback when positions-event is received', async () => {
+        const event: PositionsEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.POSITIONS,
+            attributes: {
+                positions: [
+                    {
+                        latitude: 10,
+                        longitude: 10
+                    }
+                ]
+            }
+        };
+
+        let executed = false;
+        await target.onPositionsEventReceived(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        await target.unsafeEventReceived(event);
+
+        expect(executed).toBeTruthy();
     });
 
     it('should run the callback when settings-event is received', async () => {

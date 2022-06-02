@@ -1,37 +1,22 @@
 import { Mock } from 'moq.ts';
 
-import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { AutomowerClientImpl } from '../../src/clients/automowerClient';
-import * as constants from '../../src/settings';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
-import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { FetchClient } from '../../src/primitives/fetchClient';
+import * as constants from '../../src/settings';
 
 describe('AutomowerClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
-    const APPKEY: string = process.env.HUSQVARNA_APPKEY || '';
-    const USERNAME: string = process.env.HUSQVARNA_USERNAME || '';
-    const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || '';
-    const MOWER_ID: string = process.env.MOWER_ID || '';
+    const APPKEY: string = process.env.HUSQVARNA_APPKEY || 'APPKEY';
+    const MOWER_ID: string = process.env.MOWER_ID || '12345';
 
-    let log: Mock<PlatformLogger>;
-    let authenticationClient: AuthenticationClientImpl;
+    let fetch: Mock<FetchClient>;
     let target: AutomowerClientImpl;
-    let token: OAuthToken;
 
-    beforeAll(async () => {
-        log = new Mock<PlatformLogger>();
-        target = new AutomowerClientImpl(APPKEY, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
-        authenticationClient = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL);
+    beforeEach(() => {
+        fetch = new Mock<FetchClient>();
 
-        if (USERNAME !== '' && PASSWORD !== '') {
-            token = await authenticationClient.login(USERNAME, PASSWORD);
-        }        
-    });
-
-    afterAll(async () => {
-        if (token !== undefined) {
-            await authenticationClient.logout(token);
-        }
+        target = new AutomowerClientImpl(APPKEY, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
     });
 
     it('should initialize correctly', () => {
@@ -40,12 +25,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is undefined on doAction', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
 
         let thrown = false;
 
         try {
-            await target.doAction('12345', { }, {
+            await target.doAction(MOWER_ID, { }, {
                 value: 'value',
                 provider: 'provider'
             });
@@ -59,12 +44,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is empty on doAction', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
 
         let thrown = false;
 
         try {
-            await target.doAction('12345', { }, {
+            await target.doAction(MOWER_ID, { }, {
                 value: 'value',
                 provider: 'provider'
             });
@@ -78,12 +63,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is undefined on getMower', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
 
         let thrown = false;
 
         try {
-            await target.getMower('12345', {
+            await target.getMower(MOWER_ID, {
                 value: 'value',
                 provider: 'provider'
             });
@@ -97,12 +82,12 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is empty on getMower', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
 
         let thrown = false;       
 
         try {
-            await target.getMower('12345', {
+            await target.getMower(MOWER_ID, {
                 value: 'value',
                 provider: 'provider'
             });
@@ -116,7 +101,7 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is undefined on getMowers', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
 
         let thrown = false;
 
@@ -135,7 +120,7 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is empty on getMowers', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, log.object());
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
 
         let thrown = false;       
 
@@ -181,41 +166,5 @@ describe('AutomowerClientImpl', () => {
         }
 
         expect(thrown).toBeTruthy();
-    });
-
-    it.skip('should pause the mower', async () => {
-        await target.doAction(MOWER_ID, {
-            type: 'Pause'
-        }, {
-            value: token.access_token,
-            provider: token.provider
-        });
-    });
-
-    it.skip('should get all the mowers from the account', async () => {
-        const mowers = await target.getMowers({
-            value: token.access_token,
-            provider: token.provider
-        });
-
-        expect(mowers).toBeDefined();
-    });
-
-    it.skip('should return undefined when the mower does not exist by id', async () => {
-        const mower = await target.getMower('000000', {
-            value: token.access_token,
-            provider: token.provider
-        });
-    
-        expect(mower).toBeUndefined();
-    });
-
-    it.skip('should get a specific mower by the id', async () => {
-        const mower = await target.getMower(MOWER_ID, {
-            value: token.access_token,
-            provider: token.provider
-        });
-    
-        expect(mower).toBeDefined();
-    });
+    });    
 });

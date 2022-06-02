@@ -1,10 +1,10 @@
-import { AccessTokenManagerImpl } from '../../../src/services/authentication/accessTokenManager';
+import { AccessTokenManagerImpl } from '../../../src/services/automower/accessTokenManager';
 import { OAuthToken } from '../../../src/clients/authenticationClient';
 
 export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
-    loggedIn = false;
-    refreshed = false;
-    overrideInvalidated?: boolean;
+    public loggedIn = false;
+    public refreshed = false;
+    public overrideInvalidated?: boolean;
 
     protected override async doLogin(): Promise<OAuthToken> {
         const token = await super.doLogin();

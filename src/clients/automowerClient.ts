@@ -1,11 +1,8 @@
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
-import { v4 as uuid } from 'uuid';
-
 import { AccessToken, Mower } from '../model';
 import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { UnexpectedServerError } from '../errors/unexpectedServerError';
 import { BadConfigurationError } from '../errors/badConfigurationError';
-import { PlatformLogger } from '../diagnostics/platformLogger';
+import { FetchClient, Response } from '../primitives/fetchClient';
 
 /**
  * A client used to retrieve information about automowers connected to the account.
@@ -67,7 +64,7 @@ interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, private log: PlatformLogger) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient) { }
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
@@ -94,7 +91,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
         this.guardAppKeyMustBeProvided();
         
-        const res = await this.doFetch(`${this.baseUrl}/mowers/${id}/actions`, {
+        const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}/actions`, {
             method: 'POST',
             headers: {
                 'X-Api-Key': this.appKey!,
@@ -110,37 +107,6 @@ export class AutomowerClientImpl implements AutomowerClient {
         await this.throwIfStatusNotOk(res);
     }
 
-    protected async doFetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        const id = uuid();
-
-        this.log.debug(`Sending request: ${id}\r\n`, JSON.stringify({
-            url: url,
-            method: init?.method,
-            headers: init?.headers,
-            body: init?.body        
-        }));
-
-        const response = await fetch(url, init);
-        const buffer = await response.buffer();
-
-        this.log.debug(`Received response: ${id}\r\n`, JSON.stringify({
-            status: response.status,
-            statusText: response.statusText,
-            headers: response.headers.raw,
-            body: JSON.parse(buffer.toString('utf-8'))
-        }));
-
-        // Recreate the response since the buffer has already been used.
-        return new Response(buffer, {
-            headers: response.headers,
-            size: response.size,
-            status: response.status,
-            statusText: response.statusText,
-            timeout: response.timeout,
-            url: response.url
-        });
-    }
-
     public async getMower(id: string, token: AccessToken): Promise<Mower | undefined> {
         if (id === '') {
             throw new Error('id cannot be empty.');
@@ -148,7 +114,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
         this.guardAppKeyMustBeProvided();
 
-        const res = await this.doFetch(`${this.baseUrl}/mowers/${id}`, {
+        const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey!,
@@ -174,7 +140,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     public async getMowers(token: AccessToken): Promise<Mower[]> {
         this.guardAppKeyMustBeProvided();
 
-        const res = await this.doFetch(`${this.baseUrl}/mowers`, {
+        const res = await this.fetch.execute(`${this.baseUrl}/mowers`, {
             method: 'GET',
             headers: {
                 'X-Api-Key': this.appKey!,
@@ -207,6 +173,11 @@ export class AutomowerClientImpl implements AutomowerClient {
             } else {
                 throw new UnexpectedServerError(`ERR: ${response.status}`);
             }
+        }
+
+        if (!response.ok) {
+            const msg = await response.text();
+            throw new Error(`ERR: ${response.status} -> ${msg}`);
         }
     }
 }
