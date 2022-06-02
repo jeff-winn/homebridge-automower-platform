@@ -147,6 +147,10 @@ export class EventStreamServiceImpl implements EventStreamService {
             }
         }
 
+        if (!result) {
+            this.log.debug('Reconnection is not required.');
+        }
+
         return result;
     }
 
