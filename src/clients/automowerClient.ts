@@ -34,28 +34,28 @@ export interface AutomowerClient {
 /**
  * Describes the response while getting a specific mower.
  */
-interface GetMowerResponse {
+export interface GetMowerResponse {
     data: Mower;
 }
 
 /**
  * Describes the response while getting all mowers.
  */
-interface GetMowersResponse {
+export interface GetMowersResponse {
     data: Mower[];
 }
 
 /**
  * Describes an error response.
  */
-interface ErrorResponse {
+export interface ErrorResponse {
     errors: Error[];
 }
 
 /**
  * Describes an error.
  */
-interface Error {
+export interface Error {
     id: string;
     status: string;
     code: string;
