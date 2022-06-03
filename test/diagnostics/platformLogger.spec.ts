@@ -28,6 +28,18 @@ describe('HomebridgeImitationLogger', () => {
         console.verify(o => o.stdout(It.IsAny()), Times.Once());
     });
 
+    it('should use the cached value when already enabled', () => {
+        env.setup(o => o.getDebugEnvironmentVariable()).returns(settings.PLUGIN_ID);
+
+        console.setup(o => o.stdout(It.IsAny())).returns(undefined);
+
+        target.debug('hello');
+        target.info('hello again');
+        
+        console.verify(o => o.stdout(It.IsAny()), Times.Once());
+        env.verify(o => o.getDebugEnvironmentVariable(), Times.Once());
+    });
+
     it('should log the debug to stdout when enabled via asterisk', () => {
         env.setup(o => o.getDebugEnvironmentVariable()).returns('*');
 
