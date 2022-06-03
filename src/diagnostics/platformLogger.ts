@@ -105,6 +105,8 @@ export class HomebridgeImitationLogger implements PlatformLogger {
         }
 
         const debug = this.env.getDebugEnvironmentVariable();
-        return this.isDebugEnabled = (debug === PLUGIN_ID || debug === '*');
+        this.isDebugEnabled = (debug === PLUGIN_ID || debug === '*');
+
+        return this.isDebugEnabled;
     }
 }
