@@ -1,4 +1,4 @@
-import * as color from 'colorette';
+import chalk, { Chalk } from 'chalk';
 import util from 'util';
 import { LogLevel } from 'homebridge';
 
@@ -44,8 +44,11 @@ export interface PlatformLogger {
  */
 export class HomebridgeImitationLogger implements PlatformLogger {
     private isDebugEnabled?: boolean;
+    private color: Chalk;
 
-    public constructor(private env: Environment, private platformName: string | undefined, private console: ConsoleWrapper) { }
+    public constructor(private env: Environment, private platformName: string | undefined, private console: ConsoleWrapper) { 
+        this.color = new chalk.Instance({ level: 1 });
+    }
 
     public info(message: string, ...parameters: unknown[]): void {
         this.log(LogLevel.INFO, message, ...parameters);
@@ -74,25 +77,25 @@ export class HomebridgeImitationLogger implements PlatformLogger {
 
         switch (level) {
         case LogLevel.DEBUG:
-            msg = color.gray(msg);            
+            msg = this.color.gray(msg);            
             break;
 
         case LogLevel.ERROR:
-            msg = color.red(msg);
+            msg = this.color.red(msg);
             println = this.console.stderr;
             break;
 
         case LogLevel.WARN:
-            msg = color.yellow(msg);
+            msg = this.color.yellow(msg);
             println = this.console.stderr;
             break;
         }
 
         if (this.platformName !== undefined) {
-            msg = color.cyan(`[${this.platformName}] `) + msg;
+            msg = this.color.cyan(`[${this.platformName}] `) + msg;
         }
-
-        msg = color.white(`[${new Date().toLocaleString()}] `) + msg;        
+    
+        msg = this.color.white(`[${new Date().toLocaleString()}] `) + msg;        
         println(msg);
     }
 
