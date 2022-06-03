@@ -34,9 +34,9 @@ describe('HomebridgeImitationLogger', () => {
         console.setup(o => o.stdout(It.IsAny())).returns(undefined);
 
         target.debug('hello');
-        target.info('hello again');
+        target.debug('hello again');
         
-        console.verify(o => o.stdout(It.IsAny()), Times.Once());
+        console.verify(o => o.stdout(It.IsAny()), Times.Exactly(2));
         env.verify(o => o.getDebugEnvironmentVariable(), Times.Once());
     });
 
