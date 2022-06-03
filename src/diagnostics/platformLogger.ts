@@ -1,8 +1,10 @@
-import * as color from 'colorette';
+import chalk, { Chalk } from 'chalk';
 import util from 'util';
 import { LogLevel } from 'homebridge';
 
 import { ConsoleWrapper } from './primitives/consoleWrapper';
+import { Environment } from '../primitives/environment';
+import { PLUGIN_ID } from '../settings';
 
 /**
  * A logger which handles logging events that occur within the platform accessories.
@@ -41,10 +43,11 @@ export interface PlatformLogger {
  * A logger which imitates the native logging that occurs by the Homebridge platform {@link Logging} interface.
  */
 export class HomebridgeImitationLogger implements PlatformLogger {
-    private minLevel: number;
+    private isDebugEnabled?: boolean;
+    private color: Chalk;
 
-    public constructor(level: LogLevel, private platformName: string | undefined, private console: ConsoleWrapper) {
-        this.minLevel = HomebridgeImitationLogger.getLevel(level);
+    public constructor(private env: Environment, private platformName: string | undefined, private console: ConsoleWrapper) { 
+        this.color = new chalk.Instance({ level: 1 });
     }
 
     public info(message: string, ...parameters: unknown[]): void {
@@ -64,8 +67,8 @@ export class HomebridgeImitationLogger implements PlatformLogger {
     }
 
     private log(level: LogLevel, message: string, ...parameters: unknown[]): void {
-        const current = HomebridgeImitationLogger.getLevel(level);
-        if (current < this.minLevel) {
+        if (level === LogLevel.DEBUG && !this.checkIsDebugEnabled()) {
+            // Debug logging is not currently enabled, just ignore the message.
             return;
         }
         
@@ -74,44 +77,36 @@ export class HomebridgeImitationLogger implements PlatformLogger {
 
         switch (level) {
         case LogLevel.DEBUG:
-            msg = color.gray(msg);            
+            msg = this.color.gray(msg);            
             break;
 
         case LogLevel.ERROR:
-            msg = color.red(msg);
+            msg = this.color.red(msg);
             println = this.console.stderr;
             break;
 
         case LogLevel.WARN:
-            msg = color.yellow(msg);
+            msg = this.color.yellow(msg);
             println = this.console.stderr;
             break;
         }
 
         if (this.platformName !== undefined) {
-            msg = color.cyan(`[${this.platformName}] `) + msg;
+            msg = this.color.cyan(`[${this.platformName}] `) + msg;
         }
-
-        msg = color.white(`[${new Date().toLocaleString()}] `) + msg;        
+    
+        msg = this.color.white(`[${new Date().toLocaleString()}] `) + msg;        
         println(msg);
     }
 
-    public static getLevel(level: LogLevel): number {
-        switch (level) {
-        case LogLevel.DEBUG:
-            return 0;
-
-        case LogLevel.INFO:
-            return 1;
-        
-        case LogLevel.WARN:
-            return 2;
-
-        case LogLevel.ERROR:
-            return 3;
-
-        default:
-            throw new Error(`The value '${level}' is not supported.`);
+    private checkIsDebugEnabled(): boolean {
+        if (this.isDebugEnabled !== undefined) {
+            return this.isDebugEnabled;
         }
+
+        const debug = this.env.getDebugEnvironmentVariable();
+        this.isDebugEnabled = (debug === PLUGIN_ID || debug === '*');
+
+        return this.isDebugEnabled;
     }
 }

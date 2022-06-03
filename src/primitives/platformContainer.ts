@@ -9,14 +9,17 @@ import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
-import * as constants from '../settings';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
-import { PlatformLogger } from '../diagnostics/platformLogger';
+import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { RetryerFetchClient } from '../clients/fetchClient';
+import { NodeJsEnvironment } from './environment';
+import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
+
+import * as constants from '../settings';
 
 /**
  * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
@@ -35,13 +38,29 @@ export interface PlatformContainer {
 }
 
 export class PlatformContainerImpl implements PlatformContainer {
-    public constructor(private log: PlatformLogger, private config: AutomowerPlatformConfig, private api: API) { }
+    public constructor(private config: AutomowerPlatformConfig, private api: API) { }
 
     public registerEverything(): void {
-        this.log.debug('Registering classes to the DI container...');
+        container.register(NodeJsEnvironment, {
+            useValue: new NodeJsEnvironment()
+        });
+
+        container.register(ConsoleWrapperImpl, {
+            useValue: new ConsoleWrapperImpl() 
+        });
+
+        container.register(HomebridgeImitationLogger, {
+            useFactory: (context) => new HomebridgeImitationLogger(
+                context.resolve(NodeJsEnvironment),
+                constants.PLATFORM_NAME,
+                context.resolve(ConsoleWrapperImpl))
+        });
 
         container.register(RetryerFetchClient, {
-            useValue: new RetryerFetchClient(this.log, DEFAULT_MAX_RETRY_ATTEMPTS, DEFAULT_MAX_DELAY_IN_MILLIS)
+            useFactory: (context) => new RetryerFetchClient(
+                context.resolve(HomebridgeImitationLogger), 
+                DEFAULT_MAX_RETRY_ATTEMPTS, 
+                DEFAULT_MAX_DELAY_IN_MILLIS)
         });
 
         container.register(TimerImpl, {
@@ -57,7 +76,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            this.log));
+            container.resolve(HomebridgeImitationLogger)));
 
         container.register(AutomowerClientImpl, {
             useFactory: (context) => new AutomowerClientImpl(
@@ -90,7 +109,7 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: (context) => new AutomowerAccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
-                this.log,
+                context.resolve(HomebridgeImitationLogger),
                 this)
         });
 
@@ -98,24 +117,22 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: (context) => new DiscoveryServiceImpl(
                 context.resolve(GetMowersServiceImpl), 
                 context.resolve(AutomowerAccessoryFactoryImpl),               
-                this.log)
+                context.resolve(HomebridgeImitationLogger))
         });
 
         container.register(AutomowerEventStreamClientImpl, {
-            useFactory: () => new AutomowerEventStreamClientImpl(
+            useFactory: (context) => new AutomowerEventStreamClientImpl(
                 constants.AUTOMOWER_STREAM_API_BASE_URL, 
-                this.log)
+                context.resolve(HomebridgeImitationLogger))
         });
 
         container.register(EventStreamServiceImpl, {
             useFactory: (context) => new EventStreamServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerEventStreamClientImpl),
-                this.log,
+                context.resolve(HomebridgeImitationLogger),
                 context.resolve(TimerImpl))
-        });
-        
-        this.log.debug('Completed DI container registrations.');
+        });        
     }
 
     public resolve<T>(token: InjectionToken<T>): T {
