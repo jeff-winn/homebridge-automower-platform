@@ -1,8 +1,10 @@
-import { Mock } from 'moq.ts';
+import { It, Mock } from 'moq.ts';
 
-import { AuthenticationClientImpl } from '../../src/clients/authenticationClient';
-import { FetchClient } from '../../src/clients/fetchClient';
+import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
+import { FetchClient, Response } from '../../src/clients/fetchClient';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
+import { BadCredentialsError } from '../../src/errors/badCredentialsError';
+import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 import * as constants from '../../src/settings';
 
 describe('AuthenticationClientImpl', () => {
@@ -23,6 +25,74 @@ describe('AuthenticationClientImpl', () => {
     it('should initalize correctly', () => {
         expect(target.getApplicationKey()).toBe(APPKEY);
         expect(target.getBaseUrl()).toBe(constants.AUTHENTICATION_API_BASE_URL);
+    });
+
+    it('should throw a bad credentials error on 400 response', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 400,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
+    });
+
+    it('should throw a not authorized error on 401 response', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 401,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(NotAuthorizedError);
+    });
+
+    it('should throw an error when response is not ok', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 500,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(Error);
+    });
+
+    it('should return an oauth token when logged in successfully', async () => {
+        const token: OAuthToken = {
+            access_token: 'access token',
+            expires_in: 100,
+            provider: 'provider',
+            refresh_token: 'refresh token',
+            scope: 'my scope',
+            token_type: 'all the things',
+            user_id: '12345'
+        };
+
+        const body = JSON.stringify(token);
+
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 200,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.login(USERNAME, PASSWORD)).resolves.toStrictEqual(token);
     });
 
     it('should throw an error when app key is undefined on login', async () => {
