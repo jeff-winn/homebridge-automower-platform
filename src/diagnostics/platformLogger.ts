@@ -3,6 +3,8 @@ import util from 'util';
 import { LogLevel } from 'homebridge';
 
 import { ConsoleWrapper } from './primitives/consoleWrapper';
+import { Environment } from '../primitives/environment';
+import { PLUGIN_ID } from '../settings';
 
 /**
  * A logger which handles logging events that occur within the platform accessories.
@@ -41,11 +43,9 @@ export interface PlatformLogger {
  * A logger which imitates the native logging that occurs by the Homebridge platform {@link Logging} interface.
  */
 export class HomebridgeImitationLogger implements PlatformLogger {
-    private minLevel: number;
+    private isDebugEnabled?: boolean;
 
-    public constructor(level: LogLevel, private platformName: string | undefined, private console: ConsoleWrapper) {
-        this.minLevel = HomebridgeImitationLogger.getLevel(level);
-    }
+    public constructor(private env: Environment, private platformName: string | undefined, private console: ConsoleWrapper) { }
 
     public info(message: string, ...parameters: unknown[]): void {
         this.log(LogLevel.INFO, message, ...parameters);
@@ -64,8 +64,8 @@ export class HomebridgeImitationLogger implements PlatformLogger {
     }
 
     private log(level: LogLevel, message: string, ...parameters: unknown[]): void {
-        const current = HomebridgeImitationLogger.getLevel(level);
-        if (current < this.minLevel) {
+        if (level === LogLevel.DEBUG && !this.checkIsDebugEnabled()) {
+            // Debug logging is not currently enabled, just ignore the message.
             return;
         }
         
@@ -96,22 +96,12 @@ export class HomebridgeImitationLogger implements PlatformLogger {
         println(msg);
     }
 
-    public static getLevel(level: LogLevel): number {
-        switch (level) {
-        case LogLevel.DEBUG:
-            return 0;
-
-        case LogLevel.INFO:
-            return 1;
-        
-        case LogLevel.WARN:
-            return 2;
-
-        case LogLevel.ERROR:
-            return 3;
-
-        default:
-            throw new Error(`The value '${level}' is not supported.`);
+    private checkIsDebugEnabled(): boolean {
+        if (this.isDebugEnabled !== undefined) {
+            return this.isDebugEnabled;
         }
+
+        const debug = this.env.getDebugEnvironmentVariable();
+        return this.isDebugEnabled = (debug === PLUGIN_ID || debug === '*');
     }
 }

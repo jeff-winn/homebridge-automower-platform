@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { API, Logging, LogLevel } from 'homebridge';
+import { API, Logging } from 'homebridge';
 import { Mock, It, Times } from 'moq.ts';
 
 import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
@@ -24,8 +24,7 @@ describe('AutomowerPlatform', () => {
             platform: PLUGIN_ID,
             appKey: '12345',
             password: 'password',
-            username: 'me',
-            logLevel: LogLevel.INFO
+            username: 'me'
         };
 
         api = new Mock<API>();

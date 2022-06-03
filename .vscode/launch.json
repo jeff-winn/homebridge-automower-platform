@@ -13,7 +13,11 @@
 			"type": "pwa-node",
 			"preLaunchTask": "build",
 			"windows": {
-				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge"
+				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
+				"env": {
+					"FORCE_COLOR": "1",
+					"DEBUG": "homebridge-automower-platform"
+				}
 			}
 		}
 	]

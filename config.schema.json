@@ -30,40 +30,7 @@
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
           "required": true
-        },
-        "logLevel": {
-          "title": "Log Level",
-          "type": "string",
-          "description": "The logging level for accessories registered by this platform instance, changing this setting will <b>not</b> effect any other plugins on your Homebridge server.",
-          "required": true,
-          "default": "info",
-          "oneOf": [
-            {
-              "title": "Debug",
-              "enum": [
-                "debug"
-              ]
-            },
-            {
-              "title": "Information (Default)",
-              "enum": [
-                "info"
-              ]
-            },
-            {
-              "title": "Warning",
-              "enum": [
-                "warn"
-              ]
-            },
-            {
-              "title": "Error",
-              "enum": [
-                "error"
-              ]
-            }
-          ]
-        }
+        }      
       }
     },
     "layout": [
@@ -75,7 +42,6 @@
         "description": "Changing any settings in here could break the platform instance, proceed with caution.",
         "expandable": true,
         "items": [
-          "logLevel",
           "appKey"
         ]
       }

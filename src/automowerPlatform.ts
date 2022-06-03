@@ -1,6 +1,6 @@
 import { 
     PlatformAccessory, API, DynamicPlatformPlugin, 
-    PlatformConfig, APIEvent, Logging, LogLevel 
+    PlatformConfig, APIEvent, Logging
 } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
@@ -12,8 +12,6 @@ import { EventStreamService, EventStreamServiceImpl } from './services/automower
 import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
-import { PlatformLogger, HomebridgeImitationLogger } from './diagnostics/platformLogger';
-import { ConsoleWrapper, ConsoleWrapperImpl } from './diagnostics/primitives/consoleWrapper';
 
 /** 
  * Describes the platform configuration settings.
@@ -22,7 +20,6 @@ export interface AutomowerPlatformConfig extends PlatformConfig {
     username: string | undefined;
     password: string | undefined;
     appKey: string | undefined;
-    logLevel: LogLevel | undefined;
 }
 
 /**
@@ -63,24 +60,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             return;
         }        
 
-        this.container = new PlatformContainerImpl(this.getLogger(), this.config, this.api);
+        this.container = new PlatformContainerImpl(this.config, this.api);
         this.container.registerEverything();
-    }
-
-    protected getLogger(): PlatformLogger {
-        return new HomebridgeImitationLogger(this.getMinLogLevel(), this.log.prefix, this.getConsoleWrapper());
-    }
-
-    protected getMinLogLevel(): LogLevel {
-        if (this.config.logLevel !== undefined) {
-            return this.config.logLevel;
-        }
-
-        return LogLevel.INFO;
-    }
-
-    protected getConsoleWrapper(): ConsoleWrapper {
-        return new ConsoleWrapperImpl();
     }
 
     protected async discoverMowers(): Promise<void> {
