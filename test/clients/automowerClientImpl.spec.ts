@@ -511,6 +511,53 @@ describe('AutomowerClientImpl', () => {
         await expect(target.getMower(MOWER_ID, token)).rejects.toThrowError();
     });
     
+    it('should throw an unexpected server error on 500 response on getMowers when errors is undefined', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+
+        const body = JSON.stringify({ });
+
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 500,
+            statusText: 'We are not here',
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
+    });
+
+    it('should throw an unexpected server error on 500 response on getMowers when errors is empty', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+
+        const r: ErrorResponse = {
+            errors: []
+        };
+
+        const body = JSON.stringify(r);
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 500,
+            statusText: 'We are not here',
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
+    });
+
     it('should throw an unexpected server error on 500 response on getMowers', async () => {
         const token: AccessToken = {
             value: 'value',
