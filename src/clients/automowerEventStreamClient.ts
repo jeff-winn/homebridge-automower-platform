@@ -1,7 +1,7 @@
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AutomowerEvent, ConnectedEvent } from '../events';
 import { AccessToken } from '../model';
-import { ErrorEvent, WebSocketWrapper, WebSocketWrapperImpl } from './primitives/webSocketWrapper';
+import { WebSocketWrapper, ErrorEvent, WebSocketWrapperImpl } from './primitives/webSocketWrapper';
 
 /**
  * A client which receives a stream of events for all mowers connected to the account.
@@ -42,7 +42,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     private connecting = false;
     private connected = false;
     private connectionId?: string;
-
+    
     public constructor(private baseUrl: string, private log: PlatformLogger) { }
     
     public open(token: AccessToken): void {
@@ -50,24 +50,16 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
             this.socket.close();
         }
 
-        this.connecting = true;        
+        this.onConnecting();        
         this.socket = this.createSocket(token);
         
-        this.socket.on('message', this.onMessageReceived.bind(this));
-        this.socket.on('error', (err: ErrorEvent) => {
-            this.log.error('An error occurred within the socket stream, see the following for additional details:\n', err);            
-        });
-        
-        this.socket.on('close', () => {
-            if (this.connected) {
-                this.log.info('Disconnected!');
-            } else if (this.connecting) {
-                this.log.info('Unable to connect!');
-            }
+        this.socket.on('message', this.onSocketMessageReceived.bind(this));
+        this.socket.on('error', this.onErrorReceived.bind(this));    
+        this.socket.on('close', this.onCloseReceived.bind(this));
+    }
 
-            this.connecting = false;
-            this.connected = false;
-        });
+    protected onConnecting(): void {
+        this.connecting = true;
     }
 
     protected createSocket(token: AccessToken): WebSocketWrapper {
@@ -78,6 +70,10 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         });
     }
 
+    public getConnectionId(): string | undefined {
+        return this.connectionId;
+    }
+
     public ping(): void {
         this.socket?.ping('ping');
     }
@@ -86,27 +82,70 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         return this.connected;
     }
 
-    private onMessageReceived(buffer: Buffer): void {
+    public isConnecting(): boolean {
+        return this.connecting;
+    }
+
+    public isCallbackSet(): boolean {
+        return this.onMessageReceivedCallback !== undefined;
+    }
+
+    protected onCloseReceived() {
+        if (this.connected) {
+            this.log.info('Disconnected!');
+        } else if (this.connecting) {
+            this.log.info('Unable to connect!');
+        }
+
+        this.connecting = false;
+        this.connected = false;
+    }
+    
+    protected onErrorReceived(err: ErrorEvent): void {
+        this.log.error('An error occurred within the socket stream, see the following for additional details:\n', {
+            error: err.error,
+            message: err.message,
+            type: err.type
+        });
+    }
+
+    protected onSocketMessageReceived(buffer: Buffer): void {
         if (buffer.length === 0) {
             return;
         }
 
-        const data = JSON.parse(buffer.toString());
-        this.log.debug('Received event:\r\n', JSON.stringify(data));
-
-        const connectedEvent = data as ConnectedEvent;
-        if (connectedEvent !== undefined && connectedEvent.connectionId !== undefined) {
-            this.connectionId = connectedEvent.connectionId;
-            this.connecting = false;
-            this.connected = true;
-            
-            this.log.info('Connected!');
-        } else {
-            const mowerEvent = data as AutomowerEvent;
-            if (this.onMessageReceivedCallback !== undefined && mowerEvent.type !== undefined) {
-                this.onMessageReceivedCallback(mowerEvent);
+        try {
+            const data = JSON.parse(buffer.toString());
+            this.log.debug('Received event:\r\n', JSON.stringify(data));
+    
+            const connectedEvent = data as ConnectedEvent;
+            if (connectedEvent.connectionId !== undefined) {
+                this.onConnected(connectedEvent);
+            } else {
+                const mowerEvent = data as AutomowerEvent;
+                if (mowerEvent.type !== undefined) {
+                    this.onMessageReceived(mowerEvent);
+                }
             }
+        } catch (e) {
+            this.log.error('An unexpected error occurred while processing the message.', e);
         }
+    }
+
+    protected onConnected(event: ConnectedEvent): void {
+        this.connectionId = event.connectionId;
+        this.connecting = false;
+        this.connected = true;
+        
+        this.log.info('Connected!');
+    }
+
+    protected onMessageReceived(event: AutomowerEvent): void {
+        if (this.onMessageReceivedCallback === undefined) {
+            return;
+        }
+
+        this.onMessageReceivedCallback(event);
     }
 
     public close(): void {
