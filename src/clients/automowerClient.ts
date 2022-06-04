@@ -34,28 +34,28 @@ export interface AutomowerClient {
 /**
  * Describes the response while getting a specific mower.
  */
-interface GetMowerResponse {
+export interface GetMowerResponse {
     data: Mower;
 }
 
 /**
  * Describes the response while getting all mowers.
  */
-interface GetMowersResponse {
+export interface GetMowersResponse {
     data: Mower[];
 }
 
 /**
  * Describes an error response.
  */
-interface ErrorResponse {
+export interface ErrorResponse {
     errors: Error[];
 }
 
 /**
  * Describes an error.
  */
-interface Error {
+export interface Error {
     id: string;
     status: string;
     code: string;
@@ -130,11 +130,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         await this.throwIfStatusNotOk(res);
 
         const response = await res.json() as GetMowerResponse;
-        if (response !== undefined) {
-            return response.data;
-        }
-
-        return undefined;
+        return response.data;
     }    
 
     public async getMowers(token: AccessToken): Promise<Mower[]> {
@@ -152,11 +148,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         await this.throwIfStatusNotOk(res);
     
         const response = await res.json() as GetMowersResponse;
-        if (response !== undefined) {
-            return response.data;
-        }
-
-        return [];
+        return response.data;
     }
 
     private async throwIfStatusNotOk(response: Response): Promise<void> {
@@ -165,10 +157,9 @@ export class AutomowerClientImpl implements AutomowerClient {
         }
 
         if (response.status === 500) {                        
-            const errs = await response.json() as ErrorResponse;
-            if (errs?.errors[0] !== undefined) {
-                const err = errs.errors[0];
-
+            const e = await response.json() as ErrorResponse;
+            if (e?.errors?.length > 0) {
+                const err = e.errors[0];
                 throw new UnexpectedServerError(`ERR: [${err.code}] ${err.title}`);
             } else {
                 throw new UnexpectedServerError(`ERR: ${response.status}`);
