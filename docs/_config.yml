@@ -1,12 +1,6 @@
 remote_theme: mmistakes/minimal-mistakes
 
-include:
-  - _pages
+pages: ./_pages
 
 plugins:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jekyll-feed
-  - jemoji
   - jekyll-include-cache
