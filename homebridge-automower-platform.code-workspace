@@ -5,6 +5,7 @@
 		}
 	],	
 	"settings": {
+		"coverage-gutters.showGutterCoverage": true,
 		"typescript.preferences.quoteStyle": "single",
 		"workbench.colorCustomizations": {
 			"debugConsole.infoForeground": "#d3d7cf"

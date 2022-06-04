@@ -5,13 +5,13 @@ import { AutomowerEventTypes, PositionsEvent, StatusEvent } from '../../../src/e
 import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
 import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
-import { AutomowerEventStreamClientSpy } from '../../clients/automowerEventStreamClientSpy';
+import { AutomowerEventStreamClientStub } from '../../clients/automowerEventStreamClientStub';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('EventStreamServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
-    let stream: AutomowerEventStreamClientSpy;
+    let stream: AutomowerEventStreamClientStub;
     let log: Mock<PlatformLogger>;
     let timer: Mock<Timer>;
 
@@ -19,7 +19,7 @@ describe('EventStreamServiceImpl', () => {
 
     beforeEach(() => {
         tokenManager = new Mock<AccessTokenManager>();
-        stream = new AutomowerEventStreamClientSpy();
+        stream = new AutomowerEventStreamClientStub();
         timer = new Mock<Timer>();
 
         log = new Mock<PlatformLogger>();

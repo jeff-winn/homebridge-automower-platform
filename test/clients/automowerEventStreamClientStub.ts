@@ -2,11 +2,11 @@ import { AutomowerEventStreamClient } from '../../src/clients/automowerEventStre
 import { AutomowerEvent } from '../../src/events';
 import { AccessToken } from '../../src/model';
 
-export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient {
-    opened = false;
-    closed = false;
-    callbackSet = false;
-    keptAlive = false;
+export class AutomowerEventStreamClientStub implements AutomowerEventStreamClient {
+    public opened = false;
+    public closed = false;
+    public callbackSet = false;
+    public keptAlive = false;
 
     public isConnected(): boolean {
         return this.opened;
@@ -26,7 +26,7 @@ export class AutomowerEventStreamClientSpy implements AutomowerEventStreamClient
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    on(callback: (event: AutomowerEvent) => Promise<void>): void {
+    public on(callback: (event: AutomowerEvent) => Promise<void>): void {
         this.callbackSet = true;
     }
 }
