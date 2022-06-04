@@ -13,7 +13,8 @@ export default async (): Promise<Config.InitialOptions> => {
         preset: 'ts-jest',
         testEnvironment: 'node',
         passWithNoTests: true,
-        collectCoverage: false,
+        collectCoverage: true,
+        coverageDirectory: './.build/coverage',
         testRegex: '(?<!i)\\.(spec|test)\\.[jt]s$'
     };
 };
