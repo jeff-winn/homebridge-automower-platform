@@ -1,6 +1,4 @@
-remote_theme: mmistakes/minimal-mistakes
-
-pages: ./_pages
+remote_theme: mmistakes/jekyll-theme-basically-basic
 
 plugins:
   - jekyll-include-cache
