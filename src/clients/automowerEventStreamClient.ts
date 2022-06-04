@@ -1,7 +1,7 @@
-import { ErrorEvent, WebSocket } from 'ws';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AutomowerEvent, ConnectedEvent } from '../events';
 import { AccessToken } from '../model';
+import { ErrorEvent, WebSocketWrapper, WebSocketWrapperImpl } from './primitives/webSocketWrapper';
 
 /**
  * A client which receives a stream of events for all mowers connected to the account.
@@ -36,7 +36,7 @@ export interface AutomowerEventStreamClient {
 }
 
 export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClient {
-    private socket?: WebSocket;
+    private socket?: WebSocketWrapper;
     private onMessageReceivedCallback?: (payload: AutomowerEvent) => void;
 
     private connecting = false;
@@ -51,14 +51,9 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         }
 
         this.connecting = true;        
-        this.socket = new WebSocket(this.baseUrl, {
-            headers: {
-                'Authorization': `Bearer ${token.value}`
-            }
-        });
+        this.socket = this.createSocket(token);
         
         this.socket.on('message', this.onMessageReceived.bind(this));
-
         this.socket.on('error', (err: ErrorEvent) => {
             this.log.error('An error occurred within the socket stream, see the following for additional details:\n', err);            
         });
@@ -72,6 +67,14 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
 
             this.connecting = false;
             this.connected = false;
+        });
+    }
+
+    protected createSocket(token: AccessToken): WebSocketWrapper {
+        return new WebSocketWrapperImpl(this.baseUrl, {
+            headers: {
+                'Authorization': `Bearer ${token.value}`
+            }
         });
     }
 
