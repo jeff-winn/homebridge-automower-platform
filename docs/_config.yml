@@ -1,4 +1,6 @@
 remote_theme: mmistakes/jekyll-theme-basically-basic
 
+title: Homebridge Automower Platform
+
 plugins:
   - jekyll-include-cache
