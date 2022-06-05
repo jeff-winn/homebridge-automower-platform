@@ -1,5 +1,4 @@
 ---
-title: Home
 layout: home
 ---
 You can use the [editor on GitHub](https://github.com/jeff-winn/homebridge-automower-platform/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
