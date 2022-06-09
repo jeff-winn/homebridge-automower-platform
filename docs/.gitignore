@@ -1,0 +1,7 @@
+# Outputs
+_site
+.sass-cache
+
+# Jekyll stuff
+.jekyll-cache
+.jekyll-metadata
