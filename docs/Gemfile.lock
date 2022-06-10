@@ -259,7 +259,6 @@ PLATFORMS
 
 DEPENDENCIES
   github-pages (~> 226)
-  jekyll-watch
   webrick (~> 1.7)
 
 BUNDLED WITH

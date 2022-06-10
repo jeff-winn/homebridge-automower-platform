@@ -4,7 +4,7 @@ title: Homebridge Automower Platform
 
 markdown: kramdown
 
-exclude: [ '.vscode', 'docs.code-workspace', 'Gemfile', 'Gemfile.lock' ]
+exclude: [ '.vscode', '.devcontainer', 'docs.code-workspace', 'Gemfile', 'Gemfile.lock' ]
 
 plugins:
   - jekyll-include-cache

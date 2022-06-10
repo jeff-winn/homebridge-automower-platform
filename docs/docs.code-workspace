@@ -6,8 +6,14 @@
     ],
     "settings": {
         "files.exclude": {
-            ".jekyll-*": true,
-            ".sass-cache": true
+            "_site": true,
+            ".sass-cache": true,
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true
         }
     }
 }
