@@ -19,6 +19,12 @@
 					"DEBUG": "homebridge-automower-platform"
 				}
 			}
+		},
+		{
+			"name": "Launch Jekyll",
+			"type": "chrome",
+			"request": "attach",
+			"preLaunchTask": "jekyll"
 		}
 	]
 }
