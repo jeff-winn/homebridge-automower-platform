@@ -13,7 +13,10 @@
 		"eslint.enable": true,
 		"editor.tabSize": 4,
 		"files.exclude": {
+			"build": true,
 			"dist": true,
+			"docs/_site": true,
+			"docs/.sass-cache": true,
 			"**/bin": true,
 			"**/obj": true,			
 			"**/.git": true,
