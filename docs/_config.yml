@@ -1,6 +1,11 @@
 remote_theme: mmistakes/jekyll-theme-basically-basic
 
+lang: en-US
 title: Homebridge Automower Platform
+description: A plugin to use the Husqvuarna Automower with Homebridge
+
+author:
+  name: Jeff Winn
 
 markdown: kramdown
 
