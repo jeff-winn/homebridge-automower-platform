@@ -87,7 +87,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.eventService;
     }
 
-    private async onStatusEventReceived(event: StatusEvent): Promise<void> {
+    private onStatusEventReceived(event: StatusEvent): Promise<void> {
         const mower = this.mowers.find(o => o.getId() === event.id);
         if (mower !== undefined) {
             mower.onStatusEventReceived(event);
@@ -96,7 +96,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
-    private async onSettingsEventReceived(event: SettingsEvent): Promise<void> {
+    private onSettingsEventReceived(event: SettingsEvent): Promise<void> {
         const mower = this.getMower(event.id);
         if (mower !== undefined) {
             mower.onSettingsEventReceived(event);
