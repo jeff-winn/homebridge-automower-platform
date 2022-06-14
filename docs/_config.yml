@@ -7,6 +7,7 @@ description: A plugin to use the Husqvuarna Automower with Homebridge
 author:
   name: Jeff Winn
 
+permalink: pretty
 markdown: kramdown
 
 plugins:
