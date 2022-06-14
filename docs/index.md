@@ -10,6 +10,6 @@ introduction: |
   - A switch to control whether the mower schedule is enabled or disabled.
 actions:
   - label: "Get Started"
-    icon: github
-    url: "https://github.com/jeff-winn/homebridge-automower-platform"
+    icon: arrow-right
+    url: "/getting-started.html"
 ---
