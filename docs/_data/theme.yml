@@ -2,3 +2,4 @@
 # see: https://github.com/mmistakes/jekyll-theme-basically-basic/blob/master/_includes/navigation.html
 navigation_pages:
   - getting-started.md
+  - extras.md

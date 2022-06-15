@@ -18,10 +18,18 @@ collections:
   getting_started:
     output: true
     permalink: /getting-started/:path/
+  extras:
+    output: true
+    permalink: /:collection/:path/
 
 defaults:
   - scope:
       type: getting_started
+    values:
+      layout: post
+      read_time: true
+  - scope:
+      type: extras
     values:
       layout: post
       read_time: true
