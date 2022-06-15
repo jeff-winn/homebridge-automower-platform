@@ -21,6 +21,9 @@ collections:
   extras:
     output: true
     permalink: /:collection/:path/
+  kb:
+    output: true
+    permalink: /:collection/:path/
 
 defaults:
   - scope:
@@ -30,6 +33,11 @@ defaults:
       read_time: true
   - scope:
       type: extras
+    values:
+      layout: post
+      read_time: true
+  - scope:
+      type: kb
     values:
       layout: post
       read_time: true
