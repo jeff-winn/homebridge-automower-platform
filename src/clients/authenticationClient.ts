@@ -135,7 +135,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     protected guardAppKeyMustBeProvided(): void {
         if (this.appKey === undefined || this.appKey === '') {
-            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.');
+            throw new BadConfigurationError('[CFG0001] - The appKey setting is missing, please check your configuration and try again.');
         }
     }
 
