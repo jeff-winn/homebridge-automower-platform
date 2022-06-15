@@ -39,5 +39,5 @@ defaults:
   - scope:
       type: kb
     values:
-      layout: post
+      layout: kb_article
       read_time: true

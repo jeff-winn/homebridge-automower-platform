@@ -1,0 +1,26 @@
+---
+layout: default
+---
+
+<header class="intro">
+  <div class="inner">
+    {% if page.error_message %}
+    <div class="intro-text">
+      <h3 id="error-message">{{ page.error_message | markdownify | strip_html }}</h3>
+    </div>
+    {% endif %}
+  </div>
+</header>
+
+<main id="main" class="page-content" aria-label="Content">
+  <div class="inner">
+    <article class="entry-wrap">
+      <div class="entry-content">
+        {{ content }}
+      </div>
+      {% if site.disqus.shortname %}
+        {% include disqus_comments.html %}
+      {% endif %}
+    </article>
+  </div>
+</main>
