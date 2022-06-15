@@ -11,5 +11,5 @@ introduction: |
 actions:
   - label: "Get Started"
     icon: arrow-right
-    url: "/getting-started.html"
+    url: "/getting-started"
 ---

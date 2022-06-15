@@ -13,3 +13,15 @@ markdown: kramdown
 plugins:
   - jekyll-include-cache
   - jekyll-remote-theme
+
+collections:
+  getting_started:
+    output: true
+    permalink: /getting-started/:path/
+
+defaults:
+  - scope:
+      type: getting_started
+    values:
+      layout: post
+      read_time: true

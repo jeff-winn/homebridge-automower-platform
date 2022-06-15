@@ -1,7 +1,9 @@
 ---
 title: Getting started
-layout: page
-permalink: /getting-started.html
+layout: collection
+permalink: /getting-started
+collection: getting_started
+entries_layout: grid
 ---
 
-This is the getting started page.
+The following step-by-step instructions can be used to aid installation and first-time configuration of the plugin.
