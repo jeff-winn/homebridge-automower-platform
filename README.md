@@ -7,3 +7,6 @@
 
 Supported services:
 - A switch to control whether a mower has the schedule enabled or disabled.
+
+For help installing and configuring the plugin, please see the documentation found at:
+https://jeff-winn.github.io/homebridge-automower-platform
