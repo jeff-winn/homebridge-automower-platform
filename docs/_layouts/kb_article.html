@@ -17,7 +17,12 @@ layout: default
   <div class="inner">
     <article class="entry-wrap">
       <div class="entry-content">
-        {{ content }}
+        <h3>Cause:</h3>
+        <p>{{ page.cause }}</p>
+        <h3>Details:</h3>
+        <p>{{ page.details }}</p>
+        <h3>How to Fix:</h3>
+        <p>{{ page.fix }}</p>
       </div>
       {% if site.disqus.shortname %}
         {% include disqus_comments.html %}
