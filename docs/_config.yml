@@ -16,6 +16,7 @@ permalink: pretty
 plugins:
   - jekyll-include-cache
   - jekyll-remote-theme
+  - jekyll-environment-variables
 
 collections:
   getting_started:
