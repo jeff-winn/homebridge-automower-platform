@@ -5,7 +5,8 @@ description: A plugin to use the Husqvuarna Automower with Homebridge
 author:
   name: Jeff Winn
 
-google_analytics: <%= ENV['GA_TOKEN'] %>
+# This will turn on the site built in hooks, but the token comes from secrets.
+google_analytics: true
 
 # Build settings
 markdown: kramdown
