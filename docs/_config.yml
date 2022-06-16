@@ -17,13 +17,13 @@ plugins:
 collections:
   getting_started:
     output: true
-    permalink: /getting-started/:path/
+    permalink: /getting-started/:path
   extras:
     output: true
-    permalink: /:collection/:path/
+    permalink: /:collection/:path
   kb:
     output: true
-    permalink: /:collection/:path/
+    permalink: /:collection/:path
 
 defaults:
   - scope:
