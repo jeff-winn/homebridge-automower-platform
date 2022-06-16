@@ -2,6 +2,7 @@ import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { BadCredentialsError } from '../errors/badCredentialsError';
 import { BadConfigurationError } from '../errors/badConfigurationError';
 import { FetchClient, Response } from './fetchClient';
+import { BadOAuthTokenError } from '../errors/badOAuthTokenError';
 
 /**
  * Describes an OAuth authentication token.
@@ -114,7 +115,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     private throwIfBadCredentials(response: Response): void {
         if (response.status === 400) {
             throw new BadCredentialsError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.');
+                'The username and/or password supplied were not valid, please check your configuration and try again.',
+                'CFG0002');
         }
     }
 
@@ -135,7 +137,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     protected guardAppKeyMustBeProvided(): void {
         if (this.appKey === undefined || this.appKey === '') {
-            throw new BadConfigurationError('[CFG0001] - The appKey setting is missing, please check your configuration and try again.');
+            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.', 'CFG0001');
         }
     }
 
@@ -165,7 +167,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfBadToken(response: Response): void {
         if (response.status === 400) {
-            throw new BadCredentialsError('The access token supplied was invalid.');
+            throw new BadOAuthTokenError('The access token supplied was invalid.', 'ERR0002');
         }
     }
     
@@ -185,7 +187,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfNotAuthorized(response: Response): void {
         if (response.status === 401) {
-            throw new NotAuthorizedError();
+            throw new NotAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
         }
     }
 

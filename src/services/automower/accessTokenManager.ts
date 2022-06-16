@@ -79,12 +79,12 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         if (this.config.username === undefined || this.config.username === '') {
             throw new BadConfigurationError(
-                '[CFG0002] The username and/or password setting is missing, please check your configuration and try again.');
+                'The username and/or password setting is missing, please check your configuration and try again.', 'CFG0002');
         }
 
         if (this.config.password === undefined || this.config.password === '') {
             throw new BadConfigurationError(
-                '[CFG0002] The username and/or password setting is missing, please check your configuration and try again.');
+                'The username and/or password setting is missing, please check your configuration and try again.', 'CFG0002');
         }
 
         const result = await this.client.login(this.config.username, this.config.password);

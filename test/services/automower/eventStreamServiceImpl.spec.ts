@@ -73,7 +73,7 @@ describe('EventStreamServiceImpl', () => {
     it('should flag the token as invalid when failing to authenticate', async () => {
         stream.opened = false;
 
-        tokenManager.setup(o => o.getCurrentToken()).throws(new BadCredentialsError('Unable to authenticate'));
+        tokenManager.setup(o => o.getCurrentToken()).throws(new BadCredentialsError('Unable to authenticate', 'ERR0000'));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
