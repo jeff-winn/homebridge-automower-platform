@@ -5,12 +5,10 @@ description: A plugin to use the Husqvuarna Automower with Homebridge
 author:
   name: Jeff Winn
 
-# This will turn on the site built in hooks, but the token comes from secrets.
-google_analytics: true
-
 # Build settings
 markdown: kramdown
 remote_theme: mmistakes/jekyll-theme-basically-basic
+google_analytics: G-18WB7SGF90
 permalink: pretty
 
 plugins:
