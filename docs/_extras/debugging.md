@@ -6,7 +6,7 @@ introduction: |
 ---
 To enable debug level logging, please follow the instructions provided here.
 
-WARNING: Enabling DEBUG logging **WILL** show log entries that are sensitive and can be used to perform session hijacking. Do not give these logs out to anyone.
+WARNING: Enabling DEBUG logging **WILL** show log entries that are sensitive and can be used to perform session hijacking. Do not give these logs out to anyone without removing the sensitive information.
 
 ### How to enable debug mode:
 - Open the Homebridge UI.
@@ -15,6 +15,6 @@ WARNING: Enabling DEBUG logging **WILL** show log entries that are sensitive and
 ```
 homebridge-automower-platform
 ```
-- Restart your Homebridge server.
+- Restart Homebridge.
 
 At this point, you should begin seeing additional log entries. To revert the change, just remove the DEBUG environment variable and restart your Homebridge server.
