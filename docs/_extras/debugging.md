@@ -17,4 +17,4 @@ homebridge-automower-platform
 ```
 - Restart Homebridge.
 
-At this point, you should begin seeing additional log entries. To revert the change, just remove the DEBUG environment variable and restart your Homebridge server.
+At this point, you should see additional log entries. To revert the change, simply remove the DEBUG environment variable and restart Homebridge.
