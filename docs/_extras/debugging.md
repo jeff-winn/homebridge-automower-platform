@@ -19,4 +19,5 @@ homebridge-automower-platform
 
 At this point, you should see additional log entries. To revert the change, simply remove the DEBUG environment variable and restart Homebridge.
 
+For an example of the debug log entries, see the sample below:
 {% include lightbox.html src="/assets/images/homebridge-debug-logs.png" alt="Logs screenshot" title="An example showing debug logs from Homebridge" %}
