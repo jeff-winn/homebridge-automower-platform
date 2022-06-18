@@ -46,7 +46,9 @@ export class HomebridgeImitationLogger implements PlatformLogger {
     private isDebugEnabled?: boolean;
     private color: Chalk;
 
-    public constructor(private env: Environment, private platformName: string | undefined, private console: ConsoleWrapper) { 
+    public constructor(private env: Environment, private platformName: string | undefined, 
+        private name: string | undefined, private console: ConsoleWrapper) {
+
         this.color = new chalk.Instance({ level: 1 });
     }
 
@@ -92,7 +94,13 @@ export class HomebridgeImitationLogger implements PlatformLogger {
         }
 
         if (this.platformName !== undefined) {
-            msg = this.color.cyan(`[${this.platformName}] `) + msg;
+            let logName = this.platformName;
+            if (this.name !== undefined && this.name !== this.platformName) {
+                // Change out the name of the platform to something to help the user identify which specific instance.
+                logName = `${this.platformName} - ${this.name}`;
+            }            
+
+            msg = this.color.cyan(`[${logName}] `) + msg;
         }
     
         msg = this.color.white(`[${new Date().toLocaleString()}] `) + msg;        

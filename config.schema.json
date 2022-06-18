@@ -5,6 +5,14 @@
     "schema": {
       "type": "object",
       "properties": {
+        "name": {
+          "title": "Name",
+          "description": "The name you would like to use to identify the platform (if something other than the default).",
+          "type": "string",
+          "default": "Homebridge Automower Platform",
+          "minLength": 1,
+          "required": true          
+        },
         "username": {
           "title": "Email Address",
           "type": "string",
@@ -34,6 +42,7 @@
       }
     },
     "layout": [
+      "name",
       "username",
       "password",
       {
