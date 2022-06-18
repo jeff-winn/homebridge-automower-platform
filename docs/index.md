@@ -12,4 +12,7 @@ actions:
   - label: "Get Started"
     icon: arrow-right
     relative_url: "/getting-started"
+  - label: "GitHub"
+    icon: github
+    url: "https://github.com/jeff-winn/homebridge-automower-platform"
 ---
