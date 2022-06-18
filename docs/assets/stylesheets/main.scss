@@ -1,9 +1,14 @@
 ---
 ---
 
-img.logo {
+.logo {
     width: 225px;
     height: 225px;
 }
 
 @import "basically-basic";
+
+// Fixes an issue with lightbox and the navigation buttons when an image is shown.
+.sidebar-toggle-wrapper {
+    z-index: 9999;
+}
