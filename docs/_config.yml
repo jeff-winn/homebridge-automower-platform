@@ -1,7 +1,7 @@
-lang: en-US
+# Site settings
 title: Homebridge Automower Platform
 description: A plugin to use the Husqvuarna Automower with Homebridge
-
+lang: en-US
 author:
   name: Jeff Winn
 
@@ -9,7 +9,6 @@ author:
 markdown: kramdown
 remote_theme: mmistakes/jekyll-theme-basically-basic
 permalink: pretty
-
 plugins:
   - jekyll-include-cache
   - jekyll-remote-theme
