@@ -29,7 +29,11 @@
       {% if page.actions %}
         <ul class="intro-actions">
           {% for action in page.actions %}
-            <li><a href="{{ site.baseurl }}{{ action.relative_url }}" class="btn">{% if action.icon %}<span class="icon">{% include {{ action.icon | prepend: 'icon-' | append: '.svg' }} %}</span>{% endif %}{{ action.label }}</a></li>
+            {% if action.url %}
+              <li><a href="{{ action.url }}" class="btn">{% if action.icon %}<span class="icon">{% include {{ action.icon | prepend: 'icon-' | append: '.svg' }} %}</span>{% endif %}{{ action.label }}</a></li>
+            {% else %}
+              <li><a href="{{ site.baseurl }}{{ action.relative_url }}" class="btn">{% if action.icon %}<span class="icon">{% include {{ action.icon | prepend: 'icon-' | append: '.svg' }} %}</span>{% endif %}{{ action.label }}</a></li>
+            {% endif %}
           {% endfor %}
         </ul>
       {% endif %}
