@@ -19,7 +19,7 @@ import { RetryerFetchClient } from '../clients/fetchClient';
 import { NodeJsEnvironment } from './environment';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 
-import * as constants from '../settings';
+import * as settings from '../settings';
 
 /**
  * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
@@ -52,7 +52,8 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(HomebridgeImitationLogger, {
             useFactory: (context) => new HomebridgeImitationLogger(
                 context.resolve(NodeJsEnvironment),
-                constants.PLATFORM_NAME,
+                settings.PLATFORM_NAME, 
+                this.config.name,                
                 context.resolve(ConsoleWrapperImpl))
         });
 
@@ -69,7 +70,7 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(AuthenticationClientImpl, {
             useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
-                constants.AUTHENTICATION_API_BASE_URL,
+                settings.AUTHENTICATION_API_BASE_URL,
                 context.resolve(RetryerFetchClient))
         });
 
@@ -81,7 +82,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(AutomowerClientImpl, {
             useFactory: (context) => new AutomowerClientImpl(
                 this.config.appKey,
-                constants.AUTOMOWER_CONNECT_API_BASE_URL,
+                settings.AUTOMOWER_CONNECT_API_BASE_URL,
                 context.resolve(RetryerFetchClient))
         });
 
@@ -122,7 +123,7 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(AutomowerEventStreamClientImpl, {
             useFactory: (context) => new AutomowerEventStreamClientImpl(
-                constants.AUTOMOWER_STREAM_API_BASE_URL, 
+                settings.AUTOMOWER_STREAM_API_BASE_URL, 
                 context.resolve(HomebridgeImitationLogger))
         });
 

@@ -15,7 +15,7 @@ describe('HomebridgeImitationLogger', () => {
         env = new Mock<Environment>();
         console = new Mock<ConsoleWrapper>();
 
-        target = new HomebridgeImitationLogger(env.object(), 'platform', console.object());
+        target = new HomebridgeImitationLogger(env.object(), 'platform', 'my instance', console.object());
     });
 
     it('should log the debug to stdout when enabled via plugin id', () => {
