@@ -1,1 +1,44 @@
-theme: jekyll-theme-cayman
+# Site settings
+title: Homebridge Automower Platform
+description: A plugin to use the Husqvuarna Automower with Homebridge
+lang: en-US
+author:
+  name: Jeff Winn
+search: true
+search_provider: lunr
+
+# Build settings
+markdown: kramdown
+remote_theme: mmistakes/jekyll-theme-basically-basic
+permalink: pretty
+plugins:
+  - jekyll-include-cache
+  - jekyll-remote-theme
+
+collections:
+  getting_started:
+    output: true
+    permalink: /getting-started/:path
+  extras:
+    output: true
+    permalink: /:collection/:path
+  kb:
+    output: true
+    permalink: /:collection/:path
+
+defaults:
+  - scope:
+      type: getting_started
+    values:
+      layout: page
+      read_time: true
+  - scope:
+      type: extras
+    values:
+      layout: page
+      read_time: true
+  - scope:
+      type: kb
+    values:
+      layout: kb_article
+      read_time: true

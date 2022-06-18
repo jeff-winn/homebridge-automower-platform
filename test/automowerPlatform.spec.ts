@@ -43,7 +43,7 @@ describe('AutomowerPlatform', () => {
         log.setup(o => o.error(It.IsAny<string>(), It.IsAny<Error>())).returns(undefined);
 
         const discoveryService = new Mock<DiscoveryService>();
-        discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).throws(new BadConfigurationError('Ouch'));
+        discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).throws(new BadConfigurationError('Ouch', 'ERR0000'));
 
         target.discoveryService = discoveryService.object();
 

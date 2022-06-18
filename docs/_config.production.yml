@@ -1,0 +1,5 @@
+# Needs to match where GitHub hosts the website.
+baseurl: /homebridge-automower-platform
+
+# Enables google analytics to be rendered on the site.
+google_analytics: G-18WB7SGF90

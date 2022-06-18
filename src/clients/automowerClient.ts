@@ -76,7 +76,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
     protected guardAppKeyMustBeProvided(): void {
         if (this.appKey === undefined || this.appKey === '') {
-            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.');
+            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.', 'CFG0001');
         }
     }
 
@@ -153,16 +153,16 @@ export class AutomowerClientImpl implements AutomowerClient {
 
     private async throwIfStatusNotOk(response: Response): Promise<void> {
         if (response.status === 401) {
-            throw new NotAuthorizedError();
+            throw new NotAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
         }
 
         if (response.status === 500) {                        
             const e = await response.json() as ErrorResponse;
             if (e?.errors?.length > 0) {
                 const err = e.errors[0];
-                throw new UnexpectedServerError(`ERR: [${err.code}] ${err.title}`);
+                throw new UnexpectedServerError(`ERR: [${err.code}] ${err.title}`, 'ERR0000');
             } else {
-                throw new UnexpectedServerError(`ERR: ${response.status}`);
+                throw new UnexpectedServerError(`ERR: ${response.status}`, 'ERR0000');
             }
         }
 

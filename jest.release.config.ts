@@ -11,7 +11,7 @@ export default async (): Promise<Config.InitialOptions> => {
         testEnvironment: 'node',
         passWithNoTests: false,
         collectCoverage: true,
-        coverageDirectory: './.build/coverage',
+        coverageDirectory: './build/coverage',
         testRegex: '(?<!i)\\.(spec|test)\\.[jt]s$'
     };
 };

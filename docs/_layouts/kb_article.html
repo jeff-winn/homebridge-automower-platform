@@ -1,0 +1,29 @@
+---
+layout: default
+---
+
+<header class="intro">
+  <div class="inner">
+    {% if page.error_message %}
+    <div class="intro-text">
+      <h3 id="error-message">{{ page.error_message | markdownify | strip_html }}</h3>
+      <p>Error Code: {{ page.error_code }}</p]>
+    </div>
+    {% endif %}
+  </div>
+</header>
+
+<main id="main" class="page-content" aria-label="Content">
+  <div class="inner">
+    <article class="entry-wrap">
+      <div class="entry-content">
+        <h3>Cause:</h3>
+        <p>{{ page.cause }}</p>
+        <h3>Details:</h3>
+        <p>{{ page.details }}</p>
+        <h3>How to Fix:</h3>
+        <p>{{ content }}</p>
+      </div>
+    </article>
+  </div>
+</main>

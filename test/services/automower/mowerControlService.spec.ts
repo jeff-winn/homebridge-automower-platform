@@ -45,16 +45,10 @@ describe('MowerControlService', () => {
         
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
-        client.setup(o => o.doAction(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError());
+        client.setup(o => o.doAction(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        let threw = false;
-        try {
-            await target.resumeSchedule(mowerId);
-        } catch (e) {
-            threw = true;
-        }
+        await expect(target.resumeSchedule(mowerId)).rejects.toThrow(NotAuthorizedError);
 
-        expect(threw).toBeTruthy();                
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
 
@@ -86,16 +80,10 @@ describe('MowerControlService', () => {
         
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
-        client.setup(o => o.doAction(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError());
+        client.setup(o => o.doAction(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        let threw = false;
-        try {
-            await target.parkUntilFurtherNotice(mowerId);
-        } catch (e) {
-            threw = true;
-        }
+        await expect(target.parkUntilFurtherNotice(mowerId)).rejects.toThrow(NotAuthorizedError);
 
-        expect(threw).toBeTruthy();                
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
 });

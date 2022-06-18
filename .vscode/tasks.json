@@ -29,7 +29,18 @@
 			"group": {
 				"kind": "test",
 				"isDefault": true
-			}			
+			}
+		},
+		{
+			"label": "jekyll",
+			"type": "shell",
+			"command": "bundle exec jekyll serve",
+			"windows": {
+				"options": {
+					"cwd": "${workspaceFolder}/docs"
+				}
+			},
+			"problemMatcher": []
 		}
 	]
 }

@@ -28,16 +28,10 @@ describe('GetMowersServiceImpl', () => {
         
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
-        client.setup(x => x.getMower(mowerId, token)).throws(new NotAuthorizedError());
+        client.setup(x => x.getMower(mowerId, token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        let threw = false;
-        try {
-            await target.getMower(mowerId);
-        } catch (e) {
-            threw = true;
-        }
+        await expect(target.getMower(mowerId)).rejects.toThrow(NotAuthorizedError);
 
-        expect(threw).toBeTruthy();                
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
 
@@ -49,16 +43,10 @@ describe('GetMowersServiceImpl', () => {
         
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
-        client.setup(x => x.getMowers(token)).throws(new NotAuthorizedError());
+        client.setup(x => x.getMowers(token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        let threw = false;
-        try {
-            await target.getMowers();
-        } catch (e) {
-            threw = true;
-        }
+        await expect(target.getMowers()).rejects.toThrow(NotAuthorizedError);
 
-        expect(threw).toBeTruthy();                
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
 

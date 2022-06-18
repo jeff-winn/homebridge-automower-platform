@@ -4,6 +4,7 @@ import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenti
 import { FetchClient, Response } from '../../src/clients/fetchClient';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
+import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 import * as constants from '../../src/settings';
 
@@ -206,7 +207,7 @@ describe('AuthenticationClientImpl', () => {
             scope: 'everything',
             token_type: 'fancy',
             user_id: 'me'
-        })).rejects.toThrowError(BadCredentialsError);
+        })).rejects.toThrowError(BadOAuthTokenError);
     });
 
     it('should throw not authorized error on 401 for refresh', async () => {
