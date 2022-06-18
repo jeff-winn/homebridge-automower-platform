@@ -30,12 +30,12 @@ defaults:
   - scope:
       type: getting_started
     values:
-      layout: post
+      layout: page
       read_time: true
   - scope:
       type: extras
     values:
-      layout: post
+      layout: page
       read_time: true
   - scope:
       type: kb
