@@ -6,6 +6,11 @@
     height: 225px;
 }
 
+.thumbnail {
+    height: 50%;
+    width: 50%;
+}
+
 @import "basically-basic";
 
 // Fixes an issue with lightbox and the navigation buttons when an image is shown.
