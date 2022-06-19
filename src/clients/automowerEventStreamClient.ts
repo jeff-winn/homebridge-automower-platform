@@ -120,7 +120,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     
             const connectedEvent = data as ConnectedEvent;
             if (connectedEvent.connectionId !== undefined) {
-                this.onConnected(connectedEvent);
+                this.onConnectedReceived(connectedEvent);
             } else {
                 const mowerEvent = data as AutomowerEvent;
                 if (mowerEvent.type !== undefined) {
@@ -132,7 +132,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         }
     }
 
-    protected onConnected(event: ConnectedEvent): void {
+    protected onConnectedReceived(event: ConnectedEvent): void {
         this.connectionId = event.connectionId;
         this.connecting = false;
         this.connected = true;

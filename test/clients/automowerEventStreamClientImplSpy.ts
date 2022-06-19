@@ -26,7 +26,7 @@ export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClien
         this.onConnecting();
     }
 
-    public unsafeOnConnected(event: ConnectedEvent): void {
-        this.onConnected(event);
+    public unsafeOnConnectedReceived(event: ConnectedEvent): void {
+        this.onConnectedReceived(event);
     }
 }

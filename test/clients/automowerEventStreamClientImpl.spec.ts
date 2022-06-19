@@ -108,7 +108,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     it('should log disconnected when closed after connected', () => {        
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 
-        target.unsafeOnConnected({
+        target.unsafeOnConnectedReceived({
             connected: true,
             connectionId: '12345'
         });
