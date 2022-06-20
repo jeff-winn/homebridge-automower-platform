@@ -81,7 +81,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     }
 
     protected onConnecting(): void {
-        this.connecting = true;
+        this.setConnecting(true);
     }
 
     protected createSocket(token: AccessToken): WebSocketWrapper {
@@ -96,6 +96,10 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         return this.connectionId;
     }
 
+    protected setConnectionId(value: string | undefined) {
+        this.connectionId = value;
+    }
+
     public ping(): void {
         this.socket?.ping('ping');
     }
@@ -104,8 +108,16 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         return this.connected;
     }
 
+    protected setConnected(value: boolean): void {
+        this.connected = value;
+    }
+
     public isConnecting(): boolean {
         return this.connecting;
+    }
+
+    protected setConnecting(value: boolean): void {
+        this.connecting = value;
     }
 
     public isCallbackSet(): boolean {
@@ -113,8 +125,8 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     }
 
     protected onCloseReceived() {
-        if (this.connected) {
-            this.connected = false;
+        if (this.isConnected()) {
+            this.setConnected(false);
 
             if (this.onDisconnectedCallback !== undefined) {
                 try {
@@ -124,7 +136,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
                 }
             }
         } else if (this.connecting) {
-            this.connecting = false;
+            this.setConnecting(false);
         }        
     }
     
@@ -162,9 +174,9 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     }
 
     protected onConnectedReceived(event: ConnectedEvent): void {
-        this.connectionId = event.connectionId;
-        this.connecting = false;
-        this.connected = true;
+        this.setConnectionId(event.connectionId);
+        this.setConnecting(false);
+        this.setConnected(true);
         
         if (this.onConnectedCallback !== undefined) {
             try {
