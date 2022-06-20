@@ -115,17 +115,17 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     protected onCloseReceived() {
         if (this.connected) {
             this.connected = false;
+
+            if (this.onDisconnectedCallback !== undefined) {
+                try {
+                    this.onDisconnectedCallback();                
+                } catch (e) {
+                    this.log.error('An unexpected error occurred while handling the disconnected event.', e);
+                }
+            }
         } else if (this.connecting) {
             this.connecting = false;
-        }
-
-        if (this.onDisconnectedCallback !== undefined) {
-            try {
-                this.onDisconnectedCallback();                
-            } catch (e) {
-                this.log.error('An unexpected error occurred while handling the disconnected event.', e);
-            }
-        }
+        }        
     }
     
     protected onErrorReceived(err: ErrorEvent): void {

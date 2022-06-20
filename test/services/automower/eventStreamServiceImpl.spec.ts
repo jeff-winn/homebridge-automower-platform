@@ -45,8 +45,19 @@ describe('EventStreamServiceImpl', () => {
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
-    it('should close the stream', async () => {
+    it('should not close the stream when not connected', async () => {
         timer.setup(o => o.stop()).returns(undefined);
+
+        await target.stop();
+
+        expect(stream.closed).toBeFalsy();
+
+        timer.verify(o => o.stop(), Times.Once());
+    });
+
+    it('should close the stream when connected', async () => {
+        timer.setup(o => o.stop()).returns(undefined);
+        stream.opened = true;
 
         await target.stop();
 
@@ -101,14 +112,7 @@ describe('EventStreamServiceImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        let thrown = false;
-        try {
-            await target.unsafeKeepAlive();
-        } catch (e) {
-            thrown = true;
-        }
-
-        expect(thrown).toBeFalsy();
+        await target.unsafeKeepAlive();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -126,7 +130,6 @@ describe('EventStreamServiceImpl', () => {
 
         await target.unsafeKeepAlive();        
 
-        expect(stream.closed).toBeTruthy();        
         expect(stream.opened).toBeTruthy();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());

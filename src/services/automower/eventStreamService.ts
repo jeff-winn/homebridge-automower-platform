@@ -1,6 +1,6 @@
 import { AccessTokenManager } from './accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent, ErrorEvent, ConnectedEvent } from '../../events';
+import { AutomowerEvent, AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent, ErrorEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
@@ -88,10 +88,13 @@ export class EventStreamServiceImpl implements EventStreamService {
         return Promise.resolve(undefined);
     }
 
-    protected onDisconnectedEventReceived(): Promise<void> {
+    protected async onDisconnectedEventReceived(): Promise<void> {
         this.log.info('Disconnected!');
 
-        return Promise.resolve(undefined);
+        this.stopKeepAlive();
+
+        // Trigger the keep alive to occur immediately.
+        await this.keepAlive();
     }
 
     protected onErrorEventReceived(event: ErrorEvent): Promise<void> {        
@@ -109,13 +112,11 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     private async connect(): Promise<void> {
-        this.log.debug('Attempting to open a connection to the stream...');
+        this.log.debug('Attempting to open a connection...');
 
         try {
             const token = await this.tokenManager.getCurrentToken();
             this.stream.open(token);
-
-            this.log.debug('Stream connection opened successfully.');
         } catch (e) {
             if (e instanceof BadCredentialsError) {
                 this.tokenManager.flagAsInvalid();
@@ -195,6 +196,11 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected disconnect(): void {
+        if (!this.stream.isConnected()) {
+            // The stream isn't connected. Attempting to close the stream will result in unnecessary errors being thrown.
+            return;
+        }
+
         this.log.debug('Closing the stream...');
 
         this.stream.close();

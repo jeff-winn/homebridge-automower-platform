@@ -108,7 +108,9 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
-        expect(disconnected).toBeTruthy();
+
+        // We don't want disconnected to fire when it never connected as this would cause constant reconnect attempts.
+        expect(disconnected).toBeFalsy();
     });
 
     it('should handle disconnected when closed after connected', () => {        
