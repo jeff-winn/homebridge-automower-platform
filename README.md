@@ -5,7 +5,8 @@
 
 [Homebridge](https://github.com/homebridge/homebridge) plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) as [Apple HomeKit](https://www.apple.com/ios/home/) accessories.
 
-Supported services:
+Supported capabilities:
+- Does not cause logout of Husqvarna mobile application.
 - A switch to control whether a mower has the schedule enabled or disabled.
 
 For help installing and configuring the plugin, please see the documentation found at:
