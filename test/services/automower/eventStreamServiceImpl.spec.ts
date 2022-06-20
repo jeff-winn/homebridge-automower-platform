@@ -54,6 +54,41 @@ describe('EventStreamServiceImpl', () => {
 
         timer.verify(o => o.stop(), Times.Once());
     });
+    
+    it('should log when connected event received', async () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        target.unsafeOnConnectedEventReceived();
+
+        log.verify(o => o.info(It.IsAny()), Times.Once());
+    });
+
+    it('should handle disconnected event received', async () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        timer.setup(o => o.stop()).returns(undefined);
+
+        // Don't need to test the keep alive again here, just make sure it would have ran.
+        target.shouldRunKeepAlive = false;
+
+        target.unsafeOnDisconnectedEventReceived();
+
+        expect(target.keepAliveExecuted).toBeTruthy();
+
+        log.verify(o => o.info(It.IsAny()), Times.Once());
+        timer.verify(o => o.stop(), Times.Once());
+    });
+
+    it('should log when error event received', async () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        await target.unsafeOnErrorEventReceived({
+            error: 'error',
+            message: 'message',
+            type: 'type'
+        });
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+    });
 
     it('should close the stream when connected', async () => {
         timer.setup(o => o.stop()).returns(undefined);
