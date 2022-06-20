@@ -1,10 +1,10 @@
 import { It, Mock, Times } from 'moq.ts'; 
 
-import { WebSocketWrapper, ErrorEvent } from '../../src/clients/primitives/webSocketWrapper';
+import { WebSocketWrapper } from '../../src/clients/primitives/webSocketWrapper';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { AutomowerEventStreamClientImplSpy } from './automowerEventStreamClientImplSpy';
 import * as constants from '../../src/settings';
-import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent } from '../../src/events';
+import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../src/events';
 
 describe('AutomowerEventStreamClientImpl', () => {
     let socket: Mock<WebSocketWrapper>;
@@ -93,20 +93,33 @@ describe('AutomowerEventStreamClientImpl', () => {
         expect(target.isConnected()).toBeFalsy();
     });
     
-    it('should log unable to connect when closed before connected', () => {        
+    it('should handle unable to connect when closed before connected', () => {        
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         
-        target.unsafeOnConnecting();
+        let disconnected = false;
+        target.onDisconnected(() => {
+            disconnected = true;
 
+            return Promise.resolve(undefined);
+        });
+
+        target.unsafeOnConnecting();
         target.unsafeOnCloseReceived();
 
-        log.verify(o => o.info('Unable to connect!'), Times.Once());
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
+        expect(disconnected).toBeTruthy();
     });
 
-    it('should log disconnected when closed after connected', () => {        
+    it('should handle disconnected when closed after connected', () => {        
         log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        let disconnected = false;
+        target.onDisconnected(() => {
+            disconnected = true;
+
+            return Promise.resolve(undefined);
+        });
 
         target.unsafeOnConnectedReceived({
             connected: true,
@@ -115,12 +128,12 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         target.unsafeOnCloseReceived();
 
-        log.verify(o => o.info('Disconnected!'), Times.Once());
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
+        expect(disconnected).toBeTruthy();
     });
 
-    it('should log when an error has been received', () => {
+    it('should handle when an error has been received', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
         const err: ErrorEvent = {
@@ -129,10 +142,16 @@ describe('AutomowerEventStreamClientImpl', () => {
             type: 'fake'
         };
 
+        let handled = false;
+        target.onError(() => {
+            handled = true;
+
+            return Promise.resolve(undefined);
+        });
+
         target.unsafeOnErrorReceived(err);        
 
-        log.verify(o => o.error('An error occurred within the socket stream, see the following for additional details:\n', It.IsAny()), 
-            Times.Once());
+        expect(handled).toBeTruthy();
     });
 
     it('should do nothing when not connected on close', () => {
@@ -187,13 +206,20 @@ describe('AutomowerEventStreamClientImpl', () => {
             connectionId: id
         };
 
+        let connected = false;
+        target.onConnected(() => {
+            connected = true;
+
+            return Promise.resolve(undefined);
+        });
+
         const payload = Buffer.from(JSON.stringify(event));
 
         target.unsafeOnSocketMessageReceived(payload);
         
         expect(target.isConnected()).toBeTruthy();
         expect(target.getConnectionId()).toBe(id);
-        log.verify(o => o.info('Connected!'), Times.Once());
+        expect(connected).toBeTruthy();
     });
 
     it('should ignore the event when no type is provided', () => {

@@ -1,6 +1,6 @@
 import { AccessTokenManager } from './accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../events';
+import { AutomowerEvent, AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent, ErrorEvent, ConnectedEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
@@ -67,8 +67,12 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     public async start(): Promise<void> {
-        if (!this.attached) {
+        if (!this.attached) {            
+            this.stream.onConnected(this.onConnectedEventReceived.bind(this));
+            this.stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
+            this.stream.onError(this.onErrorEventReceived.bind(this));
             this.stream.on(this.onEventReceived.bind(this));
+
             this.attached = true;
         }
 
@@ -76,6 +80,28 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.startKeepAlive();
 
         this.setStarted(new Date());
+    }
+
+    protected onConnectedEventReceived(): Promise<void> {
+        this.log.info('Connected!');
+
+        return Promise.resolve(undefined);
+    }
+
+    protected onDisconnectedEventReceived(): Promise<void> {
+        this.log.info('Disconnected!');
+
+        return Promise.resolve(undefined);
+    }
+
+    protected onErrorEventReceived(event: ErrorEvent): Promise<void> {        
+        this.log.error('An error occurred within the socket stream, see the following for additional details:\n', {
+            error: event.error,
+            message: event.message,
+            type: event.type
+        });
+        
+        return Promise.resolve(undefined);
     }
 
     protected setStarted(value?: Date): void {
@@ -108,16 +134,12 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
     
     protected async keepAlive(): Promise<void> {
-        this.log.debug('Checking keep alive for the client stream...');
-
         try {        
             if (this.shouldReconnect()) {
                 await this.reconnect();
             } else {
                 this.pingOnce();
             }
-
-            this.log.debug('Completed keep alive successfully.');
         } catch (e) {
             this.log.error('An unexpected error occurred while keeping the client stream alive.', e);
         } finally {
@@ -127,7 +149,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }    
 
     protected shouldReconnect(): boolean {
-        this.log.debug('Attempting to decide whether the event stream should be reconnected...');        
+        this.log.debug('Checking keep alive for the client stream...');
         let result = false;
 
         if (!this.stream.isConnected()) {

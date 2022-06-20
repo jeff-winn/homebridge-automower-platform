@@ -1,6 +1,6 @@
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
-import { WebSocketWrapper, ErrorEvent } from '../../src/clients/primitives/webSocketWrapper';
-import { ConnectedEvent } from '../../src/events';
+import { WebSocketWrapper } from '../../src/clients/primitives/webSocketWrapper';
+import { ConnectedEvent, ErrorEvent } from '../../src/events';
 import { AccessToken } from '../../src/model';
 
 export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClientImpl {
