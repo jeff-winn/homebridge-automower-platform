@@ -1,6 +1,6 @@
 import { AutomowerEventStreamClientImpl } from '../../src/clients/automowerEventStreamClient';
-import { WebSocketWrapper, ErrorEvent } from '../../src/clients/primitives/webSocketWrapper';
-import { ConnectedEvent } from '../../src/events';
+import { WebSocketWrapper } from '../../src/clients/primitives/webSocketWrapper';
+import { ConnectedEvent, ErrorEvent } from '../../src/events';
 import { AccessToken } from '../../src/model';
 
 export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClientImpl {
@@ -26,7 +26,15 @@ export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClien
         this.onConnecting();
     }
 
-    public unsafeOnConnected(event: ConnectedEvent): void {
-        this.onConnected(event);
+    public unsafeOnConnectedReceived(event: ConnectedEvent): void {
+        this.onConnectedReceived(event);
+    }
+
+    public unsafeSetConnecting(value: boolean): void {
+        this.setConnecting(value);
+    }
+
+    public unsafeSetConnected(value: boolean): void {
+        this.setConnected(value);
     }
 }

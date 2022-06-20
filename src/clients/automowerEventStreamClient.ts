@@ -1,7 +1,7 @@
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { AutomowerEvent, ConnectedEvent } from '../events';
+import { AutomowerEvent, ConnectedEvent, ErrorEvent } from '../events';
 import { AccessToken } from '../model';
-import { WebSocketWrapper, ErrorEvent, WebSocketWrapperImpl } from './primitives/webSocketWrapper';
+import { WebSocketWrapper, WebSocketWrapperImpl } from './primitives/webSocketWrapper';
 
 /**
  * A client which receives a stream of events for all mowers connected to the account.
@@ -30,6 +30,24 @@ export interface AutomowerEventStreamClient {
     on(callback: (event: AutomowerEvent) => Promise<void>): void;
 
     /**
+     * Executes the callback when the client is disconnected.
+     * @param callback The callback to execute.
+     */
+    onDisconnected(callback: () => Promise<void>): void;
+
+    /**
+     * Executes the callback when the client has connected.
+     * @param callback The callback to execute.
+     */
+    onConnected(callback: (event: ConnectedEvent) => Promise<void>): void;
+
+    /**
+     * Executes the callback when the client has encountered an error.
+     * @param callback The callback to execute.
+     */
+    onError(callback: (event: ErrorEvent) => Promise<void>): void;
+
+    /**
      * Pings the server.
      */
     ping(): void;
@@ -38,6 +56,10 @@ export interface AutomowerEventStreamClient {
 export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClient {
     private socket?: WebSocketWrapper;
     private onMessageReceivedCallback?: (payload: AutomowerEvent) => void;
+
+    private onErrorReceivedCallback?: (payload: ErrorEvent) => void;
+    private onConnectedCallback?: (payload: ConnectedEvent) => void;
+    private onDisconnectedCallback?: () => void;
 
     private connecting = false;
     private connected = false;
@@ -59,7 +81,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     }
 
     protected onConnecting(): void {
-        this.connecting = true;
+        this.setConnecting(true);
     }
 
     protected createSocket(token: AccessToken): WebSocketWrapper {
@@ -74,6 +96,10 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         return this.connectionId;
     }
 
+    protected setConnectionId(value: string | undefined) {
+        this.connectionId = value;
+    }
+
     public ping(): void {
         this.socket?.ping('ping');
     }
@@ -82,8 +108,16 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         return this.connected;
     }
 
+    protected setConnected(value: boolean): void {
+        this.connected = value;
+    }
+
     public isConnecting(): boolean {
         return this.connecting;
+    }
+
+    protected setConnecting(value: boolean): void {
+        this.connecting = value;
     }
 
     public isCallbackSet(): boolean {
@@ -91,22 +125,29 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     }
 
     protected onCloseReceived() {
-        if (this.connected) {
-            this.log.info('Disconnected!');
-        } else if (this.connecting) {
-            this.log.info('Unable to connect!');
-        }
+        if (this.isConnected()) {
+            this.setConnected(false);
 
-        this.connecting = false;
-        this.connected = false;
+            if (this.onDisconnectedCallback !== undefined) {
+                try {
+                    this.onDisconnectedCallback();                
+                } catch (e) {
+                    this.log.error('An unexpected error occurred while handling the disconnected event.', e);
+                }
+            }
+        } else if (this.connecting) {
+            this.setConnecting(false);
+        }        
     }
     
     protected onErrorReceived(err: ErrorEvent): void {
-        this.log.error('An error occurred within the socket stream, see the following for additional details:\n', {
-            error: err.error,
-            message: err.message,
-            type: err.type
-        });
+        if (this.onErrorReceivedCallback !== undefined) {
+            try {
+                this.onErrorReceivedCallback(err);
+            } catch (e) {
+                this.log.error('An unexpected error occurred while handling the error event.', e);
+            }
+        }
     }
 
     protected onSocketMessageReceived(buffer: Buffer): void {
@@ -120,7 +161,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     
             const connectedEvent = data as ConnectedEvent;
             if (connectedEvent.connectionId !== undefined) {
-                this.onConnected(connectedEvent);
+                this.onConnectedReceived(connectedEvent);
             } else {
                 const mowerEvent = data as AutomowerEvent;
                 if (mowerEvent.type !== undefined) {
@@ -132,12 +173,18 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         }
     }
 
-    protected onConnected(event: ConnectedEvent): void {
-        this.connectionId = event.connectionId;
-        this.connecting = false;
-        this.connected = true;
+    protected onConnectedReceived(event: ConnectedEvent): void {
+        this.setConnectionId(event.connectionId);
+        this.setConnecting(false);
+        this.setConnected(true);
         
-        this.log.info('Connected!');
+        if (this.onConnectedCallback !== undefined) {
+            try {
+                this.onConnectedCallback(event);
+            } catch (e) {
+                this.log.error('An unexpected error occurred while handling the connected event.', e);
+            }
+        }
     }
 
     protected onMessageReceived(event: AutomowerEvent): void {
@@ -158,5 +205,17 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
 
     public on(callback: (event: AutomowerEvent) => Promise<void>): void {        
         this.onMessageReceivedCallback = callback;
+    }
+
+    public onConnected(callback: (event: ConnectedEvent) => Promise<void>): void {
+        this.onConnectedCallback = callback;
+    }
+
+    public onDisconnected(callback: () => Promise<void>): void {
+        this.onDisconnectedCallback = callback;
+    }
+
+    public onError(callback: (event: ErrorEvent) => Promise<void>): void {
+        this.onErrorReceivedCallback = callback;
     }
 }

@@ -3,15 +3,6 @@ import { ClientRequestArgs } from 'http';
 import { WebSocket, ClientOptions } from 'ws';
 
 /**
- * Describes an error event.
- */
-export interface ErrorEvent {
-    error: string;
-    message: string;
-    type: string;
-}
-
-/**
  * A mechanism which wraps a {@link WebSocket} implementation.
  */
 export interface WebSocketWrapper {

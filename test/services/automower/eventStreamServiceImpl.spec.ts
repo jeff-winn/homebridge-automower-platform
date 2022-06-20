@@ -1,9 +1,9 @@
 import { It, Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
-import { AutomowerEventTypes, PositionsEvent, StatusEvent } from '../../../src/events';
+import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../src/events';
 import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
-import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
+import { AccessToken, Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientStub } from '../../clients/automowerEventStreamClientStub';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
@@ -45,8 +45,54 @@ describe('EventStreamServiceImpl', () => {
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
-    it('should close the stream', async () => {
+    it('should not close the stream when not connected', async () => {
         timer.setup(o => o.stop()).returns(undefined);
+
+        await target.stop();
+
+        expect(stream.closed).toBeFalsy();
+
+        timer.verify(o => o.stop(), Times.Once());
+    });
+    
+    it('should log when connected event received', async () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        target.unsafeOnConnectedEventReceived();
+
+        log.verify(o => o.info(It.IsAny()), Times.Once());
+    });
+
+    it('should handle disconnected event received', async () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        timer.setup(o => o.stop()).returns(undefined);
+
+        // Don't need to test the keep alive again here, just make sure it would have ran.
+        target.shouldRunKeepAlive = false;
+
+        target.unsafeOnDisconnectedEventReceived();
+
+        expect(target.keepAliveExecuted).toBeTruthy();
+
+        log.verify(o => o.info(It.IsAny()), Times.Once());
+        timer.verify(o => o.stop(), Times.Once());
+    });
+
+    it('should log when error event received', async () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        await target.unsafeOnErrorEventReceived({
+            error: 'error',
+            message: 'message',
+            type: 'type'
+        });
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+    });
+
+    it('should close the stream when connected', async () => {
+        timer.setup(o => o.stop()).returns(undefined);
+        stream.opened = true;
 
         await target.stop();
 
@@ -101,14 +147,7 @@ describe('EventStreamServiceImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        let thrown = false;
-        try {
-            await target.unsafeKeepAlive();
-        } catch (e) {
-            thrown = true;
-        }
-
-        expect(thrown).toBeFalsy();
+        await target.unsafeKeepAlive();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -126,7 +165,6 @@ describe('EventStreamServiceImpl', () => {
 
         await target.unsafeKeepAlive();        
 
-        expect(stream.closed).toBeTruthy();        
         expect(stream.opened).toBeTruthy();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -236,6 +274,32 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should run the callback when settings-event is received', async () => {
+        let executed = false;
+        const event: SettingsEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                calendar: {
+                    tasks: []
+                },
+                cuttingHeight: 10,
+                headlight: {
+                    mode: HeadlightMode.EVENING_ONLY
+                }
+            }
+        };
+
+        target.onSettingsEventReceived(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        target.unsafeEventReceived(event);
+
+        expect(executed).toBeTruthy();
+    });
+
+    it('should run the callback when status-event is received', async () => {
         let executed = false;
         const event: StatusEvent = {
             id: '12345',
