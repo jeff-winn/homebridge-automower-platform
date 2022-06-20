@@ -1,9 +1,9 @@
 import { It, Mock, Times } from 'moq.ts';
 
 import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
-import { AutomowerEventTypes, PositionsEvent, StatusEvent } from '../../../src/events';
+import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../src/events';
 import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
-import { AccessToken, Activity, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
+import { AccessToken, Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
 import { AutomowerEventStreamClientStub } from '../../clients/automowerEventStreamClientStub';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
@@ -274,6 +274,32 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should run the callback when settings-event is received', async () => {
+        let executed = false;
+        const event: SettingsEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                calendar: {
+                    tasks: []
+                },
+                cuttingHeight: 10,
+                headlight: {
+                    mode: HeadlightMode.EVENING_ONLY
+                }
+            }
+        };
+
+        target.onSettingsEventReceived(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        target.unsafeEventReceived(event);
+
+        expect(executed).toBeTruthy();
+    });
+
+    it('should run the callback when status-event is received', async () => {
         let executed = false;
         const event: StatusEvent = {
             id: '12345',
