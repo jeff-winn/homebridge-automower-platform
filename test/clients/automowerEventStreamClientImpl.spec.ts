@@ -93,6 +93,43 @@ describe('AutomowerEventStreamClientImpl', () => {
         expect(target.isConnected()).toBeFalsy();
     });
     
+    it('should do nothing when no callback is set on error received', () => {
+        target.unsafeOnErrorReceived({
+            error: 'error',
+            message: 'error message',
+            type: 'error type'
+        });
+    });
+
+    it('should log errors thrown when error callback is executed', () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.onError(() => {
+            throw new Error('Ouch');
+        });
+
+        target.unsafeOnErrorReceived({
+            error: 'error',
+            message: 'error message',
+            type: 'error type'
+        });
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+    });
+
+    it('should log errors thrown when disconnect callback is executed', () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.unsafeSetConnected(true);
+        target.onDisconnected(() => {
+            throw new Error('Ouch');
+        });
+
+        target.unsafeOnCloseReceived();
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+    });
+
     it('should handle unable to connect when closed before connected', () => {        
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         
@@ -111,6 +148,21 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         // We don't want disconnected to fire when it never connected as this would cause constant reconnect attempts.
         expect(disconnected).toBeFalsy();
+    });
+
+    it('should handle errors thrown on connected event', () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.onConnected(() => {
+            throw new Error('Ouch');
+        });
+
+        target.unsafeOnConnectedReceived({
+            connected: true,
+            connectionId: '12345'
+        });
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
 
     it('should handle disconnected when closed after connected', () => {        
