@@ -84,8 +84,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         }
 
         const lastValue = this.getLastTamperedValue();
-        // const newValue = this.tamperedPolicy.check();
-        const newValue = true;
+        const newValue = this.tamperedPolicy.check();
 
         if (lastValue === undefined || lastValue !== newValue) {
             this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'TAMPERED' : 'NOT_TAMPERED'}`);
