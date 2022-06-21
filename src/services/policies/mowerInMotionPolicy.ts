@@ -18,7 +18,7 @@ export interface MowerInMotionPolicy extends Policy {
 export class DeterministicMowerInMotionPolicy implements MowerInMotionPolicy {
     private mower?: MowerState;
 
-    public apply(): boolean {
+    public check(): boolean {
         if (this.mower === undefined) {
             return false;
         }

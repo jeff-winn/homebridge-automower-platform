@@ -206,7 +206,7 @@ describe('ScheduleSwitchImpl', () => {
         policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
         policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
-        policy.setup(o => o.apply()).returns(true);
+        policy.setup(o => o.check()).returns(true);
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
@@ -255,7 +255,7 @@ describe('ScheduleSwitchImpl', () => {
         policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
         policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
-        policy.setup(o => o.apply()).returns(false);
+        policy.setup(o => o.check()).returns(false);
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());

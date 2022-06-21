@@ -38,7 +38,7 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
             (this.mowerState === undefined || this.mowerState.state !== State.IN_OPERATION);
     }
 
-    public apply(): boolean {
+    public check(): boolean {
         if (this.calendar === undefined || this.planner === undefined) {
             throw new InvalidStateError('The calendar and planner are both required.');
         }

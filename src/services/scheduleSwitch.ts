@@ -82,7 +82,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
      */
     protected refreshCharacteristic() {
         if (this.policy.shouldApply()) {
-            const newValue = this.policy.apply();
+            const newValue = this.policy.check();
             this.updateValue(newValue);        
         }
     }

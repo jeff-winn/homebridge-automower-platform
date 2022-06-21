@@ -61,7 +61,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
     }
 
     protected refreshCharacteristic(): void {
-        const newValue = this.policy.apply();
+        const newValue = this.policy.check();
         if (this.lastValue === undefined || this.lastValue !== newValue) {
             this.motionDetected?.updateValue(newValue);
             this.lastValue = newValue;

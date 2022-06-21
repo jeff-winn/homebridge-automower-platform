@@ -3,9 +3,9 @@
  */
 export interface Policy {
     /**
-     * Determines the outcome of the policy.
+     * Check the policy.
      */
-    apply(): boolean;     
+    check(): boolean;     
 }
 
 /**
