@@ -1,20 +1,11 @@
 import { InvalidStateError } from '../../errors/invalidStateError';
 import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../model';
+import { OptionalPolicy } from './policy';
 
 /**
  * A policy which decides whether the mower schedule is enabled.
  */
-export interface ScheduleEnabledPolicy {
-    /**
-     * Identifies whether the policy should be applied.
-     */
-    shouldApply(): boolean;
-
-    /**
-     * Applies the policy.
-     */
-    apply(): boolean;
-    
+export interface ScheduleEnabledPolicy extends OptionalPolicy {   
     /**
      * Sets the calendar.
      * @param calendar The calendar.
