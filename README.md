@@ -8,7 +8,10 @@
 Supported capabilities:
 - The current charge status and battery percentage for each mower.
 - A switch to control whether each mower has their schedule enabled or disabled.
-- A motion sensor to indicate whether each mower is moving about the property.
+- A motion sensor to indicate whether each mower:
+  - *is* moving about the property.
+  - *has* been tampered with (either by a human or other means) and needs assistance.
+  - *has* encountered a fault (which will require the Husqvarna app to troubleshoot) and needs assitance.
 
 Additional capabilities:
 - Does not cause logout of Husqvarna mobile application.
