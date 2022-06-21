@@ -1,11 +1,12 @@
-import { 
-    PlatformAccessory, UnknownContext 
+import {
+    PlatformAccessory, UnknownContext
 } from 'homebridge';
 
 import { SettingsEvent, StatusEvent } from './events';
 import { Mower } from './model';
 import { AccessoryInformationService } from './services/accessoryInformationService';
 import { BatteryService } from './services/batteryService';
+import { MotionSensorService } from './services/motionSensorService';
 import { ScheduleSwitch } from './services/scheduleSwitch';
 
 /**
@@ -23,10 +24,11 @@ export interface AutomowerContext extends UnknownContext {
  */
 export class AutomowerAccessory {
     public constructor(
-        private accessory: PlatformAccessory<AutomowerContext>, 
-        private batteryService: BatteryService, 
-        private informationService: AccessoryInformationService, 
-        private scheduleSwitch: ScheduleSwitch) { 
+        private accessory: PlatformAccessory<AutomowerContext>,
+        private batteryService: BatteryService,
+        private informationService: AccessoryInformationService,
+        private motionSensorService: MotionSensorService,
+        private scheduleSwitch: ScheduleSwitch) {
     }
 
     /**
@@ -43,6 +45,7 @@ export class AutomowerAccessory {
     public init(): void {
         this.informationService.init();
         this.batteryService.init();
+        this.motionSensorService.init(false);
 
         // The display name should be prepended, unless there are multiple switches available.
         this.scheduleSwitch.init(true);
@@ -58,9 +61,11 @@ export class AutomowerAccessory {
 
         this.scheduleSwitch.setMowerState(data.attributes.mower);
         this.scheduleSwitch.setCalendar(data.attributes.calendar);
-        this.scheduleSwitch.setPlanner(data.attributes.planner);        
+        this.scheduleSwitch.setPlanner(data.attributes.planner);
+
+        this.motionSensorService.setMowerState(data.attributes.mower);
     }
-    
+
     /**
      * Gets the mower id.
      * @returns The mower id.
@@ -79,6 +84,8 @@ export class AutomowerAccessory {
         
         this.scheduleSwitch.setMowerState(event.attributes.mower);
         this.scheduleSwitch.setPlanner(event.attributes.planner);
+
+        this.motionSensorService.setMowerState(event.attributes.mower);
     }
 
     /**

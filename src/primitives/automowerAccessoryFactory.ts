@@ -1,15 +1,17 @@
 import { API, PlatformAccessory } from 'homebridge';
 
-import { PlatformAccessoryFactory } from './platformAccessoryFactory';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Mower } from '../model';
 import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/accessoryInformationService';
-import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
-import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
-import { PlatformContainer } from './platformContainer';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
-import { PlatformLogger } from '../diagnostics/platformLogger';
+import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
+import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
+import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
+import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
+import { PlatformAccessoryFactory } from './platformAccessoryFactory';
+import { PlatformContainer } from './platformContainer';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -60,9 +62,10 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
-        const result = new AutomowerAccessory(accessory, 
-            this.createBatteryService(accessory), 
+        const result = new AutomowerAccessory(accessory,
+            this.createBatteryService(accessory),
             this.createAccessoryInformationService(accessory),
+            this.createMotionSensorService(accessory),
             this.createScheduleSwitch(accessory));
 
         result.init();
@@ -71,7 +74,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected createBatteryService(accessory: PlatformAccessory<AutomowerContext>): BatteryService {
-        return new BatteryServiceImpl(accessory, this.api);       
+        return new BatteryServiceImpl(accessory, this.api);
     }
 
     protected createAccessoryInformationService(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformationService {
@@ -80,11 +83,19 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
         return new ScheduleSwitchImpl(
-            this.container.resolve(MowerControlServiceImpl), 
+            'Schedule',
+            this.container.resolve(MowerControlServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
             accessory, this.api, this.log);
     }
-    
+
+    protected createMotionSensorService(accessory: PlatformAccessory<AutomowerContext>): MotionSensorService {
+        return new MotionSensorServiceImpl(
+            'Motion Sensor',
+            this.container.resolve(DeterministicMowerInMotionPolicy),
+            accessory, this.api);
+    }
+
     private parseModelInformation(value: string): ModelInformation {
         const firstIndex = value.indexOf(' ');
 
