@@ -21,4 +21,12 @@ export class MotionSensorServiceImplSpy extends MotionSensorServiceImpl {
     public unsafeGetLastMotionValue(): boolean | undefined {
         return this.getLastMotionValue();
     }
+
+    public unsafeSetLastFaultedValue(value: boolean | undefined): void {
+        this.setLastFaultedValue(value);
+    }
+
+    public unsafeGetLastFaultedValue(): boolean | undefined {
+        return this.getLastFaultedValue();
+    }
 }

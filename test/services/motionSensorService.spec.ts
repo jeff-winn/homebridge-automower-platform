@@ -168,4 +168,82 @@ describe('MotionSensorServiceImpl', () => {
 
         motionDetected.verify(o => o.updateValue(true), Times.Once());
     });
+
+    it('should refresh the faulted characteristic when the value has changed from undefined to false', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(false)).returns(faulted.object());
+
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            errorCode: 10,
+            errorCodeTimestamp: 10000,
+            mode: Mode.MAIN_AREA,
+            state: State.ERROR
+        };
+        
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+
+        target.unsafeSetLastFaultedValue(undefined);
+        target.unsafeSetLastMotionValue(false);
+        target.init(false);
+
+        target.setMowerState(state);
+
+        const result = target.unsafeGetLastFaultedValue();
+        expect(result).toBeFalsy();
+
+        faulted.verify(o => o.updateValue(Characteristic.StatusFault.NO_FAULT), Times.Once());
+    });
+
+    it('should refresh the faulted characteristic when the value has changed from false to true', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(true)).returns(faulted.object());
+
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            errorCode: 10,
+            errorCodeTimestamp: 10000,
+            mode: Mode.MAIN_AREA,
+            state: State.ERROR
+        };
+        
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(true);
+
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastMotionValue(false);
+        target.init(false);
+
+        target.setMowerState(state);
+
+        const result = target.unsafeGetLastFaultedValue();
+        expect(result).toBeTruthy();
+
+        faulted.verify(o => o.updateValue(Characteristic.StatusFault.GENERAL_FAULT), Times.Once());
+    });
 });
