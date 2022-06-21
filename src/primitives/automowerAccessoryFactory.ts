@@ -9,6 +9,7 @@ import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
 import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
+import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
 import { PlatformAccessoryFactory } from './platformAccessoryFactory';
@@ -95,6 +96,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             'Motion Sensor',
             this.container.resolve(DeterministicMowerInMotionPolicy),
             this.container.resolve(DeterministicMowerFaultedPolicy),
+            this.container.resolve(DeterministicMowerTamperedPolicy),
             accessory, this.api, this.log);
     }
 

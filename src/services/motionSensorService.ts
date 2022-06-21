@@ -7,6 +7,7 @@ import { MowerState } from '../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
+import { MowerTamperedPolicy } from './policies/mowerTamperedPolicy';
 
 /**
  * A service which encapsulates whether the motion detection service for a mower.
@@ -28,12 +29,16 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
     private underlyingService?: Service;
     private motionDetected?: Characteristic;
     private faulted?: Characteristic;
+    private tampered?: Characteristic;
 
+    private lastTamperedValue?: boolean;
     private lastFaultedValue?: boolean;
     private lastMotionValue?: boolean;
 
-    public constructor(private name: string, private motionPolicy: MowerInMotionPolicy, private faultedPolicy: MowerFaultedPolicy,
-        accessory: PlatformAccessory<AutomowerContext>, api: API, private log: PlatformLogger) { 
+    public constructor(private name: string, private motionPolicy: MowerInMotionPolicy, private faultedPolicy: MowerFaultedPolicy, 
+        private tamperedPolicy: MowerTamperedPolicy, accessory: PlatformAccessory<AutomowerContext>, 
+        api: API, private log: PlatformLogger) { 
+            
         super(accessory, api);
     }
 
@@ -51,6 +56,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
 
         this.motionDetected = this.underlyingService.getCharacteristic(this.Characteristic.MotionDetected);
         this.faulted = this.underlyingService.getCharacteristic(this.Characteristic.StatusFault);
+        this.tampered = this.underlyingService.getCharacteristic(this.Characteristic.StatusTampered);
     }
 
     protected createService(displayName: string): Service {
@@ -60,13 +66,42 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
     public setMowerState(mower: MowerState): void {        
         this.motionPolicy.setMowerState(mower);
         this.faultedPolicy.setMowerState(mower);
+        this.tamperedPolicy.setMowerState(mower);
 
         this.refreshCharacteristics();
     }
 
     protected refreshCharacteristics(): void {
         this.checkFaulted();
+        this.checkTampered();
+        
         this.checkMotionDetected();
+    }
+
+    protected checkTampered(): void {
+        if (this.tampered === undefined) {
+            throw new InvalidStateError('The service has not been initialized.');
+        }
+
+        const lastValue = this.getLastTamperedValue();
+        // const newValue = this.tamperedPolicy.check();
+        const newValue = true;
+
+        if (lastValue === undefined || lastValue !== newValue) {
+            this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'TAMPERED' : 'NOT_TAMPERED'}`);
+
+            this.tampered.updateValue(
+                newValue ? this.Characteristic.StatusTampered.TAMPERED : this.Characteristic.StatusTampered.NOT_TAMPERED);
+            this.setLastTamperedValue(newValue);
+        }
+    }
+
+    protected getLastTamperedValue(): boolean | undefined {
+        return this.lastTamperedValue;
+    }
+
+    protected setLastTamperedValue(value: boolean | undefined) {
+        this.lastTamperedValue = value;
     }
 
     protected checkFaulted(): void {
@@ -74,8 +109,10 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
             throw new InvalidStateError('The service has not been initialized.');
         }
 
+        const lastValue = this.getLastFaultedValue();        
         const newValue = this.faultedPolicy.check();
-        if (this.lastFaultedValue === undefined || this.lastFaultedValue !== newValue) {
+
+        if (lastValue === undefined || lastValue !== newValue) {
             this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'GENERAL_FAULT' : 'NO_FAULT'}`);
 
             this.faulted.updateValue(newValue ? this.Characteristic.StatusFault.GENERAL_FAULT : this.Characteristic.StatusFault.NO_FAULT);
@@ -96,8 +133,10 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
             throw new InvalidStateError('The service has not been initialized.');
         }
 
+        const lastValue = this.getLastMotionValue();
         const newValue = this.motionPolicy.check();
-        if (this.lastMotionValue === undefined || this.lastMotionValue !== newValue) {
+
+        if (lastValue === undefined || lastValue !== newValue) {
             this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'MOTION_DETECTED' : 'NO_MOTION'}`);
 
             this.motionDetected.updateValue(newValue);
