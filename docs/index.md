@@ -7,6 +7,7 @@ introduction: |
   This is a Homebridge plugin that lets you connect an already registered Husqvarna Automower to Apple HomeKit by using Homebridge.
 
   The plugin provides the following services for each available Automower:
+  - The charge status and battery percentage for a mower.
   - A switch to control whether the mower schedule is enabled or disabled.
 actions:
   - label: "Get Started"
