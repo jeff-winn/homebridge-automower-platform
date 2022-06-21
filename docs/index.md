@@ -9,6 +9,7 @@ introduction: |
   The plugin provides the following services for each available Automower:
   - The charge status and battery percentage for a mower.
   - A switch to control whether the mower schedule is enabled or disabled.
+  - A motion sensor to indicate whether a mower is in operation.
 actions:
   - label: "Get Started"
     icon: arrow-right

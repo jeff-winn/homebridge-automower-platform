@@ -3,7 +3,7 @@
 		{
 			"path": "./"
 		}
-	],	
+	],
 	"settings": {
 		"coverage-gutters.showGutterCoverage": true,
 		"typescript.preferences.quoteStyle": "single",
@@ -18,7 +18,7 @@
 			"docs/_site": true,
 			"docs/.sass-cache": true,
 			"**/bin": true,
-			"**/obj": true,			
+			"**/obj": true,
 			"**/.git": true,
 			"**/.svn": true,
 			"**/.hg": true,

@@ -1,23 +1,24 @@
 import { API } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
+import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
+import { RetryerFetchClient } from '../clients/fetchClient';
+import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
+import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { AccessTokenManagerImpl } from '../services/automower/accessTokenManager';
-import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
-import { AutomowerPlatformConfig } from '../automowerPlatform';
+import { GetMowersServiceImpl } from '../services/automower/getMowersService';
+import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
+import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
+import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
+import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
+import { NodeJsEnvironment } from './environment';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
-import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
-import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
-import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
-import { RetryerFetchClient } from '../clients/fetchClient';
-import { NodeJsEnvironment } from './environment';
-import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 
 import * as settings from '../settings';
 
@@ -84,6 +85,10 @@ export class PlatformContainerImpl implements PlatformContainer {
                 this.config.appKey,
                 settings.AUTOMOWER_CONNECT_API_BASE_URL,
                 context.resolve(RetryerFetchClient))
+        });
+
+        container.register(DeterministicMowerInMotionPolicy, {
+            useValue: new DeterministicMowerInMotionPolicy()
         });
 
         container.register(DeterministicScheduleEnabledPolicy, {

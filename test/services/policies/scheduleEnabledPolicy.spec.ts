@@ -136,7 +136,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
 
-        const result = target.apply();
+        const result = target.check();
 
         expect(result).toBeFalsy();
     });
@@ -164,7 +164,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             restrictedReason: RestrictedReason.PARK_OVERRIDE
         });
 
-        const result = target.apply();
+        const result = target.check();
 
         expect(result).toBeFalsy();
     });
@@ -192,7 +192,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
 
-        const result = target.apply();
+        const result = target.check();
 
         expect(result).toBeTruthy();
     });
@@ -231,7 +231,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
 
-        const result = target.apply();
+        const result = target.check();
 
         expect(result).toBeTruthy();
     });
@@ -259,7 +259,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             restrictedReason: RestrictedReason.WEEK_SCHEDULE
         });
 
-        const result = target.apply();
+        const result = target.check();
 
         expect(result).toBeFalsy();
     });
@@ -273,7 +273,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
 
         let thrown = false;
         try {
-            target.apply();
+            target.check();
         } catch (e) {
             if (e instanceof InvalidStateError) {
                 thrown = true;
@@ -301,10 +301,11 @@ describe('DeterministicScheduleEnabledPolicy', () => {
                 }
             ]
         });
-
+        
         let thrown = false;
+    
         try {
-            target.apply();
+            target.check();
         } catch (e) {
             if (e instanceof InvalidStateError) {
                 thrown = true;

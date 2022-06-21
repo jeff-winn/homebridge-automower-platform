@@ -1,13 +1,13 @@
+import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, HAPStatus, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
-import { Service, Characteristic, CharacteristicEventTypes, CharacteristicValue, CharacteristicSetCallback, HAPStatus } from 'hap-nodejs';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerControlService } from '../../src/services/automower/mowerControlService';
 import { AutomowerContext } from '../../src/automowerAccessory';
-import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
-import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../src/model';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../src/model';
+import { MowerControlService } from '../../src/services/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
+import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
 
 describe('ScheduleSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
@@ -32,7 +32,7 @@ describe('ScheduleSwitchImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         log = new Mock<PlatformLogger>();        
 
-        target = new ScheduleSwitchImplSpy(mowerControlService.object(), policy.object(), 
+        target = new ScheduleSwitchImplSpy('Schedule', mowerControlService.object(), policy.object(), 
             platformAccessory.object(), api.object(), log.object());
     });
 
@@ -206,7 +206,7 @@ describe('ScheduleSwitchImpl', () => {
         policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
         policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
-        policy.setup(o => o.apply()).returns(true);
+        policy.setup(o => o.check()).returns(true);
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
@@ -255,7 +255,7 @@ describe('ScheduleSwitchImpl', () => {
         policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
         policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
-        policy.setup(o => o.apply()).returns(false);
+        policy.setup(o => o.check()).returns(false);
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());

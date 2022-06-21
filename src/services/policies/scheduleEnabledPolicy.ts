@@ -1,20 +1,11 @@
 import { InvalidStateError } from '../../errors/invalidStateError';
 import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../model';
+import { OptionalPolicy } from './policy';
 
 /**
  * A policy which decides whether the mower schedule is enabled.
  */
-export interface ScheduleEnabledPolicy {
-    /**
-     * Identifies whether the policy should be applied.
-     */
-    shouldApply(): boolean;
-
-    /**
-     * Applies the policy.
-     */
-    apply(): boolean;
-    
+export interface ScheduleEnabledPolicy extends OptionalPolicy {   
     /**
      * Sets the calendar.
      * @param calendar The calendar.
@@ -47,7 +38,7 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
             (this.mowerState === undefined || this.mowerState.state !== State.IN_OPERATION);
     }
 
-    public apply(): boolean {
+    public check(): boolean {
         if (this.calendar === undefined || this.planner === undefined) {
             throw new InvalidStateError('The calendar and planner are both required.');
         }
