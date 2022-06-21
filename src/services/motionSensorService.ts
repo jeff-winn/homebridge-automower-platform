@@ -1,8 +1,11 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
+
 import { AutomowerContext } from '../automowerAccessory';
+import { PlatformLogger } from '../diagnostics/platformLogger';
 import { InvalidStateError } from '../errors/invalidStateError';
 import { MowerState } from '../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';
+import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
 
 /**
@@ -24,11 +27,13 @@ export interface MotionSensorService {
 export class MotionSensorServiceImpl extends AbstractAccessoryService implements MotionSensorService {
     private underlyingService?: Service;
     private motionDetected?: Characteristic;
+    private faulted?: Characteristic;
 
-    private lastValue?: boolean;
+    private lastFaultedValue?: boolean;
+    private lastMotionValue?: boolean;
 
-    public constructor(private name: string, private policy: MowerInMotionPolicy, 
-        accessory: PlatformAccessory<AutomowerContext>, api: API) { 
+    public constructor(private name: string, private motionPolicy: MowerInMotionPolicy, private faultedPolicy: MowerFaultedPolicy,
+        accessory: PlatformAccessory<AutomowerContext>, api: API, private log: PlatformLogger) { 
         super(accessory, api);
     }
 
@@ -45,6 +50,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         }
 
         this.motionDetected = this.underlyingService.getCharacteristic(this.Characteristic.MotionDetected);
+        this.faulted = this.underlyingService.getCharacteristic(this.Characteristic.StatusFault);
     }
 
     protected createService(displayName: string): Service {
@@ -52,27 +58,58 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
     }
 
     public setMowerState(mower: MowerState): void {        
-        this.policy.setMowerState(mower);
-        this.refreshCharacteristic();
+        this.motionPolicy.setMowerState(mower);
+        this.faultedPolicy.setMowerState(mower);
+
+        this.refreshCharacteristics();
     }
 
-    protected refreshCharacteristic(): void {
+    protected refreshCharacteristics(): void {
+        this.checkFaulted();
+        this.checkMotionDetected();
+    }
+
+    protected checkFaulted(): void {
+        if (this.faulted === undefined) {
+            throw new InvalidStateError('The service has not been initialized.');
+        }
+
+        const newValue = this.faultedPolicy.check();
+        if (this.lastFaultedValue === undefined || this.lastFaultedValue !== newValue) {
+            this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'GENERAL_FAULT' : 'NO_FAULT'}`);
+
+            this.faulted.updateValue(newValue ? this.Characteristic.StatusFault.GENERAL_FAULT : this.Characteristic.StatusFault.NO_FAULT);
+            this.setLastFaultedValue(newValue);
+        }
+    }
+
+    protected getLastFaultedValue(): boolean | undefined {
+        return this.lastFaultedValue;        
+    }
+
+    protected setLastFaultedValue(value: boolean | undefined) {
+        this.lastFaultedValue = value;
+    }
+
+    protected checkMotionDetected(): void {
         if (this.motionDetected === undefined) {
             throw new InvalidStateError('The service has not been initialized.');
         }
 
-        const newValue = this.policy.check();
-        if (this.lastValue === undefined || this.lastValue !== newValue) {
+        const newValue = this.motionPolicy.check();
+        if (this.lastMotionValue === undefined || this.lastMotionValue !== newValue) {
+            this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'MOTION_DETECTED' : 'NO_MOTION'}`);
+
             this.motionDetected.updateValue(newValue);
-            this.lastValue = newValue;
+            this.setLastMotionValue(newValue);
         }
     }
 
-    protected getLastValue(): boolean | undefined {
-        return this.lastValue;
+    protected getLastMotionValue(): boolean | undefined {
+        return this.lastMotionValue;
     }
 
-    protected setLastValue(value: boolean | undefined): void {
-        this.lastValue = value;
+    protected setLastMotionValue(value: boolean | undefined): void {
+        this.lastMotionValue = value;
     }
 }
