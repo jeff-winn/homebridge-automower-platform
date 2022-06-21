@@ -14,11 +14,19 @@ export class MotionSensorServiceImplSpy extends MotionSensorServiceImpl {
         return super.createService(displayName);
     }
 
-    public unsafeSetLastValue(value: boolean | undefined): void {
-        this.setLastValue(value);
+    public unsafeSetLastMotionValue(value: boolean | undefined): void {
+        this.setLastMotionValue(value);
     }
 
-    public unsafeGetLastValue(): boolean | undefined {
-        return this.getLastValue();
+    public unsafeGetLastMotionValue(): boolean | undefined {
+        return this.getLastMotionValue();
+    }
+
+    public unsafeSetLastFaultedValue(value: boolean | undefined): void {
+        this.setLastFaultedValue(value);
+    }
+
+    public unsafeGetLastFaultedValue(): boolean | undefined {
+        return this.getLastFaultedValue();
     }
 }

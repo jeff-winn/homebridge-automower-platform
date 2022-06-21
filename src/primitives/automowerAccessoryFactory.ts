@@ -7,6 +7,7 @@ import { AccessoryInformationService, AccessoryInformationServiceImpl } from '..
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
 import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
+import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
@@ -93,7 +94,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return new MotionSensorServiceImpl(
             'Motion Sensor',
             this.container.resolve(DeterministicMowerInMotionPolicy),
-            accessory, this.api);
+            this.container.resolve(DeterministicMowerFaultedPolicy),
+            accessory, this.api, this.log);
     }
 
     private parseModelInformation(value: string): ModelInformation {

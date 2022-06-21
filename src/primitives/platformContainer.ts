@@ -13,6 +13,7 @@ import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
+import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
@@ -89,6 +90,10 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(DeterministicMowerInMotionPolicy, {
             useValue: new DeterministicMowerInMotionPolicy()
+        });
+
+        container.register(DeterministicMowerFaultedPolicy, {
+            useValue: new DeterministicMowerFaultedPolicy()
         });
 
         container.register(DeterministicScheduleEnabledPolicy, {
