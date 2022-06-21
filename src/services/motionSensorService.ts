@@ -51,20 +51,28 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         return new this.Service.MotionSensor(displayName, this.name);
     }
 
-    public setMowerState(mower: MowerState): void {
-        if (this.motionDetected === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');
-        }
-
+    public setMowerState(mower: MowerState): void {        
         this.policy.setMowerState(mower);
         this.refreshCharacteristic();
     }
 
     protected refreshCharacteristic(): void {
+        if (this.motionDetected === undefined) {
+            throw new InvalidStateError('The service has not been initialized.');
+        }
+
         const newValue = this.policy.check();
         if (this.lastValue === undefined || this.lastValue !== newValue) {
-            this.motionDetected?.updateValue(newValue);
+            this.motionDetected.updateValue(newValue);
             this.lastValue = newValue;
         }
+    }
+
+    protected getLastValue(): boolean | undefined {
+        return this.lastValue;
+    }
+
+    protected setLastValue(value: boolean | undefined): void {
+        this.lastValue = value;
     }
 }
