@@ -9,5 +9,7 @@
   "Received event:\r\n": "Received event:\r\n",
   "Connected!": "Connected!",
   "Checking keep alive for the client stream...": "Checking keep alive for the client stream...",
-  "Reconnection is not required.": "Reconnection is not required."
+  "Reconnection is not required.": "Reconnection is not required.",
+  "Changed '%s' switch for '%s': ON": "Changed '%s' switch for '%s': ON",
+  "Changed '%s' switch for '%s': OFF": "Changed '%s' switch for '%s': OFF"
 }
