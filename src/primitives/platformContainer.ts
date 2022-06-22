@@ -15,6 +15,7 @@ import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
+import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { NodeJsEnvironment } from './environment';
@@ -100,6 +101,10 @@ export class PlatformContainerImpl implements PlatformContainer {
             useValue: new DeterministicScheduleEnabledPolicy()
         });
 
+        container.register(DeterministicMowerTamperedPolicy, {
+            useValue: new DeterministicMowerTamperedPolicy()
+        });
+        
         container.register(GetMowersServiceImpl, {
             useFactory: (context) => new GetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),

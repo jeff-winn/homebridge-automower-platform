@@ -8,12 +8,14 @@ import { InvalidStateError } from '../../src/errors/invalidStateError';
 import { Activity, Mode, MowerState, State } from '../../src/model';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
+import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';
 import { MotionSensorServiceImplSpy } from './motionSensorServiceImplSpy';
 
 describe('MotionSensorServiceImpl', () => {
     let target: MotionSensorServiceImplSpy;
     let motionPolicy: Mock<MowerInMotionPolicy>;
     let faultedPolicy: Mock<MowerFaultedPolicy>;
+    let tamperedPolicy: Mock<MowerTamperedPolicy>;
     let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
@@ -22,6 +24,8 @@ describe('MotionSensorServiceImpl', () => {
     beforeEach(() => {
         motionPolicy = new Mock<MowerInMotionPolicy>();
         faultedPolicy = new Mock<MowerFaultedPolicy>();
+        tamperedPolicy = new Mock<MowerTamperedPolicy>();
+
         platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
         log = new Mock<PlatformLogger>();
         
@@ -33,7 +37,7 @@ describe('MotionSensorServiceImpl', () => {
         api.setup(o => o.hap).returns(hap.object()); 
 
         target = new MotionSensorServiceImplSpy('Motion Sensor', motionPolicy.object(), faultedPolicy.object(),
-            platformAccessory.object(), api.object(), log.object());
+            tamperedPolicy.object(), platformAccessory.object(), api.object(), log.object());
     });
     
     it('should be initialized with an existing service', () => {
@@ -80,10 +84,74 @@ describe('MotionSensorServiceImpl', () => {
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
     });
 
-    it('should throw an error when service has not been initialized on set mower state', () => {
-        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+    it('should throw an error when fault service has not been initialized on set mower state', () => {                
+        const service = new Mock<Service>();
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        service.setup(o => o.getCharacteristic(It.IsAny())).returns(undefined!);
+
         faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+
+        target.init(false);
         
+        expect(() => target.setMowerState({
+            activity: Activity.CHARGING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA, 
+            state: State.IN_OPERATION
+        })).toThrowError(InvalidStateError);
+    });
+
+    it('should throw an error when tampered service has not been initialized on set mower state', () => {
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        
+        target.unsafeSetLastFaultedValue(false);
+        target.init(false);
+
+        expect(() => target.setMowerState({
+            activity: Activity.CHARGING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA, 
+            state: State.IN_OPERATION
+        })).toThrowError(InvalidStateError);
+    });
+
+    it('should throw an error when motion service has not been initialized on set mower state', () => {
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
+
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(undefined!);        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastTamperedValue(false);
+        target.init(false);
+
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
             errorCode: 0,
@@ -102,6 +170,9 @@ describe('MotionSensorServiceImpl', () => {
         const faulted = new Mock<Characteristic>();
         faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
 
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
         const state: MowerState = {
             activity: Activity.GOING_HOME,
             errorCode: 0,
@@ -113,12 +184,15 @@ describe('MotionSensorServiceImpl', () => {
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
         service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
         motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
         motionPolicy.setup(o => o.check()).returns(false);
         faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
         target.unsafeSetLastMotionValue(undefined);
         target.init(false);
@@ -140,6 +214,9 @@ describe('MotionSensorServiceImpl', () => {
         const faulted = new Mock<Characteristic>();
         faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
 
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
         const state: MowerState = {
             activity: Activity.GOING_HOME,
             errorCode: 0,
@@ -151,12 +228,15 @@ describe('MotionSensorServiceImpl', () => {
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
         service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
         motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
         motionPolicy.setup(o => o.check()).returns(true);
         faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
         target.unsafeSetLastMotionValue(false);
         target.init(false);
@@ -178,6 +258,9 @@ describe('MotionSensorServiceImpl', () => {
         const faulted = new Mock<Characteristic>();
         faulted.setup(o => o.updateValue(false)).returns(faulted.object());
 
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
         const state: MowerState = {
             activity: Activity.GOING_HOME,
             errorCode: 10,
@@ -189,12 +272,15 @@ describe('MotionSensorServiceImpl', () => {
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
         service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
         motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         motionPolicy.setup(o => o.check()).returns(false);
         faultedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
         faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
         target.unsafeSetLastFaultedValue(undefined);
         target.unsafeSetLastMotionValue(false);
@@ -217,6 +303,9 @@ describe('MotionSensorServiceImpl', () => {
         const faulted = new Mock<Characteristic>();
         faulted.setup(o => o.updateValue(true)).returns(faulted.object());
 
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
         const state: MowerState = {
             activity: Activity.GOING_HOME,
             errorCode: 10,
@@ -228,12 +317,15 @@ describe('MotionSensorServiceImpl', () => {
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
         service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
         motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
         motionPolicy.setup(o => o.check()).returns(false);
         faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         faultedPolicy.setup(o => o.check()).returns(true);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
         target.unsafeSetLastFaultedValue(false);
         target.unsafeSetLastMotionValue(false);
@@ -245,5 +337,97 @@ describe('MotionSensorServiceImpl', () => {
         expect(result).toBeTruthy();
 
         faulted.verify(o => o.updateValue(Characteristic.StatusFault.GENERAL_FAULT), Times.Once());
+    });
+
+    it('should refresh the tampered characteristic when the value has changed from undefined to false', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(false)).returns(faulted.object());
+
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            errorCode: 10,
+            errorCodeTimestamp: 10000,
+            mode: Mode.MAIN_AREA,
+            state: State.ERROR
+        };
+        
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
+
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastMotionValue(false);
+        target.unsafeSetLastTamperedValue(undefined);
+        target.init(false);
+
+        target.setMowerState(state);
+
+        const result = target.unsafeGetLastTamperedValue();
+        expect(result).toBeFalsy();
+
+        tampered.verify(o => o.updateValue(Characteristic.StatusTampered.NOT_TAMPERED), Times.Once());
+    });
+
+    it('should refresh the tampered characteristic when the value has changed from false to true', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(true)).returns(faulted.object());
+
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            errorCode: 10,
+            errorCodeTimestamp: 10000,
+            mode: Mode.MAIN_AREA,
+            state: State.ERROR
+        };
+        
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(true);
+
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastMotionValue(false);
+        target.unsafeSetLastTamperedValue(false);
+        target.init(false);
+
+        target.setMowerState(state);
+
+        const result = target.unsafeGetLastTamperedValue();
+        expect(result).toBeTruthy();
+
+        tampered.verify(o => o.updateValue(Characteristic.StatusTampered.TAMPERED), Times.Once());
     });
 });
