@@ -1,6 +1,8 @@
 import { API } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
+import * as settings from '../settings';
+
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
@@ -19,10 +21,9 @@ import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamp
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { NodeJsEnvironment } from './environment';
+import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-
-import * as settings from '../settings';
 
 /**
  * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
@@ -50,6 +51,10 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(ConsoleWrapperImpl, {
             useValue: new ConsoleWrapperImpl() 
+        });
+
+        container.register(Y18nLocalization, {
+            useValue: new Y18nLocalization(this.config.lang)
         });
 
         container.register(HomebridgeImitationLogger, {
