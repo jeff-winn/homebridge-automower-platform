@@ -84,11 +84,74 @@ describe('MotionSensorServiceImpl', () => {
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
     });
 
-    it('should throw an error when service has not been initialized on set mower state', () => {
-        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+    it('should throw an error when fault service has not been initialized on set mower state', () => {                
+        const service = new Mock<Service>();
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        service.setup(o => o.getCharacteristic(It.IsAny())).returns(undefined!);
+
         faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+
+        target.init(false);
         
+        expect(() => target.setMowerState({
+            activity: Activity.CHARGING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA, 
+            state: State.IN_OPERATION
+        })).toThrowError(InvalidStateError);
+    });
+
+    it('should throw an error when tampered service has not been initialized on set mower state', () => {
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        
+        target.unsafeSetLastFaultedValue(false);
+        target.init(false);
+
+        expect(() => target.setMowerState({
+            activity: Activity.CHARGING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA, 
+            state: State.IN_OPERATION
+        })).toThrowError(InvalidStateError);
+    });
+
+    it('should throw an error when motion service has not been initialized on set mower state', () => {
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
+
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(undefined!);        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastTamperedValue(false);
+        target.init(false);
+
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
             errorCode: 0,
