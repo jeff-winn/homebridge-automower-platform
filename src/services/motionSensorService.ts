@@ -87,7 +87,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         const newValue = this.tamperedPolicy.check();
 
         if (lastValue === undefined || lastValue !== newValue) {
-            this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'TAMPERED' : 'NOT_TAMPERED'}`);
+            this.log.info(`Changed '%s' for '%s': ${newValue ? 'TAMPERED' : 'NOT_TAMPERED'}`, this.name, this.accessory.displayName);
 
             this.tampered.updateValue(
                 newValue ? this.Characteristic.StatusTampered.TAMPERED : this.Characteristic.StatusTampered.NOT_TAMPERED);
@@ -112,7 +112,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         const newValue = this.faultedPolicy.check();
 
         if (lastValue === undefined || lastValue !== newValue) {
-            this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'GENERAL_FAULT' : 'NO_FAULT'}`);
+            this.log.info(`Changed '%s' for '%s': ${newValue ? 'GENERAL_FAULT' : 'NO_FAULT'}`, this.name, this.accessory.displayName);
 
             this.faulted.updateValue(newValue ? this.Characteristic.StatusFault.GENERAL_FAULT : this.Characteristic.StatusFault.NO_FAULT);
             this.setLastFaultedValue(newValue);
@@ -136,7 +136,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         const newValue = this.motionPolicy.check();
 
         if (lastValue === undefined || lastValue !== newValue) {
-            this.log.info(`Changed '${this.name}' for '${this.accessory.displayName}': ${newValue ? 'MOTION_DETECTED' : 'NO_MOTION'}`);
+            this.log.info(`Changed '%s' for '%s': ${newValue ? 'MOTION_DETECTED' : 'NO_MOTION'}`, this.name, this.accessory.displayName);
 
             this.motionDetected.updateValue(newValue);
             this.setLastMotionValue(newValue);

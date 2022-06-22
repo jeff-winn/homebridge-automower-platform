@@ -11,5 +11,11 @@
   "Checking keep alive for the client stream...": "Checking keep alive for the client stream...",
   "Reconnection is not required.": "Reconnection is not required.",
   "Changed '%s' switch for '%s': ON": "Changed '%s' switch for '%s': ON",
-  "Changed '%s' switch for '%s': OFF": "Changed '%s' switch for '%s': OFF"
+  "Changed '%s' switch for '%s': OFF": "Changed '%s' switch for '%s': OFF",
+  "Changed '%s' for '%s': TAMPERED": "Changed '%s' for '%s': TAMPERED",
+  "Changed '%s' for '%s': NOT_TAMPERED": "Changed '%s' for '%s': NOT_TAMPERED",
+  "Changed '%s' for '%s': GENERAL_FAULT": "Changed '%s' for '%s': GENERAL_FAULT",
+  "Changed '%s' for '%s': NO_FAULT": "Changed '%s' for '%s': NO_FAULT",  
+  "Changed '%s' for '%s': MOTION_DETECTED": "Changed '%s' for '%s': MOTION_DETECTED",
+  "Changed '%s' for '%s': NO_MOTION": "Changed '%s' for '%s': NO_MOTION"
 }
