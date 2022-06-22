@@ -73,7 +73,6 @@ export class HomebridgeImitationLogger implements PlatformLogger {
             // Debug logging is not currently enabled, just ignore the message.
             return;
         }
-        
 
         let msg = this.locale.format(message, ...parameters);
         let println = this.console.stdout;
