@@ -31,6 +31,21 @@
             "type": "password"
           }
         },
+        "lang": {
+          "title": "Language",
+          "type": "string",
+          "description": "If your preferred language is not supported, you are welcome to help us by doing the translation!",
+          "required": true,
+          "default": "en",
+          "oneOf": [
+            {
+              "title": "English (en)",
+              "enum": [
+                "en"
+              ]
+            }
+          ]
+        },
         "appKey": {
           "title": "Application Key",
           "description": "This is the application key which identifies this plugin; changing this value will require another account registered with the Husqvarna Developer Portal.",
@@ -42,9 +57,18 @@
       }
     },
     "layout": [
-      "name",
       "username",
       "password",
+      {
+        "type": "fieldset",
+        "title": "General Settings",
+        "description": "Just some things you might want to change based on your preferences.",
+        "expandable": true,
+        "items": [
+          "name",
+          "lang"
+        ]
+      },
       {
         "type": "fieldset",
         "title": "Advanced Settings",
