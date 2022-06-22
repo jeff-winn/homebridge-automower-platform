@@ -42,6 +42,6 @@ export class DiscoveryServiceImpl implements DiscoveryService {
             platform.registerMowers(found);
         }
 
-        this.log.info(`Completed mower discovery, ${found.length} new mower(s) found.`);
+        this.log.info('Completed mower discovery, %d new mower(s) found.', found.length);
     }
 }

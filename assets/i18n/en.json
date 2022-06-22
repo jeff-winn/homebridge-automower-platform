@@ -1,3 +1,13 @@
 {
-    "Hello": "Hello world!"
+  "Discovering new mowers...": "Discovering new mowers...",
+  "Logging into the Husqvarna platform...": "Logging into the Husqvarna platform...",
+  "Sending request [%d/%d]: %s\r\n": "Sending request [%d/%d]: %s\r\n",
+  "Received response: %s\r\n": "Received response: %s\r\n",
+  "Logged in!": "Logged in!",
+  "Completed mower discovery, %d new mower(s) found.": "Completed mower discovery, %d new mower(s) found.",
+  "Attempting to open a connection...": "Attempting to open a connection...",
+  "Received event:\r\n": "Received event:\r\n",
+  "Connected!": "Connected!",
+  "Checking keep alive for the client stream...": "Checking keep alive for the client stream...",
+  "Reconnection is not required.": "Reconnection is not required."
 }
