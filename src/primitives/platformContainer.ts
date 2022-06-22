@@ -62,7 +62,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(NodeJsEnvironment),
                 settings.PLATFORM_NAME, 
                 this.config.name,                
-                context.resolve(ConsoleWrapperImpl))
+                context.resolve(ConsoleWrapperImpl),
+                context.resolve(Y18nLocalization))
         });
 
         container.register(RetryerFetchClient, {

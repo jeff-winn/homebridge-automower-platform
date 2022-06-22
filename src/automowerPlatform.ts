@@ -17,10 +17,10 @@ import { BadConfigurationError } from './errors/badConfigurationError';
  * Describes the platform configuration settings.
  */
 export interface AutomowerPlatformConfig extends PlatformConfig {    
-    username: string | undefined;
-    password: string | undefined;
-    appKey: string | undefined;
-    lang: string | undefined;
+    username?: string;
+    password?: string;
+    appKey?: string;
+    lang?: string;
 }
 
 /**

@@ -1,21 +1,25 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { ConsoleWrapper } from '../../src/diagnostics/primitives/consoleWrapper';
-import { HomebridgeImitationLogger } from '../../src/diagnostics/platformLogger';
-import { Environment } from '../../src/primitives/environment';
 import * as settings from '../../src/settings';
+
+import { HomebridgeImitationLogger } from '../../src/diagnostics/platformLogger';
+import { ConsoleWrapper } from '../../src/diagnostics/primitives/consoleWrapper';
+import { Environment } from '../../src/primitives/environment';
+import { Localization } from '../../src/primitives/localization';
 
 describe('HomebridgeImitationLogger', () => {
     let env: Mock<Environment>;
     let console: Mock<ConsoleWrapper>;
+    let locale: Mock<Localization>;
 
     let target: HomebridgeImitationLogger;
 
     beforeEach(() => {
         env = new Mock<Environment>();
         console = new Mock<ConsoleWrapper>();
+        locale = new Mock<Localization>();
 
-        target = new HomebridgeImitationLogger(env.object(), 'platform', 'my instance', console.object());
+        target = new HomebridgeImitationLogger(env.object(), 'platform', 'my instance', console.object(), locale.object());
     });
 
     it('should log the debug to stdout when enabled via plugin id', () => {

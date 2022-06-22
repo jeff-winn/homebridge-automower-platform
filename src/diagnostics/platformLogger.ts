@@ -1,10 +1,11 @@
 import chalk, { Chalk } from 'chalk';
-import util from 'util';
 import { LogLevel } from 'homebridge';
+import util from 'util';
 
-import { ConsoleWrapper } from './primitives/consoleWrapper';
 import { Environment } from '../primitives/environment';
+import { Localization } from '../primitives/localization';
 import { PLUGIN_ID } from '../settings';
+import { ConsoleWrapper } from './primitives/consoleWrapper';
 
 /**
  * A logger which handles logging events that occur within the platform accessories.
@@ -47,7 +48,7 @@ export class HomebridgeImitationLogger implements PlatformLogger {
     private color: Chalk;
 
     public constructor(private env: Environment, private platformName: string | undefined, 
-        private name: string | undefined, private console: ConsoleWrapper) {
+        private name: string | undefined, private console: ConsoleWrapper, private locale: Localization) {
 
         this.color = new chalk.Instance({ level: 1 });
     }
