@@ -6,11 +6,11 @@ import y18n from 'y18n';
  */
 export interface Localization {
     /**
-     * Gets the localized string.
-     * @param key The key of the message.
-     * @param args The arguments used for the translation.
+     * Formats the localized string.
+     * @param message The message.
+     * @param args The arguments used while formatting the message.
      */
-    get(key: string, ...args: any[]): string;
+     format(message: string, ...args: any[]): string;
 }
 
 /**
@@ -27,7 +27,7 @@ export class Y18nLocalization implements Localization {
         }).__;
     }
 
-    public get(key: string, ...args: any[]): string {
-        return this.translate(key, ...args);        
+    public format(message: string, ...args: any[]): string {
+        return this.translate(message, ...args);        
     }
 }
