@@ -12,7 +12,7 @@ describe('Y18nLocalization', () => {
      */
     it('should handle value replacements correctly', () => {
         const world = 'world';
-        const result = target.get('Hello %s!', world);
+        const result = target.format('Hello %s!', world);
 
         expect(result).toBe('Bonjour world!');
     });
@@ -22,7 +22,7 @@ describe('Y18nLocalization', () => {
      */
     it('should handle string interpolation correctly', () => {        
         const world = 'world';        
-        const result = target.get(`Hello ${world}!`);
+        const result = target.format(`Hello ${world}!`);
 
         expect(result).toBe('Bonjour le monde!');
     });

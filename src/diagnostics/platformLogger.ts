@@ -1,6 +1,5 @@
 import chalk, { Chalk } from 'chalk';
 import { LogLevel } from 'homebridge';
-import util from 'util';
 
 import { Environment } from '../primitives/environment';
 import { Localization } from '../primitives/localization';
@@ -75,7 +74,8 @@ export class HomebridgeImitationLogger implements PlatformLogger {
             return;
         }
         
-        let msg = util.format(message, ...parameters);
+
+        let msg = this.locale.format(message, ...parameters);
         let println = this.console.stdout;
 
         switch (level) {
