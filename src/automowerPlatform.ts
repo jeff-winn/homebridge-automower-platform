@@ -1,17 +1,14 @@
-import { 
-    PlatformAccessory, API, DynamicPlatformPlugin, 
-    PlatformConfig, APIEvent, Logging
-} from 'homebridge';
+import { API, APIEvent, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
-import { PLATFORM_NAME, PLUGIN_ID } from './settings';
-import { SettingsEvent, StatusEvent } from './events';
-import { AccessTokenManager, AccessTokenManagerImpl } from './services/automower/accessTokenManager';
-import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
+import { SettingsEvent, StatusEvent } from './events';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
+import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
+import { AccessTokenManager, AccessTokenManagerImpl } from './services/automower/accessTokenManager';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
+import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
+import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 
 /** 
  * Describes the platform configuration settings.
