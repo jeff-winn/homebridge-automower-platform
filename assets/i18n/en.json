@@ -23,5 +23,9 @@
   "The access token supplied was invalid.": "The access token supplied was invalid.",
   "The user is not authorized to perform the action requested.": "The user is not authorized to perform the action requested.",
   "ERR: %s": "ERR: %s",
-  "ERR: [%s] %s": "ERR: [%s] %s"
+  "ERR: [%s] %s": "ERR: [%s] %s",
+  "An unexpected error occurred while handling the disconnected event.": "An unexpected error occurred while handling the disconnected event.",
+  "An unexpected error occurred while handling the error event.": "An unexpected error occurred while handling the error event.",
+  "An unexpected error occurred while processing the message.": "An unexpected error occurred while processing the message.",
+  "An unexpected error occurred while handling the connected event.": "An unexpected error occurred while handling the connected event."
 }
