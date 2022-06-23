@@ -3,6 +3,7 @@ import { It, Mock } from 'moq.ts';
 import { AutomowerClientImpl, ErrorResponse, GetMowerResponse, GetMowersResponse } from '../../src/clients/automowerClient';
 import { FetchClient, Response } from '../../src/clients/fetchClient';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
+import { ErrorFactory } from '../../src/errors/errorFactory';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 import { UnexpectedServerError } from '../../src/errors/unexpectedServerError';
 import { AccessToken, Activity, Mode, Mower, RestrictedReason, State } from '../../src/model';
@@ -14,12 +15,14 @@ describe('AutomowerClientImpl', () => {
     const MOWER_ID: string = process.env.MOWER_ID || '12345';
 
     let fetch: Mock<FetchClient>;
+    let errorFactory: Mock<ErrorFactory>;
     let target: AutomowerClientImpl;
 
     beforeEach(() => {
         fetch = new Mock<FetchClient>();
+        errorFactory = new Mock<ErrorFactory>();
 
-        target = new AutomowerClientImpl(APPKEY, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        target = new AutomowerClientImpl(APPKEY, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
     });
 
     it('should initialize correctly', () => {
@@ -28,7 +31,10 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is undefined on doAction', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.doAction(MOWER_ID, { }, {
             value: 'value',
@@ -37,7 +43,10 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when app key is empty on doAction', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.doAction(MOWER_ID, { }, {
             value: 'value',
@@ -46,7 +55,10 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is undefined on getMower', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.getMower(MOWER_ID, {
             value: 'value',
@@ -55,7 +67,10 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is empty on getMower', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.getMower(MOWER_ID, {
             value: 'value',
@@ -64,7 +79,10 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is undefined on getMowers', async () => {
-        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.getMowers({
             value: 'value',
@@ -73,7 +91,10 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an error when the app key is empty on getMowers', async () => {
-        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+        
+        target = new AutomowerClientImpl('', constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.getMowers({
             value: 'value',
@@ -127,6 +148,9 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw not authorized on 401 response from doAction', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello world', '12345'));
+
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'
@@ -190,6 +214,9 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw not authorized on 401 response from getMower', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello world', '12345'));
+
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'
@@ -512,6 +539,9 @@ describe('AutomowerClientImpl', () => {
     });
     
     it('should throw an unexpected server error on 500 response on getMowers when errors is undefined', async () => {
+        errorFactory.setup(o => o.unexpectedServerError(It.IsAny(), It.IsAny(), It.IsAny()))
+            .returns(new UnexpectedServerError('hello world', '12345'));
+
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'
@@ -534,6 +564,9 @@ describe('AutomowerClientImpl', () => {
     });
 
     it('should throw an unexpected server error on 500 response on getMowers when errors is empty', async () => {
+        errorFactory.setup(o => o.unexpectedServerError(It.IsAny(), It.IsAny(), It.IsAny()))
+            .returns(new UnexpectedServerError('hello world', '12345'));
+
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'
@@ -558,7 +591,10 @@ describe('AutomowerClientImpl', () => {
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
     });
 
-    it('should throw an unexpected server error on 500 response on getMowers', async () => {
+    it('should throw an unexpected server error on 500 response on getMowers without error details', async () => {
+        errorFactory.setup(o => o.unexpectedServerError(It.IsAny(), It.IsAny(), It.IsAny()))
+            .returns(new UnexpectedServerError('hello world', '12345'));
+
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'
@@ -581,7 +617,10 @@ describe('AutomowerClientImpl', () => {
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
     });
     
-    it('should throw an unexpected server error on 500 response on getMowers', async () => {
+    it('should throw an unexpected server error on 500 response on getMowers with error details', async () => {
+        errorFactory.setup(o => o.unexpectedServerError(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()))
+            .returns(new UnexpectedServerError('hello world', '12345'));
+
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'

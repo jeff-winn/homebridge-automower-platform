@@ -21,5 +21,7 @@
   "The username and/or password supplied were not valid, please check your configuration and try again.": "The username and/or password supplied were not valid, please check your configuration and try again.",
   "The appKey setting is missing, please check your configuration and try again.": "The appKey setting is missing, please check your configuration and try again.",
   "The access token supplied was invalid.": "The access token supplied was invalid.",
-  "The user is not authorized to perform the action requested.": "The user is not authorized to perform the action requested."
+  "The user is not authorized to perform the action requested.": "The user is not authorized to perform the action requested.",
+  "ERR: %s": "ERR: %s",
+  "ERR: [%s] %s": "ERR: [%s] %s"
 }

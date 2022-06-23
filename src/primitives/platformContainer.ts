@@ -94,7 +94,8 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: (context) => new AutomowerClientImpl(
                 this.config.appKey,
                 settings.AUTOMOWER_CONNECT_API_BASE_URL,
-                context.resolve(RetryerFetchClient))
+                context.resolve(RetryerFetchClient),
+                context.resolve(DefaultErrorFactory))
         });
 
         container.register(DeterministicMowerInMotionPolicy, {

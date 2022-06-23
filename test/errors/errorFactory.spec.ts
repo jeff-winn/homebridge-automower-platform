@@ -5,6 +5,7 @@ import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
 import { DefaultErrorFactory } from '../../src/errors/errorFactory';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
+import { UnexpectedServerError } from '../../src/errors/unexpectedServerError';
 import { Localization } from '../../src/primitives/localization';
 
 describe('DefaultErrorFactory', () => {
@@ -59,5 +60,16 @@ describe('DefaultErrorFactory', () => {
         const result = target.notAuthorizedError(message, '12345');
 
         expect(result).toBeInstanceOf(NotAuthorizedError);
+    });
+
+    it('should create a new UnexpectedServerError', () => {
+        const message = 'message';
+        const formattedMessage = 'hello world';
+
+        locale.setup(o => o.format(message, It.IsAny())).returns(formattedMessage);
+    
+        const result = target.unexpectedServerError(message, '12345');
+
+        expect(result).toBeInstanceOf(UnexpectedServerError);
     });
 });

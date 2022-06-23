@@ -3,6 +3,7 @@ import { BadConfigurationError } from './badConfigurationError';
 import { BadCredentialsError } from './badCredentialsError';
 import { BadOAuthTokenError } from './badOAuthTokenError';
 import { NotAuthorizedError } from './notAuthorizedError';
+import { UnexpectedServerError } from './unexpectedServerError';
 
 /**
  * A mechanism which creates localized error messages.
@@ -39,6 +40,14 @@ export interface ErrorFactory {
      * @param params Any parameters which need to be used during localization.
      */
     notAuthorizedError(message: string, errorCode: string, ...params: unknown[]): NotAuthorizedError;
+
+    /**
+     * Creates a new {@link UnexpectedServerError} error.
+     * @param message The message to localize.
+     * @param errorCode The error code.
+     * @param params Any parameters which need to be used during localization.
+     */
+    unexpectedServerError(message: string, errorCode: string, ...params: unknown[]): UnexpectedServerError;
 }
 
 /**
@@ -61,5 +70,9 @@ export class DefaultErrorFactory implements ErrorFactory {
 
     public notAuthorizedError(message: string, errorCode: string, ...params: unknown[]): NotAuthorizedError {
         return new NotAuthorizedError(this.locale.format(message, ...params), errorCode);
+    }
+
+    public unexpectedServerError(message: string, errorCode: string, ...params: unknown[]): UnexpectedServerError {
+        return new UnexpectedServerError(this.locale.format(message, ...params), errorCode);
     }
 }

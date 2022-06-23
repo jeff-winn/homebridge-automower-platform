@@ -1,7 +1,5 @@
+import { ErrorFactory } from '../errors/errorFactory';
 import { AccessToken, Mower } from '../model';
-import { NotAuthorizedError } from '../errors/notAuthorizedError';
-import { UnexpectedServerError } from '../errors/unexpectedServerError';
-import { BadConfigurationError } from '../errors/badConfigurationError';
 import { FetchClient, Response } from './fetchClient';
 
 /**
@@ -64,7 +62,8 @@ export interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
+        private errorFactory: ErrorFactory) { }
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
@@ -76,7 +75,9 @@ export class AutomowerClientImpl implements AutomowerClient {
 
     protected guardAppKeyMustBeProvided(): void {
         if (this.appKey === undefined || this.appKey === '') {
-            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.', 'CFG0001');
+            throw this.errorFactory.badConfigurationError(
+                'The appKey setting is missing, please check your configuration and try again.', 
+                'CFG0001');
         }
     }
 
@@ -153,22 +154,23 @@ export class AutomowerClientImpl implements AutomowerClient {
 
     private async throwIfStatusNotOk(response: Response): Promise<void> {
         if (response.status === 401) {
-            throw new NotAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
+            throw this.errorFactory.notAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
         }
 
         if (response.status === 500) {                        
             const e = await response.json() as ErrorResponse;
+
             if (e?.errors?.length > 0) {
                 const err = e.errors[0];
-                throw new UnexpectedServerError(`ERR: [${err.code}] ${err.title}`, 'ERR0000');
+                throw this.errorFactory.unexpectedServerError('ERR: [%s] %s', 'ERR0000', err.code, err.title);
             } else {
-                throw new UnexpectedServerError(`ERR: ${response.status}`, 'ERR0000');
+                throw this.errorFactory.unexpectedServerError('ERR: %s', 'ERR0000', response.status);
             }
         }
 
         if (!response.ok) {
             const msg = await response.text();
-            throw new Error(`ERR: ${response.status} -> ${msg}`);
+            throw this.errorFactory.unexpectedServerError('ERR: [%s] %s', 'ERR0000', response.status, msg);
         }
     }
 }
