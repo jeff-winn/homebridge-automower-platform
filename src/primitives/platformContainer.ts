@@ -78,6 +78,11 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: () => new TimerImpl()
         });
 
+        container.register(DefaultErrorFactory, {
+            useFactory: (context) => new DefaultErrorFactory(
+                context.resolve(Y18nLocalization))
+        });
+        
         container.register(AuthenticationClientImpl, {
             useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
                 settings.AUTHENTICATION_API_BASE_URL,
