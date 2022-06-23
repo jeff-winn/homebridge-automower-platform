@@ -41,5 +41,9 @@
   "An unexpected error occurred while handling the connected event.": "An unexpected error occurred while handling the connected event.",
   "An unexpected error occurred while attempting to set '%s' for '%s'.": "An unexpected error occurred while attempting to set '%s' for '%s'.",
   "Schedule": "Schedule",
-  "Motion Sensor": "Motion Sensor"
+  "Motion Sensor": "Motion Sensor",
+  "An unexpected error occurred while starting the plugin.": "An unexpected error occurred while starting the plugin.",
+  "An unexpected error occurred while shutting down the plugin.": "An unexpected error occurred while shutting down the plugin.",
+  "An unexpected error occurred while configuring the accessory.": "An unexpected error occurred while configuring the accessory.",
+  "Configuring '%s' from the accessory cache.": "Configuring '%s' from the accessory cache."
 }
