@@ -80,7 +80,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
 
     protected checkTampered(): void {
         if (this.tampered === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');
+            throw new Error('The service has not been initialized.');
         }
 
         const lastValue = this.getLastTamperedValue();
@@ -105,7 +105,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
 
     protected checkFaulted(): void {
         if (this.faulted === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');
+            throw new Error('The service has not been initialized.');
         }
 
         const lastValue = this.getLastFaultedValue();        
@@ -129,7 +129,7 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
 
     protected checkMotionDetected(): void {
         if (this.motionDetected === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');
+            throw new Error('The service has not been initialized.');
         }
 
         const lastValue = this.getLastMotionValue();

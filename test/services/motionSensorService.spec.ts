@@ -4,7 +4,6 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { InvalidStateError } from '../../src/errors/invalidStateError';
 import { Activity, Mode, MowerState, State } from '../../src/model';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
@@ -101,7 +100,7 @@ describe('MotionSensorServiceImpl', () => {
             errorCodeTimestamp: 0,
             mode: Mode.MAIN_AREA, 
             state: State.IN_OPERATION
-        })).toThrowError(InvalidStateError);
+        })).toThrowError();
     });
 
     it('should throw an error when tampered service has not been initialized on set mower state', () => {
@@ -126,7 +125,7 @@ describe('MotionSensorServiceImpl', () => {
             errorCodeTimestamp: 0,
             mode: Mode.MAIN_AREA, 
             state: State.IN_OPERATION
-        })).toThrowError(InvalidStateError);
+        })).toThrowError();
     });
 
     it('should throw an error when motion service has not been initialized on set mower state', () => {
@@ -158,7 +157,7 @@ describe('MotionSensorServiceImpl', () => {
             errorCodeTimestamp: 0,
             mode: Mode.MAIN_AREA, 
             state: State.IN_OPERATION
-        })).toThrowError(InvalidStateError);
+        })).toThrowError();
     });
 
     it('should refresh the motion characteristic when the value has changed from undefined to false', () => {
