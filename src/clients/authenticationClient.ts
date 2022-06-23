@@ -1,8 +1,7 @@
-import { NotAuthorizedError } from '../errors/notAuthorizedError';
-import { BadCredentialsError } from '../errors/badCredentialsError';
-import { BadConfigurationError } from '../errors/badConfigurationError';
-import { FetchClient, Response } from './fetchClient';
 import { BadOAuthTokenError } from '../errors/badOAuthTokenError';
+import { ErrorFactory } from '../errors/errorFactory';
+import { NotAuthorizedError } from '../errors/notAuthorizedError';
+import { FetchClient, Response } from './fetchClient';
 
 /**
  * Describes an OAuth authentication token.
@@ -69,7 +68,8 @@ export interface AuthenticationClient {
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient) { }
+    public constructor(private appKey: string | undefined, private baseUrl: string, 
+        private fetch: FetchClient, private errorFactory: ErrorFactory) { }
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
@@ -114,8 +114,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfBadCredentials(response: Response): void {
         if (response.status === 400) {
-            throw new BadCredentialsError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.',
+            throw this.errorFactory.badCredentialsError(
+                'The username and/or password supplied were not valid, please check your configuration and try again.', 
                 'CFG0002');
         }
     }
@@ -137,7 +137,9 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     protected guardAppKeyMustBeProvided(): void {
         if (this.appKey === undefined || this.appKey === '') {
-            throw new BadConfigurationError('The appKey setting is missing, please check your configuration and try again.', 'CFG0001');
+            throw this.errorFactory.badConfigurationError(
+                'The appKey setting is missing, please check your configuration and try again.', 
+                'CFG0001');
         }
     }
 

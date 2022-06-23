@@ -10,6 +10,7 @@ import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamC
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
+import { DefaultErrorFactory } from '../errors/errorFactory';
 import { AccessTokenManagerImpl } from '../services/automower/accessTokenManager';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
@@ -80,7 +81,8 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(AuthenticationClientImpl, {
             useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
                 settings.AUTHENTICATION_API_BASE_URL,
-                context.resolve(RetryerFetchClient))
+                context.resolve(RetryerFetchClient),
+                context.resolve(DefaultErrorFactory))
         });
 
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
