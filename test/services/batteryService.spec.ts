@@ -28,39 +28,19 @@ describe('BatteryServiceImpl', () => {
     });
 
     it('should throw an error when not initialized on set battery level', () => {
-        let thrown = false;
-
-        try {
-            target.setBatteryLevel({
-                batteryPercent: 99
-            });
-        } catch (e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            }
-        }
-    
-        expect(thrown).toBeTruthy();
+        expect(() => target.setBatteryLevel({
+            batteryPercent: 99
+        })).toThrowError();
     });
 
     it('should throw an error when not initialized on set charging state', () => {
-        let thrown = false;
-
-        try {
-            target.setChargingState({
-                activity: Activity.MOWING,
-                errorCode: 0,
-                errorCodeTimestamp: 0,
-                mode: Mode.MAIN_AREA,
-                state: State.NOT_APPLICABLE
-            });
-        } catch (e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            }
-        }
-    
-        expect(thrown).toBeTruthy();
+        expect(() => target.setChargingState({
+            activity: Activity.MOWING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA,
+            state: State.NOT_APPLICABLE
+        })).toThrowError();
     });
 
     it('should use the existing battery service', () => {

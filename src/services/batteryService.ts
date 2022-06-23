@@ -49,7 +49,7 @@ export class BatteryServiceImpl extends AbstractAccessoryService implements Batt
     
     public setChargingState(state: MowerState) {  
         if (this.chargingState === undefined) {        
-            throw new InvalidStateError('The service has not been initialized.');
+            throw new Error('The service has not been initialized.');
         }
 
         if (state.activity === Activity.CHARGING) {
@@ -61,7 +61,7 @@ export class BatteryServiceImpl extends AbstractAccessoryService implements Batt
 
     public setBatteryLevel(battery: Battery): void {
         if (this.batteryLevel === undefined || this.lowBattery === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');
+            throw new Error('The service has not been initialized.');
         }
 
         this.batteryLevel.updateValue(battery.batteryPercent);          
