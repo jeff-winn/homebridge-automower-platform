@@ -1,6 +1,4 @@
-import { BadOAuthTokenError } from '../errors/badOAuthTokenError';
 import { ErrorFactory } from '../errors/errorFactory';
-import { NotAuthorizedError } from '../errors/notAuthorizedError';
 import { FetchClient, Response } from './fetchClient';
 
 /**
@@ -81,11 +79,15 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     public async login(username: string, password: string): Promise<OAuthToken> {
         if (username === '') {
-            throw new Error('username cannot be empty.');
+            throw this.errorFactory.badCredentialsError(
+                'The username and/or password supplied were not valid, please check your configuration and try again.', 
+                'CFG0002');
         }
 
         if (password === '') {
-            throw new Error('password cannot be empty.');
+            throw this.errorFactory.badCredentialsError(
+                'The username and/or password supplied were not valid, please check your configuration and try again.', 
+                'CFG0002');
         }
 
         this.guardAppKeyMustBeProvided();
@@ -169,7 +171,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfBadToken(response: Response): void {
         if (response.status === 400) {
-            throw new BadOAuthTokenError('The access token supplied was invalid.', 'ERR0002');
+            throw this.errorFactory.badOAuthTokenError('The access token supplied was invalid.', 'ERR0002');
         }
     }
     
@@ -189,7 +191,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfNotAuthorized(response: Response): void {
         if (response.status === 401) {
-            throw new NotAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
+            throw this.errorFactory.notAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
         }
     }
 

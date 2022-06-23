@@ -50,6 +50,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw a not authorized error on 401 response', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -164,6 +167,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw not authorized error on 401 when logout', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -207,7 +213,10 @@ describe('AuthenticationClientImpl', () => {
         })).rejects.toThrowError();
     });
 
-    it('should throw bad credential error on 400 for refresh', async () => {
+    it('should throw bad oauth token error on 400 for refresh', async () => {
+        errorFactory.setup(o => o.badOAuthTokenError(It.IsAny(), It.IsAny()))
+            .returns(new BadOAuthTokenError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -230,6 +239,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw not authorized error on 401 for refresh', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -251,7 +263,7 @@ describe('AuthenticationClientImpl', () => {
         })).rejects.toThrowError(NotAuthorizedError);
     });
 
-    it('should throw not authorized error on 401 for refresh', async () => {
+    it('should throw error on 500 for refresh', async () => {
         const response = new Response(undefined, {
             headers: { },
             size: 0,
