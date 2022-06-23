@@ -1,15 +1,16 @@
-import { Mock, It, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
-import { AuthenticationClient } from '../../../src/clients/authenticationClient';
-import { OAuthToken } from '../../../src/clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatform';
-import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
-import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
+import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
+import { ErrorFactory } from '../../../src/errors/errorFactory';
+import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
 
 describe('AccessTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
+    let errorFactory: Mock<ErrorFactory>;
     let log: Mock<PlatformLogger>;
 
     const username = 'username';
@@ -26,71 +27,49 @@ describe('AccessTokenManagerImpl', () => {
             appKey: appKey
         } as AutomowerPlatformConfig;
 
+        errorFactory = new Mock<ErrorFactory>();
+
         log = new Mock<PlatformLogger>();
         log.setup(x => x.debug(It.IsAny<string>())).returns(undefined);
         log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
 
-        target = new AccessTokenManagerImplSpy(client.object(), config, log.object());
+        target = new AccessTokenManagerImplSpy(client.object(), config, log.object(), errorFactory.object());
     });
 
     it('should throw an error when the config username is undefined', async () => {
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
         config.username = undefined;
 
-        let thrown = false;
-        try {
-            await target.unsafeDoLogin();
-        } catch (e) {
-            if (e instanceof BadConfigurationError) {
-                thrown = true;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is empty', async () => {
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
         config.username = '';
 
-        let thrown = false;
-        try {
-            await target.unsafeDoLogin();
-        } catch (e) {
-            if (e instanceof BadConfigurationError) {
-                thrown = true;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is undefined', async () => {
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
         config.password = undefined;
 
-        let thrown = false;
-        try {
-            await target.unsafeDoLogin();
-        } catch (e) {
-            if (e instanceof BadConfigurationError) {
-                thrown = true;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is empty', async () => {
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+            
         config.password = '';
 
-        let thrown = false;
-        try {
-            await target.unsafeDoLogin();
-        } catch (e) {
-            if (e instanceof BadConfigurationError) {
-                thrown = true;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should not be logged in when the token is reset', () => {

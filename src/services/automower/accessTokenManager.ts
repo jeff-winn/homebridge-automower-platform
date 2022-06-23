@@ -1,8 +1,8 @@
-import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
 import { AutomowerPlatformConfig } from '../../automowerPlatform';
-import { AccessToken } from '../../model';
-import { BadConfigurationError } from '../../errors/badConfigurationError';
+import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { ErrorFactory } from '../../errors/errorFactory';
+import { AccessToken } from '../../model';
 
 /**
  * A mechanism which manages the retrieval and renewal of an access token.
@@ -29,7 +29,8 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private expires?: Date;
     private invalidated = false;    
 
-    public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, private log: PlatformLogger) { }
+    public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
+        private log: PlatformLogger, private errorFactory: ErrorFactory) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
         if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {
@@ -78,13 +79,15 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         this.log.debug('Logging into the Husqvarna platform...');
 
         if (this.config.username === undefined || this.config.username === '') {
-            throw new BadConfigurationError(
-                'The username and/or password setting is missing, please check your configuration and try again.', 'CFG0002');
+            throw this.errorFactory.badConfigurationError(
+                'The username and/or password supplied were not valid, please check your configuration and try again.', 
+                'CFG0002');
         }
 
         if (this.config.password === undefined || this.config.password === '') {
-            throw new BadConfigurationError(
-                'The username and/or password setting is missing, please check your configuration and try again.', 'CFG0002');
+            throw this.errorFactory.badConfigurationError(
+                'The username and/or password supplied were not valid, please check your configuration and try again.', 
+                'CFG0002');
         }
 
         const result = await this.client.login(this.config.username, this.config.password);

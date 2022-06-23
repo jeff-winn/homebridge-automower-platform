@@ -88,7 +88,8 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            container.resolve(HomebridgeImitationLogger)));
+            container.resolve(HomebridgeImitationLogger),
+            container.resolve(DefaultErrorFactory)));
 
         container.register(AutomowerClientImpl, {
             useFactory: (context) => new AutomowerClientImpl(
