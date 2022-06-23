@@ -40,7 +40,7 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
 
     public check(): boolean {
         if (this.calendar === undefined || this.planner === undefined) {
-            throw new InvalidStateError('The calendar and planner are both required.');
+            throw new Error('The calendar and planner are both required.');
         }
         
         // Checks whether any days have been enabled on any of the schedules.
