@@ -162,7 +162,7 @@ describe('ScheduleSwitchImpl', () => {
         });
 
         mowerControlService.setup(o => o.resumeSchedule(mowerId)).throws(new Error('hello'));
-        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSet(true, (e) => {
@@ -170,7 +170,7 @@ describe('ScheduleSwitchImpl', () => {
         });
 
         mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
 
@@ -185,7 +185,7 @@ describe('ScheduleSwitchImpl', () => {
         });
 
         mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).throws(new Error('hello'));
-        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSet(false, (e) => {
@@ -193,7 +193,7 @@ describe('ScheduleSwitchImpl', () => {
         });
 
         mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
 
