@@ -135,7 +135,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
                 context.resolve(HomebridgeImitationLogger),
-                this)
+                this,
+                context.resolve(Y18nLocalization))
         });
 
         container.register(DiscoveryServiceImpl, {

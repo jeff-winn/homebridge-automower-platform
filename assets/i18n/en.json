@@ -27,5 +27,7 @@
   "An unexpected error occurred while handling the disconnected event.": "An unexpected error occurred while handling the disconnected event.",
   "An unexpected error occurred while handling the error event.": "An unexpected error occurred while handling the error event.",
   "An unexpected error occurred while processing the message.": "An unexpected error occurred while processing the message.",
-  "An unexpected error occurred while handling the connected event.": "An unexpected error occurred while handling the connected event."
+  "An unexpected error occurred while handling the connected event.": "An unexpected error occurred while handling the connected event.",
+  "Schedule": "Schedule",
+  "Motion Sensor": "Motion Sensor"
 }

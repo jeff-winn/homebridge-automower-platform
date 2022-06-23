@@ -12,6 +12,7 @@ import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMo
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
+import { Localization } from './localization';
 import { PlatformAccessoryFactory } from './platformAccessoryFactory';
 import { PlatformContainer } from './platformContainer';
 
@@ -45,7 +46,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         private factory: PlatformAccessoryFactory, 
         private api: API, 
         private log: PlatformLogger,
-        private container: PlatformContainer) { }
+        private container: PlatformContainer,
+        private locale: Localization) { }
 
     public createAccessory(mower: Mower): AutomowerAccessory {
         const displayName = mower.attributes.system.name;
@@ -85,7 +87,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
         return new ScheduleSwitchImpl(
-            'Schedule',
+            this.locale.format('Schedule'),
             this.container.resolve(MowerControlServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
             accessory, this.api, this.log);
@@ -93,7 +95,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createMotionSensorService(accessory: PlatformAccessory<AutomowerContext>): MotionSensorService {
         return new MotionSensorServiceImpl(
-            'Motion Sensor',
+            this.locale.format('Motion Sensor'),
             this.container.resolve(DeterministicMowerInMotionPolicy),
             this.container.resolve(DeterministicMowerFaultedPolicy),
             this.container.resolve(DeterministicMowerTamperedPolicy),
