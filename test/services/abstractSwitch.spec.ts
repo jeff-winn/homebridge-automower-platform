@@ -34,19 +34,7 @@ describe('AbstractSwitch', () => {
     });
     
     it('should throw an error when not initialized', () => {
-        let thrown = false;
-
-        try {
-            target.unsafeUpdateValue(true);
-        } catch(e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            } else {
-                throw e;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        expect(() => target.unsafeUpdateValue(true)).toThrowError();    
     });
 
     it('should initialize without the name prepended', () => {

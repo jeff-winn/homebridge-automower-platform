@@ -1,10 +1,10 @@
-import { API, Characteristic, CharacteristicEventTypes, 
-    CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service 
+import {
+    API, Characteristic, CharacteristicEventTypes,
+    CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service
 } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { InvalidStateError } from '../errors/invalidStateError';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
@@ -53,7 +53,7 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
 
     protected updateValue(on: boolean): void {
         if (this.on === undefined) {
-            throw new InvalidStateError('The service has not been initialized.');
+            throw new Error('The service has not been initialized.');
         }
 
         if (this.lastValue === on) {
