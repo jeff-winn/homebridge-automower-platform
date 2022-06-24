@@ -36,6 +36,28 @@ describe('AccessTokenManagerImpl', () => {
         target = new AccessTokenManagerImplSpy(client.object(), config, log.object(), errorFactory.object());
     });
 
+    it('should throw an error when the current token is undefined', () => {
+        expect(() => target.unsafeGetRequiredCurrentToken()).toThrowError();
+    });
+
+    it('should return the current token when set', () => {
+        const token: OAuthToken = {
+            access_token: 'abcd1234',
+            expires_in: 1,
+            provider: 'bob',
+            refresh_token: '123456',
+            scope: 'all the things',
+            token_type: 'yay',
+            user_id: 'me'
+        };
+
+        target.unsafeSetCurrentToken(token);
+
+        const result = target.unsafeGetRequiredCurrentToken();
+
+        expect(token).toEqual(result);
+    });
+
     it('should throw an error when the config username is undefined', async () => {
         errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
             .returns(new BadConfigurationError('hello world', '12345'));

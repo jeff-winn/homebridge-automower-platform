@@ -55,4 +55,8 @@ export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     public unsafeResetToken(): void {
         this.resetToken();
     }
+
+    public unsafeGetRequiredCurrentToken(): OAuthToken {
+        return this.getRequiredCurrentToken();
+    }
 }

@@ -48,14 +48,19 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
             this.flagAsValid();
         }
 
+        const current = this.getRequiredCurrentToken();
+        return {
+            value: current.access_token,
+            provider: current.provider
+        };
+    }
+
+    protected getRequiredCurrentToken(): OAuthToken {
         if (this.currentToken === undefined) {
             throw new Error('The client is not logged in.');
         }
-
-        return {
-            value: this.currentToken.access_token,
-            provider: this.currentToken.provider
-        };
+        
+        return this.currentToken;
     }
     
     protected shouldRefreshToken() {
