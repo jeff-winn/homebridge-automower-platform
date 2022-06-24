@@ -119,9 +119,9 @@ describe('AccessTokenManagerImpl', () => {
         expect(token.provider).toBe(provider);
     });
 
-    it('should refresh the token when the token has been invalidated', async () => {
+    it('should get a completely new token when the token has been invalidated', async () => {
         const token1: OAuthToken = {
-            access_token: 'access token',
+            access_token: 'access token 1',
             expires_in: 50000,
             provider: 'provider',
             refresh_token: '12345',
@@ -131,7 +131,7 @@ describe('AccessTokenManagerImpl', () => {
         };
 
         const token2: OAuthToken = {
-            access_token: 'access token',
+            access_token: 'access token 2',
             expires_in: 0,
             provider: 'provider',
             refresh_token: '678910',
@@ -140,8 +140,16 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(Promise.resolve(token1));
-        client.setup(x => x.refresh(token1)).returns(Promise.resolve(token2));
+        let attempt = 0;
+        client.setup(o => o.login(username, password)).callback(() => {
+            attempt++;
+
+            if (attempt === 1) {
+                return Promise.resolve(token1);
+            } else {
+                return Promise.resolve(token2);
+            }            
+        });
 
         const originalToken = await target.getCurrentToken();
 
@@ -157,7 +165,7 @@ describe('AccessTokenManagerImpl', () => {
 
     it('should refresh the token when the token has expired', async () => {
         const token1: OAuthToken = {
-            access_token: 'access token',
+            access_token: 'access token 1',
             expires_in: -100,
             provider: 'provider',
             refresh_token: '12345',
@@ -167,7 +175,7 @@ describe('AccessTokenManagerImpl', () => {
         };
 
         const token2: OAuthToken = {
-            access_token: 'access token',
+            access_token: 'access token 2',
             expires_in: 0,
             provider: 'provider',
             refresh_token: '678910',
