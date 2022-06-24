@@ -38,15 +38,15 @@ describe('AutomowerAccessory', () => {
     it('should initialize all services', () => {
         batteryService.setup(o => o.init()).returns(undefined);
         informationService.setup(o => o.init()).returns(undefined);
-        motionSensorService.setup(o => o.init(It.IsAny())).returns(undefined);
-        scheduleService.setup(o => o.init(true)).returns(undefined);
+        motionSensorService.setup(o => o.init(false)).returns(undefined);
+        scheduleService.setup(o => o.init(false)).returns(undefined);
 
         target.init();
         
         batteryService.verify(o => o.init(), Times.Once());
         informationService.verify(o => o.init(), Times.Once());
         motionSensorService.verify(o => o.init(false), Times.Once());
-        scheduleService.verify(o => o.init(true), Times.Once());
+        scheduleService.verify(o => o.init(false), Times.Once());
     });
 
     it('should refresh the services', () => {

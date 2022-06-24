@@ -46,9 +46,7 @@ export class AutomowerAccessory {
         this.informationService.init();
         this.batteryService.init();
         this.motionSensorService.init(false);
-
-        // The display name should be prepended, unless there are multiple switches available.
-        this.scheduleSwitch.init(true);
+        this.scheduleSwitch.init(false);
     }
 
     /**

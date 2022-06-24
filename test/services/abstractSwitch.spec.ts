@@ -55,7 +55,7 @@ describe('AbstractSwitch', () => {
         target.service = service.object();
         target.init(false);
 
-        expect(target.serviceName).toBe(name);
+        expect(target.serviceName).toBe(displayName);
     });
 
     it('should initialize with the name prepended', () => {
