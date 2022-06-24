@@ -23,6 +23,11 @@ export class DeterministicMowerFaultedPolicy implements MowerFaultedPolicy {
             return false;
         }
 
+        if (this.mower.state === undefined) {
+            // TODO: This needs to be cleaned up.
+            throw new Error('This is an intentional gap in coverage.');            
+        }
+
         return (this.mower.state === State.ERROR || this.mower.state === State.FATAL_ERROR || 
                 this.mower.state === State.ERROR_AT_POWER_UP) && this.mower.errorCode !== 0;
     }
