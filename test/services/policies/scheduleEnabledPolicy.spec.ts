@@ -271,18 +271,7 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             restrictedReason: RestrictedReason.NONE
         });
 
-        let thrown = false;
-        try {
-            target.check();
-        } catch (e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            } else {
-                throw e;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        expect(() => target.check()).toThrowError();
     });
 
     it('should throw an error when planner is undefined', () => {
@@ -302,18 +291,6 @@ describe('DeterministicScheduleEnabledPolicy', () => {
             ]
         });
         
-        let thrown = false;
-    
-        try {
-            target.check();
-        } catch (e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            } else {
-                throw e;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        expect(() => target.check()).toThrowError();
     });
 });

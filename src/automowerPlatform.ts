@@ -1,25 +1,24 @@
-import { 
-    PlatformAccessory, API, DynamicPlatformPlugin, 
-    PlatformConfig, APIEvent, Logging
-} from 'homebridge';
+import { API, APIEvent, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
-import { PLATFORM_NAME, PLUGIN_ID } from './settings';
-import { SettingsEvent, StatusEvent } from './events';
-import { AccessTokenManager, AccessTokenManagerImpl } from './services/automower/accessTokenManager';
-import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
+import { SettingsEvent, StatusEvent } from './events';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
+import { Localization, Y18nLocalization } from './primitives/localization';
+import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
+import { AccessTokenManager, AccessTokenManagerImpl } from './services/automower/accessTokenManager';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
+import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
+import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 
 /** 
  * Describes the platform configuration settings.
  */
 export interface AutomowerPlatformConfig extends PlatformConfig {    
-    username: string | undefined;
-    password: string | undefined;
-    appKey: string | undefined;
+    username?: string;
+    password?: string;
+    appKey?: string;
+    lang?: string;
 }
 
 /**
@@ -48,9 +47,9 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         } catch (e) {
             if (e instanceof BadConfigurationError) {
                 // The message should be in a format that is readable to an end user, just display that instead.
-                this.log.error(e.message);
+                this.error(e.message);
             } else {
-                this.log.error('An unexpected error occurred while starting the plugin.', e);
+                this.error('An unexpected error occurred while starting the plugin.', e);
             }
         }
     }
@@ -127,7 +126,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             await this.getEventService()?.stop();
             await this.getTokenManager()?.logout();
         } catch (e) {
-            this.log.error('An unexpected error occurred while shutting down the plugin.', e);
+            this.error('An unexpected error occurred while shutting down the plugin.', e);
         }
     }
 
@@ -165,16 +164,42 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
         try {
             this.ensureContainerIsInitialized();
-            this.log.info(`Configuring '${accessory.displayName}' from the accessory cache.`);
+            this.info('Configuring \'%s\' from the accessory cache.', accessory.displayName);
 
             const automower = this.getAccessoryFactory().createAutomowerAccessory(accessory);
             this.mowers.push(automower);
         } catch (e) {
-            this.log.error('An unexpected error occurred while configuring the accessory.', e);
+            this.error('An unexpected error occurred while configuring the accessory.', e);
         }
     }
 
     protected getAccessoryFactory(): AutomowerAccessoryFactory {
         return this.container!.resolve(AutomowerAccessoryFactoryImpl);
+    }
+
+    protected getLocalization(): Localization | undefined {
+        if (this.container === undefined) {
+            return undefined;
+        }
+
+        return this.container.resolve(Y18nLocalization);
+    }
+
+    protected info(message: string, ...params: unknown[]): void {
+        const locale = this.getLocalization();
+        if (locale !== undefined) {
+            this.log.info(locale.format(message, ...params));
+        } else {
+            this.log.info(message, ...params);
+        }        
+    }
+
+    protected error(message: string, ...params: unknown[]): void {
+        const locale = this.getLocalization();
+        if (locale !== undefined) {
+            this.log.error(locale.format(message, ...params));
+        } else {
+            this.log.error(message, ...params);
+        } 
     }
 }

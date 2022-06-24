@@ -34,19 +34,7 @@ describe('AbstractSwitch', () => {
     });
     
     it('should throw an error when not initialized', () => {
-        let thrown = false;
-
-        try {
-            target.unsafeUpdateValue(true);
-        } catch(e) {
-            if (e instanceof InvalidStateError) {
-                thrown = true;
-            } else {
-                throw e;
-            }
-        }
-
-        expect(thrown).toBeTruthy();
+        expect(() => target.unsafeUpdateValue(true)).toThrowError();    
     });
 
     it('should initialize without the name prepended', () => {
@@ -123,12 +111,12 @@ describe('AbstractSwitch', () => {
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(false);
         target.unsafeUpdateValue(true);
 
-        log.verify(o => o.info('Changed \'Switch\' switch for \'hello world\': ON'), Times.Once());
+        log.verify(o => o.info('Changed \'%s\' for \'%s\': ON', 'Switch', 'hello world'), Times.Once());
         c.verify(o => o.updateValue(true), Times.Once());
     });
 
@@ -145,14 +133,14 @@ describe('AbstractSwitch', () => {
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
         
         target.init(false);        
         target.unsafeSetLastValue(true);
         
         target.unsafeUpdateValue(false);
 
-        log.verify(o => o.info('Changed \'Switch\' switch for \'hello world\': OFF'), Times.Once());
+        log.verify(o => o.info('Changed \'%s\' for \'%s\': OFF', 'Switch', 'hello world'), Times.Once());
         c.verify(o => o.updateValue(false), Times.Once());
     });
 });

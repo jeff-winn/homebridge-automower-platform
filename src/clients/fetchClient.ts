@@ -90,7 +90,7 @@ export class RetryerFetchClient implements FetchClient {
     }
 
     protected async executeCore(id: string, attempt: number, url: RequestInfo, init?: RequestInit): Promise<Response> {
-        this.log.debug(`Sending request [${attempt}/${this.maxRetryAttempts}]: ${id}\r\n`, JSON.stringify({
+        this.log.debug('Sending request [%d/%d]: %s\r\n', attempt, this.maxRetryAttempts, id, JSON.stringify({
             url: url,
             method: init?.method,
             headers: init?.headers,
@@ -107,7 +107,7 @@ export class RetryerFetchClient implements FetchClient {
             body = JSON.parse(b);
         }
 
-        this.log.debug(`Received response: ${id}\r\n`, JSON.stringify({
+        this.log.debug('Received response: %s\r\n', id, JSON.stringify({
             status: response.status,
             statusText: response.statusText,
             headers: response.headers.raw,

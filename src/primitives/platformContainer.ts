@@ -1,6 +1,8 @@
 import { API } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
+import * as settings from '../settings';
+
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
@@ -8,6 +10,7 @@ import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamC
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
+import { DefaultErrorFactory } from '../errors/errorFactory';
 import { AccessTokenManagerImpl } from '../services/automower/accessTokenManager';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
@@ -19,10 +22,9 @@ import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamp
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { NodeJsEnvironment } from './environment';
+import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-
-import * as settings from '../settings';
 
 /**
  * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
@@ -52,12 +54,17 @@ export class PlatformContainerImpl implements PlatformContainer {
             useValue: new ConsoleWrapperImpl() 
         });
 
+        container.register(Y18nLocalization, {
+            useValue: new Y18nLocalization(this.config.lang)
+        });
+
         container.register(HomebridgeImitationLogger, {
             useFactory: (context) => new HomebridgeImitationLogger(
                 context.resolve(NodeJsEnvironment),
                 settings.PLATFORM_NAME, 
                 this.config.name,                
-                context.resolve(ConsoleWrapperImpl))
+                context.resolve(ConsoleWrapperImpl),
+                context.resolve(Y18nLocalization))
         });
 
         container.register(RetryerFetchClient, {
@@ -71,22 +78,30 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: () => new TimerImpl()
         });
 
+        container.register(DefaultErrorFactory, {
+            useFactory: (context) => new DefaultErrorFactory(
+                context.resolve(Y18nLocalization))
+        });
+        
         container.register(AuthenticationClientImpl, {
             useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
                 settings.AUTHENTICATION_API_BASE_URL,
-                context.resolve(RetryerFetchClient))
+                context.resolve(RetryerFetchClient),
+                context.resolve(DefaultErrorFactory))
         });
 
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            container.resolve(HomebridgeImitationLogger)));
+            container.resolve(HomebridgeImitationLogger),
+            container.resolve(DefaultErrorFactory)));
 
         container.register(AutomowerClientImpl, {
             useFactory: (context) => new AutomowerClientImpl(
                 this.config.appKey,
                 settings.AUTOMOWER_CONNECT_API_BASE_URL,
-                context.resolve(RetryerFetchClient))
+                context.resolve(RetryerFetchClient),
+                context.resolve(DefaultErrorFactory))
         });
 
         container.register(DeterministicMowerInMotionPolicy, {
@@ -126,7 +141,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
                 context.resolve(HomebridgeImitationLogger),
-                this)
+                this,
+                context.resolve(Y18nLocalization))
         });
 
         container.register(DiscoveryServiceImpl, {

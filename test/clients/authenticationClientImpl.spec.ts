@@ -5,6 +5,7 @@ import { FetchClient, Response } from '../../src/clients/fetchClient';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
+import { ErrorFactory } from '../../src/errors/errorFactory';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 import * as constants from '../../src/settings';
 
@@ -15,12 +16,15 @@ describe('AuthenticationClientImpl', () => {
     const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || 'PASSWORD';
 
     let fetch: Mock<FetchClient>;
+    let errorFactory: Mock<ErrorFactory>;
+
     let target: AuthenticationClientImpl;
 
     beforeEach(async () => {
         fetch = new Mock<FetchClient>();
+        errorFactory = new Mock<ErrorFactory>();
 
-        target = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL, fetch.object());
+        target = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
     });
 
     it('should initalize correctly', () => {
@@ -29,6 +33,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw a bad credentials error on 400 response', async () => {
+        errorFactory.setup(o => o.badCredentialsError(It.IsAny(), It.IsAny()))
+            .returns(new BadCredentialsError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -43,6 +50,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw a not authorized error on 401 response', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -97,19 +107,28 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw an error when app key is undefined on login', async () => {
-        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
+            new BadConfigurationError('hello', '12345'));
+
+        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
         
         await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when app key is empty on login', async () => {
-        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
+            new BadConfigurationError('hello', '12345'));
+
+        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when app key is undefined on logout', async () => {
-        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
+            new BadConfigurationError('hello', '12345'));
+
+        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.logout({
             access_token: '12345',
@@ -123,7 +142,10 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw an error when app key is empty on logout', async () => {
-        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL, fetch.object());
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
+            new BadConfigurationError('hello', '12345'));
+
+        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
 
         await expect(target.logout({
             access_token: '12345',
@@ -145,6 +167,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw not authorized error on 401 when logout', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -188,7 +213,10 @@ describe('AuthenticationClientImpl', () => {
         })).rejects.toThrowError();
     });
 
-    it('should throw bad credential error on 400 for refresh', async () => {
+    it('should throw bad oauth token error on 400 for refresh', async () => {
+        errorFactory.setup(o => o.badOAuthTokenError(It.IsAny(), It.IsAny()))
+            .returns(new BadOAuthTokenError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -211,6 +239,9 @@ describe('AuthenticationClientImpl', () => {
     });
 
     it('should throw not authorized error on 401 for refresh', async () => {
+        errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
+            .returns(new NotAuthorizedError('hello', '12345'));
+
         const response = new Response(undefined, {
             headers: { },
             size: 0,
@@ -232,7 +263,7 @@ describe('AuthenticationClientImpl', () => {
         })).rejects.toThrowError(NotAuthorizedError);
     });
 
-    it('should throw not authorized error on 401 for refresh', async () => {
+    it('should throw error on 500 for refresh', async () => {
         const response = new Response(undefined, {
             headers: { },
             size: 0,

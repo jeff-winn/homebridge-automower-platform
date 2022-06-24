@@ -1,9 +1,9 @@
-import { AccessTokenManager } from './accessTokenManager';
 import { AutomowerEventStreamClient } from '../../clients/automowerEventStreamClient';
-import { AutomowerEvent, AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent, ErrorEvent } from '../../events';
-import { Timer } from '../../primitives/timer';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
+import { AutomowerEvent, AutomowerEventTypes, ErrorEvent, PositionsEvent, SettingsEvent, StatusEvent } from '../../events';
+import { Timer } from '../../primitives/timer';
+import { AccessTokenManager } from './accessTokenManager';
 
 /**
  * A mechanism which is capable of streaming events for the Husqvarna account.
@@ -165,7 +165,7 @@ export class EventStreamServiceImpl implements EventStreamService {
                 result = true;
             } else if (this.lastEventReceived !== undefined && 
                 ((now.getTime() - this.lastEventReceived.getTime()) > this.getReconnectInterval())) {
-                this.log.debug('A message has not been received within the last hour; proceed with reconnect.');
+                this.log.debug('No messages have been received within the last hour; proceed with reconnect.');
                 result = true;
             }
         }
@@ -230,7 +230,7 @@ export class EventStreamServiceImpl implements EventStreamService {
             return this.onStatusEvent(event as StatusEvent);        
 
         default:
-            this.log.warn(`Received unknown event: ${event.type}`);
+            this.log.warn('Received unknown event: %s', event.type);
             return Promise.resolve(undefined);
         }
     }

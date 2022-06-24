@@ -340,13 +340,13 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should log a warning when the event is unknown', async () => {
-        log.setup(o => o.warn(It.IsAny<string>())).returns(undefined);
+        log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
         
         await target.unsafeEventReceived({
             id: '12345',
             type: AutomowerEventTypes.UNKNOWN
         });        
 
-        log.verify(o => o.warn(It.IsAny<string>()), Times.Once());
+        log.verify(o => o.warn(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
     });
 });
