@@ -22,7 +22,6 @@ export class Y18nLocalization implements Localization {
     public constructor(lang: string | undefined) {
         this.translate = y18n({
             locale: lang,
-            directory: './assets/i18n',
             updateFiles: false // This will ensure the local file isn't trying to be modified.
         }).__;
     }

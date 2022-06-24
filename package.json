@@ -16,7 +16,7 @@
   "files": [
     "README.md",
     "LICENSE",
-    "assets",
+    "locales",
     "dist",
     "config.schema.json"
   ],
