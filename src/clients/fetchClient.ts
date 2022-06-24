@@ -2,7 +2,7 @@ import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import { v4 as uuid } from 'uuid';
 
 import { PlatformLogger } from '../diagnostics/platformLogger';
-export { Response, RequestInfo, RequestInit } from 'node-fetch';
+export { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 /**
  * An node fetch client.

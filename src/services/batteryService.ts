@@ -1,5 +1,4 @@
 import { Characteristic, Service } from 'homebridge';
-import { InvalidStateError } from '../errors/invalidStateError';
 
 import { Activity, Battery, MowerState } from '../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';

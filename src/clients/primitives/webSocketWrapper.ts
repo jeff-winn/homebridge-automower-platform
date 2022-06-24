@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ClientRequestArgs } from 'http';
-import { WebSocket, ClientOptions } from 'ws';
+import { ClientOptions, WebSocket } from 'ws';
 
 /**
  * A mechanism which wraps a {@link WebSocket} implementation.

@@ -1,8 +1,9 @@
+import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
-import { Service, Characteristic } from 'hap-nodejs';
+import { Mock } from 'moq.ts';
+
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { AccessoryServiceSpy } from './accessoryServiceSpy';
-import { Mock } from 'moq.ts';
 
 describe('AbstractAccessoryService', () => {    
     it('must be able to construct the object correctly', () => {

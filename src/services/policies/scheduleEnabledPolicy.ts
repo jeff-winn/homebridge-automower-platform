@@ -1,4 +1,3 @@
-import { InvalidStateError } from '../../errors/invalidStateError';
 import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../model';
 import { OptionalPolicy } from './policy';
 

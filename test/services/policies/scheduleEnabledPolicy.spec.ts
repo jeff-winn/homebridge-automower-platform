@@ -1,4 +1,3 @@
-import { InvalidStateError } from '../../../src/errors/invalidStateError';
 import { Activity, Calendar, Mode, RestrictedReason, State } from '../../../src/model';
 import { DeterministicScheduleEnabledPolicy } from '../../../src/services/policies/scheduleEnabledPolicy';
 

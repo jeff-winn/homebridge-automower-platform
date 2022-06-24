@@ -1,5 +1,5 @@
-import { AccessTokenManagerImpl } from '../../../src/services/automower/accessTokenManager';
 import { OAuthToken } from '../../../src/clients/authenticationClient';
+import { AccessTokenManagerImpl } from '../../../src/services/automower/accessTokenManager';
 
 export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     public loggedIn = false;

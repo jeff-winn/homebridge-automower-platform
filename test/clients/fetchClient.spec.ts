@@ -1,8 +1,8 @@
 import { It, Mock } from 'moq.ts';
 import { Response } from 'node-fetch';
 
-import { RetryerFetchClientSpy } from './retryerFetchClientSpy';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { RetryerFetchClientSpy } from './retryerFetchClientSpy';
 
 describe('RetryerFetchClient', () => {
     let log: Mock<PlatformLogger>;
