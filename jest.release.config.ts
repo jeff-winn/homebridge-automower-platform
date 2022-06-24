@@ -12,6 +12,7 @@ export default async (): Promise<Config.InitialOptions> => {
         passWithNoTests: false,
         collectCoverage: true,
         coverageDirectory: './build/coverage',
-        testRegex: '(?<!i)\\.(spec|test)\\.[jt]s$'
+        testRegex: '(?<!i)\\.(spec|test)\\.[jt]s$',
+        testResultsProcessor: 'jest-sonar-reporter'
     };
 };
