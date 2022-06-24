@@ -1,5 +1,3 @@
-import { AuthenticationClientImpl } from './clients/authenticationClient';
-
 /**
  * The name of the platform (which must match the config.schema.json pluginAlias field).
  */
