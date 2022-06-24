@@ -1,14 +1,14 @@
 import 'reflect-metadata';
 
 import { API, Logging } from 'homebridge';
-import { Mock, It, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
-import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
-import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 import { AutomowerPlatform, AutomowerPlatformConfig } from '../src/automowerPlatform';
+import { BadConfigurationError } from '../src/errors/badConfigurationError';
 import { DiscoveryService } from '../src/services/automower/discoveryService';
 import { EventStreamService } from '../src/services/automower/eventStreamService';
-import { BadConfigurationError } from '../src/errors/badConfigurationError';
+import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
+import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 
 describe('AutomowerPlatform', () => {
     let log: Mock<Logging>;

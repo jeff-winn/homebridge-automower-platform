@@ -33,10 +33,10 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         private log: PlatformLogger, private errorFactory: ErrorFactory) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
-        if (!this.hasAlreadyLoggedIn() || this.isTokenInvalidated()) {
+        if (this.shouldRefreshToken()) {
             let newToken: OAuthToken;
 
-            if (this.hasAlreadyLoggedIn()) {
+            if (this.hasAlreadyLoggedIn() && !this.isTokenInvalidated()) {
                 newToken = await this.doRefreshToken();
             } else {
                 newToken = await this.doLogin();
@@ -48,15 +48,24 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
             this.flagAsValid();
         }
 
+        const current = this.getRequiredCurrentToken();
+        return {
+            value: current.access_token,
+            provider: current.provider
+        };
+    }
+
+    protected getRequiredCurrentToken(): OAuthToken {
         if (this.currentToken === undefined) {
             throw new Error('The client is not logged in.');
         }
-
-        return {
-            value: this.currentToken.access_token,
-            provider: this.currentToken.provider
-        };
-    }    
+        
+        return this.currentToken;
+    }
+    
+    protected shouldRefreshToken() {
+        return !this.hasAlreadyLoggedIn() || this.isTokenInvalidated() || this.hasTokenExpired();
+    }
 
     protected unsafeGetCurrentToken(): OAuthToken | undefined {
         return this.currentToken;
@@ -67,8 +76,12 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     protected isTokenInvalidated(): boolean {
+        return this.invalidated;
+    }
+
+    protected hasTokenExpired(): boolean {
         const now = new Date();
-        return (this.invalidated || (this.expires !== undefined && this.expires < now));
+        return this.expires !== undefined && this.expires < now;
     }
 
     public hasAlreadyLoggedIn(): boolean {

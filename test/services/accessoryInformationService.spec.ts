@@ -1,5 +1,5 @@
-import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Characteristic, Service } from 'hap-nodejs';
+import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';

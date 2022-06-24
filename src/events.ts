@@ -1,11 +1,11 @@
-import { 
+import {
     Battery,
-    Calendar, 
-    Headlight, 
-    MowerMetadata, 
-    MowerState, 
-    Planner, 
-    Position 
+    Calendar,
+    Headlight,
+    MowerMetadata,
+    MowerState,
+    Planner,
+    Position
 } from './model';
 
 /**

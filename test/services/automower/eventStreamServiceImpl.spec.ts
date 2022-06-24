@@ -1,13 +1,13 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
-import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../src/events';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
+import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../src/events';
 import { AccessToken, Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../src/model';
 import { Timer } from '../../../src/primitives/timer';
+import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
 import { AutomowerEventStreamClientStub } from '../../clients/automowerEventStreamClientStub';
 import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
-import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 
 describe('EventStreamServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;

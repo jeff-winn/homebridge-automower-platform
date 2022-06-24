@@ -1,9 +1,9 @@
 import { Mock, Times } from 'moq.ts';
 
-import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { Mower, AccessToken, Activity, Mode, State, OverrideAction, RestrictedReason } from '../../../src/model';
+import { AccessToken, Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../src/model';
+import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
 import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
 
 describe('GetMowersServiceImpl', () => {

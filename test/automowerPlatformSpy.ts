@@ -1,7 +1,7 @@
 import { AutomowerPlatform } from '../src/automowerPlatform';
 import { AccessTokenManager } from '../src/services/automower/accessTokenManager';
-import { EventStreamService } from '../src/services/automower/eventStreamService';
 import { DiscoveryService } from '../src/services/automower/discoveryService';
+import { EventStreamService } from '../src/services/automower/eventStreamService';
 
 export class AutomowerPlatformSpy extends AutomowerPlatform {
     public discoveryService?: DiscoveryService;

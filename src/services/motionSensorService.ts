@@ -2,7 +2,6 @@ import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { InvalidStateError } from '../errors/invalidStateError';
 import { MowerState } from '../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';

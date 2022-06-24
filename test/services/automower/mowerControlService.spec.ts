@@ -1,4 +1,5 @@
 import { It, Mock, Times } from 'moq.ts';
+
 import { AutomowerClient } from '../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../src/model';

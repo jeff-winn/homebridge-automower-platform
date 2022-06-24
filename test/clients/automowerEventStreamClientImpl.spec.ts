@@ -1,10 +1,11 @@
-import { It, Mock, Times } from 'moq.ts'; 
+import { It, Mock, Times } from 'moq.ts';
+
+import * as constants from '../../src/settings';
 
 import { WebSocketWrapper } from '../../src/clients/primitives/webSocketWrapper';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { AutomowerEventStreamClientImplSpy } from './automowerEventStreamClientImplSpy';
-import * as constants from '../../src/settings';
 import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../src/events';
+import { AutomowerEventStreamClientImplSpy } from './automowerEventStreamClientImplSpy';
 
 describe('AutomowerEventStreamClientImpl', () => {
     let socket: Mock<WebSocketWrapper>;

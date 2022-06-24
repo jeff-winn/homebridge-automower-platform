@@ -1,5 +1,5 @@
-import { AccessTokenManagerImpl } from '../../../src/services/automower/accessTokenManager';
 import { OAuthToken } from '../../../src/clients/authenticationClient';
+import { AccessTokenManagerImpl } from '../../../src/services/automower/accessTokenManager';
 
 export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     public loggedIn = false;
@@ -54,5 +54,9 @@ export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
 
     public unsafeResetToken(): void {
         this.resetToken();
+    }
+
+    public unsafeGetRequiredCurrentToken(): OAuthToken {
+        return this.getRequiredCurrentToken();
     }
 }
