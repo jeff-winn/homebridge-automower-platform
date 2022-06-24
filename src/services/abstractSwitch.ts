@@ -27,7 +27,7 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
     public init(prepend: boolean): void {
         this.switchService = this.accessory.getServiceById(this.Service.Switch, this.name);
         if (this.switchService === undefined) {
-            let displayName = this.name;
+            let displayName = this.accessory.displayName;
             if (prepend) {
                 displayName = `${this.accessory.displayName} ${this.name}`;
             }
