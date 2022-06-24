@@ -4,26 +4,26 @@ describe('Y18nLocalization', () => {
     let target: Y18nLocalization;
 
     beforeEach(() => {
-        target = new Y18nLocalization('test');
+        target = new Y18nLocalization('en');
     });
 
     /**
      * This uses value replacements within the string and does not require the entire string to be in the translation.
      */
     it('should handle value replacements correctly', () => {
-        const world = 'world';
-        const result = target.format('Hello %s!', world);
+        const event = 'test';
+        const result = target.format('Received unknown event: %s', event);
 
-        expect(result).toBe('Bonjour world!');
+        expect(result).toBe('Received unknown event: test');
     });
 
     /**
      * This uses string interpolation and does require the entire string (post-interpolated string) to be in the translation.
      */
     it('should handle string interpolation correctly', () => {        
-        const world = 'world';        
-        const result = target.format(`Hello ${world}!`);
+        const value = 'ON';        
+        const result = target.format(`Changed '%s' for '%s': ${value}`, 'test', 'test');
 
-        expect(result).toBe('Bonjour le monde!');
+        expect(result).toBe('Changed \'test\' for \'test\': ON');
     });
 });
