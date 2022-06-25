@@ -20,6 +20,8 @@ introduction: |
 
   Additional capabilities:
   - Does not cause logout of the Husqvarna mobile application.
+  - Multiple languages may be supported in logs (need help with translations).
+
 actions:
   - label: "Get Started"
     icon: arrow-right
