@@ -12,8 +12,10 @@ Supported capabilities:
   - *has* the schedule enabled or disabled.  
 - A motion sensor to indicate whether each mower:
   - *is* moving about the property.
-  - *has* been tampered with (either by a human or other means) and needs assistance.
-  - *has* encountered a fault (which will require the Husqvarna app to troubleshoot) and needs assistance.
+  - *has* been tampered with (either by a human or other means) and needs assistance. **
+  - *has* encountered a fault (which will require the Husqvarna app to troubleshoot) and needs assistance. **
+
+** These features are not directly supported within the Apple HomeKit app and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
 
 Additional capabilities:
 - Does not cause logout of Husqvarna mobile application.
