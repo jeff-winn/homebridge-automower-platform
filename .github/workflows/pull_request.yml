@@ -10,6 +10,10 @@ on:
 permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
+env:
+  # See LTS versions supported: https://nodejs.org/en/about/releases/
+  NODE_VERSION: 16
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,7 +45,7 @@ jobs:
 
     - uses: actions/setup-node@v2
       with:
-        node-version: 16
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
       
     - run: npm ci
