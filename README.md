@@ -19,6 +19,7 @@ Supported capabilities:
 
 Additional capabilities:
 - Does not cause logout of Husqvarna mobile application.
+- Multiple languages may be supported in logs (need help with translations).
 
 For help installing and configuring the plugin, please see the documentation found at:
 https://jeff-winn.github.io/homebridge-automower-platform
