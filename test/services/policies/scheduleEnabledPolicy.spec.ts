@@ -8,6 +8,29 @@ describe('DeterministicScheduleEnabledPolicy', () => {
         target = new DeterministicScheduleEnabledPolicy();
     });
 
+    it('should not apply the policy when the mower is paused', () => {
+        target.setMowerState({
+            activity: Activity.NOT_APPLICABLE,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA,
+            state: State.PAUSED
+        });
+
+        target.setCalendar({
+            tasks: [ ]
+        });
+        
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { },
+        });  
+
+        const result = target.shouldApply();
+
+        expect(result).toBeFalsy();
+    });
+
     it('should apply the policy when the mower is set to run continously', () => {
         target.setMowerState({
             activity: Activity.MOWING,

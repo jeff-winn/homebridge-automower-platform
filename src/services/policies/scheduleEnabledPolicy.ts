@@ -37,6 +37,11 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
             return false;
         }
 
+        if (this.mowerState.state === State.PAUSED) {
+            // The mower was paused, don't worry about updating anything.
+            return false;
+        }
+
         if (!this.isSetToRunContinuously()) {
             return this.mowerState.state !== State.IN_OPERATION;
         }
