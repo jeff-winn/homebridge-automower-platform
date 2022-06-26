@@ -31,4 +31,4 @@ What you'll need to do:
 
 {% include lightbox.html src="/assets/images/automower-always-on-schedule.png" title="An example of the Automower being always on" class="thumbnail-25" %}
 
-Because the mower is configured to always run, the button in HomeKit will actually control whether the mower should be mow the yard or go back to the charge station.
+Because the mower is configured to always run, the button in HomeKit will actually control whether the mower should mow the yard or go back to the charge station.
