@@ -7,6 +7,12 @@ import { AccessTokenManager } from './accessTokenManager';
  */
 export interface MowerControlService {
     /**
+     * Pauses the mower indefinitely.
+     * @param mowerId The mower id.
+     */
+    pause(mowerId: string): Promise<void>;
+
+    /**
      * Resume the mower, according to the schedule.
      * @param mowerId The mower id.
      */
@@ -31,6 +37,23 @@ export interface Action {
 
 export class MowerControlServiceImpl implements MowerControlService {
     public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
+
+    public async pause(mowerId: string): Promise<void> {
+        try {
+            const action: Action = {
+                type: 'Pause'
+            };
+
+            const token = await this.tokenManager.getCurrentToken();
+            return await this.client.doAction(mowerId, action, token);
+        } catch (e) {
+            if (e instanceof NotAuthorizedError) {
+                this.tokenManager.flagAsInvalid();
+            }
+
+            throw (e);
+        }
+    }
 
     public async resumeSchedule(mowerId: string): Promise<void> {
         try {
