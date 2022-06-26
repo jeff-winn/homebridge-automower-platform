@@ -46,6 +46,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     private onSettingsEventCallback?: (event: SettingsEvent) => Promise<void>;
     private onPositionsEventCallback?: (event: PositionsEvent) => Promise<void>;
 
+    private isKeepAliveActive = false;
     private started?: Date;
     private lastEventReceived?: Date;
     private attached = false;
@@ -85,16 +86,24 @@ export class EventStreamServiceImpl implements EventStreamService {
     protected onConnectedEventReceived(): Promise<void> {
         this.log.info('Connected!');
 
+        if (this.isKeepAliveActive) {
+            this.startKeepAlive();
+
+            this.isKeepAliveActive = false;
+        }
+
         return Promise.resolve(undefined);
     }
 
     protected async onDisconnectedEventReceived(): Promise<void> {
         this.log.info('Disconnected!');
 
-        this.stopKeepAlive();
+        if (!this.isKeepAliveActive) {
+            // The keep alive is not already active, attempt to trigger the reconnection immediately.
+            this.stopKeepAlive();
 
-        // Trigger the keep alive to occur immediately.
-        await this.keepAlive();
+            await this.keepAlive();
+        }
     }
 
     protected onErrorEventReceived(event: ErrorEvent): Promise<void> {        
@@ -134,9 +143,12 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.timer.start(this.keepAlive.bind(this), this.KEEP_ALIVE_INTERVAL);
     }
     
-    protected async keepAlive(): Promise<void> {
-        try {        
+    protected async keepAlive(): Promise<void> {        
+        try {
             if (this.shouldReconnect()) {
+                // Flag the keep alive will be actively trying to restart
+                this.isKeepAliveActive = true;
+
                 await this.reconnect();
             } else {
                 this.pingOnce();
@@ -144,8 +156,10 @@ export class EventStreamServiceImpl implements EventStreamService {
         } catch (e) {
             this.log.error('An unexpected error occurred while keeping the client stream alive.', e);
         } finally {
-            // Restart the timer.
-            this.startKeepAlive();
+            if (!this.isKeepAliveActive) {
+                // The keep alive is not trying to reconnect, restart the timer.
+                this.startKeepAlive();
+            }            
         }
     }    
 
