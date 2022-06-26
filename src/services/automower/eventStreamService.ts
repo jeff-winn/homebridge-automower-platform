@@ -89,7 +89,7 @@ export class EventStreamServiceImpl implements EventStreamService {
         if (this.isKeepAliveActive) {
             this.startKeepAlive();
 
-            this.isKeepAliveActive = false;
+            this.clearKeepAliveFlag();
         }
 
         return Promise.resolve(undefined);
@@ -146,8 +146,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     protected async keepAlive(): Promise<void> {        
         try {
             if (this.shouldReconnect()) {
-                // Flag the keep alive will be actively trying to restart
-                this.isKeepAliveActive = true;
+                this.flagAsKeepAliveActive();
 
                 await this.reconnect();
             } else {
@@ -161,7 +160,15 @@ export class EventStreamServiceImpl implements EventStreamService {
                 this.startKeepAlive();
             }            
         }
-    }    
+    }
+
+    protected flagAsKeepAliveActive(): void {
+        this.isKeepAliveActive = true;
+    }
+
+    protected clearKeepAliveFlag(): void {
+        this.isKeepAliveActive = false;
+    }
 
     protected shouldReconnect(): boolean {
         this.log.debug('Checking keep alive for the client stream...');
