@@ -3,7 +3,7 @@
   "displayName": "Homebridge Automower Platform",
   "description": "A platform plugin for the Husqvarna Automower.",
   "license": "MIT",
-  "homepage": "https://github.com/jeff-winn/homebridge-automower-platform",
+  "homepage": "https://jeff-winn.github.io/homebridge-automower-platform",
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src/**.ts",
