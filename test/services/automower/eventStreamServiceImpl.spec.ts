@@ -124,18 +124,10 @@ describe('EventStreamServiceImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        let thrown = false;
-        try {
-            await target.unsafeKeepAlive();
-        } catch (e) {
-            thrown = true;
-        }
-
-        expect(thrown).toBeFalsy();
+        await target.unsafeKeepAlive();
 
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
-        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     // WARNING: throwing errors while reconnecting will cause the process running homebridge to be restarted
@@ -150,7 +142,6 @@ describe('EventStreamServiceImpl', () => {
         await target.unsafeKeepAlive();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
-        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     it('should reconnect the client when disconnected', async () => {       
@@ -166,8 +157,6 @@ describe('EventStreamServiceImpl', () => {
         await target.unsafeKeepAlive();        
 
         expect(stream.opened).toBeTruthy();
-
-        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     it('should reconnect the client when never received event', async () => {
@@ -188,8 +177,6 @@ describe('EventStreamServiceImpl', () => {
 
         expect(stream.closed).toBeTruthy();        
         expect(stream.opened).toBeTruthy();
-
-        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     it('should ping the server when the last event has been recent', async () => {
@@ -223,8 +210,6 @@ describe('EventStreamServiceImpl', () => {
 
         expect(stream.closed).toBeTruthy();        
         expect(stream.opened).toBeTruthy();
-
-        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
     it('should do nothing when settings-event is received', async () => {
