@@ -8,7 +8,112 @@ describe('DeterministicScheduleEnabledPolicy', () => {
         target = new DeterministicScheduleEnabledPolicy();
     });
 
-    it('should return true when the mower state is undefined', () => {
+    it('should apply the policy when the mower is set to run continously', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA,
+            state: State.IN_OPERATION
+        });
+
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 0,
+                    duration: 1440, // 24 hours
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true
+                }
+            ]
+        });
+        
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { },
+        });  
+
+        const result = target.shouldApply();
+
+        expect(result).toBeTruthy();
+    });
+
+    it('should return false when mower is not in operation and scheduled to run continuously', () => {
+        target.setMowerState({
+            activity: Activity.PARKED_IN_CS,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.HOME,
+            state: State.NOT_APPLICABLE
+        });
+
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 0,
+                    duration: 1440, // 24 hours
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true
+                }
+            ]
+        });
+        
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { }            
+        });
+
+        const result = target.check();
+
+        expect(result).toBeFalsy();
+    });
+
+    it('should return true when mower is in operation and scheduled to run continuously', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA,
+            state: State.IN_OPERATION
+        });
+
+        target.setCalendar({
+            tasks: [
+                {
+                    start: 0,
+                    duration: 1440, // 24 hours
+                    sunday: true,
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                    saturday: true
+                }
+            ]
+        });
+        
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { }            
+        });
+
+        const result = target.check();
+
+        expect(result).toBeTruthy();
+    });
+
+    it('should return false when the mower state is undefined', () => {
         target.setCalendar({
             tasks: [
                 {
@@ -32,10 +137,10 @@ describe('DeterministicScheduleEnabledPolicy', () => {
 
         const result = target.shouldApply();
 
-        expect(result).toBeTruthy();
+        expect(result).toBeFalsy();
     });
 
-    it('should return false when the mower is in operation', () => {
+    it('should return false when the mower is in operation and not set to run continuously', () => {
         target.setCalendar({
             tasks: [
                 {
