@@ -42,4 +42,16 @@ export class EventStreamServiceImplSpy extends EventStreamServiceImpl {
     public unsafeOnErrorEventReceived(event: ErrorEvent): Promise<void> {
         return this.onErrorEventReceived(event);
     }
+
+    public unsafeFlagAsKeepAliveActive() {
+        this.flagAsKeepAliveActive();
+    }
+
+    public unsafeClearKeepAliveFlag() {
+        this.clearKeepAliveFlag();
+    }
+
+    public unsafeIsKeepAliveActive(): boolean {
+        return this.isKeepAliveActive();
+    }
 }
