@@ -63,6 +63,16 @@ describe('EventStreamServiceImpl', () => {
         log.verify(o => o.info(It.IsAny()), Times.Once());
     });
 
+    it('should not run the keep alive when keep alive is already active', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+
+        target.unsafeFlagAsKeepAliveActive();
+
+        target.unsafeOnDisconnectedEventReceived();
+
+        log.verify(o => o.info('Disconnected!'), Times.Once());
+    });
+
     it('should handle disconnected event received', async () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         timer.setup(o => o.stop()).returns(undefined);
@@ -191,6 +201,20 @@ describe('EventStreamServiceImpl', () => {
         expect(stream.keptAlive).toBeTruthy();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
+    it('should start the keep alive timer on connected if keep alive is active', async () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.unsafeFlagAsKeepAliveActive();
+
+        await target.unsafeOnConnectedEventReceived();
+
+        expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
+
+        log.verify(o => o.info('Connected!'), Times.Once());
+        timer.verify(o => o.start(It.IsAny(), It.IsAny()), Times.Once());        
     });
 
     it('should reconnect the client when too long since last event received', async () => {

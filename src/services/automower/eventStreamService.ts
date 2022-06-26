@@ -46,7 +46,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     private onSettingsEventCallback?: (event: SettingsEvent) => Promise<void>;
     private onPositionsEventCallback?: (event: PositionsEvent) => Promise<void>;
 
-    private isKeepAliveActive = false;
+    private keepAliveActive = false;
     private started?: Date;
     private lastEventReceived?: Date;
     private attached = false;
@@ -86,7 +86,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     protected onConnectedEventReceived(): Promise<void> {
         this.log.info('Connected!');
 
-        if (this.isKeepAliveActive) {
+        if (this.isKeepAliveActive()) {
             this.startKeepAlive();
 
             this.clearKeepAliveFlag();
@@ -98,7 +98,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     protected async onDisconnectedEventReceived(): Promise<void> {
         this.log.info('Disconnected!');
 
-        if (!this.isKeepAliveActive) {
+        if (!this.isKeepAliveActive()) {
             // The keep alive is not already active, attempt to trigger the reconnection immediately.
             this.stopKeepAlive();
 
@@ -155,19 +155,23 @@ export class EventStreamServiceImpl implements EventStreamService {
         } catch (e) {
             this.log.error('An unexpected error occurred while keeping the client stream alive.', e);
         } finally {
-            if (!this.isKeepAliveActive) {
+            if (!this.isKeepAliveActive()) {
                 // The keep alive is not trying to reconnect, restart the timer.
                 this.startKeepAlive();
             }            
         }
     }
-
+    
     protected flagAsKeepAliveActive(): void {
-        this.isKeepAliveActive = true;
+        this.keepAliveActive = true;
     }
 
     protected clearKeepAliveFlag(): void {
-        this.isKeepAliveActive = false;
+        this.keepAliveActive = false;
+    }
+
+    protected isKeepAliveActive(): boolean {
+        return this.keepAliveActive;
     }
 
     protected shouldReconnect(): boolean {
