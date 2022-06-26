@@ -59,10 +59,6 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         this.flagAsValid();
     }
 
-    protected shouldLogin(): boolean {
-        return this.isTokenInvalidated() || this.hasTokenExpired();
-    }
-
     protected getRequiredCurrentToken(): OAuthToken {
         if (this.currentToken === undefined) {
             throw new Error('The client is not logged in.');
