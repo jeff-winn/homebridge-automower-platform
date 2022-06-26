@@ -34,18 +34,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
     public async getCurrentToken(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
-            let newToken: OAuthToken;
-
-            if (this.hasAlreadyLoggedIn() && !this.isTokenInvalidated()) {
-                newToken = await this.doRefreshToken();
-            } else {
-                newToken = await this.doLogin();
-            }
-            
-            this.unsafeSetCurrentToken(newToken);
-            this.setExpiration(newToken);
-            
-            this.flagAsValid();
+            await this.refreshToken();
         }
 
         const current = this.getRequiredCurrentToken();
@@ -53,6 +42,25 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
             value: current.access_token,
             provider: current.provider
         };
+    }
+
+    protected async refreshToken(): Promise<void> {
+        let newToken: OAuthToken;
+
+        if (this.hasAlreadyLoggedIn() && !this.isTokenInvalidated()) {
+            newToken = await this.doRefreshToken();
+        } else {
+            newToken = await this.doLogin();
+        }
+        
+        this.unsafeSetCurrentToken(newToken);
+        this.setExpiration(newToken);
+        
+        this.flagAsValid();
+    }
+
+    protected shouldLogin(): boolean {
+        return this.isTokenInvalidated() || this.hasTokenExpired();
     }
 
     protected getRequiredCurrentToken(): OAuthToken {
@@ -109,8 +117,13 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         return result;
     }
 
-    protected doRefreshToken(): Promise<OAuthToken> {       
-        return this.client.refresh(this.currentToken!);
+    protected async doRefreshToken(): Promise<OAuthToken> {
+        this.log.debug('Refreshing the current token...');
+
+        const newToken = await this.client.refresh(this.currentToken!);
+
+        this.log.debug('Refreshed the token!');
+        return newToken;
     }
 
     /**
@@ -131,8 +144,13 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
             return;
         }
 
+        // Remove an hour from the actual expiration time as the Husqvarna auth provider will expire the token 
+        // at that exact instant, making it unusable to refresh. This should give the retry logic an hour to get
+        // the token refreshed successfully.
+        const expires_in = token.expires_in - 3600;
+
         const expires = new Date();
-        expires.setSeconds(expires.getSeconds() + token.expires_in);
+        expires.setSeconds(expires.getSeconds() + expires_in);
 
         this.expires = expires;
     }
