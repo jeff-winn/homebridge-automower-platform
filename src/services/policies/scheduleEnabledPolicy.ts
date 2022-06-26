@@ -61,29 +61,17 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
     }
 
     protected isMowerActive(): boolean {
-        if (this.mowerState === undefined) {
-            throw new Error('mowerState is required.');
-        }
-
-        return this.mowerState.state === State.IN_OPERATION;
+        return this.mowerState!.state === State.IN_OPERATION;
     }
 
-    protected isFutureScheduled(): boolean {
-        if (this.planner === undefined) {
-            throw new Error('planner is required.');
-        }
-
-        return this.planner.nextStartTimestamp > 0 && this.planner.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
+    protected isFutureScheduled(): boolean {      
+        return this.planner!.nextStartTimestamp > 0 && this.planner!.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
     }
 
     protected isSetToRunOnASchedule(): boolean {
-        if (this.calendar === undefined) {
-            throw new Error('calendar is required.');
-        }
-
         let result = false;
 
-        this.calendar.tasks.forEach(task => {
+        this.calendar!.tasks.forEach(task => {
             if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
                 result = true;
             }
@@ -93,16 +81,12 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
     }
 
     protected isSetToRunContinuously(): boolean {
-        if (this.calendar === undefined || this.planner === undefined) {
-            throw new Error('calendar is required.');
-        }
-
-        const task = this.calendar.tasks[0];
+        const task = this.calendar!.tasks[0];
         if (task === undefined) {
             return false;
         }
         
-        return this.planner.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
+        return this.planner!.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
             task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
     }
     
