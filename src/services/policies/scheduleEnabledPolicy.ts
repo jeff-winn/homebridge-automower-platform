@@ -33,28 +33,61 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
     private mowerState?: MowerState;
 
     public shouldApply(): boolean {
-        return this.calendar !== undefined && this.planner !== undefined &&
-            (this.mowerState === undefined || this.mowerState.state !== State.IN_OPERATION);
+        if (this.calendar === undefined || this.planner === undefined || this.mowerState === undefined) {
+            return false;
+        }
+
+        if (!this.isSetToRunContinuously()) {
+            return this.mowerState.state !== State.IN_OPERATION;
+        }
+
+        return true;
     }
 
-    public check(): boolean {
-        if (this.calendar === undefined || this.planner === undefined) {
-            throw new Error('The calendar and planner are both required.');
+    public check(): boolean {               
+        if (this.isSetToRunContinuously()) {
+            // The mower is set to run continuously, which means the switch is now being used to control whether the
+            // mower is actually mowing the yard rather than whether a schedule is enabled.
+            return this.isMowerActive();
+        } else {
+            // Checks whether any days have been enabled on any of the schedules.
+            const anyDaysEnabled = this.isSetToRunOnASchedule();            
+
+            // Checks whether the mower is waiting to run in the future (seen when in charge station).
+            const isFutureScheduled = this.isFutureScheduled();       
+
+            return anyDaysEnabled && isFutureScheduled;
         }
-        
-        // Checks whether any days have been enabled on any of the schedules.
-        let anyDaysEnabled = false;        
-        this.calendar.tasks.forEach(task => {
+    }
+
+    protected isMowerActive(): boolean {
+        return this.mowerState!.state === State.IN_OPERATION;
+    }
+
+    protected isFutureScheduled(): boolean {      
+        return this.planner!.nextStartTimestamp > 0 && this.planner!.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
+    }
+
+    protected isSetToRunOnASchedule(): boolean {
+        let result = false;
+
+        this.calendar!.tasks.forEach(task => {
             if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
-                anyDaysEnabled = true;
+                result = true;
             }
         });
 
-        // Checks whether the mower is waiting to run in the future (seen when in charge station).
-        const isFutureScheduled = this.planner.nextStartTimestamp > 0 && 
-            this.planner.restrictedReason === RestrictedReason.WEEK_SCHEDULE;        
+        return result;
+    }
 
-        return anyDaysEnabled && isFutureScheduled;
+    protected isSetToRunContinuously(): boolean {
+        const task = this.calendar!.tasks[0];
+        if (task === undefined) {
+            return false;
+        }
+        
+        return this.planner!.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
+            task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
     }
     
     public setCalendar(calendar: Calendar): void {
