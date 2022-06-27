@@ -8,9 +8,11 @@ introduction: |
 
   The plugin provides the following capabilities:
   - The current charge status and battery percentage for each mower.
-  - A switch to control whether each mower:
-    - *should* go and mow the property (based on configuration - see getting started).
-    - *has* the schedule enabled or disabled.  
+  - A switch to control whether each mower (based on configuration - see documentation):
+    - *should* mow the property.
+    - or *has* the on-board schedule enabled or disabled.
+  - A pause switch to control whether each mower:
+    - *should* pause while mowing on the property, and resume once the switch is turned off.
   - A motion sensor to indicate whether each mower:
     - *is* moving about the property.
     - *has* been tampered with (requires the Husqvarna app to troubleshoot) and needs assistance. **
