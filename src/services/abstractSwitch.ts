@@ -64,13 +64,11 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
     }
     
     protected getDisplayName(mode: NameMode): string {
-        switch (mode) {
-        case NameMode.DISPLAY_NAME:
+        if (mode === NameMode.DISPLAY_NAME) {
             return this.accessory.displayName;
+        }
 
-        default:
-            return this.name;
-        }        
+        return this.name;
     }
 
     protected onSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
