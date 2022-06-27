@@ -4,9 +4,11 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
 import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
+import { NameMode } from '../src/services/abstractSwitch';
 import { AccessoryInformationService } from '../src/services/accessoryInformationService';
 import { BatteryService } from '../src/services/batteryService';
 import { MotionSensorService } from '../src/services/motionSensorService';
+import { PauseSwitch } from '../src/services/pauseSwitch';
 import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
 describe('AutomowerAccessory', () => {
@@ -14,7 +16,8 @@ describe('AutomowerAccessory', () => {
     let batteryService: Mock<BatteryService>;
     let informationService: Mock<AccessoryInformationService>;
     let motionSensorService: Mock<MotionSensorService>;
-    let scheduleService: Mock<ScheduleSwitch>;
+    let pauseSwitch: Mock<PauseSwitch>;
+    let scheduleSwitch: Mock<ScheduleSwitch>;
 
     let target: AutomowerAccessory;
 
@@ -23,10 +26,11 @@ describe('AutomowerAccessory', () => {
         batteryService = new Mock<BatteryService>();
         informationService = new Mock<AccessoryInformationService>();    
         motionSensorService = new Mock<MotionSensorService>();
-        scheduleService = new Mock<ScheduleSwitch>();
+        pauseSwitch = new Mock<PauseSwitch>();
+        scheduleSwitch = new Mock<ScheduleSwitch>();
     
         target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
-            informationService.object(), motionSensorService.object(), scheduleService.object());
+            informationService.object(), motionSensorService.object(), pauseSwitch.object(), scheduleSwitch.object());
     });
 
     it('should return the underlying platform accessory', () => {
@@ -38,15 +42,17 @@ describe('AutomowerAccessory', () => {
     it('should initialize all services', () => {
         batteryService.setup(o => o.init()).returns(undefined);
         informationService.setup(o => o.init()).returns(undefined);
-        motionSensorService.setup(o => o.init(false)).returns(undefined);
-        scheduleService.setup(o => o.init(false)).returns(undefined);
+        motionSensorService.setup(o => o.init()).returns(undefined);
+        pauseSwitch.setup(o => o.init(NameMode.DEFAULT)).returns(undefined);
+        scheduleSwitch.setup(o => o.init(NameMode.DISPLAY_NAME)).returns(undefined);
 
         target.init();
         
         batteryService.verify(o => o.init(), Times.Once());
         informationService.verify(o => o.init(), Times.Once());
-        motionSensorService.verify(o => o.init(false), Times.Once());
-        scheduleService.verify(o => o.init(false), Times.Once());
+        motionSensorService.verify(o => o.init(), Times.Once());
+        pauseSwitch.verify(o => o.init(NameMode.DEFAULT), Times.Once());
+        scheduleSwitch.verify(o => o.init(NameMode.DISPLAY_NAME), Times.Once());
     });
 
     it('should refresh the services', () => {
@@ -109,18 +115,20 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-        scheduleService.setup(o => o.setPlanner(planner)).returns(undefined);
-        scheduleService.setup(o => o.setCalendar(calendar)).returns(undefined);
-        scheduleService.setup(o => o.setMowerState(state)).returns(undefined);
+        scheduleSwitch.setup(o => o.setPlanner(planner)).returns(undefined);
+        scheduleSwitch.setup(o => o.setCalendar(calendar)).returns(undefined);
+        scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
 
         target.refresh(mower);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
-        scheduleService.verify(o => o.setPlanner(planner), Times.Once());
-        scheduleService.verify(o => o.setCalendar(calendar), Times.Once());
-        scheduleService.verify(o => o.setMowerState(state), Times.Once());
+        scheduleSwitch.verify(o => o.setPlanner(planner), Times.Once());
+        scheduleSwitch.verify(o => o.setCalendar(calendar), Times.Once());
+        scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
         motionSensorService.verify(o => o.setMowerState(state), Times.Once());
     });
     
@@ -136,9 +144,10 @@ describe('AutomowerAccessory', () => {
     it('should not refresh the calendar when settings event is received with no calendar data', () => {
         batteryService.setup(o => o.init()).returns(undefined);
         informationService.setup(o => o.init()).returns(undefined);
-        scheduleService.setup(o => o.init(It.IsAny())).returns(undefined);
-        scheduleService.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-        motionSensorService.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleSwitch.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
+        pauseSwitch.setup(o => o.init(NameMode.DEFAULT)).returns(undefined);
+        motionSensorService.setup(o => o.init()).returns(undefined);
 
         target.init();
         target.onSettingsEventReceived({
@@ -149,7 +158,7 @@ describe('AutomowerAccessory', () => {
             }
         });
         
-        scheduleService.verify(o => o.setCalendar(It.IsAny()), Times.Never());
+        scheduleSwitch.verify(o => o.setCalendar(It.IsAny()), Times.Never());
     });
 
     it('should refresh the calendar when settings event is received', () => {
@@ -171,9 +180,10 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.init()).returns(undefined);
         informationService.setup(o => o.init()).returns(undefined);
-        scheduleService.setup(o => o.init(It.IsAny())).returns(undefined);
-        scheduleService.setup(o => o.setCalendar(calendar)).returns(undefined);
-        motionSensorService.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleSwitch.setup(o => o.setCalendar(calendar)).returns(undefined);
+        pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        motionSensorService.setup(o => o.init()).returns(undefined);
 
         target.init();
         target.onSettingsEventReceived({
@@ -184,7 +194,7 @@ describe('AutomowerAccessory', () => {
             }
         });
         
-        scheduleService.verify(o => o.setCalendar(calendar), Times.Once());
+        scheduleSwitch.verify(o => o.setCalendar(calendar), Times.Once());
     });
 
     it('should refresh all services when status event is received', () => {
@@ -222,16 +232,18 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-        scheduleService.setup(o => o.setPlanner(planner)).returns(undefined);
-        scheduleService.setup(o => o.setMowerState(state)).returns(undefined);
+        scheduleSwitch.setup(o => o.setPlanner(planner)).returns(undefined);
+        scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
 
         target.onStatusEventReceived(event);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
-        scheduleService.verify(o => o.setPlanner(planner), Times.Once());
-        scheduleService.verify(o => o.setMowerState(state), Times.Once());
+        scheduleSwitch.verify(o => o.setPlanner(planner), Times.Once());
+        scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
         motionSensorService.verify(o => o.setMowerState(state), Times.Once());
     });
 });

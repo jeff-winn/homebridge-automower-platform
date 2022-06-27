@@ -4,6 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { NameMode } from '../../src/services/abstractSwitch';
 import { SwitchSpy } from './switchSpy';
 
 describe('AbstractSwitch', () => {
@@ -36,7 +37,7 @@ describe('AbstractSwitch', () => {
         expect(() => target.unsafeUpdateValue(true)).toThrowError();    
     });
 
-    it('should initialize without the name prepended', () => {
+    it('should initialize with the switch name', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
@@ -53,12 +54,12 @@ describe('AbstractSwitch', () => {
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         target.service = service.object();
-        target.init(false);
+        target.init(NameMode.DEFAULT);
 
-        expect(target.serviceName).toBe(displayName);
+        expect(target.serviceName).toBe(name);
     });
 
-    it('should initialize with the name prepended', () => {
+    it('should initialize with the accessory name', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
@@ -75,9 +76,9 @@ describe('AbstractSwitch', () => {
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
 
         target.service = service.object();
-        target.init(true);
+        target.init(NameMode.DISPLAY_NAME);
 
-        expect(target.serviceName).toBe(`${displayName} ${name}`);
+        expect(target.serviceName).toBe(displayName);
     });
 
     it('should call set when callback is executed', async () => {
@@ -112,7 +113,7 @@ describe('AbstractSwitch', () => {
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
-        target.init(false);
+        target.init(NameMode.DEFAULT);
         target.unsafeUpdateValue(true);
 
         log.verify(o => o.info('Changed \'%s\' for \'%s\': ON', 'Switch', 'hello world'), Times.Once());
@@ -134,7 +135,7 @@ describe('AbstractSwitch', () => {
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
         
-        target.init(false);        
+        target.init(NameMode.DEFAULT);        
         target.unsafeSetLastValue(true);
         
         target.unsafeUpdateValue(false);

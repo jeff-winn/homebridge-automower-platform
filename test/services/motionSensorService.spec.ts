@@ -47,28 +47,12 @@ describe('MotionSensorServiceImpl', () => {
 
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
-        target.init(false);
+        target.init();
 
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
     });
 
-    it('should create a new service with the name prepended on init', () => {
-        const motionDetected = new Mock<Characteristic>();
-        
-        const service = new Mock<Service>();
-        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());
-        platformAccessory.setup(o => o.addService(It.IsAny())).returns(service.object());
-        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(undefined);
-        platformAccessory.setup(o => o.displayName).returns('Mower');
-
-        target.service = service.object();
-        target.init(true);
-
-        expect(target.displayName).toBe('Mower Motion Sensor');
-        service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
-    });
-
-    it('should create a new service without the name prepended on init', () => {
+    it('should create a new service on init', () => {
         const motionDetected = new Mock<Characteristic>();
         
         const service = new Mock<Service>();
@@ -77,7 +61,7 @@ describe('MotionSensorServiceImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(undefined);
 
         target.service = service.object();
-        target.init(false);
+        target.init();
 
         expect(target.displayName).toBe('Motion Sensor');
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
@@ -92,7 +76,7 @@ describe('MotionSensorServiceImpl', () => {
         tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
 
-        target.init(false);
+        target.init();
         
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
@@ -117,7 +101,7 @@ describe('MotionSensorServiceImpl', () => {
         motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         
         target.unsafeSetLastFaultedValue(false);
-        target.init(false);
+        target.init();
 
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
@@ -149,7 +133,7 @@ describe('MotionSensorServiceImpl', () => {
         
         target.unsafeSetLastFaultedValue(false);
         target.unsafeSetLastTamperedValue(false);
-        target.init(false);
+        target.init();
 
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
@@ -194,7 +178,7 @@ describe('MotionSensorServiceImpl', () => {
         tamperedPolicy.setup(o => o.check()).returns(false);
 
         target.unsafeSetLastMotionValue(undefined);
-        target.init(false);
+        target.init();
 
         target.setMowerState(state);
 
@@ -238,7 +222,7 @@ describe('MotionSensorServiceImpl', () => {
         tamperedPolicy.setup(o => o.check()).returns(false);
 
         target.unsafeSetLastMotionValue(false);
-        target.init(false);
+        target.init();
 
         target.setMowerState(state);
 
@@ -283,7 +267,7 @@ describe('MotionSensorServiceImpl', () => {
 
         target.unsafeSetLastFaultedValue(undefined);
         target.unsafeSetLastMotionValue(false);
-        target.init(false);
+        target.init();
 
         target.setMowerState(state);
 
@@ -328,7 +312,7 @@ describe('MotionSensorServiceImpl', () => {
 
         target.unsafeSetLastFaultedValue(false);
         target.unsafeSetLastMotionValue(false);
-        target.init(false);
+        target.init();
 
         target.setMowerState(state);
 
@@ -374,7 +358,7 @@ describe('MotionSensorServiceImpl', () => {
         target.unsafeSetLastFaultedValue(false);
         target.unsafeSetLastMotionValue(false);
         target.unsafeSetLastTamperedValue(undefined);
-        target.init(false);
+        target.init();
 
         target.setMowerState(state);
 
@@ -420,7 +404,7 @@ describe('MotionSensorServiceImpl', () => {
         target.unsafeSetLastFaultedValue(false);
         target.unsafeSetLastMotionValue(false);
         target.unsafeSetLastTamperedValue(false);
-        target.init(false);
+        target.init();
 
         target.setMowerState(state);
 

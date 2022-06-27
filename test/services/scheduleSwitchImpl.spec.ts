@@ -5,6 +5,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../src/model';
+import { NameMode } from '../../src/services/abstractSwitch';
 import { MowerControlService } from '../../src/services/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
@@ -103,7 +104,7 @@ describe('ScheduleSwitchImpl', () => {
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
 
-        target.init(true);
+        target.init(NameMode.DEFAULT);
 
         c.verify(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
@@ -214,7 +215,7 @@ describe('ScheduleSwitchImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
-        target.init(true);
+        target.init(NameMode.DEFAULT);
 
         const calendar: Calendar = {
             tasks: [
@@ -263,7 +264,7 @@ describe('ScheduleSwitchImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
-        target.init(true);
+        target.init(NameMode.DEFAULT);
         target.unsafeSetLastValue(true);
 
         const calendar: Calendar = {

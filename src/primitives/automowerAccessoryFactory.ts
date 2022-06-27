@@ -7,8 +7,10 @@ import { AccessoryInformationService, AccessoryInformationServiceImpl } from '..
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
 import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
+import { PauseSwitch, PauseSwitchImpl } from '../services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
+import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from '../services/scheduleSwitch';
@@ -70,11 +72,20 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createBatteryService(accessory),
             this.createAccessoryInformationService(accessory),
             this.createMotionSensorService(accessory),
+            this.createPauseSwitch(accessory),
             this.createScheduleSwitch(accessory));
 
         result.init();
 
         return result;
+    }
+
+    protected createPauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
+        return new PauseSwitchImpl(
+            this.locale.format('Pause'),
+            this.container.resolve(MowerControlServiceImpl),
+            this.container.resolve(DeterministicMowerIsPausedPolicy),
+            accessory, this.api, this.log);
     }
 
     protected createBatteryService(accessory: PlatformAccessory<AutomowerContext>): BatteryService {

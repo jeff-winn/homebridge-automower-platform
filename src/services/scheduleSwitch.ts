@@ -6,20 +6,14 @@ import {
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Calendar, MowerState, Planner } from '../model';
-import { AbstractSwitch } from './abstractSwitch';
+import { AbstractSwitch, Switch } from './abstractSwitch';
 import { MowerControlService } from './automower/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 
 /**
  * A service which encapsulates the schedule switch for an automower.
  */
-export interface ScheduleSwitch {
-    /**
-     * Initializes the switch.
-     * @param prepend true to prepend the display name, otherwise false.
-     */
-    init(prepend: boolean): void;
-
+export interface ScheduleSwitch extends Switch {
     /**
      * Sets the calendar.
      * @param calendar The calendar.

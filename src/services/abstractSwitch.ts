@@ -8,9 +8,35 @@ import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
+ * Defines the modes for the name of the switch.
+ */
+export enum NameMode {
+    /**
+     * The default mode, just use the name.
+     */
+    DEFAULT = 'DEFAULT',
+
+    /**
+     * Use the display name of the accessory.
+     */
+    DISPLAY_NAME = 'DISPLAY_NAME'
+}
+
+/**
+ * Identifies a switch.
+ */
+export interface Switch {
+    /**
+     * Initializes the switch.
+     * @param mode The mode for the switch name.
+     */
+    init(mode: NameMode): void;
+}
+
+/**
  * An abstract class which encapsulates an accessory switch.
  */
-export abstract class AbstractSwitch extends AbstractAccessoryService {
+export abstract class AbstractSwitch extends AbstractAccessoryService implements Switch {
     private switchService?: Service;
     private on?: Characteristic;
     
@@ -24,13 +50,10 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
         return this.switchService;
     }    
 
-    public init(prepend: boolean): void {
+    public init(mode: NameMode): void {
         this.switchService = this.accessory.getServiceById(this.Service.Switch, this.name);
         if (this.switchService === undefined) {
-            let displayName = this.accessory.displayName;
-            if (prepend) {
-                displayName = `${this.accessory.displayName} ${this.name}`;
-            }
+            const displayName = this.getDisplayName(mode);
 
             this.switchService = this.createService(displayName);
             this.accessory.addService(this.switchService);
@@ -38,6 +61,16 @@ export abstract class AbstractSwitch extends AbstractAccessoryService {
 
         this.on = this.switchService.getCharacteristic(this.Characteristic.On)
             .on(CharacteristicEventTypes.SET, this.onSetCallback.bind(this));
+    }
+    
+    protected getDisplayName(mode: NameMode): string {
+        switch (mode) {
+        case NameMode.DISPLAY_NAME:
+            return this.accessory.displayName;
+
+        default:
+            return this.name;
+        }        
     }
 
     protected onSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
