@@ -18,6 +18,41 @@ describe('MowerControlService', () => {
         target = new MowerControlServiceImpl(tokenManager.object(), client.object());
     });
 
+    it('should pause the mower', async () => {
+        const token: AccessToken = {
+            provider: 'Husqvarna',
+            value: 'abcd1234'
+        };
+
+        const mowerId = '1234';
+
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        client.setup(o => o.doAction(mowerId, It.IsAny(), token)).returns(Promise.resolve(undefined));
+
+        await target.pause(mowerId);
+
+        client.verify(o => o.doAction(mowerId, 
+            It.Is<Action>(action => action.type === 'Pause'), 
+            token), Times.Once());
+    });
+
+    it('should flag the token as invalid when pausing the mower', async () => {
+        const token: AccessToken = {
+            value: 'access token',
+            provider: 'provider'
+        };
+
+        const mowerId = '12345';
+        
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
+        client.setup(o => o.doAction(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
+
+        await expect(target.pause(mowerId)).rejects.toThrow(NotAuthorizedError);
+
+        tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
+    });
+
     it('should resume the mower schedule', async () => {
         const token: AccessToken = {
             provider: 'Husqvarna',

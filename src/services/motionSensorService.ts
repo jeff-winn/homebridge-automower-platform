@@ -15,7 +15,7 @@ export interface MotionSensorService {
     /**
      * Initializes the service.
      */
-    init(prepend: boolean): void;
+    init(): void;
 
     /**
      * Sets the state whether the motion is detected.
@@ -41,15 +41,10 @@ export class MotionSensorServiceImpl extends AbstractAccessoryService implements
         super(accessory, api);
     }
 
-    public init(prepend: boolean): void {
+    public init(): void {
         this.underlyingService = this.accessory.getServiceById(this.Service.MotionSensor, this.name);
         if (this.underlyingService === undefined) {
-            let displayName = this.name;
-            if (prepend) {
-                displayName = `${this.accessory.displayName} ${this.name}`;
-            }
-
-            this.underlyingService = this.createService(displayName);
+            this.underlyingService = this.createService(this.name);
             this.accessory.addService(this.underlyingService);
         }
 

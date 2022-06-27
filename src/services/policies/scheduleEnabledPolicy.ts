@@ -37,6 +37,11 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
             return false;
         }
 
+        if (this.mowerState.state === State.PAUSED) {
+            // The mower was paused, don't worry about updating anything.
+            return false;
+        }
+
         if (!this.isSetToRunContinuously()) {
             return this.mowerState.state !== State.IN_OPERATION;
         }
@@ -72,7 +77,8 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
         let result = false;
 
         this.calendar!.tasks.forEach(task => {
-            if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
+            if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || 
+                task.thursday || task.friday || task.saturday)) {
                 result = true;
             }
         });
