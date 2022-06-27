@@ -77,7 +77,8 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
         let result = false;
 
         this.calendar!.tasks.forEach(task => {
-            if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
+            if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || 
+                task.thursday || task.friday || task.saturday)) {
                 result = true;
             }
         });

@@ -136,6 +136,31 @@ describe('DeterministicScheduleEnabledPolicy', () => {
         expect(result).toBeTruthy();
     });
 
+    it('should return false when the calendar is defined with an empty value', () => {
+        target.setCalendar({
+            tasks: [
+                undefined!
+            ]
+        });
+
+        target.setPlanner({
+            nextStartTimestamp: 0,
+            override: { },
+        });
+
+        target.setMowerState({
+            activity: Activity.MOWING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA,
+            state: State.IN_OPERATION
+        });
+
+        const result = target.check();
+
+        expect(result).toBeFalsy();
+    });
+
     it('should return false when the mower state is undefined', () => {
         target.setCalendar({
             tasks: [
