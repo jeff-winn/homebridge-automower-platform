@@ -6,7 +6,7 @@ import { AutomowerEventTypes, StatusEvent } from '../src/events';
 import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
 import { NameMode } from '../src/services/abstractSwitch';
 import { AccessoryInformationService } from '../src/services/accessoryInformationService';
-import { ArrivingContactSensor } from '../src/services/arrivingContactSensor';
+import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryService } from '../src/services/batteryService';
 import { MotionSensorService } from '../src/services/motionSensorService';
 import { PauseSwitch } from '../src/services/pauseSwitch';
@@ -17,7 +17,7 @@ describe('AutomowerAccessory', () => {
     let batteryService: Mock<BatteryService>;
     let informationService: Mock<AccessoryInformationService>;
     let motionSensorService: Mock<MotionSensorService>;
-    let arrivingSensor: Mock<ArrivingContactSensor>;
+    let arrivingSensor: Mock<ArrivingSensor>;
     let pauseSwitch: Mock<PauseSwitch>;
     let scheduleSwitch: Mock<ScheduleSwitch>;
 
@@ -29,7 +29,7 @@ describe('AutomowerAccessory', () => {
         informationService = new Mock<AccessoryInformationService>();    
         motionSensorService = new Mock<MotionSensorService>();
         pauseSwitch = new Mock<PauseSwitch>();
-        arrivingSensor = new Mock<ArrivingContactSensor>();
+        arrivingSensor = new Mock<ArrivingSensor>();
         scheduleSwitch = new Mock<ScheduleSwitch>();
     
         target = new AutomowerAccessory(accessory.object(), batteryService.object(), 

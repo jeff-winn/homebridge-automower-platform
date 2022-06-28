@@ -4,7 +4,7 @@ import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Mower } from '../model';
 import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/accessoryInformationService';
-import { ArrivingContactSensor, ArrivingContactSensorImpl } from '../services/arrivingContactSensor';
+import { ArrivingSensor, ArrivingContactSensorImpl } from '../services/arrivingSensor';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
 import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
@@ -74,7 +74,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createBatteryService(accessory),
             this.createAccessoryInformationService(accessory),
             this.createMotionSensorService(accessory),
-            this.createArrivingContactSensor(accessory),
+            this.createArrivingSensor(accessory),
             this.createPauseSwitch(accessory),            
             this.createScheduleSwitch(accessory));
 
@@ -91,7 +91,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             accessory, this.api, this.log);
     }
 
-    protected createArrivingContactSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingContactSensor {
+    protected createArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
         return new ArrivingContactSensorImpl(
             this.locale.format('Arriving Sensor'),
             this.container.resolve(DeterministicMowerIsArrivingPolicy),

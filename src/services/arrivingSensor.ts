@@ -8,7 +8,7 @@ import { MowerIsArrivingPolicy } from './policies/mowerIsArrivingPolicy';
 /**
  * A sensor which identifies whether the mower is arriving to the charge station.
  */
-export interface ArrivingContactSensor {
+export interface ArrivingSensor {
     /**
      * Initializes the sensor.
      */
@@ -21,7 +21,10 @@ export interface ArrivingContactSensor {
      setMowerState(mower: MowerState): void;
 }
 
-export class ArrivingContactSensorImpl extends AbstractAccessoryService implements ArrivingContactSensor {    
+/**
+ * An {@link ArrivingSensor} which uses an underlying contact sensor service.
+ */
+export class ArrivingContactSensorImpl extends AbstractAccessoryService implements ArrivingSensor {    
     private underlyingService?: Service;
     private contactState?: Characteristic;
     

@@ -6,7 +6,7 @@ import { SettingsEvent, StatusEvent } from './events';
 import { Mower } from './model';
 import { NameMode } from './services/abstractSwitch';
 import { AccessoryInformationService } from './services/accessoryInformationService';
-import { ArrivingContactSensor } from './services/arrivingContactSensor';
+import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryService } from './services/batteryService';
 import { MotionSensorService } from './services/motionSensorService';
 import { PauseSwitch } from './services/pauseSwitch';
@@ -31,7 +31,7 @@ export class AutomowerAccessory {
         private batteryService: BatteryService,
         private informationService: AccessoryInformationService,
         private motionSensorService: MotionSensorService,
-        private arrivingContactSensor: ArrivingContactSensor,
+        private arrivingContactSensor: ArrivingSensor,
         private pauseSwitch: PauseSwitch,
         private scheduleSwitch: ScheduleSwitch) {
     }

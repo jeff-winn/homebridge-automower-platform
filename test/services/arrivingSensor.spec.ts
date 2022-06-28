@@ -6,7 +6,7 @@ import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, Mode, MowerState, State } from '../../src/model';
 import { MowerIsArrivingPolicy } from '../../src/services/policies/mowerIsArrivingPolicy';
-import { ArrivingContactSensorImplSpy } from './arrivingContactSensorImplSpy';
+import { ArrivingContactSensorImplSpy } from './arrivingSensorImplSpy';
 
 describe('ArrivingContactSensorImpl', () => {
     let target: ArrivingContactSensorImplSpy;
