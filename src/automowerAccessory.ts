@@ -5,7 +5,7 @@ import {
 import { SettingsEvent, StatusEvent } from './events';
 import { Mower } from './model';
 import { NameMode } from './services/abstractSwitch';
-import { AccessoryInformationService } from './services/accessoryInformationService';
+import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryService } from './services/batteryService';
 import { MotionSensor } from './services/motionSensor';
@@ -29,7 +29,7 @@ export class AutomowerAccessory {
     public constructor(
         private accessory: PlatformAccessory<AutomowerContext>,
         private batteryService: BatteryService,
-        private informationService: AccessoryInformationService,
+        private accessoryInformation: AccessoryInformation,
         private motionSensor: MotionSensor,
         private arrivingContactSensor: ArrivingSensor,
         private pauseSwitch: PauseSwitch,
@@ -48,7 +48,7 @@ export class AutomowerAccessory {
      * Initializes the accessory information.
      */
     public init(): void {
-        this.informationService.init();
+        this.accessoryInformation.init();
         this.batteryService.init();
         this.motionSensor.init();
         this.arrivingContactSensor.init();

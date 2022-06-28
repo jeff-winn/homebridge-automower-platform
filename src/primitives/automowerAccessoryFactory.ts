@@ -3,7 +3,7 @@ import { API, PlatformAccessory } from 'homebridge';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Mower } from '../model';
-import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/accessoryInformationService';
+import { AccessoryInformation, AccessoryInformationImpl } from '../services/accessoryInformation';
 import { ArrivingContactSensorImpl, ArrivingSensor } from '../services/arrivingSensor';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
@@ -102,8 +102,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return new BatteryServiceImpl(accessory, this.api);
     }
 
-    protected createAccessoryInformationService(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformationService {
-        return new AccessoryInformationServiceImpl(accessory, this.api);
+    protected createAccessoryInformationService(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+        return new AccessoryInformationImpl(accessory, this.api);
     }
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {

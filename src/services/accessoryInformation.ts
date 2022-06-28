@@ -2,16 +2,16 @@ import { Service } from 'homebridge';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
- * A service which manages battery state.
+ * A mechanism which manages accessory information displayed within HomeKit.
  */
-export interface AccessoryInformationService {
+export interface AccessoryInformation {
     /**
      * Initializes the service.
      */
     init(): void;
 }
 
-export class AccessoryInformationServiceImpl extends AbstractAccessoryService implements AccessoryInformationService {
+export class AccessoryInformationImpl extends AbstractAccessoryService implements AccessoryInformation {
     private informationService?: Service;
 
     public init(): void {
