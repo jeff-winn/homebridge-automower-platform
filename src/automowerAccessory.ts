@@ -7,7 +7,7 @@ import { Mower } from './model';
 import { NameMode } from './services/abstractSwitch';
 import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
-import { BatteryService } from './services/batteryService';
+import { BatteryInformation } from './services/batteryInformation';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 import { ScheduleSwitch } from './services/scheduleSwitch';
@@ -28,7 +28,7 @@ export interface AutomowerContext extends UnknownContext {
 export class AutomowerAccessory {
     public constructor(
         private accessory: PlatformAccessory<AutomowerContext>,
-        private batteryService: BatteryService,
+        private batteryInformation: BatteryInformation,
         private accessoryInformation: AccessoryInformation,
         private motionSensor: MotionSensor,
         private arrivingContactSensor: ArrivingSensor,
@@ -49,7 +49,7 @@ export class AutomowerAccessory {
      */
     public init(): void {
         this.accessoryInformation.init();
-        this.batteryService.init();
+        this.batteryInformation.init();
         this.motionSensor.init();
         this.arrivingContactSensor.init();
 
@@ -62,8 +62,8 @@ export class AutomowerAccessory {
      * @param data The mower data.
      */
     public refresh(data: Mower): void {
-        this.batteryService.setBatteryLevel(data.attributes.battery);
-        this.batteryService.setChargingState(data.attributes.mower);
+        this.batteryInformation.setBatteryLevel(data.attributes.battery);
+        this.batteryInformation.setChargingState(data.attributes.mower);
 
         this.scheduleSwitch.setMowerState(data.attributes.mower);
         this.scheduleSwitch.setCalendar(data.attributes.calendar);
@@ -88,8 +88,8 @@ export class AutomowerAccessory {
      * @param event The event data.
      */
     public onStatusEventReceived(event: StatusEvent): void {
-        this.batteryService.setBatteryLevel(event.attributes.battery);
-        this.batteryService.setChargingState(event.attributes.mower);
+        this.batteryInformation.setBatteryLevel(event.attributes.battery);
+        this.batteryInformation.setChargingState(event.attributes.mower);
         
         this.scheduleSwitch.setMowerState(event.attributes.mower);
         this.scheduleSwitch.setPlanner(event.attributes.planner);

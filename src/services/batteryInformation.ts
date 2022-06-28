@@ -4,9 +4,9 @@ import { Activity, Battery, MowerState } from '../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
- * A service which manages battery state.
+ * A mechanism which manages the battery state.
  */
-export interface BatteryService {
+export interface BatteryInformation {
     /**
      * Initializes the service.
      */
@@ -25,7 +25,7 @@ export interface BatteryService {
     setChargingState(state: MowerState): void;
 }
 
-export class BatteryServiceImpl extends AbstractAccessoryService implements BatteryService {        
+export class BatteryInformationImpl extends AbstractAccessoryService implements BatteryInformation {        
     private batteryService?: Service;
     private lowBattery?: Characteristic;
     private batteryLevel?: Characteristic;

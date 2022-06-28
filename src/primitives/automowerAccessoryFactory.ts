@@ -6,7 +6,7 @@ import { Mower } from '../model';
 import { AccessoryInformation, AccessoryInformationImpl } from '../services/accessoryInformation';
 import { ArrivingContactSensorImpl, ArrivingSensor } from '../services/arrivingSensor';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
-import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
+import { BatteryInformation, BatteryInformationImpl } from '../services/batteryInformation';
 import { MotionSensor, MotionSensorImpl } from '../services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
@@ -71,8 +71,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
         const result = new AutomowerAccessory(accessory,
-            this.createBatteryService(accessory),
-            this.createAccessoryInformationService(accessory),
+            this.createBatteryInformation(accessory),
+            this.createAccessoryInformation(accessory),
             this.createMotionSensor(accessory),
             this.createArrivingSensor(accessory),
             this.createPauseSwitch(accessory),            
@@ -98,11 +98,11 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             accessory, this.api, this.log);
     }
 
-    protected createBatteryService(accessory: PlatformAccessory<AutomowerContext>): BatteryService {
-        return new BatteryServiceImpl(accessory, this.api);
+    protected createBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
+        return new BatteryInformationImpl(accessory, this.api);
     }
 
-    protected createAccessoryInformationService(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+    protected createAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
         return new AccessoryInformationImpl(accessory, this.api);
     }
 

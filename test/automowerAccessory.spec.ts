@@ -7,14 +7,14 @@ import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, P
 import { NameMode } from '../src/services/abstractSwitch';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
-import { BatteryService } from '../src/services/batteryService';
+import { BatteryInformation } from '../src/services/batteryInformation';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
 import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
 describe('AutomowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
-    let batteryService: Mock<BatteryService>;
+    let batteryService: Mock<BatteryInformation>;
     let informationService: Mock<AccessoryInformation>;
     let motionSensorService: Mock<MotionSensor>;
     let arrivingSensor: Mock<ArrivingSensor>;
@@ -25,7 +25,7 @@ describe('AutomowerAccessory', () => {
 
     beforeEach(() => {
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
-        batteryService = new Mock<BatteryService>();
+        batteryService = new Mock<BatteryInformation>();
         informationService = new Mock<AccessoryInformation>();    
         motionSensorService = new Mock<MotionSensor>();
         pauseSwitch = new Mock<PauseSwitch>();
