@@ -4,12 +4,14 @@ import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Mower } from '../model';
 import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/accessoryInformationService';
+import { ArrivingContactSensor, ArrivingContactSensorImpl } from '../services/arrivingContactSensor';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
 import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
 import { PauseSwitch, PauseSwitchImpl } from '../services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
+import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
@@ -72,7 +74,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createBatteryService(accessory),
             this.createAccessoryInformationService(accessory),
             this.createMotionSensorService(accessory),
-            this.createPauseSwitch(accessory),
+            this.createArrivingContactSensor(accessory),
+            this.createPauseSwitch(accessory),            
             this.createScheduleSwitch(accessory));
 
         result.init();
@@ -85,6 +88,13 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.locale.format('Pause'),
             this.container.resolve(MowerControlServiceImpl),
             this.container.resolve(DeterministicMowerIsPausedPolicy),
+            accessory, this.api, this.log);
+    }
+
+    protected createArrivingContactSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingContactSensor {
+        return new ArrivingContactSensorImpl(
+            this.locale.format('Arriving Sensor'),
+            this.container.resolve(DeterministicMowerIsArrivingPolicy),
             accessory, this.api, this.log);
     }
 
