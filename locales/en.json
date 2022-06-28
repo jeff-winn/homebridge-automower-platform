@@ -43,6 +43,7 @@
   "Pause": "Pause",
   "Schedule": "Schedule",
   "Motion Sensor": "Motion Sensor",
+  "Arriving Sensor": "Arriving Sensor",
   "An unexpected error occurred while starting the plugin.": "An unexpected error occurred while starting the plugin.",
   "An unexpected error occurred while shutting down the plugin.": "An unexpected error occurred while shutting down the plugin.",
   "An unexpected error occurred while configuring the accessory.": "An unexpected error occurred while configuring the accessory.",

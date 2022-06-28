@@ -18,6 +18,7 @@ import { GetMowersServiceImpl } from '../services/automower/getMowersService';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
+import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
@@ -103,6 +104,10 @@ export class PlatformContainerImpl implements PlatformContainer {
                 settings.AUTOMOWER_CONNECT_API_BASE_URL,
                 context.resolve(RetryerFetchClient),
                 context.resolve(DefaultErrorFactory))
+        });
+
+        container.register(DeterministicMowerIsArrivingPolicy, {
+            useValue: new DeterministicMowerIsArrivingPolicy()
         });
 
         container.register(DeterministicMowerIsPausedPolicy, {
