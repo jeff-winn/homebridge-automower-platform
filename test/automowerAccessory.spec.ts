@@ -8,7 +8,7 @@ import { NameMode } from '../src/services/abstractSwitch';
 import { AccessoryInformationService } from '../src/services/accessoryInformationService';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryService } from '../src/services/batteryService';
-import { MotionSensorService } from '../src/services/motionSensorService';
+import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
 import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
@@ -16,7 +16,7 @@ describe('AutomowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let batteryService: Mock<BatteryService>;
     let informationService: Mock<AccessoryInformationService>;
-    let motionSensorService: Mock<MotionSensorService>;
+    let motionSensorService: Mock<MotionSensor>;
     let arrivingSensor: Mock<ArrivingSensor>;
     let pauseSwitch: Mock<PauseSwitch>;
     let scheduleSwitch: Mock<ScheduleSwitch>;
@@ -27,7 +27,7 @@ describe('AutomowerAccessory', () => {
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
         batteryService = new Mock<BatteryService>();
         informationService = new Mock<AccessoryInformationService>();    
-        motionSensorService = new Mock<MotionSensorService>();
+        motionSensorService = new Mock<MotionSensor>();
         pauseSwitch = new Mock<PauseSwitch>();
         arrivingSensor = new Mock<ArrivingSensor>();
         scheduleSwitch = new Mock<ScheduleSwitch>();

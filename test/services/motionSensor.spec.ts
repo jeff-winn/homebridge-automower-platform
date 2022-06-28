@@ -8,10 +8,10 @@ import { Activity, Mode, MowerState, State } from '../../src/model';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';
-import { MotionSensorServiceImplSpy } from './motionSensorServiceImplSpy';
+import { MotionSensorImplSpy } from './motionSensorImplSpy';
 
-describe('MotionSensorServiceImpl', () => {
-    let target: MotionSensorServiceImplSpy;
+describe('MotionSensorImpl', () => {
+    let target: MotionSensorImplSpy;
     let motionPolicy: Mock<MowerInMotionPolicy>;
     let faultedPolicy: Mock<MowerFaultedPolicy>;
     let tamperedPolicy: Mock<MowerTamperedPolicy>;
@@ -35,7 +35,7 @@ describe('MotionSensorServiceImpl', () => {
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object()); 
 
-        target = new MotionSensorServiceImplSpy('Motion Sensor', motionPolicy.object(), faultedPolicy.object(),
+        target = new MotionSensorImplSpy('Motion Sensor', motionPolicy.object(), faultedPolicy.object(),
             tamperedPolicy.object(), platformAccessory.object(), api.object(), log.object());
     });
     

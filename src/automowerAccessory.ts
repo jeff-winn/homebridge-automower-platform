@@ -8,7 +8,7 @@ import { NameMode } from './services/abstractSwitch';
 import { AccessoryInformationService } from './services/accessoryInformationService';
 import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryService } from './services/batteryService';
-import { MotionSensorService } from './services/motionSensorService';
+import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 import { ScheduleSwitch } from './services/scheduleSwitch';
 
@@ -30,7 +30,7 @@ export class AutomowerAccessory {
         private accessory: PlatformAccessory<AutomowerContext>,
         private batteryService: BatteryService,
         private informationService: AccessoryInformationService,
-        private motionSensorService: MotionSensorService,
+        private motionSensor: MotionSensor,
         private arrivingContactSensor: ArrivingSensor,
         private pauseSwitch: PauseSwitch,
         private scheduleSwitch: ScheduleSwitch) {
@@ -50,7 +50,7 @@ export class AutomowerAccessory {
     public init(): void {
         this.informationService.init();
         this.batteryService.init();
-        this.motionSensorService.init();
+        this.motionSensor.init();
         this.arrivingContactSensor.init();
 
         this.pauseSwitch.init(NameMode.DEFAULT);
@@ -72,7 +72,7 @@ export class AutomowerAccessory {
         this.pauseSwitch.setMowerState(data.attributes.mower);
 
         this.arrivingContactSensor.setMowerState(data.attributes.mower);
-        this.motionSensorService.setMowerState(data.attributes.mower);
+        this.motionSensor.setMowerState(data.attributes.mower);
     }
 
     /**
@@ -97,7 +97,7 @@ export class AutomowerAccessory {
         this.pauseSwitch.setMowerState(event.attributes.mower);
 
         this.arrivingContactSensor.setMowerState(event.attributes.mower);
-        this.motionSensorService.setMowerState(event.attributes.mower);
+        this.motionSensor.setMowerState(event.attributes.mower);
     }
 
     /**
