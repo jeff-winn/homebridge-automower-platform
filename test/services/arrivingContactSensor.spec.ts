@@ -62,6 +62,8 @@ describe('ArrivingContactSensorImpl', () => {
     });
 
     it('should throw an error when not initialized on set mower state', () => {
+        policy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
             errorCode: 0,

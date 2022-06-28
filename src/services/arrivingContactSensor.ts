@@ -32,10 +32,6 @@ export class ArrivingContactSensorImpl extends AbstractAccessoryService implemen
         super(accessory, api);
     }    
 
-    public getUnderlyingService(): Service | undefined {
-        return this.underlyingService;
-    }
-    
     public init(): void {
         this.underlyingService = this.accessory.getServiceById(this.Service.ContactSensor, this.name);
         if (this.underlyingService === undefined) {
