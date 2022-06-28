@@ -24,6 +24,10 @@
     "dist",
     "config.schema.json"
   ],
+  "funding": {
+    "type" : "paypal",
+    "url" : "https://paypal.me/jeffdwinn"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jeff-winn/homebridge-automower-platform.git"
