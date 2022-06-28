@@ -17,8 +17,11 @@ introduction: |
     - *is* moving about the property.
     - *has* been tampered with (requires the Husqvarna app to troubleshoot) and needs assistance. **
     - *has* encountered a fault (requires the Husqvarna app to troubleshoot) and needs assistance. **
+  - A contact sensor to indicate when each mower:
+    - *is* going to the charge station, by indicating contact detected. **
+    - *has* arrived home, or resumed operation, by indicating contact not detected. **
 
-  ** These features are not directly supported within the Apple HomeKit app and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
+  ** Some features are not directly supported within the Apple HomeKit app for automation and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
 
   Additional capabilities:
   - Does not cause logout of the Husqvarna mobile application.
