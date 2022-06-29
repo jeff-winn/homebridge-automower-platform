@@ -7,11 +7,13 @@ import { AccessoryInformation, AccessoryInformationImpl } from '../services/acce
 import { ArrivingContactSensorImpl, ArrivingSensor } from '../services/arrivingSensor';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
 import { BatteryInformation, BatteryInformationImpl } from '../services/batteryInformation';
+import { LeavingContactSensorImpl, LeavingSensor } from '../services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from '../services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsLeavingPolicy } from '../services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
@@ -75,6 +77,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createAccessoryInformation(accessory),
             this.createMotionSensor(accessory),
             this.createArrivingSensor(accessory),
+            this.createLeavingSensor(accessory),
             this.createPauseSwitch(accessory),            
             this.createScheduleSwitch(accessory));
 
@@ -95,6 +98,13 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return new ArrivingContactSensorImpl(
             this.locale.format('Arriving Sensor'),
             this.container.resolve(DeterministicMowerIsArrivingPolicy),
+            accessory, this.api, this.log);
+    }
+
+    protected createLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
+        return new LeavingContactSensorImpl(
+            this.locale.format('Leaving Sensor'),
+            this.container.resolve(DeterministicMowerIsLeavingPolicy),
             accessory, this.api, this.log);
     }
 

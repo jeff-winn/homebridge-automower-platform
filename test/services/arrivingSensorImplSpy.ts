@@ -14,11 +14,11 @@ export class ArrivingContactSensorImplSpy extends ArrivingContactSensorImpl {
         return super.createService(displayName);
     }
 
-    public unsafeGetLastValue(): boolean | undefined {
+    public unsafeGetLastValue(): number | undefined {
         return this.getLastValue();
     }
 
-    public unsafeSetLastValue(value: boolean | undefined): void {
+    public unsafeSetLastValue(value: number | undefined): void {
         this.setLastValue(value);
     }
 }

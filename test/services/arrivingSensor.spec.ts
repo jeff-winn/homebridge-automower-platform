@@ -5,6 +5,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, Mode, MowerState, State } from '../../src/model';
+import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/abstractContactSensor';
 import { MowerIsArrivingPolicy } from '../../src/services/policies/mowerIsArrivingPolicy';
 import { ArrivingContactSensorImplSpy } from './arrivingSensorImplSpy';
 
@@ -102,7 +103,7 @@ describe('ArrivingContactSensorImpl', () => {
         const result = target.unsafeGetLastValue();
         expect(result).toBeFalsy();
 
-        contactState.verify(o => o.updateValue(Characteristic.ContactSensorState.CONTACT_NOT_DETECTED), Times.Once());
+        contactState.verify(o => o.updateValue(CONTACT_SENSOR_CLOSED), Times.Once());
     });
 
     it('should refresh the contact state when value has changed from false to true', () => {
@@ -126,7 +127,7 @@ describe('ArrivingContactSensorImpl', () => {
         policy.setup(o => o.setMowerState(state)).returns(undefined);
         policy.setup(o => o.check()).returns(true);
 
-        target.unsafeSetLastValue(false);
+        target.unsafeSetLastValue(0);
         target.init();
 
         target.setMowerState(state);
@@ -134,6 +135,6 @@ describe('ArrivingContactSensorImpl', () => {
         const result = target.unsafeGetLastValue();
         expect(result).toBeTruthy();
 
-        contactState.verify(o => o.updateValue(Characteristic.ContactSensorState.CONTACT_DETECTED), Times.Once());
+        contactState.verify(o => o.updateValue(CONTACT_SENSOR_OPEN), Times.Once());
     });
 });

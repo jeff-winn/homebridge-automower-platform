@@ -4,12 +4,12 @@ import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { MowerState } from '../model';
 import { AbstractContactSensor, ContactSensor } from './abstractContactSensor';
-import { MowerIsArrivingPolicy } from './policies/mowerIsArrivingPolicy';
+import { MowerIsLeavingPolicy } from './policies/mowerIsLeavingPolicy';
 
 /**
- * A sensor which identifies whether the mower is arriving to the charge station.
+ * A sensor which identifies whether the mower is leaving the charge station.
  */
-export interface ArrivingSensor extends ContactSensor {
+export interface LeavingSensor extends ContactSensor {
     /**
      * Sets the state whether the motion is detected.
      * @param mower The state of the mower.
@@ -18,10 +18,10 @@ export interface ArrivingSensor extends ContactSensor {
 }
 
 /**
- * An {@link ArrivingSensor} which uses an underlying contact sensor service.
+ * An {@link LeavingSensor} which uses an underlying contact sensor service.
  */
-export class ArrivingContactSensorImpl extends AbstractContactSensor implements ArrivingSensor {    
-    public constructor(protected name: string, protected policy: MowerIsArrivingPolicy, 
+export class LeavingContactSensorImpl extends AbstractContactSensor implements LeavingSensor {    
+    public constructor(protected name: string, protected policy: MowerIsLeavingPolicy, 
         protected accessory: PlatformAccessory<AutomowerContext>, protected api: API, protected log: PlatformLogger) {
         super(name, policy, accessory, api, log);
     }    

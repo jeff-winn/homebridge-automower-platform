@@ -8,6 +8,7 @@ import { NameMode } from './services/abstractSwitch';
 import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
+import { LeavingSensor } from './services/leavingSensor';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 import { ScheduleSwitch } from './services/scheduleSwitch';
@@ -31,7 +32,8 @@ export class AutomowerAccessory {
         private batteryInformation: BatteryInformation,
         private accessoryInformation: AccessoryInformation,
         private motionSensor: MotionSensor,
-        private arrivingContactSensor: ArrivingSensor,
+        private arrivingSensor: ArrivingSensor,
+        private leavingSensor: LeavingSensor,
         private pauseSwitch: PauseSwitch,
         private scheduleSwitch: ScheduleSwitch) {
     }
@@ -51,7 +53,8 @@ export class AutomowerAccessory {
         this.accessoryInformation.init();
         this.batteryInformation.init();
         this.motionSensor.init();
-        this.arrivingContactSensor.init();
+        this.arrivingSensor.init();
+        this.leavingSensor.init();
 
         this.pauseSwitch.init(NameMode.DEFAULT);
         this.scheduleSwitch.init(NameMode.DISPLAY_NAME);
@@ -65,14 +68,15 @@ export class AutomowerAccessory {
         this.batteryInformation.setBatteryLevel(data.attributes.battery);
         this.batteryInformation.setChargingState(data.attributes.mower);
 
+        this.arrivingSensor.setMowerState(data.attributes.mower);
+        this.leavingSensor.setMowerState(data.attributes.mower);
+        this.motionSensor.setMowerState(data.attributes.mower);
+
         this.scheduleSwitch.setMowerState(data.attributes.mower);
         this.scheduleSwitch.setCalendar(data.attributes.calendar);
         this.scheduleSwitch.setPlanner(data.attributes.planner);
 
         this.pauseSwitch.setMowerState(data.attributes.mower);
-
-        this.arrivingContactSensor.setMowerState(data.attributes.mower);
-        this.motionSensor.setMowerState(data.attributes.mower);
     }
 
     /**
@@ -91,13 +95,14 @@ export class AutomowerAccessory {
         this.batteryInformation.setBatteryLevel(event.attributes.battery);
         this.batteryInformation.setChargingState(event.attributes.mower);
         
+        this.arrivingSensor.setMowerState(event.attributes.mower);
+        this.leavingSensor.setMowerState(event.attributes.mower);
+        this.motionSensor.setMowerState(event.attributes.mower);
+        
         this.scheduleSwitch.setMowerState(event.attributes.mower);
         this.scheduleSwitch.setPlanner(event.attributes.planner);
 
         this.pauseSwitch.setMowerState(event.attributes.mower);
-
-        this.arrivingContactSensor.setMowerState(event.attributes.mower);
-        this.motionSensor.setMowerState(event.attributes.mower);
     }
 
     /**

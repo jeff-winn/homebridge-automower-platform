@@ -1,11 +1,11 @@
 import { Activity, Mode, State } from '../../../src/model';
-import { DeterministicMowerIsArrivingPolicy } from '../../../src/services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsLeavingPolicy } from '../../../src/services/policies/mowerIsLeavingPolicy';
 
-describe('DeterministicMowerIsArrivingPolicy', () => {
-    let target: DeterministicMowerIsArrivingPolicy;
+describe('DeterministicMowerIsLeavingPolicy', () => {
+    let target: DeterministicMowerIsLeavingPolicy;
 
     beforeEach(() => {
-        target = new DeterministicMowerIsArrivingPolicy();
+        target = new DeterministicMowerIsLeavingPolicy();
     });
 
     it('should return false when the mower state is not set', () => {
@@ -28,9 +28,9 @@ describe('DeterministicMowerIsArrivingPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return true when the mower state is going home but not in operation', () => {
+    it('should return true when the mower state is leaving but not in operation', () => {
         target.setMowerState({
-            activity: Activity.GOING_HOME,
+            activity: Activity.LEAVING,
             errorCode: 0,
             errorCodeTimestamp: 0,
             mode: Mode.MAIN_AREA,
@@ -42,9 +42,9 @@ describe('DeterministicMowerIsArrivingPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return true when the mower state is going home', () => {
+    it('should return true when the mower state is leaving', () => {
         target.setMowerState({
-            activity: Activity.GOING_HOME,
+            activity: Activity.LEAVING,
             errorCode: 0,
             errorCodeTimestamp: 0,
             mode: Mode.MAIN_AREA,
