@@ -140,6 +140,20 @@ describe('EventStreamServiceImpl', () => {
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
 
+    it('should restart the keep alive when when unable to authenticate', async () => {
+        stream.opened = false;
+
+        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Ouch'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await target.unsafeKeepAlive();
+
+        expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+    });
+
     // WARNING: throwing errors while reconnecting will cause the process running homebridge to be restarted
     // as it occurrs on a background thread.
     it('should not throw errors when reconnecting', async () => {
