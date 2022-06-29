@@ -3,14 +3,14 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
-import { AccessoryInformationServiceImpl } from '../../src/services/accessoryInformationService';
+import { AccessoryInformationImpl } from '../../src/services/accessoryInformation';
 
 describe('AccessoryInformationService', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
 
-    let target: AccessoryInformationServiceImpl;
+    let target: AccessoryInformationImpl;
 
     beforeEach(() => {
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
@@ -21,7 +21,7 @@ describe('AccessoryInformationService', () => {
         hap.setup(x => x.Characteristic).returns(Characteristic);
         hap.setup(x => x.Service).returns(Service);
         
-        target = new AccessoryInformationServiceImpl(accessory.object(), api.object());
+        target = new AccessoryInformationImpl(accessory.object(), api.object());
     });
 
     it('should return undefined when not initialized', () => {

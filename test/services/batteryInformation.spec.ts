@@ -4,14 +4,14 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/model';
-import { BatteryServiceImpl } from '../../src/services/batteryService';
+import { BatteryInformationImpl } from '../../src/services/batteryInformation';
 
 describe('BatteryServiceImpl', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
 
-    let target: BatteryServiceImpl;
+    let target: BatteryInformationImpl;
 
     beforeEach(() => {
         accessory = new Mock<PlatformAccessory<AutomowerContext>>();
@@ -23,7 +23,7 @@ describe('BatteryServiceImpl', () => {
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object());
         
-        target = new BatteryServiceImpl(accessory.object(), api.object());
+        target = new BatteryInformationImpl(accessory.object(), api.object());
     });
 
     it('should throw an error when not initialized on set battery level', () => {

@@ -3,15 +3,17 @@ import { API, PlatformAccessory } from 'homebridge';
 import { AutomowerAccessory, AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Mower } from '../model';
-import { AccessoryInformationService, AccessoryInformationServiceImpl } from '../services/accessoryInformationService';
-import { ArrivingContactSensor, ArrivingContactSensorImpl } from '../services/arrivingContactSensor';
+import { AccessoryInformation, AccessoryInformationImpl } from '../services/accessoryInformation';
+import { ArrivingContactSensorImpl, ArrivingSensor } from '../services/arrivingSensor';
 import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
-import { BatteryService, BatteryServiceImpl } from '../services/batteryService';
-import { MotionSensorService, MotionSensorServiceImpl } from '../services/motionSensorService';
+import { BatteryInformation, BatteryInformationImpl } from '../services/batteryInformation';
+import { LeavingContactSensorImpl, LeavingSensor } from '../services/leavingSensor';
+import { MotionSensor, MotionSensorImpl } from '../services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsLeavingPolicy } from '../services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
@@ -71,10 +73,11 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
         const result = new AutomowerAccessory(accessory,
-            this.createBatteryService(accessory),
-            this.createAccessoryInformationService(accessory),
-            this.createMotionSensorService(accessory),
-            this.createArrivingContactSensor(accessory),
+            this.createBatteryInformation(accessory),
+            this.createAccessoryInformation(accessory),
+            this.createMotionSensor(accessory),
+            this.createArrivingSensor(accessory),
+            this.createLeavingSensor(accessory),
             this.createPauseSwitch(accessory),            
             this.createScheduleSwitch(accessory));
 
@@ -91,19 +94,26 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             accessory, this.api, this.log);
     }
 
-    protected createArrivingContactSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingContactSensor {
+    protected createArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
         return new ArrivingContactSensorImpl(
             this.locale.format('Arriving Sensor'),
             this.container.resolve(DeterministicMowerIsArrivingPolicy),
             accessory, this.api, this.log);
     }
 
-    protected createBatteryService(accessory: PlatformAccessory<AutomowerContext>): BatteryService {
-        return new BatteryServiceImpl(accessory, this.api);
+    protected createLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
+        return new LeavingContactSensorImpl(
+            this.locale.format('Leaving Sensor'),
+            this.container.resolve(DeterministicMowerIsLeavingPolicy),
+            accessory, this.api, this.log);
     }
 
-    protected createAccessoryInformationService(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformationService {
-        return new AccessoryInformationServiceImpl(accessory, this.api);
+    protected createBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
+        return new BatteryInformationImpl(accessory, this.api);
+    }
+
+    protected createAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+        return new AccessoryInformationImpl(accessory, this.api);
     }
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
@@ -114,8 +124,8 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             accessory, this.api, this.log);
     }
 
-    protected createMotionSensorService(accessory: PlatformAccessory<AutomowerContext>): MotionSensorService {
-        return new MotionSensorServiceImpl(
+    protected createMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
+        return new MotionSensorImpl(
             this.locale.format('Motion Sensor'),
             this.container.resolve(DeterministicMowerInMotionPolicy),
             this.container.resolve(DeterministicMowerFaultedPolicy),

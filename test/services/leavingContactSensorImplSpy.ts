@@ -1,7 +1,7 @@
 import { Service } from 'homebridge';
-import { ArrivingContactSensorImpl } from '../../src/services/arrivingSensor';
+import { LeavingContactSensorImpl } from '../../src/services/leavingSensor';
 
-export class ArrivingContactSensorImplSpy extends ArrivingContactSensorImpl {
+export class LeavingContactSensorImplSpy extends LeavingContactSensorImpl {
     public displayName?: string;
     public service?: Service;
 

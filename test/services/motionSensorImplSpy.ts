@@ -1,7 +1,7 @@
 import { Service } from 'homebridge';
-import { MotionSensorServiceImpl } from '../../src/services/motionSensorService';
+import { MotionSensorImpl } from '../../src/services/motionSensor';
 
-export class MotionSensorServiceImplSpy extends MotionSensorServiceImpl {
+export class MotionSensorImplSpy extends MotionSensorImpl {
     public displayName?: string;
     public service?: Service;
 

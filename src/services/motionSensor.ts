@@ -9,9 +9,9 @@ import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from './policies/mowerTamperedPolicy';
 
 /**
- * A service which encapsulates whether the motion detection service for a mower.
+ * A sensor which identifies whether a mower is in motion.
  */
-export interface MotionSensorService {
+export interface MotionSensor {
     /**
      * Initializes the service.
      */
@@ -24,7 +24,10 @@ export interface MotionSensorService {
     setMowerState(mower: MowerState): void;
 }
 
-export class MotionSensorServiceImpl extends AbstractAccessoryService implements MotionSensorService {
+/**
+ * A {@link MotionSensor} which is implemented by a motion sensor service.
+ */
+export class MotionSensorImpl extends AbstractAccessoryService implements MotionSensor {
     private underlyingService?: Service;
     private motionDetected?: Characteristic;
     private faulted?: Characteristic;
