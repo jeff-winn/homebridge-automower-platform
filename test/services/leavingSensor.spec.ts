@@ -6,19 +6,19 @@ import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, Mode, MowerState, State } from '../../src/model';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/abstractContactSensor';
-import { MowerIsArrivingPolicy } from '../../src/services/policies/mowerIsArrivingPolicy';
-import { ArrivingContactSensorImplSpy } from './arrivingContactSensorImplSpy';
+import { MowerIsLeavingPolicy } from '../../src/services/policies/mowerIsLeavingPolicy';
+import { LeavingContactSensorImplSpy } from './leavingContactSensorImplSpy';
 
-describe('ArrivingContactSensorImpl', () => {
-    let target: ArrivingContactSensorImplSpy;
-    let policy: Mock<MowerIsArrivingPolicy>;
+describe('LeavingContactSensorImpl', () => {
+    let target: LeavingContactSensorImplSpy;
+    let policy: Mock<MowerIsLeavingPolicy>;
     let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
 
     beforeEach(() => {
-        policy = new Mock<MowerIsArrivingPolicy>();
+        policy = new Mock<MowerIsLeavingPolicy>();
 
         platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
         log = new Mock<PlatformLogger>();
@@ -30,7 +30,7 @@ describe('ArrivingContactSensorImpl', () => {
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object()); 
 
-        target = new ArrivingContactSensorImplSpy('Arriving Sensor', policy.object(), 
+        target = new LeavingContactSensorImplSpy('Leaving Sensor', policy.object(), 
             platformAccessory.object(), api.object(), log.object());
     });
     
@@ -40,7 +40,7 @@ describe('ArrivingContactSensorImpl', () => {
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
 
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(service.object());
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
 
         target.init();
 
@@ -53,12 +53,12 @@ describe('ArrivingContactSensorImpl', () => {
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
         platformAccessory.setup(o => o.addService(It.IsAny())).returns(service.object());
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(undefined);
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(undefined);
 
         target.service = service.object();
         target.init();
 
-        expect(target.displayName).toBe('Arriving Sensor');
+        expect(target.displayName).toBe('Leaving Sensor');
         service.verify(o => o.getCharacteristic(Characteristic.ContactSensorState), Times.Once());
     });
 
@@ -78,11 +78,11 @@ describe('ArrivingContactSensorImpl', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 
         const contactState = new Mock<Characteristic>();
-        contactState.setup(o => o.updateValue(Characteristic.ContactSensorState.CONTACT_NOT_DETECTED)).returns(contactState.object());
+        contactState.setup(o => o.updateValue(CONTACT_SENSOR_CLOSED)).returns(contactState.object());
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(service.object());
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
@@ -106,15 +106,15 @@ describe('ArrivingContactSensorImpl', () => {
         contactState.verify(o => o.updateValue(CONTACT_SENSOR_CLOSED), Times.Once());
     });
 
-    it('should refresh the contact state when value has changed from false to true', () => {
+    it('should refresh the contact state when value has changed from closed to open', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 
         const contactState = new Mock<Characteristic>();
-        contactState.setup(o => o.updateValue(Characteristic.ContactSensorState.CONTACT_NOT_DETECTED)).returns(contactState.object());
+        contactState.setup(o => o.updateValue(CONTACT_SENSOR_OPEN)).returns(contactState.object());
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(service.object());
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
@@ -127,7 +127,7 @@ describe('ArrivingContactSensorImpl', () => {
         policy.setup(o => o.setMowerState(state)).returns(undefined);
         policy.setup(o => o.check()).returns(true);
 
-        target.unsafeSetLastValue(0);
+        target.unsafeSetLastValue(CONTACT_SENSOR_CLOSED);
         target.init();
 
         target.setMowerState(state);
