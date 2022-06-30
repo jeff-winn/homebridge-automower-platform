@@ -3,7 +3,7 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
 import { AutomowerEvent, AutomowerEventTypes, ErrorEvent, PositionsEvent, SettingsEvent, StatusEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
-import { AccessTokenManager } from './accessTokenManager';
+import { AccessTokenManager } from '../husqvarna/accessTokenManager';
 
 /**
  * A mechanism which is capable of streaming events for the Husqvarna account.

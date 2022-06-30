@@ -11,7 +11,7 @@ import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
-import { AccessTokenManagerImpl } from '../services/automower/accessTokenManager';
+import { AccessTokenManagerImpl } from '../services/husqvarna/accessTokenManager';
 import { DiscoveryServiceImpl } from '../services/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/automower/getMowersService';

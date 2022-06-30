@@ -1,5 +1,5 @@
 import { OAuthToken } from '../../../src/clients/authenticationClient';
-import { AccessTokenManagerImpl } from '../../../src/services/automower/accessTokenManager';
+import { AccessTokenManagerImpl } from '../../../src/services/husqvarna/accessTokenManager';
 
 export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     public loggedIn = false;
