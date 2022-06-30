@@ -1,6 +1,6 @@
-import { AutomowerClient } from '../../clients/automowerClient';
-import { NotAuthorizedError } from '../../errors/notAuthorizedError';
-import { AccessTokenManager } from './accessTokenManager';
+import { AutomowerClient } from '../../../clients/automowerClient';
+import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
+import { AccessTokenManager } from '../accessTokenManager';
 
 /**
  * A service which can issue commands to a Husqvarna mower.

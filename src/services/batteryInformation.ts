@@ -1,7 +1,7 @@
 import { Characteristic, Service } from 'homebridge';
 
 import { Activity, Battery, MowerState } from '../model';
-import { AbstractAccessoryService } from './abstractAccessoryService';
+import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**
  * A mechanism which manages the battery state.

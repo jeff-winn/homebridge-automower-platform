@@ -6,9 +6,9 @@ import { SettingsEvent, StatusEvent } from './events';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
-import { AccessTokenManager, AccessTokenManagerImpl } from './services/automower/accessTokenManager';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/automower/discoveryService';
-import { EventStreamService, EventStreamServiceImpl } from './services/automower/eventStreamService';
+import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/automower/discoveryService';
+import { EventStreamService, EventStreamServiceImpl } from './services/husqvarna/automower/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 
 /** 

@@ -1,5 +1,5 @@
-import { AutomowerEvent, ErrorEvent } from '../../../src/events';
-import { EventStreamServiceImpl } from '../../../src/services/automower/eventStreamService';
+import { AutomowerEvent, ErrorEvent } from '../../../../src/events';
+import { EventStreamServiceImpl } from '../../../../src/services/husqvarna/automower/eventStreamService';
 
 export class EventStreamServiceImplSpy extends EventStreamServiceImpl {
     public shouldRunKeepAlive = true;

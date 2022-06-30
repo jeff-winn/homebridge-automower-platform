@@ -1,12 +1,12 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerAccessory } from '../../../src/automowerAccessory';
-import { AutomowerPlatform } from '../../../src/automowerPlatform';
-import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../src/model';
-import { AutomowerAccessoryFactory } from '../../../src/primitives/automowerAccessoryFactory';
-import { DiscoveryServiceImpl } from '../../../src/services/automower/discoveryService';
-import { GetMowersService } from '../../../src/services/automower/getMowersService';
+import { AutomowerAccessory } from '../../../../src/automowerAccessory';
+import { AutomowerPlatform } from '../../../../src/automowerPlatform';
+import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
+import { Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
+import { AutomowerAccessoryFactory } from '../../../../src/primitives/automowerAccessoryFactory';
+import { DiscoveryServiceImpl } from '../../../../src/services/husqvarna/automower/discoveryService';
+import { GetMowersService } from '../../../../src/services/husqvarna/automower/getMowersService';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;

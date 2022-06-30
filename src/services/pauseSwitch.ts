@@ -2,8 +2,8 @@ import { API, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'ho
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { MowerState } from '../model';
-import { AbstractSwitch, Switch } from './abstractSwitch';
-import { MowerControlService } from './automower/mowerControlService';
+import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
+import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
 
 /**

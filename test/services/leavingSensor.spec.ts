@@ -5,7 +5,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, Mode, MowerState, State } from '../../src/model';
-import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/abstractContactSensor';
+import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsLeavingPolicy } from '../../src/services/policies/mowerIsLeavingPolicy';
 import { LeavingContactSensorImplSpy } from './leavingContactSensorImplSpy';
 

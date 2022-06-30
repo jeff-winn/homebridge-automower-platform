@@ -5,7 +5,7 @@ import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Mower } from '../model';
 import { AccessoryInformation, AccessoryInformationImpl } from '../services/accessoryInformation';
 import { ArrivingContactSensorImpl, ArrivingSensor } from '../services/arrivingSensor';
-import { MowerControlServiceImpl } from '../services/automower/mowerControlService';
+import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
 import { BatteryInformation, BatteryInformationImpl } from '../services/batteryInformation';
 import { LeavingContactSensorImpl, LeavingSensor } from '../services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from '../services/motionSensor';

@@ -1,5 +1,5 @@
 import { CharacteristicSetCallback, CharacteristicValue, Service } from 'homebridge';
-import { AbstractSwitch } from '../../src/services/abstractSwitch';
+import { AbstractSwitch } from '../../../src/services/homebridge/abstractSwitch';
 
 export class SwitchSpy extends AbstractSwitch {
     public serviceName: string | undefined;

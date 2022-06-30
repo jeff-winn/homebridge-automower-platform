@@ -1,9 +1,9 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
-import { AutomowerContext } from '../automowerAccessory';
-import { PlatformLogger } from '../diagnostics/platformLogger';
+import { AutomowerContext } from '../../automowerAccessory';
+import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { Policy } from '../policies/policy';
 import { AbstractAccessoryService } from './abstractAccessoryService';
-import { Policy } from './policies/policy';
 
 /**
  * Defines the value which indicates the contact sensor is open.

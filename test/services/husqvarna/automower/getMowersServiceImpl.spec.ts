@@ -1,10 +1,10 @@
 import { Mock, Times } from 'moq.ts';
 
-import { AutomowerClient } from '../../../src/clients/automowerClient';
-import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { AccessToken, Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../src/model';
-import { AccessTokenManager } from '../../../src/services/automower/accessTokenManager';
-import { GetMowersServiceImpl } from '../../../src/services/automower/getMowersService';
+import { AutomowerClient } from '../../../../src/clients/automowerClient';
+import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
+import { AccessToken, Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
+import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
+import { GetMowersServiceImpl } from '../../../../src/services/husqvarna/automower/getMowersService';
 
 describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
