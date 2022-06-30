@@ -6,7 +6,7 @@ import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, Mode, MowerState, State } from '../../src/model';
 import { NameMode } from '../../src/services/abstractSwitch';
-import { MowerControlService } from '../../src/services/automower/mowerControlService';
+import { MowerControlService } from '../../src/services/husqvarna/automower/mowerControlService';
 import { MowerIsPausedPolicy } from '../../src/services/policies/mowerIsPausedPolicy';
 import { PauseSwitchImplSpy } from './pauseSwitchImplSpy';
 

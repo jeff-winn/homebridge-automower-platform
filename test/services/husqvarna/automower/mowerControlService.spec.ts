@@ -1,10 +1,10 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerClient } from '../../../src/clients/automowerClient';
-import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
-import { AccessToken } from '../../../src/model';
-import { AccessTokenManager } from '../../../src/services/husqvarna/accessTokenManager';
-import { Action, MowerControlServiceImpl } from '../../../src/services/automower/mowerControlService';
+import { AutomowerClient } from '../../../../src/clients/automowerClient';
+import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
+import { AccessToken } from '../../../../src/model';
+import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
+import { Action, MowerControlServiceImpl } from '../../../../src/services/husqvarna/automower/mowerControlService';
 
 describe('MowerControlService', () => {
     let target: MowerControlServiceImpl;
