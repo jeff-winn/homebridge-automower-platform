@@ -1,5 +1,5 @@
 import { Service } from 'homebridge';
-import { AbstractAccessoryService } from './abstractAccessoryService';
+import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**
  * A mechanism which manages accessory information displayed within HomeKit.

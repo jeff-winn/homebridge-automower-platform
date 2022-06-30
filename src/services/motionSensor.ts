@@ -3,7 +3,7 @@ import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { MowerState } from '../model';
-import { AbstractAccessoryService } from './abstractAccessoryService';
+import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from './policies/mowerTamperedPolicy';

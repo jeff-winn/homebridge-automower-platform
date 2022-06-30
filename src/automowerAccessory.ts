@@ -4,10 +4,10 @@ import {
 
 import { SettingsEvent, StatusEvent } from './events';
 import { Mower } from './model';
-import { NameMode } from './services/abstractSwitch';
 import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
+import { NameMode } from './services/homebridge/abstractSwitch';
 import { LeavingSensor } from './services/leavingSensor';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';

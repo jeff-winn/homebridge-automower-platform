@@ -3,8 +3,8 @@ import {
     CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service
 } from 'homebridge';
 
-import { AutomowerContext } from '../automowerAccessory';
-import { PlatformLogger } from '../diagnostics/platformLogger';
+import { AutomowerContext } from '../../automowerAccessory';
+import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
