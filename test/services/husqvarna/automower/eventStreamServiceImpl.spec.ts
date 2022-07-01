@@ -63,6 +63,38 @@ describe('EventStreamServiceImpl', () => {
         log.verify(o => o.info(It.IsAny()), Times.Once());
     });
 
+    it('should not restart the keep alive on error when keep alive is not already active', async () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        target.unsafeClearKeepAliveFlag();
+
+        await target.unsafeOnErrorEventReceived({
+            error: 'hello',
+            message: 'world',
+            type: 'busted'        
+        });
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Never());
+    });
+
+    it('should restart the keep alive on error when keep alive is already active', async () => {
+        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        target.unsafeFlagAsKeepAliveActive();
+
+        await target.unsafeOnErrorEventReceived({
+            error: 'hello',
+            message: 'world',
+            type: 'busted'        
+        });
+
+        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+    });
+
     it('should not run the keep alive when keep alive is already active', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 

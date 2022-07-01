@@ -88,7 +88,6 @@ export class EventStreamServiceImpl implements EventStreamService {
 
         if (this.isKeepAliveActive()) {
             this.startKeepAlive();
-            
             this.clearKeepAliveFlag();
         }
 
@@ -112,6 +111,11 @@ export class EventStreamServiceImpl implements EventStreamService {
             message: event.message,
             type: event.type
         });
+
+        if (this.isKeepAliveActive()) {
+            this.startKeepAlive();
+            this.clearKeepAliveFlag();
+        }
         
         return Promise.resolve(undefined);
     }
