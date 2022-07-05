@@ -51,6 +51,9 @@ export class EventStreamServiceImpl implements EventStreamService {
     private lastEventReceived?: Date;
     private attached = false;
 
+    private stopping = false;
+    private stopped = true;
+
     public constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
         private log: PlatformLogger, private timer: Timer) { }
 
@@ -81,6 +84,12 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.startKeepAlive();
 
         this.setStarted(new Date());
+        this.flagAsStarted();
+    }
+
+    protected flagAsStarted(): void {
+        this.stopping = false;
+        this.stopped = false;
     }
 
     protected onConnectedEventReceived(): Promise<void> {
@@ -97,12 +106,28 @@ export class EventStreamServiceImpl implements EventStreamService {
     protected async onDisconnectedEventReceived(): Promise<void> {
         this.log.info('Disconnected!');
 
-        if (!this.isKeepAliveActive()) {
+        if (this.isStopping()) {
+            // The service is intentionally being stopped.
+            this.flagAsStopped();
+        } else if (!this.isKeepAliveActive()) {
             // The keep alive is not already active, attempt to trigger the reconnection immediately.
             this.stopKeepAlive();
 
             await this.keepAlive();
         }
+    }
+
+    protected hasStopped(): boolean {
+        return this.stopped;
+    }
+
+    protected isStopping(): boolean {
+        return this.stopping;
+    }
+
+    protected flagAsStopped(): void {
+        this.stopping = false;
+        this.stopped = true;
     }
 
     protected onErrorEventReceived(event: ErrorEvent): Promise<void> {        
@@ -224,15 +249,23 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     public stop(): Promise<void> {
-        this.disconnect();
+        this.flagAsStopping();
+
         this.stopKeepAlive();
+        this.disconnect();
 
         return Promise.resolve(undefined);
+    }
+
+    protected flagAsStopping(): void {
+        this.stopping = true;
+        this.stopped = false;
     }
 
     protected disconnect(): void {
         if (!this.stream.isConnected()) {
             // The stream isn't connected. Attempting to close the stream will result in unnecessary errors being thrown.
+            this.flagAsStopped();            
             return;
         }
 
