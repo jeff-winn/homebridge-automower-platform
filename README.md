@@ -17,11 +17,11 @@ Supported capabilities:
   - *has* been tampered with (requires the Husqvarna app to troubleshoot) and needs assistance. **
   - *has* encountered a fault (requires the Husqvarna app to troubleshoot) and needs assistance. **
 - A contact sensor to indicate when each mower:
-  - *is* going to the charge station, by indicating open contact state. **
-  - *has* arrived home, or resumed operation, by indicating closed contact state. **
+  - *is* going to the charge station, by indicating open contact state.
+  - *has* arrived home, or resumed operation, by indicating closed contact state.
 - A contact sensor to indicate when each mower:
-  - *is* leaving the charge station, by indicating open contact state. **
-  - *has* left home, or returned home, by indicating closed contact state. **
+  - *is* leaving the charge station, by indicating open contact state.
+  - *has* left home, or returned home, by indicating closed contact state.
 
 ** These features are not directly supported within the Apple HomeKit app and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
 
