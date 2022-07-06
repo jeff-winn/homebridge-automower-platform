@@ -151,6 +151,7 @@ describe('EventStreamServiceImpl', () => {
         await target.stop();
 
         expect(stream.closed).toBeTruthy();
+        expect(() => target.unsafeIsStopping()).toBeTruthy();
 
         timer.verify(o => o.stop(), Times.Once());
     });
