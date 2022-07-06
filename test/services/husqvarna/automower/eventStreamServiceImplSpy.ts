@@ -54,4 +54,16 @@ export class EventStreamServiceImplSpy extends EventStreamServiceImpl {
     public unsafeIsKeepAliveActive(): boolean {
         return this.isKeepAliveActive();
     }
+
+    public unsafeFlagAsStopping(): void {
+        this.flagAsStopping();
+    }
+
+    public unsafeHasStopped(): boolean {
+        return this.hasStopped();
+    }
+
+    public unsafeIsStopping(): boolean {
+        return this.isStopping();
+    }
 }
