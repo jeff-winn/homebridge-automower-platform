@@ -93,7 +93,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected onConnectedEventReceived(): Promise<void> {
-        this.log.info('Connected!');
+        this.log.debug('Connected!');
 
         if (this.isKeepAliveActive()) {
             this.startKeepAlive();
@@ -104,7 +104,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected async onDisconnectedEventReceived(): Promise<void> {
-        this.log.info('Disconnected!');
+        this.log.debug('Disconnected!');
 
         if (this.isStopping()) {
             // The service is intentionally being stopped.
