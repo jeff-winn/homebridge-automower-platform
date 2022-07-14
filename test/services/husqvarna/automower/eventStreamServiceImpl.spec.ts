@@ -56,11 +56,11 @@ describe('EventStreamServiceImpl', () => {
     });
     
     it('should log when connected event received', async () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         target.unsafeOnConnectedEventReceived();
 
-        log.verify(o => o.info(It.IsAny()), Times.Once());
+        log.verify(o => o.debug(It.IsAny()), Times.Once());
     });
 
     it('should not restart the keep alive on error when keep alive is not already active', async () => {
@@ -96,7 +96,7 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should not run the keep alive when being stopped on disconnect', () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         target.unsafeFlagAsStopping();
 
         target.unsafeOnDisconnectedEventReceived();
@@ -104,21 +104,21 @@ describe('EventStreamServiceImpl', () => {
         expect(target.unsafeHasStopped()).toBeTruthy();
         expect(target.unsafeIsStopping()).toBeFalsy();
 
-        log.verify(o => o.info('Disconnected!'), Times.Once());
+        log.verify(o => o.debug('Disconnected!'), Times.Once());
     });
 
     it('should not run the keep alive when keep alive is already active', () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         target.unsafeFlagAsKeepAliveActive();
 
         target.unsafeOnDisconnectedEventReceived();
 
-        log.verify(o => o.info('Disconnected!'), Times.Once());
+        log.verify(o => o.debug('Disconnected!'), Times.Once());
     });
 
     it('should handle disconnected event received', async () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.stop()).returns(undefined);
 
         // Don't need to test the keep alive again here, just make sure it would have ran.
@@ -128,7 +128,7 @@ describe('EventStreamServiceImpl', () => {
 
         expect(target.keepAliveExecuted).toBeTruthy();
 
-        log.verify(o => o.info(It.IsAny()), Times.Once());
+        log.verify(o => o.debug(It.IsAny()), Times.Once());
         timer.verify(o => o.stop(), Times.Once());
     });
 
@@ -263,7 +263,7 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should start the keep alive timer on connected if keep alive is active', async () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.unsafeFlagAsKeepAliveActive();
@@ -272,7 +272,7 @@ describe('EventStreamServiceImpl', () => {
 
         expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
 
-        log.verify(o => o.info('Connected!'), Times.Once());
+        log.verify(o => o.debug('Connected!'), Times.Once());
         timer.verify(o => o.start(It.IsAny(), It.IsAny()), Times.Once());        
     });
 
