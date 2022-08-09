@@ -26,6 +26,7 @@ Supported capabilities:
 ** These features are not directly supported within the Apple HomeKit app and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
 
 Additional capabilities:
+- Streams events from Husqvarna rather than polling for changes. This allows you to run automations without having to worry about the timing of when a change is noticed, it should be within a few seconds.
 - Does not cause logout of Husqvarna mobile application.
 - Multiple languages may be supported in logs (need help with translations).
 
