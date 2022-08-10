@@ -155,4 +155,49 @@ describe('PauseSwitchImpl', () => {
         policy.verify(o => o.setMowerState(mowerState), Times.Once());
         c.verify(o => o.updateValue(true), Times.Once());
     });
+
+    it('should park on resume when the mower was previously going home', async () => {
+        const mowerState: MowerState = {
+            activity: Activity.GOING_HOME,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.HOME,
+            state: State.IN_OPERATION
+        };
+
+        const mowerId = '12345';
+
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
+
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        
+        policy.setup(o => o.check()).returns(true);
+        policy.setup(o => o.setMowerState(mowerState)).returns(undefined);
+    
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
+        controlService.setup(o => o.parkUntilFurtherNotice(mowerId)).returns(Promise.resolve(undefined));
+        log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.init(NameMode.DEFAULT);
+        target.setMowerState(mowerState);
+
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(false, (e) => {
+            status = e;
+        });
+
+        controlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        expect(status).toBe(HAPStatus.SUCCESS);
+    });
 });
