@@ -1,7 +1,7 @@
 import { API, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { MowerState } from '../model';
+import { Activity, MowerState, State } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
@@ -18,9 +18,15 @@ export interface PauseSwitch extends Switch {
 }
 
 export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
+    private lastActivity?: Activity;
+
     public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsPausedPolicy, 
         accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
+    }
+
+    public getLastActivity(): Activity | undefined {
+        return this.lastActivity;
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
@@ -28,7 +34,11 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
             if (on) {
                 await this.controlService.pause(this.accessory.context.mowerId);
             } else {
-                await this.controlService.resumeSchedule(this.accessory.context.mowerId);
+                if (this.shouldParkMowerUntilFurtherNotice()) {
+                    await this.controlService.parkUntilFurtherNotice(this.accessory.context.mowerId);
+                } else {
+                    await this.controlService.resumeSchedule(this.accessory.context.mowerId);
+                }                
             }    
 
             callback(HAPStatus.SUCCESS);
@@ -39,14 +49,29 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
             callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }        
     }
+
+    protected shouldParkMowerUntilFurtherNotice(): boolean {
+        return this.lastActivity !== undefined && this.lastActivity === Activity.GOING_HOME;
+    }
     
     public setMowerState(state: MowerState): void {
         this.policy.setMowerState(state);
+        this.refreshLastActivity(state);
+        
         this.refreshCharacteristic();
     }
 
+    protected refreshLastActivity(state: MowerState): void {
+        if (state.state === State.PAUSED) {
+            // Do not update the last activity because pause was enabled.
+            return;
+        }
+
+        this.lastActivity = state.activity;
+    }
+
     /**
-     * Refreshes the characteristic value based on the deterministic calculation of whether the schedule is currently enabled.
+     * Refreshes the characteristic value based on the deterministic calculation of whether the mower is paused.
      */
     protected refreshCharacteristic() {
         const newValue = this.policy.check();
