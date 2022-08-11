@@ -1,7 +1,7 @@
 import { API, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { Activity, MowerState } from '../model';
+import { Activity, MowerState, State } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
@@ -23,6 +23,10 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
     public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsPausedPolicy, 
         accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
+    }
+
+    public getLastActivity(): Activity | undefined {
+        return this.lastActivity;
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
@@ -52,9 +56,18 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
     
     public setMowerState(state: MowerState): void {
         this.policy.setMowerState(state);
-        this.lastActivity = state.activity;
+        this.refreshLastActivity(state);
         
         this.refreshCharacteristic();
+    }
+
+    protected refreshLastActivity(state: MowerState): void {
+        if (state.state === State.PAUSED) {
+            // Do not update the last activity because pause was enabled.
+            return;
+        }
+
+        this.lastActivity = state.activity;
     }
 
     /**
