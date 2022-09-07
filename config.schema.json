@@ -7,7 +7,6 @@
       "properties": {
         "name": {
           "title": "Name",
-          "description": "The name you would like to use to identify the platform (if something other than the default).",
           "type": "string",
           "default": "Homebridge Automower Platform",
           "minLength": 1,
@@ -34,7 +33,6 @@
         "lang": {
           "title": "Language",
           "type": "string",
-          "description": "If your preferred language is not supported, you are welcome to help us by doing the translation!",
           "required": true,
           "default": "en",
           "oneOf": [
@@ -57,18 +55,16 @@
       }
     },
     "layout": [
-      "username",
-      "password",
       {
-        "type": "fieldset",
-        "title": "General Settings",
-        "description": "Just some things you might want to change based on your preferences.",
-        "expandable": true,
+        "type": "flex",
+        "flex-flow": "column-count: 2",
         "items": [
           "name",
           "lang"
         ]
-      },
+      },      
+      "username",
+      "password",
       {
         "type": "fieldset",
         "title": "Advanced Settings",
