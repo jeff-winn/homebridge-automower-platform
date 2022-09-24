@@ -89,7 +89,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         if (clientId === '' || clientSecret === '') {
             throw this.errorFactory.badCredentialsError(
                 'The client id and/or client secret supplied were not valid, please check your configuration and try again.',
-                'CFG0003');
+                'CFG0004');
         }
 
         this.guardAppKeyMustBeProvided();
