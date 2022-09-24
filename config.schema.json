@@ -16,18 +16,24 @@
           "title": "Email Address",
           "type": "string",
           "minLength": 1,
-          "required": true,
+          "required": false,
           "x-schema-form": {
             "type": "email"
+          },
+          "condition": {
+            "functionBody": "return model.grant_type === 'password' "
           }
         },
         "password": {
           "title": "Password",
           "type": "string",
           "minLength": 1,
-          "required": true,
+          "required": false,
           "x-schema-form": {
             "type": "password"
+          },
+          "condition": {
+            "functionBody": "return model.grant_type === 'password' "
           }
         },
         "lang": {
@@ -43,16 +49,50 @@
               ]
             }
           ]
-        },
+        },        
         "appKey": {
           "title": "Application Key",
           "description": "This is the application key which identifies this plugin; changing this value will require another account registered with the Husqvarna Developer Portal.",
           "type": "string",
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
+          "required": false,
+          "condition": {
+            "functionBody": "return model.grant_type === 'password' "
+          }
+        },
+        "grant_type": {
+          "title": "Mode",
+          "type": "string",
+          "required": true,
+          "default": "client_credentials",
+          "oneOf": [
+            {
+              "title": "Password (Legacy)",
+              "enum": [
+                "password"
+              ]
+            },
+            {
+              "title": "Client Credentials",
+              "enum": [
+                "client_credentials"
+              ]
+            }
+          ]
+        },
+        "clientSecret": {
+          "title": "Application Secret",
+          "type": "string",
           "minLength": 1,
-          "required": true
-        }      
-      }
+          "required": false,
+          "x-schema-form": {
+            "type": "password"
+          },
+          "condition": {
+            "functionBody": "return model.grant_type === 'client_credentials' "
+          }
+        }
+      }      
     },
     "layout": [
       {
@@ -62,16 +102,18 @@
           "name",
           "lang"
         ]
-      },      
-      "username",
-      "password",
+      },
       {
         "type": "fieldset",
-        "title": "Advanced Settings",
-        "description": "Changing any settings in here could break the platform instance, proceed with caution.",
-        "expandable": true,
+        "title": "Authentication Settings",
+        "description": "Changing the settings in here could prevent your client from being able to login to the Husqvarna platform, proceed with caution.",
+        "expandable": false,
         "items": [
-          "appKey"
+          "grant_type",
+          "username",
+          "password",
+          "appKey",
+          "appSecret"
         ]
       }
     ]
