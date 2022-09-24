@@ -5,6 +5,18 @@ import { ErrorFactory } from '../../errors/errorFactory';
 import { AccessToken } from '../../model';
 
 /**
+ * A strategy for exchanging configuration settings for an OAuth token.
+ */
+export interface OAuthTokenExchangeStrategy {
+    /**
+     * Performs the exchange.
+     * @param config The configuration settings.
+     * @param client The client to use.
+     */
+    exchange(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
+}
+
+/**
  * A mechanism which manages the retrieval and renewal of an access token.
  */
 export interface AccessTokenManager {
@@ -30,6 +42,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private invalidated = false;    
 
     public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
+        private exchangeStrategy: OAuthTokenExchangeStrategy,
         private log: PlatformLogger, private errorFactory: ErrorFactory) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
@@ -93,24 +106,8 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     protected async doLogin(): Promise<OAuthToken> {
-        this.log.debug('Logging into the Husqvarna platform...');
-
-        if (this.config.username === undefined || this.config.username === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        if (this.config.password === undefined || this.config.password === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        const result = await this.client.login(this.config.username, this.config.password);
-
-        this.log.debug('Logged in!');
-        return result;
+        return await this.exchangeStrategy.exchange(this.config, this.client);
+        
     }
 
     protected async doRefreshToken(): Promise<OAuthToken> {

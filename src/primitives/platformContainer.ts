@@ -12,6 +12,7 @@ import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { AccessTokenManagerImpl } from '../services/husqvarna/accessTokenManager';
+import { PasswordFlowStrategy } from '../services/husqvarna/authentication/PasswordFlowStrategy';
 import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
@@ -92,9 +93,15 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(DefaultErrorFactory))
         });
 
+        container.registerInstance(PasswordFlowStrategy, new PasswordFlowStrategy(
+            container.resolve(HomebridgeImitationLogger),
+            container.resolve(DefaultErrorFactory))
+        );
+
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
+            container.resolve(PasswordFlowStrategy),
             container.resolve(HomebridgeImitationLogger),
             container.resolve(DefaultErrorFactory)));
 
