@@ -42,8 +42,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private invalidated = false;    
 
     public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
-        private exchangeStrategy: OAuthTokenExchangeStrategy,
-        private log: PlatformLogger, private errorFactory: ErrorFactory) { }
+        private login: OAuthTokenExchangeStrategy, private log: PlatformLogger, private errorFactory: ErrorFactory) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
@@ -106,8 +105,12 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     protected async doLogin(): Promise<OAuthToken> {
-        return await this.exchangeStrategy.exchange(this.config, this.client);
-        
+        this.log.debug('Logging into the Husqvarna platform...');
+
+        const token = await this.login.exchange(this.config, this.client);
+        this.log.debug('Logged in!');
+
+        return token;
     }
 
     protected async doRefreshToken(): Promise<OAuthToken> {

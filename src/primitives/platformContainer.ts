@@ -94,7 +94,6 @@ export class PlatformContainerImpl implements PlatformContainer {
         });
 
         container.registerInstance(PasswordFlowStrategy, new PasswordFlowStrategy(
-            container.resolve(HomebridgeImitationLogger),
             container.resolve(DefaultErrorFactory))
         );
 
