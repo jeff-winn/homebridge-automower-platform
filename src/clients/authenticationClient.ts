@@ -1,3 +1,4 @@
+import { BodyInit } from 'node-fetch';
 import { ErrorFactory } from '../errors/errorFactory';
 import { FetchClient, Response } from './fetchClient';
 
@@ -46,6 +47,13 @@ export interface OAuthToken {
  */
 export interface AuthenticationClient {
     /**
+     * Login the user using the client credentials grant.
+     * @param clientId The client id.
+     * @param clientSecret The client secret.
+     */
+    exchangeClientCredentials(clientId: string, clientSecret: string): Promise<OAuthToken>;
+
+    /**
      * Login the user using the password grant.
      * @param username The username.
      * @param password The password.
@@ -77,14 +85,26 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return this.baseUrl;
     }
 
-    public async exchangePassword(username: string, password: string): Promise<OAuthToken> {
-        if (username === '') {
+    public async exchangeClientCredentials(clientId: string, clientSecret: string): Promise<OAuthToken> {
+        if (clientId === '' || clientSecret === '') {
             throw this.errorFactory.badCredentialsError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
+                'The client id and/or client secret supplied were not valid, please check your configuration and try again.',
+                'CFG0003');
         }
 
-        if (password === '') {
+        this.guardAppKeyMustBeProvided();
+
+        const body = this.encode({
+            client_id: clientId,
+            client_secret: clientSecret,
+            grant_type: 'client_credentials'
+        });
+
+        return await this.exchange(body);
+    }
+
+    public async exchangePassword(username: string, password: string): Promise<OAuthToken> {
+        if (username === '' || password === '') {
             throw this.errorFactory.badCredentialsError(
                 'The username and/or password supplied were not valid, please check your configuration and try again.', 
                 'CFG0002');
@@ -99,6 +119,10 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             password: password
         });
 
+        return await this.exchange(body);
+    }
+
+    private async exchange(body: BodyInit): Promise<OAuthToken> {
         const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
