@@ -11,8 +11,9 @@ import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
-import { AccessTokenManagerImpl } from '../services/husqvarna/accessTokenManager';
-import { PasswordFlowStrategy } from '../services/husqvarna/authentication/PasswordFlowStrategy';
+import { AccessTokenManagerImpl, OAuthTokenExchangeStrategy } from '../services/husqvarna/accessTokenManager';
+import { ClientCredentialsFlowStrategy } from '../services/husqvarna/authentication/ClientCredentialsFlowStrategy';
+import { LegacyPasswordFlowStrategy } from '../services/husqvarna/authentication/LegacyPasswordFlowStrategy';
 import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
@@ -93,14 +94,33 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(DefaultErrorFactory))
         });
 
-        container.registerInstance(PasswordFlowStrategy, new PasswordFlowStrategy(
-            container.resolve(DefaultErrorFactory))
-        );
+        container.register(LegacyPasswordFlowStrategy, {
+            useFactory: (context) => new LegacyPasswordFlowStrategy(
+                context.resolve(DefaultErrorFactory),
+                context.resolve(HomebridgeImitationLogger)
+            )
+        });
 
+        container.register(ClientCredentialsFlowStrategy, {
+            useFactory: (context) => new ClientCredentialsFlowStrategy(
+                context.resolve(DefaultErrorFactory))
+        });
+
+        let strategy: OAuthTokenExchangeStrategy;            
+        switch (this.config.grant_type) {
+        case 'client_credentials': 
+            strategy = container.resolve(ClientCredentialsFlowStrategy);
+            break;
+
+        default: 
+            strategy = container.resolve(LegacyPasswordFlowStrategy);
+            break;
+        }
+        
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            container.resolve(PasswordFlowStrategy),
+            strategy,
             container.resolve(HomebridgeImitationLogger),
             container.resolve(DefaultErrorFactory)));
 

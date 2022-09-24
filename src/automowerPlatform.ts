@@ -11,6 +11,14 @@ import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/aut
 import { EventStreamService, EventStreamServiceImpl } from './services/husqvarna/automower/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 
+/**
+ * Describes the client credentials configuration settings.
+ */
+export interface ClientCredentialsConfig {
+    clientId?: string;
+    clientSecret?: string;
+}
+
 /** 
  * Describes the platform configuration settings.
  */
@@ -19,6 +27,8 @@ export interface AutomowerPlatformConfig extends PlatformConfig {
     password?: string;
     appKey?: string;
     lang?: string;
+    grant_type: string;
+    client_credentials?: ClientCredentialsConfig;
 }
 
 /**
