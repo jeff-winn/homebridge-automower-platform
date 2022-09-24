@@ -46,11 +46,11 @@ export interface OAuthToken {
  */
 export interface AuthenticationClient {
     /**
-     * Login the user.
+     * Login the user using the password grant.
      * @param username The username.
      * @param password The password.
      */
-    login(username: string, password: string): Promise<OAuthToken>;
+    exchangePassword(username: string, password: string): Promise<OAuthToken>;
 
     /**
      * Logout the user.
@@ -77,7 +77,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return this.baseUrl;
     }
 
-    public async login(username: string, password: string): Promise<OAuthToken> {
+    public async exchangePassword(username: string, password: string): Promise<OAuthToken> {
         if (username === '') {
             throw this.errorFactory.badCredentialsError(
                 'The username and/or password supplied were not valid, please check your configuration and try again.', 

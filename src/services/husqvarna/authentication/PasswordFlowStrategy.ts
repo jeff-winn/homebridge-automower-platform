@@ -25,7 +25,7 @@ export class PasswordFlowStrategy implements OAuthTokenExchangeStrategy {
                 'CFG0002');
         }
 
-        const result = await client.login(config.username, config.password);
+        const result = await client.exchangePassword(config.username, config.password);
 
         this.log.debug('Logged in!');
         return result;
