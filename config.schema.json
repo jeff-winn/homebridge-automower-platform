@@ -15,8 +15,7 @@
         "username": {
           "title": "Email Address",
           "type": "string",
-          "minLength": 1,
-          "required": true,
+          "required": false,
           "x-schema-form": {
             "type": "email"
           }
@@ -24,8 +23,7 @@
         "password": {
           "title": "Password",
           "type": "string",
-          "minLength": 1,
-          "required": true,
+          "required": false,
           "x-schema-form": {
             "type": "password"
           }
@@ -62,15 +60,15 @@
           "name",
           "lang"
         ]
-      },      
-      "username",
-      "password",
+      },
       {
         "type": "fieldset",
-        "title": "Advanced Settings",
-        "description": "Changing any settings in here could break the platform instance, proceed with caution.",
+        "title": "Authorization Settings",
+        "description": "Changing any settings in here could cause the plugin to fail while logging into the Husqvarna platform, proceed with caution.",
         "expandable": true,
         "items": [
+          "username",
+          "password",
           "appKey"
         ]
       }
