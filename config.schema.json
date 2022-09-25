@@ -44,12 +44,20 @@
         },
         "appKey": {
           "title": "Application Key",
-          "description": "This is the application key which identifies this plugin; changing this value will require another account registered with the Husqvarna Developer Portal.",
+          "description": "This is the application key of the application registered on the Husqvarna Developer portal.",
           "type": "string",
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
           "required": true
-        }      
+        },
+        "appSecret": {
+          "title": "Application Secret",
+          "description": "This is the application secret of the application registered on the Husqvarna Developer portal.",
+          "type": "string",
+          "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
+          "minLength": 1,
+          "required": true
+        }
       }
     },
     "layout": [
