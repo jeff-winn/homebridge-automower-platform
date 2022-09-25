@@ -12,6 +12,7 @@ import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { AccessTokenManagerImpl } from '../services/husqvarna/accessTokenManager';
+import { LegacyPasswordFlowStrategy } from '../services/husqvarna/authentication/LegacyPasswordFlowStrategy';
 import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
@@ -92,11 +93,17 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(DefaultErrorFactory))
         });
 
+        container.register(LegacyPasswordFlowStrategy, {
+            useFactory: (context) => new LegacyPasswordFlowStrategy(
+                context.resolve(DefaultErrorFactory),
+                context.resolve(HomebridgeImitationLogger))
+        });
+
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            container.resolve(HomebridgeImitationLogger),
-            container.resolve(DefaultErrorFactory)));
+            container.resolve(LegacyPasswordFlowStrategy),
+            container.resolve(HomebridgeImitationLogger)));
 
         container.register(AutomowerClientImpl, {
             useFactory: (context) => new AutomowerClientImpl(
