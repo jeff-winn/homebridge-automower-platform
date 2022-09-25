@@ -2,7 +2,6 @@ import { It, Mock } from 'moq.ts';
 
 import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
 import { FetchClient, Response } from '../../src/clients/fetchClient';
-import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
 import { ErrorFactory } from '../../src/errors/errorFactory';
@@ -24,11 +23,10 @@ describe('AuthenticationClientImpl', () => {
         fetch = new Mock<FetchClient>();
         errorFactory = new Mock<ErrorFactory>();
 
-        target = new AuthenticationClientImpl(APPKEY, constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
+        target = new AuthenticationClientImpl(constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
     });
 
     it('should initalize correctly', () => {
-        expect(target.getApplicationKey()).toBe(APPKEY);
         expect(target.getBaseUrl()).toBe(constants.AUTHENTICATION_API_BASE_URL);
     });
 
@@ -46,7 +44,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a not authorized error on 401 response', async () => {
@@ -63,7 +61,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(NotAuthorizedError);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(NotAuthorizedError);
     });
 
     it('should throw an error when response is not ok', async () => {
@@ -77,7 +75,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(Error);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(Error);
     });
 
     it('should return an oauth token when logged in successfully', async () => {
@@ -103,67 +101,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.login(USERNAME, PASSWORD)).resolves.toStrictEqual(token);
-    });
-
-    it('should throw an error when app key is undefined on login', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
-            new BadConfigurationError('hello', '12345'));
-
-        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
-        
-        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when app key is empty on login', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
-            new BadConfigurationError('hello', '12345'));
-
-        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
-
-        await expect(target.login(USERNAME, PASSWORD)).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when app key is undefined on logout', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
-            new BadConfigurationError('hello', '12345'));
-
-        target = new AuthenticationClientImpl(undefined, constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
-
-        await expect(target.logout({
-            access_token: '12345',
-            expires_in: 1,
-            provider: 'hello',
-            refresh_token: 'abcd1234',
-            scope: 'everything',
-            token_type: 'fancy',
-            user_id: 'me'
-        })).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when app key is empty on logout', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny())).returns(
-            new BadConfigurationError('hello', '12345'));
-
-        target = new AuthenticationClientImpl('', constants.AUTHENTICATION_API_BASE_URL, fetch.object(), errorFactory.object());
-
-        await expect(target.logout({
-            access_token: '12345',
-            expires_in: 1,
-            provider: 'hello',
-            refresh_token: 'abcd1234',
-            scope: 'everything',
-            token_type: 'fancy',
-            user_id: 'me'
-        })).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when username is empty', async () => {
-        await expect(target.login('', PASSWORD)).rejects.toThrowError();
-    });
-
-    it('should throw an error when password is empty', async () => {
-        await expect(target.login(USERNAME, '')).rejects.toThrowError();
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).resolves.toStrictEqual(token);
     });
 
     it('should throw not authorized error on 401 when logout', async () => {
@@ -180,7 +118,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.logout({
+        await expect(target.logout(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -202,7 +140,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.logout({
+        await expect(target.logout(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -227,7 +165,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh({
+        await expect(target.refresh(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -252,7 +190,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh({
+        await expect(target.refresh(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -274,7 +212,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh({
+        await expect(target.refresh(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -307,7 +245,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh({
+        await expect(target.refresh(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',

@@ -121,7 +121,7 @@ describe('AccessTokenManagerImpl', () => {
         const tokenType = 'Bearer';
         const userId = 'user id';
 
-        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(
+        client.setup(x => x.exchangePassword(appKey, It.Is(u => u === username), It.Is(p => p === password))).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -163,7 +163,7 @@ describe('AccessTokenManagerImpl', () => {
         };
         
         let attempt = 0;
-        client.setup(o => o.login(username, password)).callback(() => {
+        client.setup(o => o.exchangePassword(appKey, username, password)).callback(() => {
             attempt++;
 
             if (attempt === 1) {
@@ -206,8 +206,8 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(Promise.resolve(token1));
-        client.setup(x => x.refresh(token1)).returns(Promise.resolve(token2));
+        client.setup(x => x.exchangePassword(appKey, username, password)).returns(Promise.resolve(token1));
+        client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
 
         const originalToken = await target.getCurrentToken();
 
@@ -225,7 +225,7 @@ describe('AccessTokenManagerImpl', () => {
 
         await target.logout();        
 
-        client.verify(x => x.logout(It.IsAny<OAuthToken>()), Times.Never());
+        client.verify(x => x.logout(appKey, It.IsAny<OAuthToken>()), Times.Never());
     });
 
     it('should logout the user when the user has been logged in', async () => {
@@ -239,14 +239,14 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.logout(token)).returns(Promise.resolve(undefined));
+        client.setup(x => x.logout(appKey, token)).returns(Promise.resolve(undefined));
 
         target.unsafeSetCurrentToken(token);
         await target.logout();
 
         const result = target.unsafeGetCurrentToken();
 
-        client.verify(x => x.logout(token), Times.Once());
+        client.verify(x => x.logout(appKey, token), Times.Once());
         expect(result).toBeUndefined();
     });
 });

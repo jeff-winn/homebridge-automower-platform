@@ -95,6 +95,12 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doLogin(): Promise<OAuthToken> {
         this.log.debug('Logging into the Husqvarna platform...');
 
+        if (this.config.appKey === undefined || this.config.appKey === '') {
+            throw this.errorFactory.badConfigurationError(
+                'The appKey setting is missing, please check your configuration and try again.', 
+                'CFG0002');
+        }
+
         if (this.config.username === undefined || this.config.username === '') {
             throw this.errorFactory.badConfigurationError(
                 'The username and/or password supplied were not valid, please check your configuration and try again.', 
@@ -107,7 +113,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
                 'CFG0002');
         }
 
-        const result = await this.client.login(this.config.username, this.config.password);
+        const result = await this.client.exchangePassword(this.config.appKey, this.config.username, this.config.password);
 
         this.log.debug('Logged in!');
         return result;
@@ -116,7 +122,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doRefreshToken(): Promise<OAuthToken> {
         this.log.debug('Refreshing the current token...');
 
-        const newToken = await this.client.refresh(this.currentToken!);
+        const newToken = await this.client.refresh(this.config.appKey!, this.currentToken!);
 
         this.log.debug('Refreshed the token!');
         return newToken;
@@ -167,7 +173,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         this.log.debug('Logging out of the Husqvarna platform...');
 
-        await this.client.logout(token);
+        await this.client.logout(this.config.appKey!, token);
         this.currentToken = undefined;
 
         this.log.debug('Logged out!');

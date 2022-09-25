@@ -86,7 +86,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         });
         
         container.register(AuthenticationClientImpl, {
-            useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
+            useFactory: (context) => new AuthenticationClientImpl(
                 settings.AUTHENTICATION_API_BASE_URL,
                 context.resolve(RetryerFetchClient),
                 context.resolve(DefaultErrorFactory))
