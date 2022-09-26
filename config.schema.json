@@ -18,6 +18,9 @@
           "required": false,
           "x-schema-form": {
             "type": "email"
+          },
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
           }
         },
         "password": {
@@ -26,6 +29,9 @@
           "required": false,
           "x-schema-form": {
             "type": "password"
+          },
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
           }
         },
         "lang": {
@@ -48,15 +54,61 @@
           "type": "string",
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
-          "required": true
+          "required": true,
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
+          }
         },
-        "appSecret": {
+        "authentication_mode": {
+          "title": "Authentication Mode",
+          "type": "string",
+          "required": true,
+          "default": "password",
+          "oneOf": [
+            {
+              "title": "Password (Not Supported)",
+              "enum": [
+                "password"
+              ]
+            },
+            {
+              "title": "Client Credentials",
+              "enum": [
+                "client_credentials"
+              ]
+            }
+          ]
+        },
+        "authentication_mode_no_longer_supported": {
+          "type": "label",
+          "title": "ATTENTION! Your current Authentication Mode is no longer supported by the Husqvarna platform, please choose a different value from the options available.",
+          "labelHtmlClass": "text-warning",
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
+          }
+        },
+        "application_key": {
+          "title": "Application Key",
+          "description": "This is the application key of the application registered on the Husqvarna Developer portal.",
+          "type": "string",
+          "minLength": 1,
+          "required": true,
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'client_credentials' "
+          }
+        },
+        "application_secret": {
           "title": "Application Secret",
           "description": "This is the application secret of the application registered on the Husqvarna Developer portal.",
           "type": "string",
-          "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
-          "required": true
+          "required": false,
+          "x-schema-form": {
+            "type": "password"
+          },
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'client_credentials' "
+          }
         }
       }
     },
@@ -71,13 +123,17 @@
       },
       {
         "type": "fieldset",
-        "title": "Authorization Settings",
-        "description": "Changing any settings in here could cause the plugin to fail while logging into the Husqvarna platform, proceed with caution.",
-        "expandable": true,
+        "title": "Account Settings",
+        "description": "Changing any settings here could cause the plugin to fail while logging into the Husqvarna platform, so please proceed with caution.",
+        "expandable": false,
         "items": [
+          "authentication_mode_no_longer_supported",
+          "authentication_mode",
           "username",
           "password",
-          "appKey"
+          "appKey",
+          "application_key",
+          "application_secret"
         ]
       }
     ]
