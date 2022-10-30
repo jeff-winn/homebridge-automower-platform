@@ -1,6 +1,5 @@
 import { AutomowerPlatformConfig } from '../../../automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../clients/authenticationClient';
-import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { ErrorFactory } from '../../../errors/errorFactory';
 import { OAuth2FlowStrategy } from '../accessTokenManager';
 
@@ -8,7 +7,7 @@ import { OAuth2FlowStrategy } from '../accessTokenManager';
  * A legacy authorization flow which exchanges the username and password for an authorization token.
  */
 export class LegacyPasswordFlowStrategy implements OAuth2FlowStrategy {
-    public constructor(private errorFactory: ErrorFactory, private log: PlatformLogger) { }
+    public constructor(private errorFactory: ErrorFactory) { }
     
     public async exchange(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
         if (config.appKey === undefined || config.appKey === '') {

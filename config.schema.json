@@ -54,10 +54,7 @@
           "type": "string",
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
-          "required": true,
-          "condition": {
-            "functionBody": "return model.authentication_mode === 'password' "
-          }
+          "required": true
         },
         "authentication_mode": {
           "title": "Authentication Mode",
@@ -66,7 +63,7 @@
           "default": "password",
           "oneOf": [
             {
-              "title": "Password (Not Supported)",
+              "title": "Password (No longer supported)",
               "enum": [
                 "password"
               ]
@@ -79,24 +76,21 @@
             }
           ]
         },
-        "authentication_mode_no_longer_supported": {
+        "client_credentials_requires_account": {
           "type": "label",
-          "title": "ATTENTION! Your current Authentication Mode is no longer supported by the Husqvarna platform, please choose a different value from the options available.",
-          "labelHtmlClass": "text-warning",
-          "condition": {
-            "functionBody": "return model.authentication_mode === 'password' "
-          }
-        },
-        "application_key": {
-          "title": "Application Key",
-          "description": "This is the application key of the application registered on the Husqvarna Developer portal.",
-          "type": "string",
-          "minLength": 1,
-          "required": true,
+          "title": "In order to use the Client Credentials authentication mode, you will need to register an account at the <a href=\"https://developer.husqvarnagroup.cloud/\">Husqvarna developer portal</a>. Please see the documentation for more details.",
           "condition": {
             "functionBody": "return model.authentication_mode === 'client_credentials' "
           }
         },
+        "authentication_mode_no_longer_supported": {
+          "type": "label",
+          "title": "<b>ATTENTION!</b> Your current authentication mode is no longer supported by the Husqvarna platform, please choose a different value from the options available.",
+          "labelHtmlClass": "text-warning",
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
+          }
+        },        
         "application_secret": {
           "title": "Application Secret",
           "description": "This is the application secret of the application registered on the Husqvarna Developer portal.",
@@ -125,14 +119,14 @@
         "type": "fieldset",
         "title": "Account Settings",
         "description": "Changing any settings here could cause the plugin to fail while logging into the Husqvarna platform, so please proceed with caution.",
-        "expandable": false,
+        "expandable": true,
         "items": [
           "authentication_mode_no_longer_supported",
-          "authentication_mode",
+          "authentication_mode",          
+          "client_credentials_requires_account",
+          "appKey",
           "username",
           "password",
-          "appKey",
-          "application_key",
           "application_secret"
         ]
       }

@@ -47,6 +47,13 @@ export interface OAuthToken {
  */
 export interface AuthenticationClient {
     /**
+     * Exchanges the app key and secret for an {@link OAuthToken}.
+     * @param appKey The application key.
+     * @param appSecret The application secret.
+     */
+    exchangeClientCredentials(appKey: string, appSecret: string): Promise<OAuthToken>;
+
+    /**
      * Exchanges the password for an {@link OAuthToken}.
      * @param appKey The application key.
      * @param username The username.

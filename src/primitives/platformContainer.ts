@@ -95,8 +95,7 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(LegacyPasswordFlowStrategy, {
             useFactory: (context) => new LegacyPasswordFlowStrategy(
-                context.resolve(DefaultErrorFactory),
-                context.resolve(HomebridgeImitationLogger))
+                context.resolve(DefaultErrorFactory))
         });
 
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
