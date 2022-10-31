@@ -3,13 +3,13 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { OAuth2FlowStrategy } from '../../../src/services/husqvarna/accessTokenManager';
+import { OAuth2AuthorizationStrategy } from '../../../src/services/husqvarna/accessTokenManager';
 import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
 
 describe('AccessTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
-    let login: Mock<OAuth2FlowStrategy>;
+    let login: Mock<OAuth2AuthorizationStrategy>;
     let log: Mock<PlatformLogger>;    
 
     const username = 'username';
@@ -26,7 +26,7 @@ describe('AccessTokenManagerImpl', () => {
             appKey: appKey
         } as AutomowerPlatformConfig;
 
-        login = new Mock<OAuth2FlowStrategy>();
+        login = new Mock<OAuth2AuthorizationStrategy>();
 
         log = new Mock<PlatformLogger>();
         log.setup(x => x.debug(It.IsAny<string>())).returns(undefined);
@@ -85,7 +85,7 @@ describe('AccessTokenManagerImpl', () => {
         const tokenType = 'Bearer';
         const userId = 'user id';
 
-        login.setup(o => o.exchange(config, client.object())).returns(
+        login.setup(o => o.authorize(config, client.object())).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -127,7 +127,7 @@ describe('AccessTokenManagerImpl', () => {
         };
                 
         let attempt = 0;
-        login.setup(o => o.exchange(config, client.object())).callback(() => {
+        login.setup(o => o.authorize(config, client.object())).callback(() => {
             attempt++;
 
             if (attempt === 1) {
@@ -170,7 +170,7 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        login.setup(o => o.exchange(config, client.object())).returns(Promise.resolve(token1));
+        login.setup(o => o.authorize(config, client.object())).returns(Promise.resolve(token1));
         client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
 
         const originalToken = await target.getCurrentToken();
