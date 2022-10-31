@@ -2,15 +2,15 @@ import { AutomowerPlatformConfig } from '../../../automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../clients/authenticationClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { ErrorFactory } from '../../../errors/errorFactory';
-import { OAuth2FlowStrategy } from '../accessTokenManager';
+import { OAuth2AuthorizationStrategy } from '../accessTokenManager';
 
 /**
- * A legacy authorization flow which exchanges the username and password for an authorization token.
+ * A legacy authorization strategy which exchanges the username and password for an authorization token.
  */
-export class LegacyPasswordFlowStrategy implements OAuth2FlowStrategy {
+export class LegacyPasswordAuthorizationStrategy implements OAuth2AuthorizationStrategy {
     public constructor(private errorFactory: ErrorFactory, private log: PlatformLogger) { }
     
-    public async exchange(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
+    public async authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
         if (config.appKey === undefined || config.appKey === '') {
             throw this.errorFactory.badConfigurationError(
                 'The application key setting is missing, please check your configuration and try again.', 
