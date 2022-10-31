@@ -15,19 +15,23 @@
         "username": {
           "title": "Email Address",
           "type": "string",
-          "minLength": 1,
-          "required": true,
+          "required": false,
           "x-schema-form": {
             "type": "email"
+          },
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
           }
         },
         "password": {
           "title": "Password",
           "type": "string",
-          "minLength": 1,
-          "required": true,
+          "required": false,
           "x-schema-form": {
             "type": "password"
+          },
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
           }
         },
         "lang": {
@@ -46,12 +50,60 @@
         },
         "appKey": {
           "title": "Application Key",
-          "description": "This is the application key which identifies this plugin; changing this value will require another account registered with the Husqvarna Developer Portal.",
+          "description": "This is the application key of the application registered on the Husqvarna Developer portal.",
           "type": "string",
           "default": "78e47163-dd2a-48bf-9af9-3cec8cadae00",
           "minLength": 1,
           "required": true
-        }      
+        },
+        "authentication_mode": {
+          "title": "Authentication Mode",
+          "type": "string",
+          "required": true,
+          "default": "password",
+          "oneOf": [
+            {
+              "title": "Password (No longer supported)",
+              "enum": [
+                "password"
+              ]
+            },
+            {
+              "title": "Client Credentials",
+              "enum": [
+                "client_credentials"
+              ]
+            }
+          ]
+        },
+        "client_credentials_requires_account": {
+          "type": "label",
+          "title": "In order to use the Client Credentials authentication mode, you will need to register an account at the <a href=\"https://developer.husqvarnagroup.cloud/\">Husqvarna developer portal</a>. Please see the documentation for more details.",
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'client_credentials' "
+          }
+        },
+        "authentication_mode_no_longer_supported": {
+          "type": "label",
+          "title": "<b>ATTENTION!</b> Your current authentication mode is no longer supported by the Husqvarna platform, please choose a different value from the options available.",
+          "labelHtmlClass": "text-warning",
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'password' "
+          }
+        },        
+        "application_secret": {
+          "title": "Application Secret",
+          "description": "This is the application secret of the application registered on the Husqvarna Developer portal.",
+          "type": "string",
+          "minLength": 1,
+          "required": false,
+          "x-schema-form": {
+            "type": "password"
+          },
+          "condition": {
+            "functionBody": "return model.authentication_mode === 'client_credentials' "
+          }
+        }
       }
     },
     "layout": [
@@ -62,16 +114,20 @@
           "name",
           "lang"
         ]
-      },      
-      "username",
-      "password",
+      },
       {
         "type": "fieldset",
-        "title": "Advanced Settings",
-        "description": "Changing any settings in here could break the platform instance, proceed with caution.",
+        "title": "Account Settings",
+        "description": "Changing any settings here could cause the plugin to fail while logging into the Husqvarna platform, so please proceed with caution.",
         "expandable": true,
         "items": [
-          "appKey"
+          "authentication_mode_no_longer_supported",
+          "authentication_mode",          
+          "client_credentials_requires_account",
+          "appKey",
+          "username",
+          "password",
+          "application_secret"
         ]
       }
     ]

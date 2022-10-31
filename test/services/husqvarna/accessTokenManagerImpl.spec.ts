@@ -3,15 +3,14 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerPlatformConfig } from '../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../src/clients/authenticationClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
-import { ErrorFactory } from '../../../src/errors/errorFactory';
+import { OAuth2FlowStrategy } from '../../../src/services/husqvarna/accessTokenManager';
 import { AccessTokenManagerImplSpy } from './accessTokenManagerImplSpy';
 
 describe('AccessTokenManagerImpl', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
-    let errorFactory: Mock<ErrorFactory>;
-    let log: Mock<PlatformLogger>;
+    let login: Mock<OAuth2FlowStrategy>;
+    let log: Mock<PlatformLogger>;    
 
     const username = 'username';
     const password = 'password';
@@ -27,13 +26,13 @@ describe('AccessTokenManagerImpl', () => {
             appKey: appKey
         } as AutomowerPlatformConfig;
 
-        errorFactory = new Mock<ErrorFactory>();
+        login = new Mock<OAuth2FlowStrategy>();
 
         log = new Mock<PlatformLogger>();
         log.setup(x => x.debug(It.IsAny<string>())).returns(undefined);
         log.setup(x => x.info(It.IsAny<string>())).returns(undefined);
 
-        target = new AccessTokenManagerImplSpy(client.object(), config, log.object(), errorFactory.object());
+        target = new AccessTokenManagerImplSpy(client.object(), config, login.object(), log.object());
     });
 
     it('should throw an error when the current token is undefined', () => {
@@ -58,42 +57,7 @@ describe('AccessTokenManagerImpl', () => {
         expect(token).toEqual(result);
     });
 
-    it('should throw an error when the config username is undefined', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
-            .returns(new BadConfigurationError('hello world', '12345'));
-
-        config.username = undefined;
-
-        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when the config username is empty', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
-            .returns(new BadConfigurationError('hello world', '12345'));
-
-        config.username = '';
-
-        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when the config password is undefined', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
-            .returns(new BadConfigurationError('hello world', '12345'));
-
-        config.password = undefined;
-
-        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when the config password is empty', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
-            .returns(new BadConfigurationError('hello world', '12345'));
-            
-        config.password = '';
-
-        await expect(target.unsafeDoLogin()).rejects.toThrowError(BadConfigurationError);
-    });
-
+   
     it('should not be logged in when the token is reset', () => {
         target.unsafeSetCurrentToken({
             access_token: 'abcd1234',
@@ -121,7 +85,7 @@ describe('AccessTokenManagerImpl', () => {
         const tokenType = 'Bearer';
         const userId = 'user id';
 
-        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(
+        login.setup(o => o.exchange(config, client.object())).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -161,16 +125,16 @@ describe('AccessTokenManagerImpl', () => {
             token_type: 'Bearer',
             user_id: 'user id'
         };
-        
+                
         let attempt = 0;
-        client.setup(o => o.login(username, password)).callback(() => {
+        login.setup(o => o.exchange(config, client.object())).callback(() => {
             attempt++;
 
             if (attempt === 1) {
                 return Promise.resolve(token1);
             } else {
                 return Promise.resolve(token2);
-            }            
+            }
         });
 
         const originalToken = await target.getCurrentToken();
@@ -206,8 +170,8 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.login(It.Is(u => u === username), It.Is(p => p === password))).returns(Promise.resolve(token1));
-        client.setup(x => x.refresh(token1)).returns(Promise.resolve(token2));
+        login.setup(o => o.exchange(config, client.object())).returns(Promise.resolve(token1));
+        client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
 
         const originalToken = await target.getCurrentToken();
 
@@ -225,7 +189,7 @@ describe('AccessTokenManagerImpl', () => {
 
         await target.logout();        
 
-        client.verify(x => x.logout(It.IsAny<OAuthToken>()), Times.Never());
+        client.verify(x => x.logout(appKey, It.IsAny<OAuthToken>()), Times.Never());
     });
 
     it('should logout the user when the user has been logged in', async () => {
@@ -239,14 +203,14 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.logout(token)).returns(Promise.resolve(undefined));
+        client.setup(x => x.logout(appKey, token)).returns(Promise.resolve(undefined));
 
         target.unsafeSetCurrentToken(token);
         await target.logout();
 
         const result = target.unsafeGetCurrentToken();
 
-        client.verify(x => x.logout(token), Times.Once());
+        client.verify(x => x.logout(appKey, token), Times.Once());
         expect(result).toBeUndefined();
     });
 });

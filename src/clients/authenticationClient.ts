@@ -1,3 +1,4 @@
+import { BodyInit } from 'node-fetch';
 import { ErrorFactory } from '../errors/errorFactory';
 import { FetchClient, Response } from './fetchClient';
 
@@ -46,59 +47,64 @@ export interface OAuthToken {
  */
 export interface AuthenticationClient {
     /**
-     * Login the user.
+     * Exchanges the app key and secret for an {@link OAuthToken}.
+     * @param appKey The application key.
+     * @param appSecret The application secret.
+     */
+    exchangeClientCredentials(appKey: string, appSecret: string): Promise<OAuthToken>;
+
+    /**
+     * Exchanges the password for an {@link OAuthToken}.
+     * @param appKey The application key.
      * @param username The username.
      * @param password The password.
      */
-    login(username: string, password: string): Promise<OAuthToken>;
+    exchangePassword(appKey: string, username: string, password: string): Promise<OAuthToken>;
 
     /**
      * Logout the user.
+     * @param appKey The application key.
      * @param token The OAuth token.
      */
-    logout(token: OAuthToken): Promise<void>;
+    logout(appKey: string, token: OAuthToken): Promise<void>;
 
     /**
      * Refreshes the token.
+     * @param appKey The application key.
      * @param token The OAuth token to refresh.
      */
-    refresh(token: OAuthToken): Promise<OAuthToken>;
+    refresh(appKey: string, token: OAuthToken): Promise<OAuthToken>;
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, 
-        private fetch: FetchClient, private errorFactory: ErrorFactory) { }
-
-    public getApplicationKey(): string | undefined {
-        return this.appKey;
-    }
+    public constructor(private baseUrl: string, private fetch: FetchClient, private errorFactory: ErrorFactory) { }
 
     public getBaseUrl(): string {
         return this.baseUrl;
     }
 
-    public async login(username: string, password: string): Promise<OAuthToken> {
-        if (username === '') {
-            throw this.errorFactory.badCredentialsError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        if (password === '') {
-            throw this.errorFactory.badCredentialsError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        this.guardAppKeyMustBeProvided();
-
+    public async exchangeClientCredentials(appKey: string, appSecret: string): Promise<OAuthToken> {
         const body = this.encode({
-            client_id: this.appKey!,
+            grant_type: 'client_credentials',
+            client_id: appKey,
+            client_secret: appSecret
+        });
+
+        return await this.exchange(body);
+    }
+
+    public async exchangePassword(appKey: string, username: string, password: string): Promise<OAuthToken> {
+        const body = this.encode({
+            client_id: appKey,
             grant_type: 'password',
             username: username,
             password: password
         });
 
+        return await this.exchange(body);
+    }
+
+    private async exchange(body: BodyInit): Promise<OAuthToken> {
         const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
@@ -117,18 +123,16 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     private throwIfBadCredentials(response: Response): void {
         if (response.status === 400) {
             throw this.errorFactory.badCredentialsError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
+                'The credentials supplied were not valid, please check your configuration and try again.', 
                 'CFG0002');
         }
     }
 
-    public async logout(token: OAuthToken): Promise<void> {
-        this.guardAppKeyMustBeProvided();
-
+    public async logout(appKey: string, token: OAuthToken): Promise<void> {
         const response = await this.fetch.execute(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
-                'X-Api-Key': this.appKey!,
+                'X-Api-Key': appKey,
                 'Authorization-Provider': token.provider
             }
         });
@@ -137,19 +141,9 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         await this.throwIfStatusNotOk(response);
     }
 
-    protected guardAppKeyMustBeProvided(): void {
-        if (this.appKey === undefined || this.appKey === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The appKey setting is missing, please check your configuration and try again.', 
-                'CFG0001');
-        }
-    }
-
-    public async refresh(token: OAuthToken): Promise<OAuthToken> {
-        this.guardAppKeyMustBeProvided();
-
+    public async refresh(appKey: string, token: OAuthToken): Promise<OAuthToken> {
         const body = this.encode({
-            client_id: this.appKey!,
+            client_id: appKey,
             grant_type: 'refresh_token',
             refresh_token: token.refresh_token
         });

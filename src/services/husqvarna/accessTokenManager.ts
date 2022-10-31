@@ -1,8 +1,19 @@
 import { AutomowerPlatformConfig } from '../../automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../clients/authenticationClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
-import { ErrorFactory } from '../../errors/errorFactory';
 import { AccessToken } from '../../model';
+
+/**
+ * A mechanism which authorizes the client.
+ */
+export interface OAuth2FlowStrategy {
+    /**
+     * Exchanges the configuration settings for an {@link OAuthToken}.
+     * @param config The configuration settings.
+     * @param client The authentication client.
+     */
+    exchange(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
+}
 
 /**
  * A mechanism which manages the retrieval and renewal of an access token.
@@ -30,7 +41,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private invalidated = false;    
 
     public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
-        private log: PlatformLogger, private errorFactory: ErrorFactory) { }
+        private login: OAuth2FlowStrategy, private log: PlatformLogger) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
@@ -95,28 +106,16 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doLogin(): Promise<OAuthToken> {
         this.log.debug('Logging into the Husqvarna platform...');
 
-        if (this.config.username === undefined || this.config.username === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        if (this.config.password === undefined || this.config.password === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        const result = await this.client.login(this.config.username, this.config.password);
-
+        const token = await this.login.exchange(this.config, this.client);
+        
         this.log.debug('Logged in!');
-        return result;
+        return token;
     }
 
     protected async doRefreshToken(): Promise<OAuthToken> {
         this.log.debug('Refreshing the current token...');
 
-        const newToken = await this.client.refresh(this.currentToken!);
+        const newToken = await this.client.refresh(this.config.appKey!, this.currentToken!);
 
         this.log.debug('Refreshed the token!');
         return newToken;
@@ -167,7 +166,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         this.log.debug('Logging out of the Husqvarna platform...');
 
-        await this.client.logout(token);
+        await this.client.logout(this.config.appKey!, token);
         this.currentToken = undefined;
 
         this.log.debug('Logged out!');

@@ -11,7 +11,9 @@ import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
-import { AccessTokenManagerImpl } from '../services/husqvarna/accessTokenManager';
+import { AccessTokenManagerImpl, OAuth2FlowStrategy } from '../services/husqvarna/accessTokenManager';
+import { ClientCredentialsFlowStrategy } from '../services/husqvarna/authentication/ClientCredentialsFlowStrategy';
+import { LegacyPasswordFlowStrategy } from '../services/husqvarna/authentication/LegacyPasswordFlowStrategy';
 import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
@@ -86,17 +88,28 @@ export class PlatformContainerImpl implements PlatformContainer {
         });
         
         container.register(AuthenticationClientImpl, {
-            useFactory: (context) => new AuthenticationClientImpl(this.config.appKey,
+            useFactory: (context) => new AuthenticationClientImpl(
                 settings.AUTHENTICATION_API_BASE_URL,
                 context.resolve(RetryerFetchClient),
                 context.resolve(DefaultErrorFactory))
         });
 
+        container.register(LegacyPasswordFlowStrategy, {
+            useFactory: (context) => new LegacyPasswordFlowStrategy(
+                context.resolve(DefaultErrorFactory),
+                context.resolve(HomebridgeImitationLogger))
+        });
+
+        container.register(ClientCredentialsFlowStrategy, {
+            useFactory: (context) => new ClientCredentialsFlowStrategy(
+                context.resolve(DefaultErrorFactory))
+        });
+        
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            container.resolve(HomebridgeImitationLogger),
-            container.resolve(DefaultErrorFactory)));
+            container.resolve(this.getLoginStrategy()),
+            container.resolve(HomebridgeImitationLogger)));
 
         container.register(AutomowerClientImpl, {
             useFactory: (context) => new AutomowerClientImpl(
@@ -175,6 +188,14 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(HomebridgeImitationLogger),
                 context.resolve(TimerImpl))
         });        
+    }
+
+    protected getLoginStrategy(): InjectionToken<OAuth2FlowStrategy> {
+        if (this.config.authentication_mode === 'client_credentials') {
+            return ClientCredentialsFlowStrategy;
+        }
+
+        return LegacyPasswordFlowStrategy;
     }
 
     public resolve<T>(token: InjectionToken<T>): T {
