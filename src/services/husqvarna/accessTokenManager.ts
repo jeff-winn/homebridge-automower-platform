@@ -6,13 +6,13 @@ import { AccessToken } from '../../model';
 /**
  * A mechanism which authorizes the client.
  */
-export interface OAuth2FlowStrategy {
+export interface OAuth2AuthorizationStrategy {
     /**
      * Exchanges the configuration settings for an {@link OAuthToken}.
      * @param config The configuration settings.
      * @param client The authentication client.
      */
-    exchange(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
+    authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
 }
 
 /**
@@ -41,7 +41,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     private invalidated = false;    
 
     public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
-        private login: OAuth2FlowStrategy, private log: PlatformLogger) { }
+        private login: OAuth2AuthorizationStrategy, private log: PlatformLogger) { }
 
     public async getCurrentToken(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
@@ -106,7 +106,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doLogin(): Promise<OAuthToken> {
         this.log.debug('Logging into the Husqvarna platform...');
 
-        const token = await this.login.exchange(this.config, this.client);
+        const token = await this.login.authorize(this.config, this.client);
         
         this.log.debug('Logged in!');
         return token;

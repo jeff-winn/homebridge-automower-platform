@@ -4,9 +4,9 @@ import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authen
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { BadConfigurationError } from '../../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../../src/errors/errorFactory';
-import { LegacyPasswordFlowStrategy } from '../../../../src/services/husqvarna/authentication/LegacyPasswordFlowStrategy';
+import { LegacyPasswordAuthorizationStrategy } from '../../../../src/services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
 
-describe('LegacyPasswordFlowStrategy', () => {
+describe('LegacyPasswordAuthorizationStrategy', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
     let errorFactory: Mock<ErrorFactory>;
@@ -16,7 +16,7 @@ describe('LegacyPasswordFlowStrategy', () => {
     const password = 'password';
     const appKey = '12345';
 
-    let target: LegacyPasswordFlowStrategy;
+    let target: LegacyPasswordAuthorizationStrategy;
 
     beforeEach(() => {
         client = new Mock<AuthenticationClient>();        
@@ -29,7 +29,7 @@ describe('LegacyPasswordFlowStrategy', () => {
         log = new Mock<PlatformLogger>();
         errorFactory = new Mock<ErrorFactory>();
 
-        target = new LegacyPasswordFlowStrategy(errorFactory.object(), log.object());
+        target = new LegacyPasswordAuthorizationStrategy(errorFactory.object(), log.object());
     });
 
     it('should throw an error when the config app key is undefined', async () => {
@@ -38,7 +38,7 @@ describe('LegacyPasswordFlowStrategy', () => {
 
         config.appKey = undefined;
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app key is empty', async () => {
@@ -47,7 +47,7 @@ describe('LegacyPasswordFlowStrategy', () => {
 
         config.appKey = '';
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is undefined', async () => {
@@ -56,7 +56,7 @@ describe('LegacyPasswordFlowStrategy', () => {
 
         config.username = undefined;
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is empty', async () => {
@@ -65,7 +65,7 @@ describe('LegacyPasswordFlowStrategy', () => {
 
         config.username = '';
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is undefined', async () => {
@@ -74,7 +74,7 @@ describe('LegacyPasswordFlowStrategy', () => {
 
         config.password = undefined;
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is empty', async () => {
@@ -83,7 +83,7 @@ describe('LegacyPasswordFlowStrategy', () => {
             
         config.password = '';
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should exchange the password for an oauth token', async () => {
@@ -104,6 +104,6 @@ describe('LegacyPasswordFlowStrategy', () => {
         client.setup(o => o.exchangePassword(appKey, username, password)).returnsAsync(token);
         log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
 
-        await expect(target.exchange(config, client.object())).resolves.toBe(token);
+        await expect(target.authorize(config, client.object())).resolves.toBe(token);
     });
 });

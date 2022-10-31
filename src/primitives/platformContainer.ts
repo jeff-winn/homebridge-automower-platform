@@ -11,9 +11,9 @@ import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
-import { AccessTokenManagerImpl, OAuth2FlowStrategy } from '../services/husqvarna/accessTokenManager';
-import { ClientCredentialsFlowStrategy } from '../services/husqvarna/authentication/ClientCredentialsFlowStrategy';
-import { LegacyPasswordFlowStrategy } from '../services/husqvarna/authentication/LegacyPasswordFlowStrategy';
+import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
+import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
+import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
 import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
@@ -94,14 +94,14 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(DefaultErrorFactory))
         });
 
-        container.register(LegacyPasswordFlowStrategy, {
-            useFactory: (context) => new LegacyPasswordFlowStrategy(
+        container.register(LegacyPasswordAuthorizationStrategy, {
+            useFactory: (context) => new LegacyPasswordAuthorizationStrategy(
                 context.resolve(DefaultErrorFactory),
                 context.resolve(HomebridgeImitationLogger))
         });
 
-        container.register(ClientCredentialsFlowStrategy, {
-            useFactory: (context) => new ClientCredentialsFlowStrategy(
+        container.register(ClientCredentialsAuthorizationStrategy, {
+            useFactory: (context) => new ClientCredentialsAuthorizationStrategy(
                 context.resolve(DefaultErrorFactory))
         });
         
@@ -190,12 +190,12 @@ export class PlatformContainerImpl implements PlatformContainer {
         });        
     }
 
-    protected getLoginStrategy(): InjectionToken<OAuth2FlowStrategy> {
+    protected getLoginStrategy(): InjectionToken<OAuth2AuthorizationStrategy> {
         if (this.config.authentication_mode === 'client_credentials') {
-            return ClientCredentialsFlowStrategy;
+            return ClientCredentialsAuthorizationStrategy;
         }
 
-        return LegacyPasswordFlowStrategy;
+        return LegacyPasswordAuthorizationStrategy;
     }
 
     public resolve<T>(token: InjectionToken<T>): T {

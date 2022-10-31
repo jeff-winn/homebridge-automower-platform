@@ -3,9 +3,9 @@ import { AutomowerPlatformConfig } from '../../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authenticationClient';
 import { BadConfigurationError } from '../../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../../src/errors/errorFactory';
-import { ClientCredentialsFlowStrategy } from '../../../../src/services/husqvarna/authentication/ClientCredentialsFlowStrategy';
+import { ClientCredentialsAuthorizationStrategy } from '../../../../src/services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 
-describe('ClientCredentialsFlowStrategy', () => {
+describe('ClientCredentialsAuthorizationStrategy', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
     let errorFactory: Mock<ErrorFactory>;
@@ -13,7 +13,7 @@ describe('ClientCredentialsFlowStrategy', () => {
     const appKey = '12345';
     const appSecret = 'secret';
 
-    let target: ClientCredentialsFlowStrategy;
+    let target: ClientCredentialsAuthorizationStrategy;
 
     beforeEach(() => {
         client = new Mock<AuthenticationClient>();        
@@ -24,7 +24,7 @@ describe('ClientCredentialsFlowStrategy', () => {
 
         errorFactory = new Mock<ErrorFactory>();
 
-        target = new ClientCredentialsFlowStrategy(errorFactory.object());
+        target = new ClientCredentialsAuthorizationStrategy(errorFactory.object());
     });
 
     it('should throw an error when the config app key is undefined', async () => {
@@ -33,7 +33,7 @@ describe('ClientCredentialsFlowStrategy', () => {
 
         config.appKey = undefined;
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app key is empty', async () => {
@@ -42,7 +42,7 @@ describe('ClientCredentialsFlowStrategy', () => {
 
         config.appKey = '';
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app secret is undefined', async () => {
@@ -51,7 +51,7 @@ describe('ClientCredentialsFlowStrategy', () => {
 
         config.application_secret = undefined;
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app secret is empty', async () => {
@@ -60,7 +60,7 @@ describe('ClientCredentialsFlowStrategy', () => {
 
         config.application_secret = '';
 
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should exchange the client credentials for an oauth token', async () => {
@@ -76,6 +76,6 @@ describe('ClientCredentialsFlowStrategy', () => {
 
         client.setup(o => o.exchangeClientCredentials(appKey, appSecret)).returnsAsync(token);
 
-        await expect(target.exchange(config, client.object())).resolves.toBe(token);
+        await expect(target.authorize(config, client.object())).resolves.toBe(token);
     });
 });
