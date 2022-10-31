@@ -78,7 +78,33 @@ describe('AuthenticationClientImpl', () => {
         await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(Error);
     });
 
-    it('should return an oauth token when logged in successfully', async () => {
+    it('should return an oauth token when logged in with client credentials successfully', async () => {
+        const token: OAuthToken = {
+            access_token: 'access token',
+            expires_in: 100,
+            provider: 'provider',
+            refresh_token: 'refresh token',
+            scope: 'my scope',
+            token_type: 'all the things',
+            user_id: '12345'
+        };
+
+        const body = JSON.stringify(token);
+
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 200,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD)).resolves.toStrictEqual(token);
+    });
+
+    it('should return an oauth token when logged in with password successfully', async () => {
         const token: OAuthToken = {
             access_token: 'access token',
             expires_in: 100,
