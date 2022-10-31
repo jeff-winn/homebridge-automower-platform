@@ -1,35 +1,30 @@
 import { It, Mock } from 'moq.ts';
 import { AutomowerPlatformConfig } from '../../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authenticationClient';
-import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { BadConfigurationError } from '../../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../../src/errors/errorFactory';
-import { LegacyPasswordFlowStrategy } from '../../../../src/services/husqvarna/authentication/LegacyPasswordFlowStrategy';
+import { ClientCredentialsFlowStrategy } from '../../../../src/services/husqvarna/authentication/ClientCredentialsFlowStrategy';
 
-describe('LegacyPasswordFlowStrategy', () => {
+describe('ClientCredentialsFlowStrategy', () => {
     let client: Mock<AuthenticationClient>;
     let config: AutomowerPlatformConfig;
     let errorFactory: Mock<ErrorFactory>;
-    let log: Mock<PlatformLogger>;
 
-    const username = 'username';
-    const password = 'password';
     const appKey = '12345';
+    const appSecret = 'secret';
 
-    let target: LegacyPasswordFlowStrategy;
+    let target: ClientCredentialsFlowStrategy;
 
     beforeEach(() => {
         client = new Mock<AuthenticationClient>();        
         config = {
-            username: username,
-            password: password,
-            appKey: appKey
+            appKey: appKey,
+            application_secret: appSecret
         } as AutomowerPlatformConfig;
 
-        log = new Mock<PlatformLogger>();
         errorFactory = new Mock<ErrorFactory>();
 
-        target = new LegacyPasswordFlowStrategy(errorFactory.object(), log.object());
+        target = new ClientCredentialsFlowStrategy(errorFactory.object());
     });
 
     it('should throw an error when the config app key is undefined', async () => {
@@ -50,43 +45,25 @@ describe('LegacyPasswordFlowStrategy', () => {
         await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
-    it('should throw an error when the config username is undefined', async () => {
+    it('should throw an error when the config app secret is undefined', async () => {
         errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
             .returns(new BadConfigurationError('hello world', '12345'));
 
-        config.username = undefined;
+        config.application_secret = undefined;
 
         await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
-    it('should throw an error when the config username is empty', async () => {
+    it('should throw an error when the config app secret is empty', async () => {
         errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
             .returns(new BadConfigurationError('hello world', '12345'));
 
-        config.username = '';
+        config.application_secret = '';
 
         await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
-    it('should throw an error when the config password is undefined', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
-            .returns(new BadConfigurationError('hello world', '12345'));
-
-        config.password = undefined;
-
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should throw an error when the config password is empty', async () => {
-        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
-            .returns(new BadConfigurationError('hello world', '12345'));
-            
-        config.password = '';
-
-        await expect(target.exchange(config, client.object())).rejects.toThrowError(BadConfigurationError);
-    });
-
-    it('should exchange the password for an oauth token', async () => {
+    it('should exchange the client credentials for an oauth token', async () => {
         const token: OAuthToken = {
             access_token: 'access_token',
             expires_in: 100,
@@ -97,12 +74,7 @@ describe('LegacyPasswordFlowStrategy', () => {
             user_id: 'user_id'
         };
 
-        config.appKey = appKey;
-        config.username = username;
-        config.password = password;
-        
-        client.setup(o => o.exchangePassword(appKey, username, password)).returnsAsync(token);
-        log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
+        client.setup(o => o.exchangeClientCredentials(appKey, appSecret)).returnsAsync(token);
 
         await expect(target.exchange(config, client.object())).resolves.toBe(token);
     });

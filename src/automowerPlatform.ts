@@ -17,7 +17,9 @@ import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 export interface AutomowerPlatformConfig extends PlatformConfig {    
     username?: string;
     password?: string;
+    authentication_mode?: string;
     appKey?: string;
+    application_secret?: string;
     lang?: string;
 }
 
