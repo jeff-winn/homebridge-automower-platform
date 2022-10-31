@@ -41,7 +41,9 @@ describe('EventStreamServiceImpl', () => {
 
         expect(stream.opened).toBeTruthy();
         expect(stream.callbackSet).toBeTruthy();
-
+        expect(target.unsafeGetStarted()).toBeDefined();
+        expect(target.unsafeGetLastEventReceived()).toBeUndefined();
+        
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
@@ -291,8 +293,10 @@ describe('EventStreamServiceImpl', () => {
 
         await target.unsafeKeepAlive();        
 
-        expect(stream.closed).toBeTruthy();        
+        expect(stream.closed).toBeTruthy();
         expect(stream.opened).toBeTruthy();
+        expect(target.unsafeGetStarted()).toBeDefined();
+        expect(target.unsafeGetLastEventReceived()).toBeUndefined();
     });
 
     it('should do nothing when settings-event is received', async () => {

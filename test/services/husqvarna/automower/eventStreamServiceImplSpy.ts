@@ -22,9 +22,17 @@ export class EventStreamServiceImplSpy extends EventStreamServiceImpl {
 
         return Promise.resolve(undefined);
     }
+
+    public unsafeGetLastEventReceived(): Date | undefined {
+        return this.getLastEventReceived();
+    }
     
     public unsafeSetLastEventReceived(value?: Date): void {
         this.setLastEventReceived(value);
+    }
+
+    public unsafeGetStarted(): Date | undefined {
+        return this.getStarted();
     }
 
     public unsafeSetStarted(value?: Date): void {
