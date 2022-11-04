@@ -87,7 +87,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         const body = this.encode({
             grant_type: 'client_credentials',
             client_id: appKey,
-            client_secret: appSecret
+            client_secret: appSecret,
+            scope: 'iam:read amc:api'
         });
 
         return await this.exchange(body);
