@@ -32,7 +32,6 @@ Show your Homebridge config.json here, remove any sensitive information.
 * **Plugin Version**:
 * **Homebridge Version**: <!-- homebridge -V -->
 * **Node.js Version**: <!-- node -v -->
-* **NPM Version**: <!-- npm -v -->
 * **Operating System**: <!-- Raspbian / Ubuntu / Debian / Windows / macOS / Docker / hb-service -->
 
 <!-- Click the "Preview" tab before you submit to ensure the formatting is correct. -->
