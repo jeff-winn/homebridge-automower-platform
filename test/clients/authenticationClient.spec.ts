@@ -178,6 +178,50 @@ describe('AuthenticationClientImpl', () => {
         await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).resolves.toStrictEqual(token);
     });
 
+    it('should logout successfully', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 204,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await target.logout(APPKEY, {
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        });
+    });
+
+    it('should not throw an error on 403 when logout', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 403,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await target.logout(APPKEY, {
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        });
+    });
+
     it('should throw not authorized error on 401 when logout', async () => {
         errorFactory.setup(o => o.notAuthorizedError(It.IsAny(), It.IsAny()))
             .returns(new NotAuthorizedError('hello', '12345'));
