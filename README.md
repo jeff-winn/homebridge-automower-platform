@@ -5,7 +5,10 @@
 
 [Homebridge](https://github.com/homebridge/homebridge) plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) as [Apple HomeKit](https://www.apple.com/ios/home/) accessories.
 
-Supported capabilities:
+### Known Issues:
+- There is a problem with the Husqvarna web services when using multiple mowers and the Client Credentials authentication receiving 404 errors when communicating with some of the mowers. If experienced continue to use Password authentication mode, please refer to #171 for more information.
+
+### Supported capabilities:
 - The current charge status and battery percentage for each mower.
 - A switch to control whether each mower (based on configuration - see documentation):
   - *should* mow the property.
@@ -25,7 +28,7 @@ Supported capabilities:
 
 ** These features are not directly supported within the Apple HomeKit app and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
 
-Additional capabilities:
+### Additional capabilities:
 - Streams events from Husqvarna rather than polling for changes. This allows you to run automations without having to worry about the timing of when a change is noticed, it should be within a few seconds.
 - Does not cause logout of Husqvarna mobile application.
 - Multiple languages may be supported in logs (need help with translations).
