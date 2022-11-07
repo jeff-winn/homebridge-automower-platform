@@ -40,7 +40,7 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
     private switchService?: Service;
     private on?: Characteristic;
     
-    private lastValue = false;
+    private lastValue?: boolean;
 
     public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API, protected log: PlatformLogger) {
         super(accessory, api);

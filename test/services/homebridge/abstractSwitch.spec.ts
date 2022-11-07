@@ -98,6 +98,28 @@ describe('AbstractSwitch', () => {
         expect(result.displayName).toBe(displayName);
     });
 
+    it('should log the value when updated the first time to false', () => {
+        const displayName = 'hello world';
+        accessory.setup(o => o.displayName).returns(displayName);
+
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        c.setup(o => o.updateValue(It.IsAny())).returns(c.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+
+        accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.init(NameMode.DEFAULT);
+        target.unsafeUpdateValue(false);
+
+        log.verify(o => o.info('Changed \'%s\' for \'%s\': OFF', 'Switch', 'hello world'), Times.Once());
+        c.verify(o => o.updateValue(false), Times.Once());
+    });
+
     it('should log the value when changed from false to true', () => {
         const displayName = 'hello world';
         accessory.setup(o => o.displayName).returns(displayName);
