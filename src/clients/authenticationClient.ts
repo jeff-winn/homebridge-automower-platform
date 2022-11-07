@@ -43,6 +43,26 @@ export interface OAuthToken {
 }
 
 /**
+ * Describes an authentication error response.
+ */
+export interface AuthenticationErrorResponse {
+    /**
+     * The error type.
+     */
+    error: string;
+    
+    /**
+     * The error description.
+     */
+    error_description: string;
+
+    /**
+     * The error code.
+     */
+    error_code: string;
+}
+
+/**
  * A client used to authenticate to the Husqvarna platform.
  */
 export interface AuthenticationClient {
@@ -114,15 +134,22 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             body: body
         });
 
-        this.throwIfBadCredentials(response);
+        await this.throwIfBadCredentials(response);
         this.throwIfNotAuthorized(response);
         await this.throwIfStatusNotOk(response);
 
         return await response.json() as OAuthToken;
     }
 
-    private throwIfBadCredentials(response: Response): void {
+    private async throwIfBadCredentials(response: Response): Promise<void> {
         if (response.status === 400) {
+            const error = await response.json() as AuthenticationErrorResponse;
+            if (error?.error_code === 'user.is.blocked') {
+                throw this.errorFactory.accountLockedError(
+                    'The account for the credentials supplied is currently locked, please check your account with Husqvarna and try again.',
+                    'CFG0002');
+            }
+            
             throw this.errorFactory.badCredentialsError(
                 'The credentials supplied were not valid, please check your configuration and try again.', 
                 'CFG0002');

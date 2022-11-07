@@ -1,4 +1,5 @@
 import { It, Mock } from 'moq.ts';
+import { AccountLockedError } from '../../src/errors/accountLockedError';
 
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
@@ -16,6 +17,17 @@ describe('DefaultErrorFactory', () => {
         locale = new Mock<Localization>();
 
         target = new DefaultErrorFactory(locale.object());
+    });
+
+    it('should create a new AccountLockedError', () => {
+        const message = 'message';
+        const formattedMessage = 'hello world';
+
+        locale.setup(o => o.format(message, It.IsAny())).returns(formattedMessage);
+    
+        const result = target.accountLockedError(message, '12345');
+
+        expect(result).toBeInstanceOf(AccountLockedError);
     });
 
     it('should create a new BadConfigurationError', () => {
