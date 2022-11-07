@@ -84,7 +84,7 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.startKeepAlive();
 
         this.setStarted(new Date());
-        this.setLastEventReceived(undefined);
+        this.setLastEventReceived();
 
         this.flagAsStarted();
     }
@@ -248,7 +248,7 @@ export class EventStreamServiceImpl implements EventStreamService {
         await this.connect();
 
         this.setStarted(new Date());
-        this.setLastEventReceived(undefined);
+        this.setLastEventReceived();
     }
 
     protected pingOnce(): void {
