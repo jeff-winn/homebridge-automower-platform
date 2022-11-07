@@ -166,7 +166,12 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         });
 
         this.throwIfNotAuthorized(response);
-        await this.throwIfStatusNotOk(response);
+
+        if (response.status !== 403) {
+            // Dealing with an issue with the Husqvarna platform returning a bad HTTP status for client credentials based tokens.
+            // See: https://github.com/jeff-winn/homebridge-automower-platform/issues/175
+            await this.throwIfStatusNotOk(response);
+        }
     }
 
     public async refresh(appKey: string, token: OAuthToken): Promise<OAuthToken> {
