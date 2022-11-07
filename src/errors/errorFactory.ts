@@ -1,4 +1,5 @@
 import { Localization } from '../primitives/localization';
+import { AccountLockedError } from './accountLockedError';
 import { BadConfigurationError } from './badConfigurationError';
 import { BadCredentialsError } from './badCredentialsError';
 import { BadOAuthTokenError } from './badOAuthTokenError';
@@ -16,6 +17,14 @@ export interface ErrorFactory {
      * @param params Any parameters which need to be used during localization.
      */
     badConfigurationError(message: string, errorCode: string, ...params: unknown[]): BadConfigurationError;
+
+    /**
+     * Creates a new {@link AccountLockedError} error.
+     * @param message The message to localize.
+     * @param errorCode The error code.
+     * @param params Any parameters which need to be used during localization.
+     */
+    accountLockedError(message: string, errorCode: string, ...params: unknown[]): AccountLockedError;
 
     /**
      * Creates a new {@link BadCredentialsError} error.
@@ -55,6 +64,10 @@ export interface ErrorFactory {
  */
 export class DefaultErrorFactory implements ErrorFactory {
     public constructor(private locale: Localization) { }
+
+    public accountLockedError(message: string, errorCode: string, ...params: unknown[]): AccountLockedError {
+        return new AccountLockedError(this.locale.format(message, ...params), errorCode);
+    }
 
     public badCredentialsError(message: string, errorCode: string, ...params: unknown[]): BadCredentialsError {
         return new BadCredentialsError(this.locale.format(message, ...params), errorCode);

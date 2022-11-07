@@ -1,7 +1,8 @@
 import { It, Mock } from 'moq.ts';
 
-import { AuthenticationClientImpl, OAuthToken } from '../../src/clients/authenticationClient';
+import { AuthenticationClientImpl, AuthenticationErrorResponse, OAuthToken } from '../../src/clients/authenticationClient';
 import { FetchClient, Response } from '../../src/clients/fetchClient';
+import { AccountLockedError } from '../../src/errors/accountLockedError';
 import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
 import { ErrorFactory } from '../../src/errors/errorFactory';
@@ -30,17 +31,64 @@ describe('AuthenticationClientImpl', () => {
         expect(target.getBaseUrl()).toBe(constants.AUTHENTICATION_API_BASE_URL);
     });
 
-    it('should throw a bad credentials error on 400 response', async () => {
-        errorFactory.setup(o => o.badCredentialsError(It.IsAny(), It.IsAny()))
-            .returns(new BadCredentialsError('hello', '12345'));
+    it('should throw an account locked error on 400 response when user is blocked for password exchange', async () => {
+        errorFactory.setup(o => o.accountLockedError(It.IsAny(), It.IsAny())).returns(new AccountLockedError('hello', '12345'));
 
-        const response = new Response(undefined, {
+        const error: AuthenticationErrorResponse = {
+            error: 'invalid_request',
+            error_code: 'user.is.blocked',
+            error_description: 'Blocked for too many login-attempts'
+        };
+            
+        const body = JSON.stringify(error);
+
+        const response = new Response(body, {
             headers: { },
             size: 0,
             status: 400,
             timeout: 0,
             url: 'http://localhost',
-        });
+        });       
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(AccountLockedError);
+    });
+
+    it('should throw a bad credentials error on 400 response when incorrect response body for password exchange', async () => {
+        errorFactory.setup(o => o.badCredentialsError(It.IsAny(), It.IsAny())).returns(new BadCredentialsError('hello', '12345'));
+
+        const response = new Response('{}', {
+            headers: { },
+            size: 0,
+            status: 400,
+            timeout: 0,
+            url: 'http://localhost',
+        });       
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
+    });
+
+    it('should throw a bad credentials error on 400 response when unknown error for password exchange', async () => {
+        errorFactory.setup(o => o.badCredentialsError(It.IsAny(), It.IsAny())).returns(new BadCredentialsError('hello', '12345'));
+
+        const error: AuthenticationErrorResponse = {
+            error: 'hello',
+            error_code: 'unknown',
+            error_description: 'Yeah this broke'
+        };
+            
+        const body = JSON.stringify(error);
+
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 400,
+            timeout: 0,
+            url: 'http://localhost',
+        });       
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
