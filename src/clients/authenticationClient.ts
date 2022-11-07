@@ -144,7 +144,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     private async throwIfBadCredentials(response: Response): Promise<void> {
         if (response.status === 400) {
             const error = await response.json() as AuthenticationErrorResponse;
-            if (error?.error_code === 'user.is.blocked') {
+            if (error.error_code === 'user.is.blocked') {
                 throw this.errorFactory.accountLockedError(
                     'The account for the credentials supplied is currently locked, please check your account with Husqvarna and try again.',
                     'CFG0002');

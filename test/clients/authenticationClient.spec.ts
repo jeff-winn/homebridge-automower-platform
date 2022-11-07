@@ -31,7 +31,7 @@ describe('AuthenticationClientImpl', () => {
         expect(target.getBaseUrl()).toBe(constants.AUTHENTICATION_API_BASE_URL);
     });
 
-    it('should throw an account locked error on 400 response when user is blocked', async () => {
+    it('should throw an account locked error on 400 response when user is blocked for password exchange', async () => {
         errorFactory.setup(o => o.accountLockedError(It.IsAny(), It.IsAny())).returns(new AccountLockedError('hello', '12345'));
 
         const error: AuthenticationErrorResponse = {
@@ -55,7 +55,23 @@ describe('AuthenticationClientImpl', () => {
         await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(AccountLockedError);
     });
 
-    it('should throw a bad credentials error on 400 response', async () => {
+    it('should throw a bad credentials error on 400 response when incorrect response body for password exchange', async () => {
+        errorFactory.setup(o => o.badCredentialsError(It.IsAny(), It.IsAny())).returns(new BadCredentialsError('hello', '12345'));
+
+        const response = new Response('{}', {
+            headers: { },
+            size: 0,
+            status: 400,
+            timeout: 0,
+            url: 'http://localhost',
+        });       
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
+    });
+
+    it('should throw a bad credentials error on 400 response when unknown error for password exchange', async () => {
         errorFactory.setup(o => o.badCredentialsError(It.IsAny(), It.IsAny())).returns(new BadCredentialsError('hello', '12345'));
 
         const error: AuthenticationErrorResponse = {
