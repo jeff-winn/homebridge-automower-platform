@@ -7,7 +7,6 @@
 
 ### Known Issues:
 - There is a problem identified while using multiple mowers and Client Credentials authentication mode receiving 404 errors when communicating with some mowers. This is due to the Husqvarna web services not supporting multiple mowers with Client Credentials authentication. If experienced, please continue to use Password authentication mode. You may refer to [#171](https://github.com/jeff-winn/homebridge-automower-platform/issues/171) for more information.
-- In iOS 16.0 there is a problem with the switches and sensors all being named the same as the mower, which makes distinguishing the different switches very difficult. You may refer to [KB0003](https://jeff-winn.github.io/homebridge-automower-platform/kb/kb0003) for documentation on how to remediate this issue.
 
 ### Supported capabilities:
 - The current charge status and battery percentage for each mower.
