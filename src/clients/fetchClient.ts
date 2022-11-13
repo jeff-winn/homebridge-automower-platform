@@ -61,7 +61,7 @@ export class RetryerFetchClient implements FetchClient {
             } else if (response.status === SERVICE_UNAVAILABLE) {
                 retry = await this.onServiceUnavailable();
             }
-        } while (retry && attempt <= this.maxRetryAttempts);
+        } while (retry && attempt < this.maxRetryAttempts);
         
         return response;
     }

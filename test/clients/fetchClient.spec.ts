@@ -121,8 +121,8 @@ describe('RetryerFetchClient', () => {
         expect(target.attempts).toBe(1);
     });
 
-    it('should retry on 429 when retry attempts is 1', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 1, 1000, policy.object());
+    it('should retry on 429 when retry attempts is 5', async () => {
+        const target = new RetryerFetchClientSpy(log.object(), 5, 1000, policy.object());
         
         target.responseCallback = () => new Response(undefined, {
             headers: { },
@@ -139,8 +139,8 @@ describe('RetryerFetchClient', () => {
 
         expect(result.status).toBe(429);
         expect(target.waited).toBeTruthy();
-        expect(target.tooManyRequests).toBe(2);
-        expect(target.attempts).toBe(2);
+        expect(target.tooManyRequests).toBe(5);
+        expect(target.attempts).toBe(5);
     });
 
     it('should not retry on 503 when retry attempts is zero', async () => {
@@ -165,8 +165,8 @@ describe('RetryerFetchClient', () => {
         expect(target.attempts).toBe(1);
     });
 
-    it('should retry on 503 when retry attempts is 1', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 1, 1000, policy.object());
+    it('should retry on 503 when retry attempts is 2', async () => {
+        const target = new RetryerFetchClientSpy(log.object(), 2, 1000, policy.object());
         
         target.responseCallback = () => new Response(undefined, {
             headers: { },
@@ -187,8 +187,8 @@ describe('RetryerFetchClient', () => {
         expect(target.attempts).toBe(2);
     });
 
-    it('should retry on 429 and 503 when retry attempts is 1', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 1, 1000, policy.object());
+    it('should retry on 429 and 503 when retry attempts is 2', async () => {
+        const target = new RetryerFetchClientSpy(log.object(), 2, 1000, policy.object());
         
         target.responseCallback = () => {
             let status: number;
