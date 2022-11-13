@@ -145,11 +145,7 @@ export class RetryerFetchClient implements FetchClient {
         return this.interceptHeaders(new Headers(headers));
     }
 
-    protected interceptHeaders(headers: Headers | undefined): { [k: string]: string[] } | undefined {
-        if (headers === undefined) {
-            return undefined;
-        }
-
+    protected interceptHeaders(headers: Headers): { [k: string]: string[] } {
         const result = new Headers();
 
         headers.forEach((value: string, name: string) => {
