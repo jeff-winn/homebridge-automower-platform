@@ -1,5 +1,6 @@
 import { ErrorFactory } from '../errors/errorFactory';
 import { AccessToken, Mower } from '../model';
+import { PLUGIN_ID } from '../settings';
 import { FetchClient, Response } from './fetchClient';
 
 /**
@@ -95,6 +96,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}/actions`, {
             method: 'POST',
             headers: {
+                'X-Application-Id': PLUGIN_ID,
                 'X-Api-Key': this.appKey!,
                 'Content-Type': 'application/vnd.api+json',
                 'Authorization': `Bearer ${token.value}`,
@@ -118,6 +120,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}`, {
             method: 'GET',
             headers: {
+                'X-Application-Id': PLUGIN_ID,
                 'X-Api-Key': this.appKey!,
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider
@@ -140,6 +143,7 @@ export class AutomowerClientImpl implements AutomowerClient {
         const res = await this.fetch.execute(`${this.baseUrl}/mowers`, {
             method: 'GET',
             headers: {
+                'X-Application-Id': PLUGIN_ID,
                 'X-Api-Key': this.appKey!,
                 'Authorization': `Bearer ${token.value}`,
                 'Authorization-Provider': token.provider

@@ -1,5 +1,6 @@
 import { BodyInit } from 'node-fetch';
 import { ErrorFactory } from '../errors/errorFactory';
+import { PLUGIN_ID } from '../settings';
 import { FetchClient, Response } from './fetchClient';
 
 /**
@@ -129,7 +130,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                'X-Application-Id': PLUGIN_ID
             },
             body: body
         });
@@ -160,6 +162,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         const response = await this.fetch.execute(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
+                'X-Application-Id': PLUGIN_ID,
                 'X-Api-Key': appKey,
                 'Authorization-Provider': token.provider
             }
@@ -184,7 +187,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                'X-Application-Id': PLUGIN_ID
             },
             body: body
         });
