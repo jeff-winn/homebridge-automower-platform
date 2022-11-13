@@ -16,8 +16,12 @@ While in the plugin configuration settings, and the Account Settings section exp
 2. Enter the Application Key: ```78e47163-dd2a-48bf-9af9-3cec8cadae00```
 3. Enter the email address used for your Husqvarna Connect account.
 4. Enter your password used for your Husqvarna Connect account.
-{% include lightbox.html src="/assets/images/plugin-config-sample-password.png" title="An example of the plugin configuration user interface using Password authentication" class="thumbnail" %}
 5. Click Save.
+6. Restart Homebridge.
+
+Your configuration should look like this:
+
+{% include lightbox.html src="/assets/images/plugin-config-sample-password.png" title="An example of the plugin configuration user interface using Password authentication" class="thumbnail" %}
 
 ### Manually
 Be advised, attempting to install the plug-in manually is undocumented and could result in your Homebridge server experiencing problems. If you wish to continue to install manually, you do so at your own risk.

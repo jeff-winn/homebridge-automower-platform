@@ -21,4 +21,3 @@ This assumes you already have the Homebridge configured and working correctly.
     - There are currently multiple authentication modes supported. This will determine how the plugin will access your Automower managed by the Husqvarna cloud services:
       - To configure Client Credentials authentication, you can follow the instructions found <a href="/getting-started/step-1b-configuring-client-credentials-authentication">here</a>.
       - To configure Password authentication, you can follow the instructions found <a href="/getting-started/step-1a-configuring-password-authentication">here</a>. Be advised, this mode of authentication is no longer supported by Husqvarna and may discontinue working without warning.
-6. Restart Homebridge.
