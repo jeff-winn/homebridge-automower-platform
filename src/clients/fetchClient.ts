@@ -156,7 +156,7 @@ export class RetryerFetchClient implements FetchClient {
             if (this.policy.shouldLog(name, value)) {
                 result.append(name, value);
             } else {
-                result.append(name, '--REDACTED--');
+                result.append(name, 'REDACTED');
             }
         });
 
