@@ -78,7 +78,7 @@
         },
         "client_credentials_requires_account": {
           "type": "label",
-          "title": "In order to use the Client Credentials authentication mode, you will need to register an account at the <a href=\"https://developer.husqvarnagroup.cloud/\">Husqvarna developer portal</a>. Please see the documentation for more details.",
+          "title": "In order to use the Client Credentials authentication mode, you will need to register an account at the <a href=\"https://developer.husqvarnagroup.cloud/\">Husqvarna developer portal</a>. Please see the documentation <a href=\"https://jeff-winn.github.io/homebridge-automower-platform/getting-started/step-1b-configuring-client-credentials-authentication\">HERE</a> for more details.",
           "condition": {
             "functionBody": "return model.authentication_mode === 'client_credentials' "
           }
