@@ -1,6 +1,7 @@
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AutomowerEvent, ConnectedEvent, ErrorEvent } from '../events';
 import { AccessToken } from '../model';
+import { PLUGIN_ID } from '../settings';
 import { WebSocketWrapper, WebSocketWrapperImpl } from './primitives/webSocketWrapper';
 
 /**
@@ -87,7 +88,8 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     protected createSocket(token: AccessToken): WebSocketWrapper {
         return new WebSocketWrapperImpl(this.baseUrl, {
             headers: {
-                'Authorization': `Bearer ${token.value}`
+                'Authorization': `Bearer ${token.value}`,
+                'X-Application-Id': PLUGIN_ID
             }
         });
     }
