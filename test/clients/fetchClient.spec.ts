@@ -17,6 +17,28 @@ describe('RetryerFetchClient', () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
     });
 
+    it('should not log any request headers', async () => {
+        const target = new RetryerFetchClientSpy(log.object(), 0, 1000, policy.object());
+        
+        target.responseCallback = () => new Response(undefined, {
+            headers: undefined,
+            size: 0,
+            status: 200,
+            statusText: 'Ok',
+            timeout: 0,
+            url: url,
+        });
+        
+        policy.setup(o => o.shouldLog(It.IsAny(), It.IsAny())).returns(true);
+        
+        const result = await target.execute(url);
+
+        expect(result.status).toBe(200);
+        expect(target.waited).toBeFalsy();
+        expect(target.tooManyRequests).toBe(0);
+        expect(target.attempts).toBe(1);
+    });
+
     it('should not log any request or response headers', async () => {
         const target = new RetryerFetchClientSpy(log.object(), 0, 1000, policy.object());
         
