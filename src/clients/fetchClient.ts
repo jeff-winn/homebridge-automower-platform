@@ -1,4 +1,4 @@
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
+import fetch, { Headers, HeadersInit, RequestInfo, RequestInit, Response } from 'node-fetch';
 import { v4 as uuid } from 'uuid';
 
 import { PlatformLogger } from '../diagnostics/platformLogger';
@@ -17,6 +17,18 @@ export interface FetchClient {
 }
 
 /**
+ * A policy which determines whether a header should be logged.
+ */
+export interface ShouldLogHeaderPolicy {
+    /**
+     * Identifies whether the header specified should be logged.
+     * @param name The name of the header.
+     * @param value The value of the header.
+     */
+    shouldLog(name: string, value: string): boolean;
+}
+
+/**
  * When too many requests have been received within the alloted time window.
  */
 const TOO_MANY_REQUESTS = 429;
@@ -30,7 +42,7 @@ const SERVICE_UNAVAILABLE = 503;
  * A client which uses node-fetch to perform HTTP requests and includes retryer support.
  */
 export class RetryerFetchClient implements FetchClient {
-    public constructor(private log: PlatformLogger, private maxRetryAttempts: number, private maxDelayInMillis: number) { }
+    public constructor(private log: PlatformLogger, private maxRetryAttempts: number, private maxDelayInMillis: number, private policy: ShouldLogHeaderPolicy) { }
 
     public async execute(url: RequestInfo, init?: RequestInit): Promise<Response> {
         let response: Response;
@@ -93,7 +105,7 @@ export class RetryerFetchClient implements FetchClient {
         this.log.debug('Sending request [%d/%d]: %s\r\n', attempt, this.maxRetryAttempts, id, JSON.stringify({
             url: url,
             method: init?.method,
-            headers: init?.headers,
+            headers: this.interceptRequestHeaders(init?.headers),
             body: init?.body        
         }));
 
@@ -110,7 +122,7 @@ export class RetryerFetchClient implements FetchClient {
         this.log.debug('Received response: %s\r\n', id, JSON.stringify({
             status: response.status,
             statusText: response.statusText,
-            headers: response.headers.raw,
+            headers: this.interceptHeaders(response.headers),
             body: body
         }));
 
@@ -123,6 +135,28 @@ export class RetryerFetchClient implements FetchClient {
             timeout: response.timeout,
             url: response.url
         });
+    }
+
+    protected interceptRequestHeaders(headers: HeadersInit | undefined): { [k: string]: string[] } | undefined {
+        if (headers === undefined) {
+            return undefined;
+        }
+
+        return this.interceptHeaders(new Headers(headers));
+    }
+
+    protected interceptHeaders(headers: Headers): { [k: string]: string[] } {
+        const result = new Headers();
+
+        headers.forEach((value: string, name: string) => {
+            if (this.policy.shouldLog(name, value)) {
+                result.append(name, value);
+            } else {
+                result.append(name, 'REDACTED');
+            }
+        });
+
+        return result.raw();
     }
 
     protected doFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {

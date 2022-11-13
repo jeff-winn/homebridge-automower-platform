@@ -8,6 +8,7 @@ import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
+import { ShouldLogHeaderPolicyImpl } from '../clients/policies/shouldLogHeaderPolicyImpl';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
@@ -71,11 +72,16 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(Y18nLocalization))
         });
 
+        container.register(ShouldLogHeaderPolicyImpl, {
+            useValue: new ShouldLogHeaderPolicyImpl()
+        });
+
         container.register(RetryerFetchClient, {
             useFactory: (context) => new RetryerFetchClient(
                 context.resolve(HomebridgeImitationLogger), 
                 DEFAULT_MAX_RETRY_ATTEMPTS, 
-                DEFAULT_MAX_DELAY_IN_MILLIS)
+                DEFAULT_MAX_DELAY_IN_MILLIS,
+                context.resolve(ShouldLogHeaderPolicyImpl))
         });
 
         container.register(TimerImpl, {
