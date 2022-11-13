@@ -120,7 +120,8 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             client_id: appKey,
             grant_type: 'password',
             username: username,
-            password: password
+            password: password,
+            scope: 'iam:read amc:api'
         });
 
         return await this.exchange(body);
