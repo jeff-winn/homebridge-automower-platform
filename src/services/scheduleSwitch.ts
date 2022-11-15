@@ -1,12 +1,12 @@
 import {
-    API, CharacteristicSetCallback,
+    API, Characteristic, CharacteristicSetCallback,
     HAPStatus, PlatformAccessory
 } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Calendar, MowerState, Planner } from '../model';
-import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
+import { AbstractSwitch, NameMode, Switch } from './homebridge/abstractSwitch';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 
@@ -34,9 +34,19 @@ export interface ScheduleSwitch extends Switch {
 }
 
 export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
+    private chargingCycles?: Characteristic;
+
     public constructor(name: string, private controlService: MowerControlService, private policy: ScheduleEnabledPolicy, 
         accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
+    }
+
+    public override init(mode: NameMode): void {
+        super.init(mode);
+
+        const service = this.getUnderlyingService()!;
+        
+        this.chargingCycles = service.addCharacteristic(this.CustomCharacteristic.ChargingCycles).updateValue(10);
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
