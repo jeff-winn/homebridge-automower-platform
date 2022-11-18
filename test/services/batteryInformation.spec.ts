@@ -47,6 +47,18 @@ describe('BatteryServiceImpl', () => {
         })).toThrowError();
     });
 
+    it('should throw an error when not initialized on set statistics', () => {
+        expect(() => target.setStatistics({
+            cuttingBladeUsageTime: 0,
+            numberOfChargingCycles: 0,
+            numberOfCollisions: 0,
+            totalChargingTime: 0,
+            totalCuttingTime: 0,
+            totalRunningTime: 0,
+            totalSearchingTime: 0
+        })).toThrowError();
+    });
+
     it('should use the existing battery service', () => {
         const serviceInstance = new Mock<Service>();
         const lowBattery = new Mock<Characteristic>();
