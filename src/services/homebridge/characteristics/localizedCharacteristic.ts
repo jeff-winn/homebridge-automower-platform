@@ -7,6 +7,10 @@ export { Formats, Perms } from 'hap-nodejs';
  * An abstract {@link Characteristic} which supports resource localization.
  */
 export abstract class LocalizedCharacteristic extends Characteristic {
+    /**
+     * Localizes the characteristic.
+     * @param locale The localization.
+     */
     public localize(locale: Localization): void {
         this.displayName = locale.format(this.displayName);
 
