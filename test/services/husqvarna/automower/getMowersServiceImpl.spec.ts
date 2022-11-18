@@ -2,7 +2,7 @@ import { Mock, Times } from 'moq.ts';
 
 import { AutomowerClient } from '../../../../src/clients/automowerClient';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
-import { AccessToken, Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
+import { AccessToken, Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
 import { GetMowersServiceImpl } from '../../../../src/services/husqvarna/automower/getMowersService';
 
@@ -87,6 +87,21 @@ describe('GetMowersServiceImpl', () => {
                     restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [ ],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: '12345',
                     name: 'dobby',
@@ -139,6 +154,21 @@ describe('GetMowersServiceImpl', () => {
                     restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [ ],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: '12345',
                     name: 'dobby',

@@ -6,7 +6,7 @@ import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../src/errors/errorFactory';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 import { UnexpectedServerError } from '../../src/errors/unexpectedServerError';
-import { AccessToken, Activity, Mode, Mower, RestrictedReason, State } from '../../src/model';
+import { AccessToken, Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../src/model';
 import * as constants from '../../src/settings';
 
 describe('AutomowerClientImpl', () => {
@@ -306,6 +306,21 @@ describe('AutomowerClientImpl', () => {
                     restrictedReason: RestrictedReason.NONE
                 },
                 positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: 'model',
                     name: 'name',
@@ -394,6 +409,21 @@ describe('AutomowerClientImpl', () => {
                         restrictedReason: RestrictedReason.NONE
                     },
                     positions: [],
+                    settings: {
+                        cuttingHeight: 1,
+                        headlight: {
+                            mode: HeadlightMode.ALWAYS_ON
+                        }
+                    },
+                    statistics: {
+                        cuttingBladeUsageTime: 0,
+                        numberOfChargingCycles: 0,
+                        numberOfCollisions: 0,
+                        totalChargingTime: 0,
+                        totalCuttingTime: 0,
+                        totalRunningTime: 0,
+                        totalSearchingTime: 0
+                    },
                     system: {
                         model: 'model',
                         name: 'name',
@@ -456,6 +486,21 @@ describe('AutomowerClientImpl', () => {
                         restrictedReason: RestrictedReason.NONE
                     },
                     positions: [],
+                    settings: {
+                        cuttingHeight: 1,
+                        headlight: {
+                            mode: HeadlightMode.ALWAYS_ON
+                        }
+                    },
+                    statistics: {
+                        cuttingBladeUsageTime: 0,
+                        numberOfChargingCycles: 0,
+                        numberOfCollisions: 0,
+                        totalChargingTime: 0,
+                        totalCuttingTime: 0,
+                        totalRunningTime: 0,
+                        totalSearchingTime: 0
+                    },
                     system: {
                         model: 'model',
                         name: 'name',
@@ -490,6 +535,21 @@ describe('AutomowerClientImpl', () => {
                         restrictedReason: RestrictedReason.NONE
                     },
                     positions: [],
+                    settings: {
+                        cuttingHeight: 1,
+                        headlight: {
+                            mode: HeadlightMode.ALWAYS_ON
+                        }
+                    },
+                    statistics: {
+                        cuttingBladeUsageTime: 0,
+                        numberOfChargingCycles: 0,
+                        numberOfCollisions: 0,
+                        totalChargingTime: 0,
+                        totalCuttingTime: 0,
+                        totalRunningTime: 0,
+                        totalSearchingTime: 0
+                    },
                     system: {
                         model: 'model',
                         name: 'name',

@@ -1,9 +1,9 @@
-import { Characteristic, Formats, Perms } from 'hap-nodejs';
+import { Formats, LocalizedCharacteristic, Perms } from './localizedCharacteristic';
 
 /**
  * A characteristic for the number of charging cycles a mower has performed.
  */
-export class ChargingCycles extends Characteristic {
+export class ChargingCycles extends LocalizedCharacteristic {
     /**
      * Defines the UUID for the characteristic.
      */

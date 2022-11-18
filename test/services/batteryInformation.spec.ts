@@ -4,10 +4,13 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/model';
+import { Localization } from '../../src/primitives/localization';
 import { BatteryInformationImpl } from '../../src/services/batteryInformation';
+import { CustomCharacteristicDefinitions } from '../../src/services/homebridge/customCharacteristicDefinitions';
 
 describe('BatteryServiceImpl', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let locale: Mock<Localization>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
 
@@ -19,11 +22,13 @@ describe('BatteryServiceImpl', () => {
         hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);
         hap.setup(o => o.Characteristic).returns(Characteristic);
+        
+        locale = new Mock<Localization>();
 
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object());
         
-        target = new BatteryInformationImpl(accessory.object(), api.object());
+        target = new BatteryInformationImpl(locale.object(), accessory.object(), api.object());
     });
 
     it('should throw an error when not initialized on set battery level', () => {
@@ -47,10 +52,13 @@ describe('BatteryServiceImpl', () => {
         const lowBattery = new Mock<Characteristic>();
         const batteryLevel = new Mock<Characteristic>();
         const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
 
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(true);
+        serviceInstance.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(chargingCycles.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
 
@@ -65,13 +73,19 @@ describe('BatteryServiceImpl', () => {
         const lowBattery = new Mock<Characteristic>();
         const batteryLevel = new Mock<Characteristic>();
         const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
 
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(false);
+        serviceInstance.setup(o => o.addCharacteristic(It.IsAny())).returns(chargingCycles.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(undefined);
         accessory.setup(o => o.addService(Service.Battery)).returns(serviceInstance.object());
+
+        locale.setup(o => o.format('Charging Cycles')).returns('Hello');
+        locale.setup(o => o.format('cycles')).returns('worlds');
 
         target.init();
 
@@ -81,14 +95,13 @@ describe('BatteryServiceImpl', () => {
     
     it('sets the battery service as 20 percent and low battery', () => {
         const serviceInstance = new Mock<Service>();
-        
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
-
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
-
         const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
+
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
         chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
@@ -96,6 +109,8 @@ describe('BatteryServiceImpl', () => {
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(true);
+        serviceInstance.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(chargingCycles.object());
 
         target.init();
 
@@ -108,15 +123,14 @@ describe('BatteryServiceImpl', () => {
     });
 
     it('sets the battery service as normal battery with 100 percent', () => {
-        const serviceInstance = new Mock<Service>();
-        
+        const serviceInstance = new Mock<Service>();        
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
-
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
-
         const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
+
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
         chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
@@ -124,6 +138,8 @@ describe('BatteryServiceImpl', () => {
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(true);
+        serviceInstance.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(chargingCycles.object());
 
         target.init();
 
@@ -137,14 +153,13 @@ describe('BatteryServiceImpl', () => {
 
     it('sets the battery service as charging', () => {
         const serviceInstance = new Mock<Service>();
-        
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
-
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
-
         const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
+
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
         chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
@@ -152,6 +167,8 @@ describe('BatteryServiceImpl', () => {
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(true);
+        serviceInstance.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(chargingCycles.object());
 
         target.init();
 
@@ -168,14 +185,13 @@ describe('BatteryServiceImpl', () => {
 
     it('sets the battery service as not charging', () => {
         const serviceInstance = new Mock<Service>();
-        
         const lowBattery = new Mock<Characteristic>();
-        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
-
         const batteryLevel = new Mock<Characteristic>();
-        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
-
         const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
+
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
         chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
 
         accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
@@ -183,6 +199,8 @@ describe('BatteryServiceImpl', () => {
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
         serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(true);
+        serviceInstance.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(chargingCycles.object());
 
         target.init();
         
@@ -195,5 +213,37 @@ describe('BatteryServiceImpl', () => {
         });
 
         chargingState.verify(o => o.updateValue(Characteristic.ChargingState.NOT_CHARGING), Times.Once());
+    });
+
+    it('sets the battery service statistics', () => {
+        const serviceInstance = new Mock<Service>();
+        const lowBattery = new Mock<Characteristic>();
+        const batteryLevel = new Mock<Characteristic>();
+        const chargingState = new Mock<Characteristic>();
+        const chargingCycles = new Mock<Characteristic>();
+
+        chargingCycles.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingCycles.object());
+
+        accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
+
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+        serviceInstance.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(true);
+        serviceInstance.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.ChargingCycles)).returns(chargingCycles.object());
+
+        target.init();
+
+        target.setStatistics({
+            cuttingBladeUsageTime: 0,
+            numberOfChargingCycles: 1,
+            numberOfCollisions: 0,
+            totalChargingTime: 0,
+            totalCuttingTime: 0,
+            totalRunningTime: 0,
+            totalSearchingTime: 0
+        });
+
+        chargingCycles.verify(o => o.updateValue(1), Times.Once());
     });
 });

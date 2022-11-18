@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory } from '../../../../src/automowerAccessory';
 import { AutomowerPlatform } from '../../../../src/automowerPlatform';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
-import { Activity, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
+import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
 import { AutomowerAccessoryFactory } from '../../../../src/primitives/automowerAccessoryFactory';
 import { DiscoveryServiceImpl } from '../../../../src/services/husqvarna/automower/discoveryService';
 import { GetMowersService } from '../../../../src/services/husqvarna/automower/getMowersService';
@@ -69,6 +69,21 @@ describe('DiscoveryServiceImpl', () => {
                     restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: 'HUSQVARNA AUTOMOWER 430XH',
                     name: mower1Name,
@@ -106,6 +121,21 @@ describe('DiscoveryServiceImpl', () => {
                     restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: 'HUSQVARNA AUTOMOWER 430XH',
                     name: mower2Name,
@@ -176,6 +206,21 @@ describe('DiscoveryServiceImpl', () => {
                     restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: 'HUSQVARNA AUTOMOWER 430XH',
                     name: mower1Name,
@@ -213,6 +258,21 @@ describe('DiscoveryServiceImpl', () => {
                     restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    cuttingBladeUsageTime: 0,
+                    numberOfChargingCycles: 0,
+                    numberOfCollisions: 0,
+                    totalChargingTime: 0,
+                    totalCuttingTime: 0,
+                    totalRunningTime: 0,
+                    totalSearchingTime: 0
+                },
                 system: {
                     model: 'HUSQVARNA AUTOMOWER 430XH',
                     name: mower2Name,

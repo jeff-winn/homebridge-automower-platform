@@ -1,6 +1,7 @@
-import { Characteristic, Service } from 'homebridge';
-
+import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
+import { AutomowerContext } from '../automowerAccessory';
 import { Activity, Battery, MowerState, Statistics } from '../model';
+import { Localization } from '../primitives/localization';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**
@@ -25,10 +26,10 @@ export interface BatteryInformation {
     setChargingState(state: MowerState): void;
 
     /**
-     * Sets the charging cycles.
+     * Sets the statistics.
      * @param statistics The statistics of the mower.
      */
-    setChargingCycles(statistics: Statistics): void;
+    setStatistics(statistics: Statistics): void;
 }
 
 export class BatteryInformationImpl extends AbstractAccessoryService implements BatteryInformation {        
@@ -37,6 +38,10 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
     private chargingCycles?: Characteristic;
+
+    public constructor(private locale: Localization, accessory: PlatformAccessory<AutomowerContext>, api: API) {
+        super(accessory, api);
+    }
 
     public getUnderlyingService(): Service | undefined {
         return this.batteryService;
@@ -52,9 +57,13 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
         this.batteryLevel = this.batteryService.getCharacteristic(this.Characteristic.BatteryLevel);
         this.chargingState = this.batteryService.getCharacteristic(this.Characteristic.ChargingState);
 
-        this.chargingCycles = this.batteryService.getCharacteristic(this.CustomCharacteristic.ChargingCycles);
-        if (this.chargingCycles === undefined) {
-            this.chargingCycles = this.batteryService.addCharacteristic(this.CustomCharacteristic.ChargingCycles);
+        if (this.batteryService.testCharacteristic(this.CustomCharacteristic.ChargingCycles)) {
+            this.chargingCycles = this.batteryService.getCharacteristic(this.CustomCharacteristic.ChargingCycles);
+        } else {
+            const characteristic = new this.CustomCharacteristic.ChargingCycles();
+            characteristic.localize(this.locale);
+
+            this.chargingCycles = this.batteryService.addCharacteristic(characteristic);
         }
     }
     
@@ -84,7 +93,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
         }
     }
 
-    public setChargingCycles(statistics: Statistics): void {
+    public setStatistics(statistics: Statistics): void {
         if (this.chargingCycles === undefined) {
             throw new Error('The service has not been initialized.');
         }
