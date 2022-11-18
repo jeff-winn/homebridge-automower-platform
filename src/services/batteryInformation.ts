@@ -1,6 +1,7 @@
-import { Characteristic, Service } from 'homebridge';
-
-import { Activity, Battery, MowerState } from '../model';
+import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
+import { AutomowerContext } from '../automowerAccessory';
+import { Activity, Battery, MowerState, Statistics } from '../model';
+import { Localization } from '../primitives/localization';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**
@@ -23,6 +24,12 @@ export interface BatteryInformation {
      * @param state The state of the mower.
      */
     setChargingState(state: MowerState): void;
+
+    /**
+     * Sets the statistics.
+     * @param statistics The statistics of the mower.
+     */
+    setStatistics(statistics: Statistics): void;
 }
 
 export class BatteryInformationImpl extends AbstractAccessoryService implements BatteryInformation {        
@@ -30,6 +37,11 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     private lowBattery?: Characteristic;
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
+    private chargingCycles?: Characteristic;
+
+    public constructor(private locale: Localization, accessory: PlatformAccessory<AutomowerContext>, api: API) {
+        super(accessory, api);
+    }
 
     public getUnderlyingService(): Service | undefined {
         return this.batteryService;
@@ -44,6 +56,15 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
         this.lowBattery = this.batteryService.getCharacteristic(this.Characteristic.StatusLowBattery);
         this.batteryLevel = this.batteryService.getCharacteristic(this.Characteristic.BatteryLevel);
         this.chargingState = this.batteryService.getCharacteristic(this.Characteristic.ChargingState);
+
+        if (this.batteryService.testCharacteristic(this.CustomCharacteristic.ChargingCycles)) {
+            this.chargingCycles = this.batteryService.getCharacteristic(this.CustomCharacteristic.ChargingCycles);
+        } else {
+            const characteristic = new this.CustomCharacteristic.ChargingCycles();
+            characteristic.localize(this.locale);
+
+            this.chargingCycles = this.batteryService.addCharacteristic(characteristic);
+        }
     }
     
     public setChargingState(state: MowerState) {  
@@ -70,5 +91,13 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
         } else {
             this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
         }
+    }
+
+    public setStatistics(statistics: Statistics): void {
+        if (this.chargingCycles === undefined) {
+            throw new Error('The service has not been initialized.');
+        }
+
+        this.chargingCycles.updateValue(statistics.numberOfChargingCycles);
     }
 }

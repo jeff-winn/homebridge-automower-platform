@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
-import { Activity, Battery, Calendar, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../src/model';
+import { Activity, Battery, Calendar, HeadlightMode, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State, Statistics } from '../src/model';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
@@ -103,6 +103,16 @@ describe('AutomowerAccessory', () => {
             restrictedReason: RestrictedReason.NOT_APPLICABLE
         };
 
+        const statistics: Statistics = {
+            cuttingBladeUsageTime: 0,
+            numberOfChargingCycles: 0,
+            numberOfCollisions: 0,
+            totalChargingTime: 0,
+            totalCuttingTime: 0,
+            totalRunningTime: 0,
+            totalSearchingTime: 0
+        };
+
         const mower: Mower = {
             id: '12345',
             type: 'abcd1234',
@@ -116,6 +126,13 @@ describe('AutomowerAccessory', () => {
                 mower: state,
                 planner: planner,
                 positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: statistics,
                 system: {
                     model: 'model',
                     name: 'name',
@@ -126,6 +143,7 @@ describe('AutomowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
+        batteryService.setup(o => o.setStatistics(statistics)).returns(undefined);
         scheduleSwitch.setup(o => o.setPlanner(planner)).returns(undefined);
         scheduleSwitch.setup(o => o.setCalendar(calendar)).returns(undefined);
         scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
@@ -138,6 +156,7 @@ describe('AutomowerAccessory', () => {
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
+        batteryService.verify(o => o.setStatistics(statistics), Times.Once());
         scheduleSwitch.verify(o => o.setPlanner(planner), Times.Once());
         scheduleSwitch.verify(o => o.setCalendar(calendar), Times.Once());
         scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());

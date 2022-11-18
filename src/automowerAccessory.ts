@@ -67,6 +67,7 @@ export class AutomowerAccessory {
     public refresh(data: Mower): void {
         this.batteryInformation.setBatteryLevel(data.attributes.battery);
         this.batteryInformation.setChargingState(data.attributes.mower);
+        this.batteryInformation.setStatistics(data.attributes.statistics);
 
         this.arrivingSensor.setMowerState(data.attributes.mower);
         this.leavingSensor.setMowerState(data.attributes.mower);

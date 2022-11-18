@@ -20,6 +20,8 @@ export interface Mower {
         planner: Planner;
         metadata: MowerMetadata;
         positions: Position[];
+        settings: Settings;
+        statistics: Statistics;
     };
 }
 
@@ -53,11 +55,22 @@ export interface Headlight {
     mode: HeadlightMode;
 }
 
+/**
+ * Defines the headlight modes.
+ */
 export enum HeadlightMode {
     ALWAYS_ON = 'ALWAYS_ON',
     ALWAYS_OFF = 'ALWAYS_OFF',
     EVENING_ONLY = 'EVENING_ONLY',
     EVENING_AND_NIGHT = 'EVENING_AND_NIGHT'
+}
+
+/**
+ * Describes the settings for the mower.
+ */
+export interface Settings {
+    cuttingHeight: number;
+    headlight: Headlight;
 }
 
 /**
@@ -79,6 +92,9 @@ export interface MowerState {
     errorCodeTimestamp: number;
 }
 
+/**
+ * Defines the modes.
+ */
 export enum Mode {
     MAIN_AREA = 'MAIN_AREA',
     SECONDARY_AREA = 'SECONDARY_AREA',
@@ -87,6 +103,9 @@ export enum Mode {
     UNKNOWN = 'UNKNOWN'
 }
 
+/**
+ * Defines the activities.
+ */
 export enum Activity {
     UNKNOWN = 'UNKNOWN',
     NOT_APPLICABLE = 'NOT_APPLICABLE',
@@ -98,6 +117,9 @@ export enum Activity {
     STOPPED_IN_GARDEN = 'STOPPED_IN_GARDEN'
 }
 
+/**
+ * Defines the states.
+ */
 export enum State {
     UNKNOWN = 'UNKNOWN',
     NOT_APPLICABLE = 'NOT_APPLICABLE',
@@ -170,4 +192,17 @@ export interface Task {
     friday: boolean;
     saturday: boolean;
     sunday: boolean;
+}
+
+/**
+ * Describes the statistics for the mower.
+ */
+export interface Statistics {
+    cuttingBladeUsageTime: number;
+    numberOfChargingCycles: number;
+    numberOfCollisions: number;
+    totalChargingTime: number;
+    totalCuttingTime: number;
+    totalRunningTime: number;
+    totalSearchingTime: number;
 }

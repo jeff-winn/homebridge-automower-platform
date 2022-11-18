@@ -51,5 +51,7 @@
   "An unexpected error occurred while configuring the accessory.": "An unexpected error occurred while configuring the accessory.",
   "Configuring '%s' from the accessory cache.": "Configuring '%s' from the accessory cache.",
   "Refreshing the current token...": "Refreshing the current token...",
-  "Refreshed the token!": "Refreshed the token!"
+  "Refreshed the token!": "Refreshed the token!",
+  "Charging Cycles": "Charging Cycles",
+  "cycles": "cycles"
 }
