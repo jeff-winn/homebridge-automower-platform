@@ -5,7 +5,7 @@
 
 [Homebridge](https://github.com/homebridge/homebridge) plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) as [Apple HomeKit](https://www.apple.com/ios/home/) accessories using the [Husqvarna Group](https://developer.husqvarnagroup.cloud) cloud services.
 
-Be advised, because this plug-in uses cloud services, downtime or outages are possible as it relies solely on the cloud services to manage the communication with your device(s).
+Be advised, because this plug-in uses cloud services, service interruptions or outages are possible as it relies solely on the cloud services to manage the communication with your device(s).
 
 #### Supported capabilities
 - The current charge status and battery percentage for each mower.
