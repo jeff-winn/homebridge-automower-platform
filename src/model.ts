@@ -96,10 +96,29 @@ export interface MowerState {
  * Defines the modes.
  */
 export enum Mode {
+    /**
+     * Mower will mow until low battery. Go home and charge. Leave and continue mowing. Week schedule is used. Schedule can be overridden with forced park or forced mowing.
+     */
     MAIN_AREA = 'MAIN_AREA',
+
+    /**
+     * Mower is in secondary area. Schedule is overridden with forced park or forced mowing. Mower will mow for request time or untill the battery runs out.
+     */
     SECONDARY_AREA = 'SECONDARY_AREA',
+
+    /**
+     * Mower goes home and parks forever. Week schedule is not used. Cannot be overridden with forced mowing.
+     */
     HOME = 'HOME',
+
+    /**
+     * Same as main area, but shorter times. No blade operation.
+     */
     DEMO = 'DEMO',
+
+    /**
+     * Unknown mode.
+     */
     UNKNOWN = 'UNKNOWN'
 }
 
@@ -107,13 +126,44 @@ export enum Mode {
  * Defines the activities.
  */
 export enum Activity {
+    /**
+     * Unknown activity.
+     */
     UNKNOWN = 'UNKNOWN',
+    
+    /**
+     * Manual start required in mower.
+     */
     NOT_APPLICABLE = 'NOT_APPLICABLE',
+
+    /**
+     * Mower is mowing lawn. If in demo mode the blades are not in operation.
+     */
     MOWING = 'MOWING',
-    GOING_HOME = 'GOING_HOME',    
+
+    /**
+     * Mower is going home to the charging station.
+     */
+    GOING_HOME = 'GOING_HOME',
+
+    /**
+     * Mower is charging in station due to low battery.
+     */
     CHARGING = 'CHARGING',
+    
+    /**
+     * Mower is leaving the charging station.
+     */
     LEAVING = 'LEAVING',
+
+    /**
+     * Mower is parked in charging station.
+     */
     PARKED_IN_CS = 'PARKED_IN_CS',
+
+    /**
+     * Mower has stopped. Needs manual action to resume.
+     */
     STOPPED_IN_GARDEN = 'STOPPED_IN_GARDEN'
 }
 
@@ -121,17 +171,64 @@ export enum Activity {
  * Defines the states.
  */
 export enum State {
+    /**
+     * Unknown state.
+     */
     UNKNOWN = 'UNKNOWN',
+
+    /**
+     * State is not applicable.
+     */
     NOT_APPLICABLE = 'NOT_APPLICABLE',
+
+    /**
+     * Mower has been paused by user.
+     */
     PAUSED = 'PAUSED',
+
+    /**
+     * Mower is in operation. See value in activity for status.
+     */
     IN_OPERATION = 'IN_OPERATION',
+
+    /**
+     * Mower is downloading new firmware.
+     */
     WAIT_UPDATING = 'WAIT_UPDATING',
+
+    /**
+     * Mower is performing power up tests.
+     */
     WAIT_POWER_UP = 'WAIT_POWER_UP',
+
+    /**
+     * Mower can currently not mow due to week calender, or override park.
+     */
     RESTRICTED = 'RESTRICTED',
+
+    /**
+     * Mower is turned off.
+     */
     OFF = 'OFF',
+
+    /**
+     * Mower is stopped requires manual action.
+     */
     STOPPED = 'STOPPED',
+
+    /**
+     * An error has occurred. Mower requires manual action.
+     */
     ERROR = 'ERROR',
+
+    /**
+     * An error has occurred. Mower requires manual action.
+     */
     FATAL_ERROR = 'FATAL_ERROR',
+
+    /**
+     * An error has occurred. Mower requires manual action.
+     */
     ERROR_AT_POWER_UP = 'ERROR_AT_POWER_UP'
 }
 
