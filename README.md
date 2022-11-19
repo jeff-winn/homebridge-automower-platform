@@ -8,7 +8,6 @@
 Be advised, because this plug-in uses cloud services, service interruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your device(s).
 
 #### Supported capabilities
-- The current charge status and battery percentage for each mower.
 - A switch to control whether each mower (based on configuration - see documentation):
   - *should* mow the property.
   - or *has* the on-board schedule enabled or disabled.
