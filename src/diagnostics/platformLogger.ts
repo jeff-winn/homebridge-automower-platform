@@ -97,7 +97,7 @@ export class HomebridgeImitationLogger implements PlatformLogger {
             let logName = this.platformName;
             if (this.name !== undefined && this.name !== this.platformName) {
                 // Change out the name of the platform to something to help the user identify which specific instance.
-                logName = `${this.platformName} - ${this.name}`;
+                logName = this.name;
             }            
 
             msg = this.color.cyan(`[${logName}] `) + msg;
