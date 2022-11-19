@@ -4,6 +4,7 @@ import { BadConfigurationError } from './badConfigurationError';
 import { BadCredentialsError } from './badCredentialsError';
 import { BadOAuthTokenError } from './badOAuthTokenError';
 import { NotAuthorizedError } from './notAuthorizedError';
+import { SimultaneousLoginError } from './simultaneousLoginError';
 import { UnexpectedServerError } from './unexpectedServerError';
 
 /**
@@ -51,6 +52,14 @@ export interface ErrorFactory {
     notAuthorizedError(message: string, errorCode: string, ...params: unknown[]): NotAuthorizedError;
 
     /**
+     * Creates a new {@link SimultaneousLoginError} error.
+     * @param message The message to localize.
+     * @param errorCode The error code.
+     * @param params Any parameters which need to be used during localization.
+     */
+    simultaneousLoginError(message: string, errorCode: string, ...params: unknown[]): SimultaneousLoginError;
+
+    /**
      * Creates a new {@link UnexpectedServerError} error.
      * @param message The message to localize.
      * @param errorCode The error code.
@@ -83,6 +92,10 @@ export class DefaultErrorFactory implements ErrorFactory {
 
     public notAuthorizedError(message: string, errorCode: string, ...params: unknown[]): NotAuthorizedError {
         return new NotAuthorizedError(this.locale.format(message, ...params), errorCode);
+    }
+
+    public simultaneousLoginError(message: string, errorCode: string, ...params: unknown[]): SimultaneousLoginError {
+        return new SimultaneousLoginError(this.locale.format(message, ...params), errorCode);
     }
 
     public unexpectedServerError(message: string, errorCode: string, ...params: unknown[]): UnexpectedServerError {

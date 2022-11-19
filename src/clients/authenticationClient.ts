@@ -148,14 +148,12 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         if (response.status === 400) {
             const error = await response.json() as AuthenticationErrorResponse;
             if (error.error_code === 'user.is.blocked') {
-                throw this.errorFactory.accountLockedError(
-                    'The account for the credentials supplied is currently locked, please check your account with Husqvarna and try again.',
-                    'CFG0002');
+                throw this.errorFactory.accountLockedError('ACCOUNT_LOGIN_BLOCKED', 'CFG0002');
+            } else if (error.error_code === 'simultaneous.logins') {
+                throw this.errorFactory.simultaneousLoginError('SIMULTANEOUS_LOGINS_DETECTED', 'CFG0002');
             }
             
-            throw this.errorFactory.badCredentialsError(
-                'The credentials supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
+            throw this.errorFactory.badCredentialsError('BAD_CREDENTIALS', 'CFG0002');
         }
     }
 
@@ -203,7 +201,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfBadToken(response: Response): void {
         if (response.status === 400) {
-            throw this.errorFactory.badOAuthTokenError('The access token supplied was invalid.', 'ERR0002');
+            throw this.errorFactory.badOAuthTokenError('INVALID_ACCESS_TOKEN', 'ERR0002');
         }
     }
     
@@ -223,7 +221,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
 
     private throwIfNotAuthorized(response: Response): void {
         if (response.status === 401) {
-            throw this.errorFactory.notAuthorizedError('The user is not authorized to perform the action requested.', 'ERR0001');
+            throw this.errorFactory.notAuthorizedError('NOT_AUTHORIZED', 'ERR0001');
         }
     }
 
