@@ -7,6 +7,7 @@ import { BadCredentialsError } from '../../src/errors/badCredentialsError';
 import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
 import { ErrorFactory } from '../../src/errors/errorFactory';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
+import { SimultaneousLoginError } from '../../src/errors/simultaneousLoginError';
 import * as constants from '../../src/settings';
 
 describe('AuthenticationClientImpl', () => {
@@ -150,6 +151,30 @@ describe('AuthenticationClientImpl', () => {
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangeClientCredentials(APPKEY, PASSWORD)).resolves.toStrictEqual(token);
+    });
+
+    it('should throw a simultaneous login error on 400 response when simultaneous login detected for client credentials', async () => {
+        errorFactory.setup(o => o.simultaneousLoginError(It.IsAny(), It.IsAny())).returns(new SimultaneousLoginError('hello', '12345'));
+
+        const error: AuthenticationErrorResponse = {
+            error: 'invalid_request',
+            error_code: 'simultaneous.logins',
+            error_description: 'Simultaneous logins detected for client[id=REDACTED], user[id=REDACTED, email=REDACTED}]'
+        };
+            
+        const body = JSON.stringify(error);
+
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 400,
+            timeout: 0,
+            url: 'http://localhost',
+        });       
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD)).rejects.toThrowError(SimultaneousLoginError);
     });
 
     it('should return an oauth token when logged in with password successfully', async () => {
