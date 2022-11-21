@@ -422,4 +422,38 @@ describe('MotionSensorImpl', () => {
 
         expect(() => target.setMowerMetadata(metadata)).toThrowError();
     });
+
+    it('should set active status to true when connected', () => {
+        const statusActive = new Mock<Characteristic>();
+        statusActive.setup(o => o.updateValue(It.IsAny())).returns(statusActive.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        target.init();
+        target.setMowerMetadata({
+            connected: true,
+            statusTimestamp: 1
+        });
+
+        statusActive.verify(o => o.updateValue(true), Times.Once());
+    });
+
+    it('should set active status to false when not connected', () => {
+        const statusActive = new Mock<Characteristic>();
+        statusActive.setup(o => o.updateValue(It.IsAny())).returns(statusActive.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        target.init();
+        target.setMowerMetadata({
+            connected: false,
+            statusTimestamp: 1
+        });
+
+        statusActive.verify(o => o.updateValue(false), Times.Once());
+    });
 });
