@@ -70,14 +70,21 @@ export class AutomowerAccessory {
         this.batteryInformation.setStatistics(data.attributes.statistics);
 
         this.arrivingSensor.setMowerState(data.attributes.mower);
+        this.arrivingSensor.setMowerMetadata(data.attributes.metadata);
+
         this.leavingSensor.setMowerState(data.attributes.mower);
+        this.leavingSensor.setMowerMetadata(data.attributes.metadata);
+
         this.motionSensor.setMowerState(data.attributes.mower);
+        this.motionSensor.setMowerMetadata(data.attributes.metadata);
 
         this.scheduleSwitch.setMowerState(data.attributes.mower);
         this.scheduleSwitch.setCalendar(data.attributes.calendar);
         this.scheduleSwitch.setPlanner(data.attributes.planner);
+        this.scheduleSwitch.setMowerMetadata(data.attributes.metadata);
 
         this.pauseSwitch.setMowerState(data.attributes.mower);
+        this.pauseSwitch.setMowerMetadata(data.attributes.metadata);
     }
 
     /**
@@ -97,13 +104,20 @@ export class AutomowerAccessory {
         this.batteryInformation.setChargingState(event.attributes.mower);
         
         this.arrivingSensor.setMowerState(event.attributes.mower);
+        this.arrivingSensor.setMowerMetadata(event.attributes.metadata);
+
         this.leavingSensor.setMowerState(event.attributes.mower);
+        this.leavingSensor.setMowerMetadata(event.attributes.metadata);
+
         this.motionSensor.setMowerState(event.attributes.mower);
+        this.motionSensor.setMowerMetadata(event.attributes.metadata);
         
         this.scheduleSwitch.setMowerState(event.attributes.mower);
         this.scheduleSwitch.setPlanner(event.attributes.planner);
+        this.scheduleSwitch.setMowerMetadata(event.attributes.metadata);
 
         this.pauseSwitch.setMowerState(event.attributes.mower);
+        this.pauseSwitch.setMowerMetadata(event.attributes.metadata);
     }
 
     /**

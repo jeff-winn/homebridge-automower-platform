@@ -1,8 +1,8 @@
-import { API, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'homebridge';
+import { API, Characteristic, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { Activity, MowerState, State } from '../model';
-import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
+import { Activity, MowerMetadata, MowerState, State } from '../model';
+import { AbstractSwitch, NameMode, Switch } from './homebridge/abstractSwitch';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
 
@@ -15,9 +15,16 @@ export interface PauseSwitch extends Switch {
      * @param state The mower state.
      */
     setMowerState(state: MowerState): void;
+
+    /**
+     * Sets the mower metadata.
+     * @param metadata The metadata.
+     */
+    setMowerMetadata(metadata: MowerMetadata): void;
 }
 
 export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
+    private statusActive?: Characteristic;
     private lastActivity?: Activity;
 
     public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsPausedPolicy, 
@@ -25,8 +32,22 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
         super(name, accessory, api, log);
     }
 
+    public init(mode: NameMode): void {
+        super.init(mode);
+
+        this.statusActive = this.getUnderlyingService()!.getCharacteristic(this.Characteristic.StatusActive);
+    }
+
     public getLastActivity(): Activity | undefined {
         return this.lastActivity;
+    }
+
+    public setMowerMetadata(metadata: MowerMetadata): void {
+        if (this.statusActive === undefined) {
+            throw new Error('The service has not been initialized.');
+        }
+
+        this.statusActive.updateValue(metadata.connected);
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {

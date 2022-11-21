@@ -4,7 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, Calendar, Mode, MowerState, Planner, RestrictedReason, State } from '../../src/model';
+import { Activity, Calendar, Mode, MowerMetadata, MowerState, Planner, RestrictedReason, State } from '../../src/model';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { MowerControlService } from '../../src/services/husqvarna/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
@@ -295,5 +295,14 @@ describe('ScheduleSwitchImpl', () => {
         policy.verify(o => o.setCalendar(calendar), Times.Once());
         policy.verify(o => o.setPlanner(planner), Times.Once());
         c.verify(o => o.updateValue(false), Times.Once());
+    });
+
+    it('should throw an error when not initialized on set mower metadata', () => {
+        const metadata: MowerMetadata = {
+            connected: false,
+            statusTimestamp: 1
+        };
+
+        expect(() => target.setMowerMetadata(metadata)).toThrowError();
     });
 });

@@ -37,7 +37,11 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
     public constructor(protected name: string, protected policy: Policy, protected accessory: PlatformAccessory<AutomowerContext>, 
         protected api: API, protected log: PlatformLogger) {
         super(accessory, api);
-    }    
+    }
+    
+    public getUnderlyingService(): Service | undefined {
+        return this.underlyingService;
+    }
     
     public init(): void {
         this.underlyingService = this.accessory.getServiceById(this.Service.ContactSensor, this.name);

@@ -1,12 +1,12 @@
 import {
-    API, CharacteristicSetCallback,
+    API, Characteristic, CharacteristicSetCallback,
     HAPStatus, PlatformAccessory
 } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { Calendar, MowerState, Planner } from '../model';
-import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
+import { Calendar, MowerMetadata, MowerState, Planner } from '../model';
+import { AbstractSwitch, NameMode, Switch } from './homebridge/abstractSwitch';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 
@@ -31,9 +31,17 @@ export interface ScheduleSwitch extends Switch {
      * @param state The mower state.
      */
     setMowerState(state: MowerState): void;
+
+    /**
+     * Sets the mower metadata.
+     * @param metadata The metadata.
+     */
+    setMowerMetadata(metadata: MowerMetadata): void;
 }
 
 export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
+    private statusActive?: Characteristic;
+
     public constructor(name: string, private controlService: MowerControlService, private policy: ScheduleEnabledPolicy, 
         accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
@@ -56,6 +64,12 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
         }        
     }
 
+    public init(mode: NameMode): void {
+        super.init(mode);
+
+        this.statusActive = this.getUnderlyingService()!.getCharacteristic(this.Characteristic.StatusActive);
+    }
+
     public setCalendar(calendar: Calendar): void {    
         this.policy.setCalendar(calendar);
         this.refreshCharacteristic();
@@ -69,6 +83,14 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     public setMowerState(state: MowerState): void {
         this.policy.setMowerState(state);
         this.refreshCharacteristic();
+    }
+
+    public setMowerMetadata(metadata: MowerMetadata): void {
+        if (this.statusActive === undefined) {
+            throw new Error('The service has not been initialized.');
+        }
+
+        this.statusActive.updateValue(metadata.connected);
     }
 
     /**

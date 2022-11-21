@@ -4,7 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, Mode, MowerState, State } from '../../src/model';
+import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/model';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsLeavingPolicy } from '../../src/services/policies/mowerIsLeavingPolicy';
 import { LeavingContactSensorImplSpy } from './leavingContactSensorImplSpy';
@@ -136,5 +136,14 @@ describe('LeavingContactSensorImpl', () => {
         expect(result).toBeTruthy();
 
         contactState.verify(o => o.updateValue(CONTACT_SENSOR_OPEN), Times.Once());
+    });
+
+    it('should throw an error when not initialized on set mower metadata', () => {
+        const metadata: MowerMetadata = {
+            connected: false,
+            statusTimestamp: 1
+        };
+
+        expect(() => target.setMowerMetadata(metadata)).toThrowError();
     });
 });
