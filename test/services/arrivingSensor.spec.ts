@@ -4,7 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, Mode, MowerState, State } from '../../src/model';
+import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/model';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsArrivingPolicy } from '../../src/services/policies/mowerIsArrivingPolicy';
 import { ArrivingContactSensorImplSpy } from './arrivingContactSensorImplSpy';
@@ -49,9 +49,12 @@ describe('ArrivingContactSensorImpl', () => {
 
     it('should create a new service on init', () => {
         const contactState = new Mock<Characteristic>();
+        const statusActive = new Mock<Characteristic>();
         
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+
         platformAccessory.setup(o => o.addService(It.IsAny())).returns(service.object());
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(undefined);
 
@@ -60,6 +63,7 @@ describe('ArrivingContactSensorImpl', () => {
 
         expect(target.displayName).toBe('Arriving Sensor');
         service.verify(o => o.getCharacteristic(Characteristic.ContactSensorState), Times.Once());
+        service.verify(o => o.getCharacteristic(Characteristic.StatusActive), Times.Once());
     });
 
     it('should throw an error when not initialized on set mower state', () => {
@@ -136,5 +140,5 @@ describe('ArrivingContactSensorImpl', () => {
         expect(result).toBeTruthy();
 
         contactState.verify(o => o.updateValue(CONTACT_SENSOR_OPEN), Times.Once());
-    });
+    });   
 });

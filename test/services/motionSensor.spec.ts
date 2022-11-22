@@ -4,7 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, Mode, MowerState, State } from '../../src/model';
+import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/model';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';
@@ -412,5 +412,48 @@ describe('MotionSensorImpl', () => {
         expect(result).toBeTruthy();
 
         tampered.verify(o => o.updateValue(Characteristic.StatusTampered.TAMPERED), Times.Once());
+    });
+
+    it('should throw an error when not initialized on set mower metadata', () => {
+        const metadata: MowerMetadata = {
+            connected: false,
+            statusTimestamp: 1
+        };
+
+        expect(() => target.setMowerMetadata(metadata)).toThrowError();
+    });
+
+    it('should set active status to true when connected', () => {
+        const statusActive = new Mock<Characteristic>();
+        statusActive.setup(o => o.updateValue(It.IsAny())).returns(statusActive.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        target.init();
+        target.setMowerMetadata({
+            connected: true,
+            statusTimestamp: 1
+        });
+
+        statusActive.verify(o => o.updateValue(true), Times.Once());
+    });
+
+    it('should set active status to false when not connected', () => {
+        const statusActive = new Mock<Characteristic>();
+        statusActive.setup(o => o.updateValue(It.IsAny())).returns(statusActive.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+
+        target.init();
+        target.setMowerMetadata({
+            connected: false,
+            statusTimestamp: 1
+        });
+
+        statusActive.verify(o => o.updateValue(false), Times.Once());
     });
 });

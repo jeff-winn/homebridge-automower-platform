@@ -14,7 +14,7 @@ export interface PauseSwitch extends Switch {
      * Sets the state of the mower.
      * @param state The mower state.
      */
-    setMowerState(state: MowerState): void;
+    setMowerState(state: MowerState): void;    
 }
 
 export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
@@ -28,7 +28,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
     public getLastActivity(): Activity | undefined {
         return this.lastActivity;
     }
-
+    
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         try {
             if (on) {

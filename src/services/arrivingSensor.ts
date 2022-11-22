@@ -20,11 +20,11 @@ export interface ArrivingSensor extends ContactSensor {
 /**
  * An {@link ArrivingSensor} which uses an underlying contact sensor service.
  */
-export class ArrivingContactSensorImpl extends AbstractContactSensor implements ArrivingSensor {    
+export class ArrivingContactSensorImpl extends AbstractContactSensor implements ArrivingSensor {  
     public constructor(protected name: string, protected policy: MowerIsArrivingPolicy, 
         protected accessory: PlatformAccessory<AutomowerContext>, protected api: API, protected log: PlatformLogger) {
         super(name, policy, accessory, api, log);
-    }    
+    }
 
     public setMowerState(mower: MowerState): void {
         this.policy.setMowerState(mower);

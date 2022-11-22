@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { AutomowerEventTypes, StatusEvent } from '../src/events';
-import { Activity, Battery, Calendar, HeadlightMode, Mode, Mower, MowerState, OverrideAction, Planner, RestrictedReason, State, Statistics } from '../src/model';
+import { Activity, Battery, Calendar, HeadlightMode, Mode, Mower, MowerMetadata, MowerState, OverrideAction, Planner, RestrictedReason, State, Statistics } from '../src/model';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
@@ -113,16 +113,18 @@ describe('AutomowerAccessory', () => {
             totalSearchingTime: 0
         };
 
+        const metadata: MowerMetadata = {
+            connected: true,
+            statusTimestamp: 1
+        };
+
         const mower: Mower = {
             id: '12345',
             type: 'abcd1234',
             attributes: {
                 battery: battery,
                 calendar: calendar,
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
-                },
+                metadata: metadata,
                 mower: state,
                 planner: planner,
                 positions: [],
@@ -147,11 +149,16 @@ describe('AutomowerAccessory', () => {
         scheduleSwitch.setup(o => o.setPlanner(planner)).returns(undefined);
         scheduleSwitch.setup(o => o.setCalendar(calendar)).returns(undefined);
         scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        scheduleSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
-
+        motionSensorService.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
+        
         target.refresh(mower);
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
@@ -160,10 +167,15 @@ describe('AutomowerAccessory', () => {
         scheduleSwitch.verify(o => o.setPlanner(planner), Times.Once());
         scheduleSwitch.verify(o => o.setCalendar(calendar), Times.Once());
         scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
+        scheduleSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
         pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
         arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
+        arrivingSensor.verify(o => o.setMowerMetadata(metadata), Times.Once());
         leavingSensor.verify(o => o.setMowerState(state), Times.Once());
+        leavingSensor.verify(o => o.setMowerMetadata(metadata), Times.Once());
         motionSensorService.verify(o => o.setMowerState(state), Times.Once());
+        motionSensorService.verify(o => o.setMowerMetadata(metadata), Times.Once());
     });
     
     it('returns the accessory uuid', () => {
@@ -248,6 +260,11 @@ describe('AutomowerAccessory', () => {
             state: State.NOT_APPLICABLE
         };
 
+        const metadata: MowerMetadata = {
+            connected: true,
+            statusTimestamp: 1
+        };
+
         const planner: Planner = {
             nextStartTimestamp: 0,
             override: { },
@@ -259,10 +276,7 @@ describe('AutomowerAccessory', () => {
             type: AutomowerEventTypes.STATUS,
             attributes: {
                 battery: battery,
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
-                },
+                metadata: metadata,
                 mower: state,
                 planner: planner
             }
@@ -272,10 +286,15 @@ describe('AutomowerAccessory', () => {
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
         scheduleSwitch.setup(o => o.setPlanner(planner)).returns(undefined);
         scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        scheduleSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
 
         target.onStatusEventReceived(event);
 
@@ -283,9 +302,14 @@ describe('AutomowerAccessory', () => {
         batteryService.verify(o => o.setChargingState(state), Times.Once());
         scheduleSwitch.verify(o => o.setPlanner(planner), Times.Once());
         scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
+        scheduleSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
         pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
         arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
+        arrivingSensor.verify(o => o.setMowerMetadata(metadata), Times.Once());
         leavingSensor.verify(o => o.setMowerState(state), Times.Once());
+        leavingSensor.verify(o => o.setMowerMetadata(metadata), Times.Once());
         motionSensorService.verify(o => o.setMowerState(state), Times.Once());
+        motionSensorService.verify(o => o.setMowerMetadata(metadata), Times.Once());
     });
 });

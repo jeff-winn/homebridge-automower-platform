@@ -2,7 +2,7 @@ import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { MowerState } from '../model';
+import { MowerMetadata, MowerState } from '../model';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
@@ -22,6 +22,12 @@ export interface MotionSensor {
      * @param mower The state of the mower.
      */
     setMowerState(mower: MowerState): void;
+
+    /**
+     * Sets the mower metadata.
+     * @param metadata The metadata.
+     */
+    setMowerMetadata(metadata: MowerMetadata): void;
 }
 
 /**
@@ -32,6 +38,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
     private motionDetected?: Characteristic;
     private faulted?: Characteristic;
     private tampered?: Characteristic;
+    private statusActive?: Characteristic;
 
     private lastTamperedValue?: boolean;
     private lastFaultedValue?: boolean;
@@ -54,10 +61,19 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
         this.motionDetected = this.underlyingService.getCharacteristic(this.Characteristic.MotionDetected);
         this.faulted = this.underlyingService.getCharacteristic(this.Characteristic.StatusFault);
         this.tampered = this.underlyingService.getCharacteristic(this.Characteristic.StatusTampered);
+        this.statusActive = this.underlyingService.getCharacteristic(this.Characteristic.StatusActive);
     }
 
     protected createService(displayName: string): Service {
         return new this.Service.MotionSensor(displayName, this.name);
+    }
+
+    public setMowerMetadata(metadata: MowerMetadata): void {
+        if (this.statusActive === undefined) {
+            throw new Error('The service has not been initialized.');
+        }
+
+        this.statusActive.updateValue(metadata.connected);
     }
 
     public setMowerState(mower: MowerState): void {        

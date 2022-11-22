@@ -5,6 +5,7 @@ import {
 
 import { AutomowerContext } from '../../automowerAccessory';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { MowerMetadata } from '../../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
@@ -31,6 +32,12 @@ export interface Switch {
      * @param mode The mode for the switch name.
      */
     init(mode: NameMode): void;
+
+    /**
+     * Sets the mower metadata.
+     * @param metadata The metadata.
+     */
+     setMowerMetadata(metadata: MowerMetadata): void;
 }
 
 /**
@@ -39,6 +46,7 @@ export interface Switch {
 export abstract class AbstractSwitch extends AbstractAccessoryService implements Switch {
     private switchService?: Service;
     private on?: Characteristic;
+    private statusActive?: Characteristic;    
     
     private lastValue?: boolean;
 
@@ -61,6 +69,15 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
 
         this.on = this.switchService.getCharacteristic(this.Characteristic.On)
             .on(CharacteristicEventTypes.SET, this.onSetCallback.bind(this));
+        this.statusActive = this.switchService.getCharacteristic(this.Characteristic.StatusActive);
+    }
+
+    public setMowerMetadata(metadata: MowerMetadata): void {
+        if (this.statusActive === undefined) {
+            throw new Error('The service has not been initialized.');
+        }
+
+        this.statusActive.updateValue(metadata.connected);
     }
     
     protected getDisplayName(mode: NameMode): string {
