@@ -54,5 +54,6 @@
   "Refreshing the current token...": "Refreshing the current token...",
   "Refreshed the token!": "Refreshed the token!",
   "Charging Cycles": "Charging Cycles",
-  "cycles": "cycles"
+  "cycles": "cycles",
+  "Total Charging Time": "Total Charging Time"
 }

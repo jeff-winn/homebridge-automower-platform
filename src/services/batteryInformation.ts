@@ -38,6 +38,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
     private chargingCycles?: Characteristic;
+    private chargingTime?: Characteristic;
 
     public constructor(private locale: Localization, accessory: PlatformAccessory<AutomowerContext>, api: API) {
         super(accessory, api);
@@ -64,6 +65,15 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
             characteristic.localize(this.locale);
 
             this.chargingCycles = this.batteryService.addCharacteristic(characteristic);
+        }
+
+        if (this.batteryService.testCharacteristic(this.CustomCharacteristic.TotalChargingTime)) {
+            this.chargingTime = this.batteryService.getCharacteristic(this.CustomCharacteristic.TotalChargingTime);
+        } else {
+            const characteristic = new this.CustomCharacteristic.TotalChargingTime();
+            characteristic.localize(this.locale);
+
+            this.chargingTime = this.batteryService.addCharacteristic(characteristic);
         }
     }
     
@@ -94,10 +104,11 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     }
 
     public setStatistics(statistics: Statistics): void {
-        if (this.chargingCycles === undefined) {
+        if (this.chargingCycles === undefined || this.chargingTime === undefined) {
             throw new Error('The service has not been initialized.');
         }
 
         this.chargingCycles.updateValue(statistics.numberOfChargingCycles);
+        this.chargingTime.updateValue(statistics.totalChargingTime);
     }
 }
