@@ -4,7 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/model';
+import { Activity, Mode, MowerState, State } from '../../src/model';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsLeavingPolicy } from '../../src/services/policies/mowerIsLeavingPolicy';
 import { LeavingContactSensorImplSpy } from './leavingContactSensorImplSpy';
@@ -136,56 +136,5 @@ describe('LeavingContactSensorImpl', () => {
         expect(result).toBeTruthy();
 
         contactState.verify(o => o.updateValue(CONTACT_SENSOR_OPEN), Times.Once());
-    });
-
-    it('should throw an error when not initialized on set mower metadata', () => {
-        const metadata: MowerMetadata = {
-            connected: false,
-            statusTimestamp: 1
-        };
-
-        expect(() => target.setMowerMetadata(metadata)).toThrowError();
-    });
-
-    it('should set active status to true when connected', () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
-
-        const contactState = new Mock<Characteristic>();
-        const statusActive = new Mock<Characteristic>();
-        statusActive.setup(o => o.updateValue(It.IsAny())).returns(statusActive.object());
-
-        const service = new Mock<Service>();
-        service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
-        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
-
-        target.init();
-        target.setMowerMetadata({
-            connected: true,
-            statusTimestamp: 1
-        });
-
-        statusActive.verify(o => o.updateValue(true), Times.Once());
-    });
-
-    it('should set active status to false when not connected', () => {
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
-
-        const contactState = new Mock<Characteristic>();
-        const statusActive = new Mock<Characteristic>();
-        statusActive.setup(o => o.updateValue(It.IsAny())).returns(statusActive.object());
-
-        const service = new Mock<Service>();
-        service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
-        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
-
-        target.init();
-        target.setMowerMetadata({
-            connected: false,
-            statusTimestamp: 1
-        });
-
-        statusActive.verify(o => o.updateValue(false), Times.Once());
     });
 });
