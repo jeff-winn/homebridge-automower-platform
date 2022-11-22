@@ -1,7 +1,7 @@
 import { Characteristic } from 'hap-nodejs';
 import { Localization } from '../../../primitives/localization';
 
-export { Formats, Perms } from 'hap-nodejs';
+export { Formats, Perms, Units } from 'hap-nodejs';
 
 /**
  * An abstract {@link Characteristic} which supports resource localization.
