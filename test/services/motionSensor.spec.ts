@@ -38,6 +38,12 @@ describe('MotionSensorImpl', () => {
         target = new MotionSensorImplSpy('Motion Sensor', motionPolicy.object(), faultedPolicy.object(),
             tamperedPolicy.object(), platformAccessory.object(), api.object(), log.object());
     });
+
+    it('should create a new service instance', () => {
+        const result = target.unsafeCreateService('My Service');
+
+        expect(result).toBeDefined();
+    });
     
     it('should be initialized with an existing service', () => {
         const motionDetected = new Mock<Characteristic>();

@@ -32,6 +32,12 @@ describe('AbstractContactSensor', () => {
         target = new ContactSensorSpy('Test', policy.object(), platformAccessory.object(), api.object(), log.object());
     });
 
+    it('should create a new service instance', () => {
+        const result = target.unsafeCreateService('My Service');
+
+        expect(result).toBeDefined();
+    });
+
     it('should return undefined service when not initialized', () => {
         expect(target.getUnderlyingService()).toBeUndefined();
     });
