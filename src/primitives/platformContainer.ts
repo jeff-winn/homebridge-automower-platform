@@ -30,6 +30,7 @@ import { NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
+import { RateLimitedAutomowerClient } from '../clients/rateLimitedAutomowerClient';
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -105,13 +106,11 @@ export class PlatformContainerImpl implements PlatformContainer {
             container.resolve(this.getLoginStrategy()),
             container.resolve(HomebridgeImitationLogger)));
 
-        container.register(AutomowerClientImpl, {
-            useFactory: (context) => new AutomowerClientImpl(
-                this.config.appKey,
-                settings.AUTOMOWER_CONNECT_API_BASE_URL,
-                context.resolve(RetryerFetchClient),
-                context.resolve(DefaultErrorFactory))
-        });
+        container.registerInstance(AutomowerClientImpl, new RateLimitedAutomowerClient(
+            this.config.appKey,
+            settings.AUTOMOWER_CONNECT_API_BASE_URL,
+            container.resolve(RetryerFetchClient),
+            container.resolve(DefaultErrorFactory)));
 
         container.register(DeterministicMowerIsArrivingPolicy, {
             useValue: new DeterministicMowerIsArrivingPolicy()
