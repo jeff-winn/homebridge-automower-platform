@@ -4,7 +4,7 @@ import { AutomowerClientImpl } from './automowerClient';
 /**
  * The duration that must occur in between calls.
  */
-const RATE_LIMIT_DURATION = 1100; // Max 1 request per second.
+const RATE_LIMIT_DURATION = 1000; // Max 1 request per second.
 
 /**
  * An {@link AutomowerClient} which performs rate limiting between outgoing calls to the web service.

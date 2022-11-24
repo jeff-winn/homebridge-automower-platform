@@ -41,7 +41,7 @@ describe('RateLimitedAutomowerClient', () => {
         expect(result).toBe(-1);
     });
 
-    it('should return 600 when accessed within the rate limitation period', () => {
+    it('should return 500 when accessed within the rate limitation period', () => {
         const now = new Date();
 
         const lastAccessed = new Date();
@@ -51,7 +51,7 @@ describe('RateLimitedAutomowerClient', () => {
 
         const result = target.unsafeCalculateRateLimitationDelay(now);
 
-        expect(result).toBe(600);
+        expect(result).toBe(500);
     });
     
     it('should delay the doAction call when rate limited', async () => {
