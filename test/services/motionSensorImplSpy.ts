@@ -14,6 +14,10 @@ export class MotionSensorImplSpy extends MotionSensorImpl {
         return super.createService(displayName);
     }
 
+    public unsafeCreateService(displayName: string): Service {
+        return this.createService(displayName);
+    }
+    
     public unsafeSetLastMotionValue(value: boolean | undefined): void {
         this.setLastMotionValue(value);
     }
