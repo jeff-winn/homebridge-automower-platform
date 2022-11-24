@@ -3,10 +3,10 @@ import { RateLimitedAutomowerClient } from '../../src/clients/rateLimitedAutomow
 export class RateLimitedAutomowerClientSpy extends RateLimitedAutomowerClient {
     public waited = false;
 
-    protected override wait(): Promise<void> {
+    protected override wait(ms: number): Promise<void> {
         this.waited = true;
 
-        return Promise.resolve(undefined);
+        return super.wait(ms);
     }
 
     public unsafeCalculateRateLimitationDelay(now: Date): number {
