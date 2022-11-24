@@ -17,6 +17,19 @@ describe('RetryerFetchClient', () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
     });
 
+    it('should wait as expected', async () => {
+        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const delay = 1000;
+
+        const started = new Date().getTime();
+
+        await target.unsafeWait(delay);
+
+        const finished = new Date().getTime();
+
+        expect(finished - started).toBeGreaterThanOrEqual(750);
+    });
+
     it('should not log any request headers', async () => {
         const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
         

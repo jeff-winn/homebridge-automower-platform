@@ -14,6 +14,10 @@ export class RetryerFetchClientSpy extends RetryerFetchClient {
         return Promise.resolve(undefined);
     }
 
+    public unsafeWait(ms: number): Promise<void> {
+        return super.wait(ms);
+    }
+
     protected override doFetch(): Promise<Response> {
         this.attempts++;
         
