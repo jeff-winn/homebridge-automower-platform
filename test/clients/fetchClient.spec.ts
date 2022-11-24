@@ -1,6 +1,6 @@
 import { It, Mock } from 'moq.ts';
 import { Response } from 'node-fetch';
-import { ShouldLogHeaderPolicy } from '../../src/clients/fetchClient';
+import { RetryerFetchClient, ShouldLogHeaderPolicy } from '../../src/clients/fetchClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { RetryerFetchClientSpy } from './retryerFetchClientSpy';
 
@@ -28,6 +28,18 @@ describe('RetryerFetchClient', () => {
         const finished = new Date().getTime();
 
         expect(finished - started).toBeGreaterThanOrEqual(750);
+    });
+
+    it('should create a new instance without max attempts specified', () => {
+        const t = new RetryerFetchClient(log.object(), policy.object());
+
+        expect(t).toBeDefined();
+    });
+
+    it('should create a new instance with max attempts specified', () => {
+        const t = new RetryerFetchClient(log.object(), policy.object(), 5);
+
+        expect(t).toBeDefined();
     });
 
     it('should not log any request headers', async () => {
