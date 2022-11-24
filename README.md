@@ -5,7 +5,7 @@
 
 [Homebridge](https://github.com/homebridge/homebridge) plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) as [Apple HomeKit](https://www.apple.com/ios/home/) accessories using the [Husqvarna Group](https://developer.husqvarnagroup.cloud) cloud services.
 
-Be advised, because this plug-in uses cloud services, service interruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your device(s).
+Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mowers(s).
 
 #### Known issues
 - Husqvarna cloud services may reject web service calls during peak times, resulting in 429 errors being seen within the plug-in. See [#195](https://github.com/jeff-winn/homebridge-automower-platform/issues/195) for more information.
