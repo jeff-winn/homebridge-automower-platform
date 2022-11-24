@@ -1,4 +1,4 @@
-import { RequestInfo, RequestInit, Response, RetryerFetchClient } from '../../src/clients/fetchClient';
+import { Response, RetryerFetchClient } from '../../src/clients/fetchClient';
 
 export class RetryerFetchClientSpy extends RetryerFetchClient {
     public waited = false;
@@ -8,23 +8,23 @@ export class RetryerFetchClientSpy extends RetryerFetchClient {
     public serviceUnavailable = 0;
     public responseCallback!: () => Response;
     
-    protected override waitMilliseconds(ms: number): Promise<unknown> {
+    protected override wait(): Promise<void> {
         this.waited = true;
 
         return Promise.resolve(undefined);
     }
 
-    protected override doFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
+    protected override doFetch(): Promise<Response> {
         this.attempts++;
         
         const response = this.responseCallback!();
         return Promise.resolve(response);        
     }
 
-    protected override onTooManyRequests(): Promise<boolean> {
+    protected override onTooManyRequests(attempt: number): Promise<boolean> {
         this.tooManyRequests++;
         
-        return super.onTooManyRequests();
+        return super.onTooManyRequests(attempt);
     }
 
     protected override onServiceUnavailable(): Promise<boolean> {

@@ -39,10 +39,20 @@ const TOO_MANY_REQUESTS = 429;
 const SERVICE_UNAVAILABLE = 503;
 
 /**
+ * Defines the delay needed between retry attempts, which according to Husqvarna this limitation is enforced per second.
+ */
+const DEFAULT_RETRY_DELAY_IN_MILLIS = 1000;
+
+/**
+ * Defines the 'base' multiplicative factor for the exponential backoff function.
+ */
+const DEFAULT_EXPONENTIAL_BACKOFF_MULTIPLIER = 1.97435; // Causes a 30 second maximum backoff.
+
+/**
  * A client which uses node-fetch to perform HTTP requests and includes retryer support.
  */
 export class RetryerFetchClient implements FetchClient {
-    public constructor(private log: PlatformLogger, private maxRetryAttempts: number, private maxDelayInMillis: number, private policy: ShouldLogHeaderPolicy) { }
+    public constructor(private log: PlatformLogger, private maxRetryAttempts: number, private policy: ShouldLogHeaderPolicy) { }
 
     public async execute(url: RequestInfo, init?: RequestInit): Promise<Response> {
         let response: Response;
@@ -57,7 +67,7 @@ export class RetryerFetchClient implements FetchClient {
 
             response = await this.executeCore(id, attempt, url, init);
             if (response.status === TOO_MANY_REQUESTS) {
-                retry = await this.onTooManyRequests();
+                retry = await this.onTooManyRequests(attempt);
             } else if (response.status === SERVICE_UNAVAILABLE) {
                 retry = await this.onServiceUnavailable();
             }
@@ -68,10 +78,13 @@ export class RetryerFetchClient implements FetchClient {
 
     /**
      * Occurs when too many requests have been received by the server within the alloted time window.
+     * @param attempt The attempt number which failed.
      * @returns The promise to await.
      */
-    protected async onTooManyRequests(): Promise<boolean> {
-        await this.wait();
+    protected async onTooManyRequests(attempt: number): Promise<boolean> {
+        const delay = Math.pow(DEFAULT_EXPONENTIAL_BACKOFF_MULTIPLIER, attempt) * 1000;
+
+        await this.wait(delay);
         return true;
     }
 
@@ -80,23 +93,12 @@ export class RetryerFetchClient implements FetchClient {
      * @returns The promise to await.
      */
     protected async onServiceUnavailable(): Promise<boolean> {
-        await this.wait();
+        await this.wait(DEFAULT_RETRY_DELAY_IN_MILLIS);
         return true;
     }
-
-    private rand(min: number, max: number) {
-        return Math.floor(
-            Math.random() * (max - min + 1) + max
-        );
-    }
-
-    protected async wait(): Promise<void> {
-        const delay = this.rand(0, this.maxDelayInMillis);
-        await this.waitMilliseconds(delay);
-    }
-
-    protected waitMilliseconds(ms: number): Promise<unknown> {
-        return new Promise((resolve) => {
+    
+    protected async wait(ms: number): Promise<void> {
+        await new Promise((resolve) => {
             setTimeout(resolve, ms);
         });
     }

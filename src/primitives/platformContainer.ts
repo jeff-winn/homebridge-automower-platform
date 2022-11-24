@@ -35,11 +35,6 @@ import { TimerImpl } from './timer';
  * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
  */
 const DEFAULT_MAX_RETRY_ATTEMPTS = 5;
-    
-/**
- * Defines the maximum delay needed between retry attempts, which according to Husqvarna this limitation is enforced per second.
- */
-const DEFAULT_MAX_DELAY_IN_MILLIS = 1000;
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -79,8 +74,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(RetryerFetchClient, {
             useFactory: (context) => new RetryerFetchClient(
                 context.resolve(HomebridgeImitationLogger), 
-                DEFAULT_MAX_RETRY_ATTEMPTS, 
-                DEFAULT_MAX_DELAY_IN_MILLIS,
+                DEFAULT_MAX_RETRY_ATTEMPTS,
                 context.resolve(ShouldLogHeaderPolicyImpl))
         });
 
