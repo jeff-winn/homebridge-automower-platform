@@ -140,12 +140,15 @@ describe('PauseSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         
+        const statusActive = new Mock<Characteristic>();
+
         policy.setup(o => o.check()).returns(true);
         policy.setup(o => o.setMowerState(mowerState)).returns(undefined);
     
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
@@ -178,12 +181,16 @@ describe('PauseSwitchImpl', () => {
         c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-        
+    
+        const statusActive = new Mock<Characteristic>();
+
         policy.setup(o => o.check()).returns(true);
         policy.setup(o => o.setMowerState(mowerState)).returns(undefined);
     
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
         controlService.setup(o => o.parkUntilFurtherNotice(mowerId)).returns(Promise.resolve(undefined));
@@ -227,8 +234,12 @@ describe('PauseSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
@@ -259,8 +270,12 @@ describe('PauseSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+        
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);

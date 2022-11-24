@@ -1,4 +1,3 @@
-import { stat } from 'fs';
 import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, Service } from 'hap-nodejs';
 import { API, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
@@ -55,6 +54,7 @@ describe('AbstractSwitch', () => {
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         target.service = service.object();
@@ -68,6 +68,8 @@ describe('AbstractSwitch', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+
         const displayName = 'Hello';
 
         accessory.setup(o => o.displayName).returns(displayName);
@@ -78,6 +80,8 @@ describe('AbstractSwitch', () => {
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(false);
+        service.setup(o => o.addCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         target.service = service.object();
         target.init(NameMode.DISPLAY_NAME);
@@ -111,8 +115,12 @@ describe('AbstractSwitch', () => {
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         c.setup(o => o.updateValue(It.IsAny())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
@@ -133,8 +141,12 @@ describe('AbstractSwitch', () => {
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         c.setup(o => o.updateValue(It.IsAny())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
@@ -155,8 +167,12 @@ describe('AbstractSwitch', () => {
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         c.setup(o => o.updateValue(It.IsAny())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         accessory.setup(o => o.getServiceById(Service.Switch, name)).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
@@ -192,6 +208,7 @@ describe('AbstractSwitch', () => {
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(on.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
         accessory.setup(o => o.getServiceById(Service.Switch, 'Switch')).returns(service.object());
 
@@ -217,6 +234,7 @@ describe('AbstractSwitch', () => {
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(on.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
         accessory.setup(o => o.getServiceById(Service.Switch, 'Switch')).returns(service.object());
 
