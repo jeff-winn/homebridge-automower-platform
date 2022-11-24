@@ -1,6 +1,6 @@
 import { It, Mock } from 'moq.ts';
 import { Response } from 'node-fetch';
-import { ShouldLogHeaderPolicy } from '../../src/clients/fetchClient';
+import { RetryerFetchClient, ShouldLogHeaderPolicy } from '../../src/clients/fetchClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { RetryerFetchClientSpy } from './retryerFetchClientSpy';
 
@@ -18,7 +18,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should wait as expected', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 0);
         const delay = 1000;
 
         const started = new Date().getTime();
@@ -30,8 +30,20 @@ describe('RetryerFetchClient', () => {
         expect(finished - started).toBeGreaterThanOrEqual(750);
     });
 
+    it('should create a new instance without max attempts specified', () => {
+        const t = new RetryerFetchClient(log.object(), policy.object());
+
+        expect(t).toBeDefined();
+    });
+
+    it('should create a new instance with max attempts specified', () => {
+        const t = new RetryerFetchClient(log.object(), policy.object(), 5);
+
+        expect(t).toBeDefined();
+    });
+
     it('should not log any request headers', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 0);
         
         target.responseCallback = () => new Response(undefined, {
             headers: undefined,
@@ -53,7 +65,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should not log any request or response headers', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 0);
         
         target.responseCallback = () => new Response(undefined, {
             headers: undefined,
@@ -79,7 +91,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should not retry on 200 response', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 0);
         
         target.responseCallback = () => new Response(undefined, {
             headers: { },
@@ -107,7 +119,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should not retry on 429 when retry attempts is zero', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 0);
         
         target.responseCallback = () => new Response(undefined, {
             headers: { },
@@ -135,7 +147,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should retry on 429 when retry attempts is 5', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 5, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 5);
         
         target.responseCallback = () => new Response(undefined, {
             headers: { },
@@ -157,7 +169,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should not retry on 503 when retry attempts is zero', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 0, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 0);
         
         target.responseCallback = () => new Response('{ "hello": "world" }', {
             headers: { },
@@ -179,7 +191,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should retry on 503 when retry attempts is 2', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 2, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 2);
         
         target.responseCallback = () => new Response(undefined, {
             headers: { },
@@ -201,7 +213,7 @@ describe('RetryerFetchClient', () => {
     });
 
     it('should retry on 429 and 503 when retry attempts is 2', async () => {
-        const target = new RetryerFetchClientSpy(log.object(), 2, policy.object());
+        const target = new RetryerFetchClientSpy(log.object(), policy.object(), 2);
         
         target.responseCallback = () => {
             let status: number;

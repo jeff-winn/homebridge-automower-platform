@@ -30,11 +30,7 @@ import { NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-
-/**
- * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
- */
-const DEFAULT_MAX_RETRY_ATTEMPTS = 5;
+import { RateLimitedAutomowerClient } from '../clients/rateLimitedAutomowerClient';
 
 export interface PlatformContainer {
     registerEverything(): void;
@@ -74,7 +70,6 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(RetryerFetchClient, {
             useFactory: (context) => new RetryerFetchClient(
                 context.resolve(HomebridgeImitationLogger), 
-                DEFAULT_MAX_RETRY_ATTEMPTS,
                 context.resolve(ShouldLogHeaderPolicyImpl))
         });
 
@@ -111,13 +106,11 @@ export class PlatformContainerImpl implements PlatformContainer {
             container.resolve(this.getLoginStrategy()),
             container.resolve(HomebridgeImitationLogger)));
 
-        container.register(AutomowerClientImpl, {
-            useFactory: (context) => new AutomowerClientImpl(
-                this.config.appKey,
-                settings.AUTOMOWER_CONNECT_API_BASE_URL,
-                context.resolve(RetryerFetchClient),
-                context.resolve(DefaultErrorFactory))
-        });
+        container.registerInstance(AutomowerClientImpl, new RateLimitedAutomowerClient(
+            this.config.appKey,
+            settings.AUTOMOWER_CONNECT_API_BASE_URL,
+            container.resolve(RetryerFetchClient),
+            container.resolve(DefaultErrorFactory)));
 
         container.register(DeterministicMowerIsArrivingPolicy, {
             useValue: new DeterministicMowerIsArrivingPolicy()

@@ -41,18 +41,23 @@ const SERVICE_UNAVAILABLE = 503;
 /**
  * Defines the delay needed between retry attempts, which according to Husqvarna this limitation is enforced per second.
  */
-const DEFAULT_RETRY_DELAY_IN_MILLIS = 1000;
+const RETRY_DELAY_IN_MILLIS = 1000;
+
+/**
+ * Defines the maximum number of retry attempts that need to occur for a given request before abandoning the request.
+ */
+const DEFAULT_MAX_RETRY_ATTEMPTS = 5;
 
 /**
  * Defines the 'base' multiplicative factor for the exponential backoff function.
  */
-const DEFAULT_EXPONENTIAL_BACKOFF_MULTIPLIER = 1.97435; // Causes a 30 second maximum backoff.
+const EXPONENTIAL_BACKOFF_MULTIPLIER = 1.97435; // Causes a 30 second maximum backoff.
 
 /**
  * A client which uses node-fetch to perform HTTP requests and includes retryer support.
  */
 export class RetryerFetchClient implements FetchClient {
-    public constructor(private log: PlatformLogger, private maxRetryAttempts: number, private policy: ShouldLogHeaderPolicy) { }
+    public constructor(private log: PlatformLogger, private policy: ShouldLogHeaderPolicy, private maxRetryAttempts: number = DEFAULT_MAX_RETRY_ATTEMPTS) { }
 
     public async execute(url: RequestInfo, init?: RequestInit): Promise<Response> {
         let response: Response;
@@ -82,7 +87,7 @@ export class RetryerFetchClient implements FetchClient {
      * @returns The promise to await.
      */
     protected async onTooManyRequests(attempt: number): Promise<boolean> {
-        const delay = Math.pow(DEFAULT_EXPONENTIAL_BACKOFF_MULTIPLIER, attempt) * 1000;
+        const delay = Math.pow(EXPONENTIAL_BACKOFF_MULTIPLIER, attempt) * 1000;
 
         await this.wait(delay);
         return true;
@@ -93,7 +98,7 @@ export class RetryerFetchClient implements FetchClient {
      * @returns The promise to await.
      */
     protected async onServiceUnavailable(): Promise<boolean> {
-        await this.wait(DEFAULT_RETRY_DELAY_IN_MILLIS);
+        await this.wait(RETRY_DELAY_IN_MILLIS);
         return true;
     }
     
