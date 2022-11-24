@@ -69,7 +69,12 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
 
         this.on = this.switchService.getCharacteristic(this.Characteristic.On)
             .on(CharacteristicEventTypes.SET, this.onSetCallback.bind(this));
-        this.statusActive = this.switchService.getCharacteristic(this.Characteristic.StatusActive);
+
+        if (this.switchService.testCharacteristic(this.Characteristic.StatusActive)) {
+            this.statusActive = this.switchService.getCharacteristic(this.Characteristic.StatusActive);
+        } else {
+            this.statusActive = this.switchService.addCharacteristic(this.Characteristic.StatusActive);
+        }
     }
 
     public setMowerMetadata(metadata: MowerMetadata): void {

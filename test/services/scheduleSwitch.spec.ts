@@ -99,8 +99,12 @@ describe('ScheduleSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
+        const statusActive = new Mock<Characteristic>();
+
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
 
@@ -204,6 +208,9 @@ describe('ScheduleSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         
+
+        const statusActive = new Mock<Characteristic>();
+
         policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
         policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
@@ -211,6 +218,8 @@ describe('ScheduleSwitchImpl', () => {
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
@@ -253,6 +262,8 @@ describe('ScheduleSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         
+        const statusActive = new Mock<Characteristic>();
+        
         policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
         policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
@@ -260,6 +271,8 @@ describe('ScheduleSwitchImpl', () => {
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
