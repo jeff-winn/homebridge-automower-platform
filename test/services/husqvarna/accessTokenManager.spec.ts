@@ -149,7 +149,7 @@ describe('AccessTokenManagerImpl', () => {
         expect(refreshToken.provider).toBe(token2.provider);
     });
 
-    it('should refresh the token when the token has expired', async () => {
+    it('should refresh the token when the token has expired with a refresh token', async () => {
         const token1: OAuthToken = {
             access_token: 'access token 1',
             expires_in: -100,
@@ -172,6 +172,48 @@ describe('AccessTokenManagerImpl', () => {
         
         login.setup(o => o.authorize(config, client.object())).returns(Promise.resolve(token1));
         client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
+
+        const originalToken = await target.getCurrentToken();
+
+        expect(originalToken.value).toBe(token1.access_token);
+        expect(originalToken.provider).toBe(token1.provider);
+
+        const refreshToken = await target.getCurrentToken();
+
+        expect(refreshToken.value).toBe(token2.access_token);
+        expect(refreshToken.provider).toBe(token2.provider);
+    });
+
+    it('should login the user again when the token has expired without a refresh token', async () => {
+        const token1: OAuthToken = {
+            access_token: 'access token 1',
+            expires_in: -100,
+            provider: 'provider',
+            refresh_token: undefined,
+            scope: '',
+            token_type: 'Bearer',
+            user_id: 'user id'
+        };
+
+        const token2: OAuthToken = {
+            access_token: 'access token 2',
+            expires_in: 0,
+            provider: 'provider',
+            refresh_token: undefined,
+            scope: '',
+            token_type: 'Bearer',
+            user_id: 'user id'
+        };
+       
+        let called = false;
+        login.setup(o => o.authorize(config, client.object())).callback(() => {
+            if (called) {
+                return Promise.resolve(token2);
+            }
+
+            called = true;
+            return Promise.resolve(token1);
+        });
 
         const originalToken = await target.getCurrentToken();
 

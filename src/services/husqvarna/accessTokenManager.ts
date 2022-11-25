@@ -58,7 +58,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async refreshToken(): Promise<void> {
         let newToken: OAuthToken;
 
-        if (this.hasAlreadyLoggedIn() && !this.isTokenInvalidated()) {
+        if (this.canTokenBeRefreshed() && !this.isTokenInvalidated()) {
             newToken = await this.doRefreshToken();
         } else {
             newToken = await this.doLogin();
@@ -119,6 +119,10 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         this.log.debug('Refreshed the token!');
         return newToken;
+    }
+
+    protected canTokenBeRefreshed(): boolean {
+        return this.currentToken !== undefined && this.currentToken.refresh_token !== undefined;
     }
 
     /**

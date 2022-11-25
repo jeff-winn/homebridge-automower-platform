@@ -23,9 +23,9 @@ export interface OAuthToken {
     expires_in: number;
     
     /**
-     * The token to use when refreshing the token.
+     * Optional. The token to use when refreshing the token.
      */
-    refresh_token: string;
+    refresh_token?: string;
 
     /**
      * The provider.
