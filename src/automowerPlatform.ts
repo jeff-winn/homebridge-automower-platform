@@ -89,7 +89,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     private onStatusEventReceived(event: StatusEvent): Promise<void> {
-        const mower = this.mowers.find(o => o.getId() === event.id);
+        const mower = this.getMower(event.id);
         if (mower !== undefined) {
             mower.onStatusEventReceived(event);
         }
