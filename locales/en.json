@@ -53,8 +53,8 @@
   "ERROR_SHUTTING_DOWN_PLUGIN": "An unexpected error occurred while shutting down the plugin.",
   "ERROR_CONFIGURING_ACCESSORY": "An unexpected error occurred while configuring the accessory.",
   "CONFIGURING_CACHED_ACCESSORY": "Configuring '%s' from the accessory cache.",
-  "Refreshing the current token...": "Refreshing the current token...",
-  "Refreshed the token!": "Refreshed the token!",
+  "REFRESHING_TOKEN": "Refreshing the current token...",
+  "REFRESHED_TOKEN": "Refreshed the token!",
   "Charging Cycles": "Charging Cycles",
   "cycles": "cycles",
   "Total Charging Time": "Total Charging Time"
