@@ -35,7 +35,7 @@
   "ERROR_HANDLING_DISCONNECTED_EVENT": "An unexpected error occurred while handling the disconnected event.",
   "ERROR_HANDLING_ERROR_EVENT": "An unexpected error occurred while handling the error event.",
   "ERROR_PROCESSING_MESSAGE": "An unexpected error occurred while processing the message.",
-  "An unexpected error occurred while attempting to set '%s' for '%s'.": "An unexpected error occurred while attempting to set '%s' for '%s'.",
+  "ERROR_HANDLING_SET": "An unexpected error occurred while attempting to set '%s' for '%s'.",
   "USERNAME_PASSWORD_INVALID": "The username and/or password supplied were not valid, please check your configuration and try again.",
   "PAUSE": "Pause",
   "SCHEDULE": "Schedule",
