@@ -134,7 +134,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
                 try {
                     this.onDisconnectedCallback();                
                 } catch (e) {
-                    this.log.error('An unexpected error occurred while handling the disconnected event.', e);
+                    this.log.error('ERROR_HANDLING_DISCONNECTED_EVENT', e);
                 }
             }
         } else if (this.connecting) {
@@ -147,7 +147,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
             try {
                 this.onErrorReceivedCallback(err);
             } catch (e) {
-                this.log.error('An unexpected error occurred while handling the error event.', e);
+                this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
             }
         }
     }
@@ -159,7 +159,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
 
         try {
             const data = JSON.parse(buffer.toString());
-            this.log.debug('Received event:\r\n', JSON.stringify(data));
+            this.log.debug('RECEIVED_EVENT', JSON.stringify(data));
     
             const connectedEvent = data as ConnectedEvent;
             if (connectedEvent.connectionId !== undefined) {
@@ -171,7 +171,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
                 }
             }
         } catch (e) {
-            this.log.error('An unexpected error occurred while processing the message.', e);
+            this.log.error('ERROR_PROCESSING_MESSAGE', e);
         }
     }
 
@@ -184,7 +184,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
             try {
                 this.onConnectedCallback(event);
             } catch (e) {
-                this.log.error('An unexpected error occurred while handling the connected event.', e);
+                this.log.error('ERROR_HANDLING_CONNECTED_EVENT', e);
             }
         }
     }

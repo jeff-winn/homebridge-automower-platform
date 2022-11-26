@@ -10,10 +10,10 @@ export class ChargingCycles extends LocalizedCharacteristic {
     public static readonly UUID = 'e28ea134-47e2-49f0-895d-72dab38c9ab3';
 
     public constructor() { 
-        super('Charging Cycles', ChargingCycles.UUID, {
+        super('CHARGING_CYCLES', ChargingCycles.UUID, {
             format: Formats.UINT32,
             perms: [ Perms.PAIRED_READ, Perms.NOTIFY ],
-            unit: 'cycles',
+            unit: 'CYCLES',
             minValue: 0
         });
     }

@@ -104,20 +104,20 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     protected async doLogin(): Promise<OAuthToken> {
-        this.log.debug('Logging into the Husqvarna platform...');
+        this.log.debug('LOGGING_IN');
 
         const token = await this.login.authorize(this.config, this.client);
         
-        this.log.debug('Logged in!');
+        this.log.debug('LOGGED_IN');
         return token;
     }
 
     protected async doRefreshToken(): Promise<OAuthToken> {
-        this.log.debug('Refreshing the current token...');
+        this.log.debug('REFRESHING_TOKEN');
 
         const newToken = await this.client.refresh(this.config.appKey!, this.currentToken!);
 
-        this.log.debug('Refreshed the token!');
+        this.log.debug('REFRESHED_TOKEN');
         return newToken;
     }
 
@@ -168,11 +168,11 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
             return;
         }
 
-        this.log.debug('Logging out of the Husqvarna platform...');
+        this.log.debug('LOGGING_OUT');
 
         await this.client.logout(this.config.appKey!, token);
         this.currentToken = undefined;
 
-        this.log.debug('Logged out!');
+        this.log.debug('LOGGED_OUT');
     }
 }

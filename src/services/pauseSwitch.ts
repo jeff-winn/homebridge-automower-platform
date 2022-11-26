@@ -43,8 +43,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
 
             callback(HAPStatus.SUCCESS);
         } catch (e) {
-            this.log.error('An unexpected error occurred while attempting to set \'%s\' for \'%s\'.', 
-                this.name, this.accessory.displayName, e);
+            this.log.error('ERROR_HANDLING_SET', this.name, this.accessory.displayName, e);
 
             callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }        

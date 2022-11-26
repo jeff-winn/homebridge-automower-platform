@@ -128,7 +128,7 @@ describe('AbstractSwitch', () => {
         target.init(NameMode.DEFAULT);
         target.unsafeUpdateValue(false);
 
-        log.verify(o => o.info('Changed \'%s\' for \'%s\': OFF', 'Switch', 'hello world'), Times.Once());
+        log.verify(o => o.info('CHANGED_VALUE', 'Switch', 'hello world', 'OFF'), Times.Once());
         c.verify(o => o.updateValue(false), Times.Once());
     });
 
@@ -154,7 +154,7 @@ describe('AbstractSwitch', () => {
         target.init(NameMode.DEFAULT);
         target.unsafeUpdateValue(true);
 
-        log.verify(o => o.info('Changed \'%s\' for \'%s\': ON', 'Switch', 'hello world'), Times.Once());
+        log.verify(o => o.info('CHANGED_VALUE', 'Switch', 'hello world', 'ON'), Times.Once());
         c.verify(o => o.updateValue(true), Times.Once());
     });
 
@@ -182,7 +182,7 @@ describe('AbstractSwitch', () => {
         
         target.unsafeUpdateValue(false);
 
-        log.verify(o => o.info('Changed \'%s\' for \'%s\': OFF', 'Switch', 'hello world'), Times.Once());
+        log.verify(o => o.info('CHANGED_VALUE', 'Switch', 'hello world', 'OFF'), Times.Once());
         c.verify(o => o.updateValue(false), Times.Once());
     });
 

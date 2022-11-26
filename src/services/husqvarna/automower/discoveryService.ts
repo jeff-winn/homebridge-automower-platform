@@ -22,7 +22,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
     public constructor(private mowerService: GetMowersService, private factory: AutomowerAccessoryFactory, private log: PlatformLogger) { }
 
     public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
-        this.log.info('Discovering new mowers...');
+        this.log.info('DISCOVERING_NEW_MOWERS');
 
         const found: AutomowerAccessory[] = [];
         const mowers = await this.mowerService.getMowers();
@@ -42,6 +42,6 @@ export class DiscoveryServiceImpl implements DiscoveryService {
             platform.registerMowers(found);
         }
 
-        this.log.info('Completed mower discovery, %d new mower(s) found.', found.length);
+        this.log.info('COMPLETED_MOWER_DISCOVERY', found.length);
     }
 }

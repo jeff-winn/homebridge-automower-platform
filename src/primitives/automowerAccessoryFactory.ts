@@ -88,7 +88,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createPauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
         return new PauseSwitchImpl(
-            this.locale.format('Pause'),
+            this.locale.format('PAUSE'),
             this.container.resolve(MowerControlServiceImpl),
             this.container.resolve(DeterministicMowerIsPausedPolicy),
             accessory, this.api, this.log);
@@ -96,14 +96,14 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
         return new ArrivingContactSensorImpl(
-            this.locale.format('Arriving Sensor'),
+            this.locale.format('ARRIVING_SENSOR'),
             this.container.resolve(DeterministicMowerIsArrivingPolicy),
             accessory, this.api, this.log);
     }
 
     protected createLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
         return new LeavingContactSensorImpl(
-            this.locale.format('Leaving Sensor'),
+            this.locale.format('LEAVING_SENSOR'),
             this.container.resolve(DeterministicMowerIsLeavingPolicy),
             accessory, this.api, this.log);
     }
@@ -118,7 +118,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
         return new ScheduleSwitchImpl(
-            this.locale.format('Schedule'),
+            this.locale.format('SCHEDULE'),
             this.container.resolve(MowerControlServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
             accessory, this.api, this.log);
@@ -126,7 +126,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
         return new MotionSensorImpl(
-            this.locale.format('Motion Sensor'),
+            this.locale.format('MOTION_SENSOR'),
             this.container.resolve(DeterministicMowerInMotionPolicy),
             this.container.resolve(DeterministicMowerFaultedPolicy),
             this.container.resolve(DeterministicMowerTamperedPolicy),
