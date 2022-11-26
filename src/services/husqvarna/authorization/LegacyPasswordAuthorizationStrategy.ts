@@ -12,27 +12,18 @@ export class LegacyPasswordAuthorizationStrategy implements OAuth2AuthorizationS
     
     public async authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
         if (config.appKey === undefined || config.appKey === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The application key setting is missing, please check your configuration and try again.', 
-                'CFG0002');
+            throw this.errorFactory.badConfigurationError('APP_KEY_MISSING', 'CFG0002');
         }
 
         if (config.username === undefined || config.username === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
+            throw this.errorFactory.badConfigurationError('USERNAME_PASSWORD_INVALID', 'CFG0002');
         }
 
         if (config.password === undefined || config.password === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The username and/or password supplied were not valid, please check your configuration and try again.', 
-                'CFG0002');
+            throw this.errorFactory.badConfigurationError('USERNAME_PASSWORD_INVALID', 'CFG0002');
         }
 
-        this.log.warn(
-            'ATTENTION! You are currently using an authentication mode no longer supported by Husqvarna. ' + 
-            'This authentication mode may suddenly stop working as Husqvarna has begun phased removal from their products. ' + 
-            'Please migrate to another authentication mode at your earliest convenience, see documentation for more details.');
+        this.log.warn('AUTHENTICATION_SCHEME_NOT_SUPPORTED');
 
         return await client.exchangePassword(config.appKey, config.username, config.password);
     }
