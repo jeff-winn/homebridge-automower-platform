@@ -78,8 +78,8 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
         const newValue = this.getContactSensorState();
 
         if (lastValue === undefined || lastValue !== newValue) {
-            this.log.info(`Changed '%s' for '%s': ${newValue === CONTACT_SENSOR_OPEN ? 'OPEN' : 'CLOSED'}`, 
-                this.name, this.accessory.displayName);
+            this.log.info('CHANGED_VALUE', this.name, this.accessory.displayName, 
+                newValue === CONTACT_SENSOR_OPEN ? 'OPEN' : 'CLOSED');
 
             this.contactState.updateValue(newValue);
             this.setLastValue(newValue);
