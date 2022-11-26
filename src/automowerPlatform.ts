@@ -51,7 +51,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
                 // The message should be in a format that is readable to an end user, just display that instead.
                 this.error(e.message);
             } else {
-                this.error('An unexpected error occurred while starting the plugin.', e);
+                this.error('ERROR_STARTING_PLUGIN', e);
             }
         }
     }
@@ -128,7 +128,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             await this.getEventService()?.stop();
             await this.getTokenManager()?.logout();
         } catch (e) {
-            this.error('An unexpected error occurred while shutting down the plugin.', e);
+            this.error('ERROR_SHUTTING_DOWN_PLUGIN', e);
         }
     }
 
@@ -166,12 +166,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
         try {
             this.ensureContainerIsInitialized();
-            this.info('Configuring \'%s\' from the accessory cache.', accessory.displayName);
+            this.info('CONFIGURING_CACHED_ACCESSORY', accessory.displayName);
 
             const automower = this.getAccessoryFactory().createAutomowerAccessory(accessory);
             this.mowers.push(automower);
         } catch (e) {
-            this.error('An unexpected error occurred while configuring the accessory.', e);
+            this.error('ERROR_CONFIGURING_ACCESSORY', e);
         }
     }
 
