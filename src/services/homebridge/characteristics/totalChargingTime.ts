@@ -10,7 +10,7 @@ export class TotalChargingTime extends LocalizedCharacteristic {
     public static readonly UUID = 'd34cccf5-562a-44d6-9adf-e896d3cabf08';
 
     public constructor() {
-        super('Total Charging Time', TotalChargingTime.UUID, {
+        super('TOTAL_CHARGING_TIME', TotalChargingTime.UUID, {
             format: Formats.UINT32,
             perms: [ Perms.PAIRED_READ, Perms.NOTIFY ],
             unit: Units.SECONDS

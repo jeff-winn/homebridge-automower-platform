@@ -55,7 +55,7 @@
   "CONFIGURING_CACHED_ACCESSORY": "Configuring '%s' from the accessory cache.",
   "REFRESHING_TOKEN": "Refreshing the current token...",
   "REFRESHED_TOKEN": "Refreshed the token!",
-  "Charging Cycles": "Charging Cycles",
-  "cycles": "cycles",
-  "Total Charging Time": "Total Charging Time"
+  "CHARGING_CYCLES": "Charging Cycles",
+  "CYCLES": "cycles",
+  "TOTAL_CHARGING_TIME": "Total Charging Time"
 }
