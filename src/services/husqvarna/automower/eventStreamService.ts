@@ -95,7 +95,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected onConnectedEventReceived(): Promise<void> {
-        this.log.debug('Connected!');
+        this.log.debug('CONNECTED');
 
         if (this.isKeepAliveActive()) {
             this.startKeepAlive();
@@ -106,7 +106,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected async onDisconnectedEventReceived(): Promise<void> {
-        this.log.debug('Disconnected!');
+        this.log.debug('DISCONNECTED');
 
         if (this.isStopping()) {
             // The service is intentionally being stopped.
@@ -133,7 +133,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected onErrorEventReceived(event: ErrorEvent): Promise<void> {        
-        this.log.error('An error occurred within the socket stream, see the following for additional details:\n', {
+        this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: event.error,
             message: event.message,
             type: event.type
@@ -156,7 +156,7 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     private async connect(): Promise<void> {
-        this.log.debug('Attempting to open a connection...');
+        this.log.debug('OPENING_CONNECTION');
 
         try {
             const token = await this.tokenManager.getCurrentToken();
@@ -194,7 +194,7 @@ export class EventStreamServiceImpl implements EventStreamService {
                 this.pingOnce();
             }
         } catch (e) {
-            this.log.error('An unexpected error occurred while keeping the client stream alive.', e);
+            this.log.error('ERROR_KEEPING_STREAM_ALIVE', e);
         } finally {
             if (!this.isKeepAliveActive()) {
                 // The keep alive is not trying to reconnect, restart the timer.
@@ -216,28 +216,28 @@ export class EventStreamServiceImpl implements EventStreamService {
     }
 
     protected shouldReconnect(): boolean {
-        this.log.debug('Checking keep alive for the client stream...');
+        this.log.debug('CHECKING_KEEP_ALIVE');
         let result = false;
 
         if (!this.stream.isConnected()) {
-            this.log.debug('The stream somehow got disconnected; proceed with reconnect.');
+            this.log.debug('UNEXPECTED_STREAM_DISCONNECT');
             result = true;
         } else {
             const now = new Date();
             
             if (this.lastEventReceived === undefined && this.started !== undefined && 
                 ((now.getTime() - this.started.getTime()) > this.getReconnectInterval())) {
-                this.log.debug('No message has been received, and the client was started an hour ago; proceed with reconnect.');
+                this.log.debug('NO_MESSAGE_RECEIVED');
                 result = true;
             } else if (this.lastEventReceived !== undefined && 
                 ((now.getTime() - this.lastEventReceived.getTime()) > this.getReconnectInterval())) {
-                this.log.debug('No messages have been received within the last hour; proceed with reconnect.');
+                this.log.debug('NO_RECENT_MESSAGE_RECEIVED');
                 result = true;
             }
         }
 
         if (!result) {
-            this.log.debug('Reconnection is not required.');
+            this.log.debug('RECONNECT_NOT_NEEDED');
         }
 
         return result;
@@ -276,11 +276,11 @@ export class EventStreamServiceImpl implements EventStreamService {
             return;
         }
 
-        this.log.debug('Closing the stream...');
+        this.log.debug('CLOSING_STREAM');
 
         this.stream.close();
 
-        this.log.debug('Stream closed.');
+        this.log.debug('CLOSED_STREAM');
     }
     
     protected stopKeepAlive(): void {
