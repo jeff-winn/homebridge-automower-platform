@@ -248,7 +248,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         target.unsafeOnSocketMessageReceived(payload);
 
-        log.verify(o => o.error('An unexpected error occurred while processing the message.', It.IsAny()), Times.Once());
+        log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
 
     it('should handle the connected event', () => {

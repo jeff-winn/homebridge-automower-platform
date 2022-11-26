@@ -12,7 +12,7 @@ describe('Y18nLocalization', () => {
      */
     it('should handle value replacements correctly', () => {
         const event = 'test';
-        const result = target.format('Received unknown event: %s', event);
+        const result = target.format('RECEIVED_UNKNOWN_EVENT', event);
 
         expect(result).toBe('Received unknown event: test');
     });

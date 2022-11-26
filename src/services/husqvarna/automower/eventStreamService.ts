@@ -309,7 +309,7 @@ export class EventStreamServiceImpl implements EventStreamService {
             return this.onStatusEvent(event as StatusEvent);        
 
         default:
-            this.log.warn('Received unknown event: %s', event.type);
+            this.log.warn('RECEIVED_UNKNOWN_EVENT', event.type);
             return Promise.resolve(undefined);
         }
     }
