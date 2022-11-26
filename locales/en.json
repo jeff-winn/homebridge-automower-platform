@@ -34,7 +34,7 @@
   "SIMULTANEOUS_LOGINS_DETECTED": "The account for the credentials supplied appears to be logged in multiple times, please check your account with Husqvarna and try again. If this activity seems suspicious, you should renew your application secret on the Husqvarna website.",
   "INVALID_ACCESS_TOKEN": "The access token supplied was invalid.",
   "NOT_AUTHORIZED": "The user is not authorized to perform the action requested.",
-  "The appKey setting is missing, please check your configuration and try again.": "The appKey setting is missing, please check your configuration and try again.",
+  "APP_KEY_MISSING": "The appKey setting is missing, please check your configuration and try again.",
   "ATTENTION! You are currently using an authentication mode no longer supported by Husqvarna. This authentication mode may suddenly stop working as Husqvarna has begun phased removal from their products. Please migrate to another authentication mode at your earliest convenience, see documentation for more details.": "ATTENTION! You are currently using an authentication mode no longer supported by Husqvarna. This authentication mode may suddenly stop working as Husqvarna has begun phased removal from their products. Please migrate to another authentication mode at your earliest convenience, see documentation for more details.",
   "ERR: %s": "ERR: %s",
   "ERR: [%s] %s": "ERR: [%s] %s",
