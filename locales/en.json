@@ -47,8 +47,5 @@
   "ERROR_CONFIGURING_ACCESSORY": "An unexpected error occurred while configuring the accessory.",
   "CONFIGURING_CACHED_ACCESSORY": "Configuring '%s' from the accessory cache.",
   "REFRESHING_TOKEN": "Refreshing the current token...",
-  "REFRESHED_TOKEN": "Refreshed the token!",
-  "CHARGING_CYCLES": "Charging Cycles",
-  "CYCLES": "cycles",
-  "TOTAL_CHARGING_TIME": "Total Charging Time"
+  "REFRESHED_TOKEN": "Refreshed the token!"
 }
