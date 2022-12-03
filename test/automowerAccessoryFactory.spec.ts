@@ -1,4 +1,5 @@
-import { API, PlatformAccessory } from 'homebridge';
+import { Characteristic, Service } from 'hap-nodejs';
+import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
@@ -6,19 +7,28 @@ import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason,
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
 import { PlatformContainer } from '../src/primitives/platformContainer';
-import { AccessoryInformation } from '../src/services/accessoryInformation';
-import { ArrivingSensor } from '../src/services/arrivingSensor';
-import { BatteryInformation } from '../src/services/batteryInformation';
+import { AccessoryInformation, AccessoryInformationImpl } from '../src/services/accessoryInformation';
+import { ArrivingContactSensorImpl, ArrivingSensor } from '../src/services/arrivingSensor';
+import { BatteryInformation, BatteryInformationImpl } from '../src/services/batteryInformation';
 import { NameMode } from '../src/services/homebridge/abstractSwitch';
-import { LeavingSensor } from '../src/services/leavingSensor';
-import { MotionSensor } from '../src/services/motionSensor';
-import { PauseSwitch } from '../src/services/pauseSwitch';
-import { ScheduleSwitch } from '../src/services/scheduleSwitch';
+import { MowerControlServiceImpl } from '../src/services/husqvarna/automower/mowerControlService';
+import { LeavingContactSensorImpl, LeavingSensor } from '../src/services/leavingSensor';
+import { MotionSensor, MotionSensorImpl } from '../src/services/motionSensor';
+import { PauseSwitch, PauseSwitchImpl } from '../src/services/pauseSwitch';
+import { DeterministicMowerFaultedPolicy } from '../src/services/policies/mowerFaultedPolicy';
+import { DeterministicMowerInMotionPolicy } from '../src/services/policies/mowerInMotionPolicy';
+import { DeterministicMowerIsArrivingPolicy } from '../src/services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsLeavingPolicy } from '../src/services/policies/mowerIsLeavingPolicy';
+import { DeterministicMowerIsPausedPolicy } from '../src/services/policies/mowerIsPausedPolicy';
+import { DeterministicMowerTamperedPolicy } from '../src/services/policies/mowerTamperedPolicy';
+import { DeterministicScheduleEnabledPolicy } from '../src/services/policies/scheduleEnabledPolicy';
+import { ScheduleSwitch, ScheduleSwitchImpl } from '../src/services/scheduleSwitch';
 import { AutomowerAccessoryFactorySpy } from './automowerAccessoryFactorySpy';
 
 describe('AutomowerAccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
     let api: Mock<API>;
+    let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
     let container: Mock<PlatformContainer>;
     let locale: Mock<Localization>;
@@ -27,7 +37,14 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
     beforeEach(() => {
         factory = new Mock<PlatformAccessoryFactory>();
+
+        hap = new Mock<HAP>();        
+        hap.setup(o => o.Service).returns(Service);
+        hap.setup(o => o.Characteristic).returns(Characteristic);
+        
         api = new Mock<API>();
+        api.setup(o => o.hap).returns(hap.object());
+
         log = new Mock<PlatformLogger>();
         container = new Mock<PlatformContainer>();
         locale = new Mock<Localization>();
@@ -174,5 +191,95 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         motionSensor.verify(o => o.init(), Times.Once());
         batteryInformation.verify(o => o.init(), Times.Once());
         accessoryInformation.verify(o => o.init(), Times.Once());
+    });
+    
+    it('should create the schedule switch', () => {
+        const service = new Mock<MowerControlServiceImpl>();
+        const policy = new Mock<DeterministicScheduleEnabledPolicy>();
+        container.setup(o => o.resolve(MowerControlServiceImpl)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicScheduleEnabledPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
+        
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreateScheduleSwitch(platformAccessory.object()) as ScheduleSwitchImpl;
+
+        expect(result).toBeDefined();
+    });
+    
+    it('should create a pause switch', () => {
+        const service = new Mock<MowerControlServiceImpl>();
+        const policy = new Mock<DeterministicMowerIsPausedPolicy>();
+        container.setup(o => o.resolve(MowerControlServiceImpl)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicMowerIsPausedPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('PAUSE')).returns('Pause');
+        
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreatePauseSwitch(platformAccessory.object()) as PauseSwitchImpl;
+
+        expect(result).toBeDefined();
+    });
+
+    it('should create an arriving sensor', () => {
+        const policy = new Mock<DeterministicMowerIsArrivingPolicy>();
+        container.setup(o => o.resolve(DeterministicMowerIsArrivingPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('ARRIVING_SENSOR')).returns('Arriving');
+        
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as ArrivingContactSensorImpl;
+
+        expect(result).toBeDefined();
+    });
+
+    it('should create an leaving sensor', () => {
+        const policy = new Mock<DeterministicMowerIsLeavingPolicy>();
+        container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('LEAVING_SENSOR')).returns('Leaving');
+        
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
+
+        expect(result).toBeDefined();
+    });
+
+    it('should create a motion sensor', () => {
+        const motionPolicy = new Mock<DeterministicMowerInMotionPolicy>();
+        const faultedPolicy = new Mock<DeterministicMowerFaultedPolicy>();
+        const tamperedPolicy = new Mock<DeterministicMowerTamperedPolicy>();
+
+        container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(motionPolicy.object());
+        container.setup(o => o.resolve(DeterministicMowerFaultedPolicy)).returns(faultedPolicy.object());
+        container.setup(o => o.resolve(DeterministicMowerTamperedPolicy)).returns(tamperedPolicy.object());
+
+        locale.setup(o => o.format('MOTION_SENSOR')).returns('Motion');
+        
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreateMotionSensor(platformAccessory.object()) as MotionSensorImpl;
+
+        expect(result).toBeDefined();
+    });
+
+    it('should create battery information', () => {
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreateBatteryInformation(platformAccessory.object()) as BatteryInformationImpl;
+
+        expect(result).toBeDefined();
+    });
+
+    it('should create accessory information', () => {
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const result = target.unsafeCreateAccessoryInformation(platformAccessory.object()) as AccessoryInformationImpl;
+
+        expect(result).toBeDefined();
     });
 });

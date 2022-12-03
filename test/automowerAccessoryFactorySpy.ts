@@ -60,12 +60,20 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createAutomowerAccessoryImpl(accessory);
     }
 
+    public unsafeCreatePauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
+        return this.createPauseSwitch(accessory);
+    }
+
     protected override createPauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
         if (this.pauseSwitch !== undefined) {
             return this.pauseSwitch;
         }
 
         return super.createPauseSwitch(accessory);
+    }
+
+    public unsafeCreateAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+        return this.createAccessoryInformation(accessory);
     }
 
     protected override createAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
@@ -76,12 +84,20 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createAccessoryInformation(accessory);
     }
 
+    public unsafeCreateBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
+        return this.createBatteryInformation(accessory);
+    }
+
     protected override createBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
         if (this.batteryInformation !== undefined) {
             return this.batteryInformation;
         }
 
         return super.createBatteryInformation(accessory);
+    }
+
+    public unsafeCreateArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
+        return this.createArrivingSensor(accessory);
     }
 
     protected override createArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
@@ -92,6 +108,10 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createArrivingSensor(accessory);
     }
 
+    public unsafeCreateLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
+        return this.createLeavingSensor(accessory);
+    }
+
     protected override createLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
         if (this.leavingSensor !== undefined) {
             return this.leavingSensor;
@@ -100,12 +120,20 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createLeavingSensor(accessory);
     }
 
+    public unsafeCreateMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
+        return this.createMotionSensor(accessory);
+    }
+
     protected override createMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
         if (this.motionSensor !== undefined) {
             return this.motionSensor;
         }
 
         return super.createMotionSensor(accessory);
+    }
+
+    public unsafeCreateScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
+        return this.createScheduleSwitch(accessory);
     }
 
     protected override createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {

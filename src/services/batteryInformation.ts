@@ -32,7 +32,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
 
-    public constructor(private locale: Localization, accessory: PlatformAccessory<AutomowerContext>, api: API) {
+    public constructor(accessory: PlatformAccessory<AutomowerContext>, api: API) {
         super(accessory, api);
     }
 

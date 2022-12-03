@@ -112,7 +112,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected createBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
-        return new BatteryInformationImpl(this.locale, accessory, this.api);
+        return new BatteryInformationImpl(accessory, this.api);
     }
 
     protected createAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
