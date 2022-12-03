@@ -295,7 +295,6 @@ export interface Task {
  * Describes the statistics for the mower.
  */
 export interface Statistics {
-    cuttingBladeUsageTime: number;
     numberOfChargingCycles: number;
     numberOfCollisions: number;
     totalChargingTime: number;
