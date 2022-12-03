@@ -3,12 +3,14 @@ import { container, InjectionToken } from 'tsyringe';
 
 import * as settings from '../settings';
 
+import { AutomowerAccessoryFactoryImpl } from '../automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { ShouldLogHeaderPolicyImpl } from '../clients/policies/shouldLogHeaderPolicyImpl';
+import { RateLimitedAutomowerClient } from '../clients/rateLimitedAutomowerClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
@@ -25,12 +27,10 @@ import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIs
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
-import { AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
-import { RateLimitedAutomowerClient } from '../clients/rateLimitedAutomowerClient';
 
 export interface PlatformContainer {
     registerEverything(): void;

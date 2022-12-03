@@ -1,7 +1,6 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
 import { Activity, Battery, MowerState } from '../model';
-import { Localization } from '../primitives/localization';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**
@@ -32,7 +31,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
 
-    public constructor(private locale: Localization, accessory: PlatformAccessory<AutomowerContext>, api: API) {
+    public constructor(accessory: PlatformAccessory<AutomowerContext>, api: API) {
         super(accessory, api);
     }
 

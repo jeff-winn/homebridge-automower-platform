@@ -4,12 +4,10 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/model';
-import { Localization } from '../../src/primitives/localization';
 import { BatteryInformationImpl } from '../../src/services/batteryInformation';
 
 describe('BatteryServiceImpl', () => {
     let accessory: Mock<PlatformAccessory<AutomowerContext>>;
-    let locale: Mock<Localization>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
 
@@ -20,14 +18,12 @@ describe('BatteryServiceImpl', () => {
 
         hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);
-        hap.setup(o => o.Characteristic).returns(Characteristic);
-        
-        locale = new Mock<Localization>();
+        hap.setup(o => o.Characteristic).returns(Characteristic);        
 
         api = new Mock<API>();
         api.setup(o => o.hap).returns(hap.object());
         
-        target = new BatteryInformationImpl(locale.object(), accessory.object(), api.object());
+        target = new BatteryInformationImpl(accessory.object(), api.object());
     });
 
     it('should throw an error when not initialized on set battery level', () => {

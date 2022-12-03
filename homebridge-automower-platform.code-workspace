@@ -15,8 +15,7 @@
 		"files.exclude": {
 			"build": true,
 			"dist": true,
-			"docs/_site": true,
-			"docs/.sass-cache": true,
+			"docs": true,
 			"**/bin": true,
 			"**/obj": true,
 			"**/.git": true,
