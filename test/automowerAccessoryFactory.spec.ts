@@ -206,6 +206,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateScheduleSwitch(platformAccessory.object()) as ScheduleSwitchImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(ScheduleSwitchImpl);
     });
     
     it('should create a pause switch', () => {
@@ -221,6 +222,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreatePauseSwitch(platformAccessory.object()) as PauseSwitchImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(PauseSwitchImpl);
     });
 
     it('should create an arriving sensor', () => {
@@ -234,6 +236,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as ArrivingContactSensorImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(ArrivingContactSensorImpl);
     });
 
     it('should create an leaving sensor', () => {
@@ -244,9 +247,10 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         
         const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
 
-        const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
+        const result = target.unsafeCreateLeavingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(LeavingContactSensorImpl);
     });
 
     it('should create a motion sensor', () => {
@@ -265,6 +269,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateMotionSensor(platformAccessory.object()) as MotionSensorImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(MotionSensorImpl);
     });
 
     it('should create battery information', () => {
@@ -273,6 +278,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateBatteryInformation(platformAccessory.object()) as BatteryInformationImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(BatteryInformationImpl);
     });
 
     it('should create accessory information', () => {
@@ -281,5 +287,6 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateAccessoryInformation(platformAccessory.object()) as AccessoryInformationImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(AccessoryInformationImpl);
     });
 });
