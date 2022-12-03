@@ -3,7 +3,7 @@ import { API, APIEvent, DynamicPlatformPlugin, Logging, PlatformAccessory, Platf
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { SettingsEvent, StatusEvent } from './events';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './primitives/automowerAccessoryFactory';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';

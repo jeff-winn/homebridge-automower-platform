@@ -1,10 +1,10 @@
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory } from '../../../../src/automowerAccessory';
+import { AutomowerAccessoryFactory } from '../../../../src/automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../../../src/automowerPlatform';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
-import { AutomowerAccessoryFactory } from '../../../../src/primitives/automowerAccessoryFactory';
 import { DiscoveryServiceImpl } from '../../../../src/services/husqvarna/automower/discoveryService';
 import { GetMowersService } from '../../../../src/services/husqvarna/automower/getMowersService';
 
