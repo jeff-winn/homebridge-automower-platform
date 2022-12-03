@@ -1,11 +1,19 @@
 import { API, PlatformAccessory } from 'homebridge';
-import { Mock, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
 import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../src/model';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
 import { PlatformContainer } from '../src/primitives/platformContainer';
+import { AccessoryInformation } from '../src/services/accessoryInformation';
+import { ArrivingSensor } from '../src/services/arrivingSensor';
+import { BatteryInformation } from '../src/services/batteryInformation';
+import { NameMode } from '../src/services/homebridge/abstractSwitch';
+import { LeavingSensor } from '../src/services/leavingSensor';
+import { MotionSensor } from '../src/services/motionSensor';
+import { PauseSwitch } from '../src/services/pauseSwitch';
+import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 import { AutomowerAccessoryFactorySpy } from './automowerAccessoryFactorySpy';
 
 describe('AutomowerAccessoryFactoryImpl', () => {
@@ -32,7 +40,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
             locale.object());
     });
 
-    it('should initialize the accessory on create new accessory', () => {        
+    it('should create the accessory from mower data', () => {        
         const mowerName = 'Test';
         const mowerId = '1234';
 
@@ -110,7 +118,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         expected.verify(o => o.init(), Times.Once());
     });
 
-    it('should initialize the accessory on create from existing platform accessory', () => {
+    it('should initialize the accessory instance', () => {
         const expected = new Mock<AutomowerAccessory>();
         expected.setup(o => o.init()).returns(undefined);
 
@@ -122,5 +130,49 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         expect(actual).toBe(expected.object());            
         expected.verify(o => o.init(), Times.Once());
+    });
+
+    it('should create the mower accessory', () => {
+        const scheduleSwitch = new Mock<ScheduleSwitch>();
+        scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+
+        const pauseSwitch = new Mock<PauseSwitch>();
+        pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+
+        const arrivingSensor = new Mock<ArrivingSensor>();
+        arrivingSensor.setup(o => o.init()).returns(undefined);
+
+        const leavingSensor = new Mock<LeavingSensor>();
+        leavingSensor.setup(o => o.init()).returns(undefined);
+
+        const motionSensor = new Mock<MotionSensor>();
+        motionSensor.setup(o => o.init()).returns(undefined);
+
+        const batteryInformation = new Mock<BatteryInformation>();
+        batteryInformation.setup(o => o.init()).returns(undefined);
+
+        const accessoryInformation = new Mock<AccessoryInformation>();
+        accessoryInformation.setup(o => o.init()).returns(undefined);
+
+        target.setScheduleSwitch(scheduleSwitch.object());
+        target.setPauseSwitch(pauseSwitch.object());
+        target.setArrivingSensor(arrivingSensor.object());
+        target.setLeavingSensor(leavingSensor.object());
+        target.setMotionSensor(motionSensor.object());
+        target.setBatteryInformation(batteryInformation.object());
+        target.setAccessoryInformation(accessoryInformation.object());
+
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        const actual = target.createAutomowerAccessory(platformAccessory.object());
+
+        expect(actual).toBeDefined();
+        scheduleSwitch.verify(o => o.init(NameMode.DISPLAY_NAME), Times.Once());
+        pauseSwitch.verify(o => o.init(NameMode.DEFAULT), Times.Once());
+        arrivingSensor.verify(o => o.init(), Times.Once());
+        leavingSensor.verify(o => o.init(), Times.Once());
+        motionSensor.verify(o => o.init(), Times.Once());
+        batteryInformation.verify(o => o.init(), Times.Once());
+        accessoryInformation.verify(o => o.init(), Times.Once());
     });
 });

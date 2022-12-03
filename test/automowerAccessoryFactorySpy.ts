@@ -12,16 +12,44 @@ import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl {
     private accessory?: AutomowerAccessory;
 
+    private scheduleSwitch?: ScheduleSwitch;
     private pauseSwitch?: PauseSwitch;
     private accessoryInformation?: AccessoryInformation;
     private batteryInformation?: BatteryInformation;
     private arrivingSensor?: ArrivingSensor;
     private leavingSensor?: LeavingSensor;
     private motionSensor?: MotionSensor;
-    private scheduleSwitch?: ScheduleSwitch;
 
     public setAccessory(accessory: AutomowerAccessory): void {
         this.accessory = accessory;
+    }
+
+    public setScheduleSwitch(scheduleSwitch: ScheduleSwitch): void {
+        this.scheduleSwitch = scheduleSwitch;
+    }
+
+    public setPauseSwitch(pauseSwitch: PauseSwitch): void {
+        this.pauseSwitch = pauseSwitch;
+    }
+
+    public setAccessoryInformation(accessoryInformation: AccessoryInformation): void {
+        this.accessoryInformation = accessoryInformation;
+    }
+
+    public setBatteryInformation(batteryInformation: BatteryInformation): void {
+        this.batteryInformation = batteryInformation;
+    }
+
+    public setArrivingSensor(arrivingSensor: ArrivingSensor): void {
+        this.arrivingSensor = arrivingSensor;
+    }
+
+    public setLeavingSensor(leavingSensor: LeavingSensor): void {
+        this.leavingSensor = leavingSensor;
+    }
+
+    public setMotionSensor(motionSensor: MotionSensor): void {
+        this.motionSensor = motionSensor;
     }
 
     protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
