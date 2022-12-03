@@ -76,7 +76,6 @@ describe('DiscoveryServiceImpl', () => {
                     }
                 },
                 statistics: {
-                    cuttingBladeUsageTime: 0,
                     numberOfChargingCycles: 0,
                     numberOfCollisions: 0,
                     totalChargingTime: 0,
@@ -128,7 +127,6 @@ describe('DiscoveryServiceImpl', () => {
                     }
                 },
                 statistics: {
-                    cuttingBladeUsageTime: 0,
                     numberOfChargingCycles: 0,
                     numberOfCollisions: 0,
                     totalChargingTime: 0,
@@ -213,7 +211,6 @@ describe('DiscoveryServiceImpl', () => {
                     }
                 },
                 statistics: {
-                    cuttingBladeUsageTime: 0,
                     numberOfChargingCycles: 0,
                     numberOfCollisions: 0,
                     totalChargingTime: 0,
@@ -265,7 +262,6 @@ describe('DiscoveryServiceImpl', () => {
                     }
                 },
                 statistics: {
-                    cuttingBladeUsageTime: 0,
                     numberOfChargingCycles: 0,
                     numberOfCollisions: 0,
                     totalChargingTime: 0,
