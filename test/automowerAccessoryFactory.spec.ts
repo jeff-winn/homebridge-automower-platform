@@ -1,0 +1,126 @@
+import { API, PlatformAccessory } from 'homebridge';
+import { Mock, Times } from 'moq.ts';
+import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
+import { PlatformLogger } from '../src/diagnostics/platformLogger';
+import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../src/model';
+import { Localization } from '../src/primitives/localization';
+import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
+import { PlatformContainer } from '../src/primitives/platformContainer';
+import { AutomowerAccessoryFactorySpy } from './automowerAccessoryFactorySpy';
+
+describe('AutomowerAccessoryFactoryImpl', () => {
+    let factory: Mock<PlatformAccessoryFactory>;
+    let api: Mock<API>;
+    let log: Mock<PlatformLogger>;
+    let container: Mock<PlatformContainer>;
+    let locale: Mock<Localization>;
+
+    let target: AutomowerAccessoryFactorySpy;
+
+    beforeEach(() => {
+        factory = new Mock<PlatformAccessoryFactory>();
+        api = new Mock<API>();
+        log = new Mock<PlatformLogger>();
+        container = new Mock<PlatformContainer>();
+        locale = new Mock<Localization>();
+
+        target = new AutomowerAccessoryFactorySpy(
+            factory.object(), 
+            api.object(), 
+            log.object(), 
+            container.object(), 
+            locale.object());
+    });
+
+    it('should initialize the accessory on create new accessory', () => {        
+        const mowerName = 'Test';
+        const mowerId = '1234';
+
+        const mower: Mower = {
+            type: 'mower',
+            id: mowerId,
+            attributes: {
+                system: {
+                    name: mowerName,
+                    model: 'HUSQVARNA AUTOMOWER® 430XH',
+                    serialNumber: 123456
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                mower: {
+                    mode: Mode.MAIN_AREA,
+                    activity: Activity.NOT_APPLICABLE,
+                    state: State.STOPPED,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0
+                },
+                calendar: {
+                    tasks: []
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: OverrideAction.NOT_ACTIVE
+                    },
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
+                },
+                metadata: {
+                    connected: false,
+                    statusTimestamp: 1670007077108
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 8,
+                    headlight: {
+                        mode: HeadlightMode.EVENING_AND_NIGHT
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 275,
+                    numberOfCollisions: 9370,
+                    totalChargingTime: 928800,
+                    totalCuttingTime: 2779200,
+                    totalRunningTime: 3027600,
+                    totalSearchingTime: 248400
+                }
+            }
+        };
+
+        const uuid = 'my-uuid';
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        factory.setup(o => o.generateUuid(mowerId)).returns(uuid);
+        factory.setup(o => o.create(mowerName, uuid)).returns(platformAccessory.object());
+
+        const expected = new Mock<AutomowerAccessory>();
+        expected.setup(o => o.init()).returns(undefined);
+        expected.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
+        target.setAccessory(expected.object());
+
+        const actual = target.createAccessory(mower);
+
+        const underlyingAccessory = actual.getUnderlyingAccessory();
+        expect(underlyingAccessory.context.mowerId).toBe(mowerId);
+        expect(underlyingAccessory.context.manufacturer).toBe('HUSQVARNA');
+        expect(underlyingAccessory.context.model).toBe('AUTOMOWER® 430XH');
+        expect(underlyingAccessory.context.serialNumber).toBe('123456');
+
+        expect(actual).toBe(expected.object());
+        expected.verify(o => o.init(), Times.Once());
+    });
+
+    it('should initialize the accessory on create from existing platform accessory', () => {
+        const expected = new Mock<AutomowerAccessory>();
+        expected.setup(o => o.init()).returns(undefined);
+
+        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+
+        target.setAccessory(expected.object());
+
+        const actual = target.createAutomowerAccessory(platformAccessory.object());
+
+        expect(actual).toBe(expected.object());            
+        expected.verify(o => o.init(), Times.Once());
+    });
+});

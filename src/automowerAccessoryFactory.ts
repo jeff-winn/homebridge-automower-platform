@@ -72,7 +72,14 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
-        const result = new AutomowerAccessory(accessory,
+        const result = this.createAutomowerAccessoryImpl(accessory);
+        result.init();
+
+        return result;
+    }
+    
+    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+        return new AutomowerAccessory(accessory,
             this.createBatteryInformation(accessory),
             this.createAccessoryInformation(accessory),
             this.createMotionSensor(accessory),
@@ -80,10 +87,6 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createLeavingSensor(accessory),
             this.createPauseSwitch(accessory),            
             this.createScheduleSwitch(accessory));
-
-        result.init();
-
-        return result;
     }
 
     protected createPauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
