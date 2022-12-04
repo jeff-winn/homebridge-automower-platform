@@ -8,7 +8,7 @@
 Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mowers(s).
 
 #### Hardware Requirements
-- The Automower *must* have an Automower Connect module installed on-board the device. For more information, please contact your local Husqvarna Automower dealer.
+- The Automower *must* have an Automower Connect module installed. For more information, please contact your local Husqvarna Automower dealer.
 
 #### Supported Capabilities
 - A switch to control whether each mower (based on configuration - see documentation):
