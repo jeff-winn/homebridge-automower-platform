@@ -19,5 +19,9 @@ assignees: ''
 **Additional context:**
 <!-- Add any other context or screenshots about the feature request here. -->
 
+**Automower:**
+
+* **Year**: <!-- 2020 -->
+* **Model**: <!-- 430XH -->
 
 <!-- Click the "Preview" tab before you submit to ensure the formatting is correct. -->
