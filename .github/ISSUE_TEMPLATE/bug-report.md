@@ -35,6 +35,7 @@ Show your Homebridge config.json here, remove any sensitive information.
 
 **Environment:**
 
+* **Automower Model**: <!-- 430XH -->
 * **Plugin Version**:
 * **Homebridge Version**: <!-- homebridge -V -->
 * **Node.js Version**: <!-- node -v -->
