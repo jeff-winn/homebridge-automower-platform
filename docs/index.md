@@ -35,6 +35,9 @@ introduction: |
   - Does not cause logout of the Husqvarna mobile application.
   - Multiple languages may be supported in logs (need help with translations).
 
+  #### Disclaimer
+  I am in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are property of Husqvarna and/or the Husqvarna Group.
+
 actions:
   - label: "Get Started"
     icon: arrow-right
