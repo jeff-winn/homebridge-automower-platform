@@ -36,3 +36,6 @@ Be advised, because this plug-in uses cloud services, service disruptions or out
 
 For help installing and configuring the plugin, please see the documentation found at:
 https://jeff-winn.github.io/homebridge-automower-platform
+
+#### Disclaimer
+I am in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are sole property of Husqvarna and/or the Husqvarna Group.
