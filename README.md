@@ -40,4 +40,4 @@ For help installing and configuring the plugin, please see the documentation fou
 https://jeff-winn.github.io/homebridge-automower-platform
 
 #### Disclaimer
-I am in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are property of Husqvarna and/or the Husqvarna Group.
+This plug-in is in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are property of Husqvarna and/or the Husqvarna Group.
