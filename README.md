@@ -8,6 +8,8 @@
 Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mowers(s).
 
 #### Hardware Requirements
+The following hardware requirements are necessary for the proper operation of the plug-in. If you are unsure whether your mower is supported by the plug-in, you can find the compatibility matrix [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/compatibility-matrix).
+
 - The Automower *must* have an Automower Connect module installed, Bluetooth only models will require an upgrade. For more information, please contact your local Husqvarna Automower dealer.
 
 #### Supported Capabilities
