@@ -9,3 +9,4 @@ introduction: |
 | Model | Year | Compatible? | Connect Module? |
 | ----- | ---- | --------- | ------------------------ |
 | Automower 430XH | 2020 | Yes | Included |
+| Automower 315 | 2018 | No | No - Requires upgrade |
