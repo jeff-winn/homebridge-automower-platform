@@ -51,7 +51,9 @@ export class PlatformContainerImpl implements PlatformContainer {
         });
 
         container.register(Y18nLocalization, {
-            useValue: new Y18nLocalization(this.config.lang)
+            useValue: new Y18nLocalization(
+                this.config.lang, 
+                container.resolve(NodeJsEnvironment))
         });
 
         container.register(HomebridgeImitationLogger, {

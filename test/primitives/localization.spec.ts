@@ -1,10 +1,16 @@
+import { Mock } from 'moq.ts';
+import { Environment } from '../../src/primitives/environment';
 import { Y18nLocalization } from '../../src/primitives/localization';
 
 describe('Y18nLocalization', () => {
+    let env: Mock<Environment>;
     let target: Y18nLocalization;
 
     beforeEach(() => {
-        target = new Y18nLocalization('en');
+        env = new Mock<Environment>();
+        env.setup(o => o.getPackageRoot()).returns('./');
+
+        target = new Y18nLocalization('en', env.object());
     });
 
     /**

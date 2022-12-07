@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { env } from 'process';
 
 /**
@@ -8,6 +11,12 @@ export interface Environment {
      * Gets the 'DEBUG' environment variable.
      */
     getDebugEnvironmentVariable(): string | undefined;
+
+    /**
+     * Gets the fully-qualified root directory of the package.
+     * @remarks This is derived from the location of the nearest 'package.json' file hierarchically above the implementation class within the directory tree.
+     */
+     getPackageRoot(): string;
 }
 
 /**
@@ -16,5 +25,15 @@ export interface Environment {
 export class NodeJsEnvironment implements Environment {
     public getDebugEnvironmentVariable(): string | undefined {
         return env.DEBUG;
+    }
+
+    public getPackageRoot(): string {
+        let current = __dirname;
+
+        while(!fs.existsSync(path.join(current, 'package.json'))) {
+            current = path.join(current, '..');
+        }
+
+        return current;
     }
 }
