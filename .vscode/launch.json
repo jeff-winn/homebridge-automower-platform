@@ -14,7 +14,6 @@
 			"preLaunchTask": "build",
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
-				"cwd": "${env:APPDATA}\\npm",
 				"env": {
 					"FORCE_COLOR": "1",
 					"DEBUG": "homebridge-automower-platform"
