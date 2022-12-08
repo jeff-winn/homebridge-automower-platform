@@ -15,7 +15,6 @@
 		"files.exclude": {
 			"build": true,
 			"dist": true,
-			"docs": true,
 			"**/bin": true,
 			"**/obj": true,
 			"**/.git": true,
