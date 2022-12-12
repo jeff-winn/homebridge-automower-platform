@@ -1,6 +1,6 @@
 ---
 title: Compatibility Matrix
-sub_title: Not sure whether your mower will work with the plug-in?
+sub_title: Not sure whether your mower will work?
 introduction: |
     Please keep in mind, this matrix is not all encompassing of all model mowers that may work without any issues. It is only updated as mowers are confirmed to work with the plug-in.
 ---
