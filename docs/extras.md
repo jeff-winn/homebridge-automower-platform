@@ -5,5 +5,5 @@ permalink: /extras
 collection: extras
 entries_layout: grid
 introduction: |
-    The following describe how to configure other parts of the plugin, and are considered optional.
+    The following extras may provide some useful tips and tricks within Homebridge. They are not required to perform at all, however you may find them useful in certain situations.
 ---
