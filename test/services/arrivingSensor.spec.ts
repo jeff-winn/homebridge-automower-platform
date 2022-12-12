@@ -48,20 +48,23 @@ describe('ArrivingContactSensorImpl', () => {
     });
 
     it('should create a new service on init', () => {
+        const displayName = 'Arriving Sensor';
         const contactState = new Mock<Characteristic>();
         const statusActive = new Mock<Characteristic>();
         
         const service = new Mock<Service>();
+        service.setup(o => o.setCharacteristic(Characteristic.ConfiguredName, displayName)).returns(service.object());
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.addService(It.IsAny())).returns(service.object());
-        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(undefined);
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, displayName)).returns(undefined);
 
         target.service = service.object();
         target.init();
 
-        expect(target.displayName).toBe('Arriving Sensor');
+        expect(target.displayName).toBe(displayName);
+        service.verify(o => o.setCharacteristic(Characteristic.ConfiguredName, displayName), Times.Once());
         service.verify(o => o.getCharacteristic(Characteristic.ContactSensorState), Times.Once());
         service.verify(o => o.getCharacteristic(Characteristic.StatusActive), Times.Once());
     });

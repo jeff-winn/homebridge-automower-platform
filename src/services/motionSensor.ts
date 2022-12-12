@@ -55,6 +55,8 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
         this.underlyingService = this.accessory.getServiceById(this.Service.MotionSensor, this.name);
         if (this.underlyingService === undefined) {
             this.underlyingService = this.createService(this.name);
+            this.underlyingService.setCharacteristic(this.Characteristic.ConfiguredName, this.name);
+
             this.accessory.addService(this.underlyingService);
         }
 

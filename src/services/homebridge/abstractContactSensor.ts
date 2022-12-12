@@ -55,6 +55,8 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
         this.underlyingService = this.accessory.getServiceById(this.Service.ContactSensor, this.name);
         if (this.underlyingService === undefined) {
             this.underlyingService = this.createService(this.name);
+            this.underlyingService.setCharacteristic(this.Characteristic.ConfiguredName, this.name);
+
             this.accessory.addService(this.underlyingService);
         }
 
