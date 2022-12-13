@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch Homebridge",
+			"name": "Launch",
 			"request": "launch",
 			"skipFiles": [
 				"<node_internals>/**"
@@ -14,6 +14,11 @@
 			"preLaunchTask": "build",
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
+				"args": [
+					"-D",
+					"-U",
+					"${workspaceFolder}/.homebridge"
+				],
 				"env": {
 					"FORCE_COLOR": "1",
 					"DEBUG": "homebridge-automower-platform"

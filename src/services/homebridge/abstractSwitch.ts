@@ -64,6 +64,8 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
             const displayName = this.getDisplayName(mode);
 
             this.switchService = this.createService(displayName);
+            this.switchService.setCharacteristic(this.Characteristic.ConfiguredName, displayName);
+
             this.accessory.addService(this.switchService);
         }
 

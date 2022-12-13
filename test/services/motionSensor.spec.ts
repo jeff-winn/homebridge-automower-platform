@@ -59,17 +59,21 @@ describe('MotionSensorImpl', () => {
     });
 
     it('should create a new service on init', () => {
+        const displayName = 'Motion Sensor';
         const motionDetected = new Mock<Characteristic>();
         
         const service = new Mock<Service>();
+        service.setup(o => o.setCharacteristic(Characteristic.ConfiguredName, displayName)).returns(service.object());
         service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());
+
         platformAccessory.setup(o => o.addService(It.IsAny())).returns(service.object());
-        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(undefined);
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, displayName)).returns(undefined);
 
         target.service = service.object();
         target.init();
 
-        expect(target.displayName).toBe('Motion Sensor');
+        expect(target.displayName).toBe(displayName);
+        service.verify(o => o.setCharacteristic(Characteristic.ConfiguredName, displayName), Times.Once());
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
     });
 

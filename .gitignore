@@ -1,6 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### HAP-NodeJS files
-persist
+.homebridge
 
 ### Node template
 # Logs

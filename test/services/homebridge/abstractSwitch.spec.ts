@@ -53,6 +53,7 @@ describe('AbstractSwitch', () => {
         });
 
         const service = new Mock<Service>();
+        service.setup(o => o.setCharacteristic(Characteristic.ConfiguredName, displayName)).returns(service.object());
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
         service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
@@ -79,6 +80,7 @@ describe('AbstractSwitch', () => {
         });
 
         const service = new Mock<Service>();
+        service.setup(o => o.setCharacteristic(Characteristic.ConfiguredName, displayName)).returns(service.object());
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
         service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(false);
         service.setup(o => o.addCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
