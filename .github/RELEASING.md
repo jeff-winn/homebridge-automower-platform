@@ -6,7 +6,7 @@ The following describes how to perform a proper release of the plug-in to ensure
 To begin preparation for a release, a release candidate is suggested but not required. The following steps describe how to do a release to ensure consistency between releases.
 
 1. Create a new release candidate:
-    - The tag **MUST** match the convention `v{x.x.x-rc{v}` where `{x.x.x}` is the release version and `{v}` is the release candidate version.
+    - The tag **MUST** match the convention `v{x.x.x}-rc{v}` where `{x.x.x}` is the release version and `{v}` is the release candidate version.
     - The title **MUST** match the tag version.
     - Click the *Generate release notes* button.
     - Ensure the *Pre-release* checkbox **IS** checked.
