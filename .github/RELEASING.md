@@ -1,0 +1,37 @@
+# Releasing Guidelines
+
+The following describes how to perform a proper release of the plug-in to ensure operational consistency between versions. This will keep trust of the plug-in high, while also helping find changes that Apple contributes within HomeKit that indirectly affects the plug-in.
+
+## Preparation for Release
+To begin preparation for a release, a release candidate is suggested but not required. The following steps describe how to do a release to ensure consistency between releases.
+
+1. Create a new release candidate:
+    - The tag **MUST** match the convention `v{x.x.x-rc{v}` where `{x.x.x}` is the release version and `{v}` is the release candidate version.
+    - The title **MUST** match the tag version.
+    - Click the *Generate release notes* button.
+    - Ensure the *Pre-release* checkbox **IS** checked.
+    - Ensure the *Latest release* checkbox is **NOT** checked.
+    - Click Publish.
+2. The publishing of a new release candidate will trigger the publish GitHub workflow and promote the changes automatically to the npmjs.com website.
+3. On the 'Production' Homebridge server:
+    - Update the plug-in version to the release candidate version.
+    - Restart Homebridge.
+4. Validate the candidate is ready for release:
+    - Verify all switches and sensors are named appropriately in HomeKit.
+    - Verify all switches and sensors are triggered appropriately when:
+      - Mower is controlled within HomeKit
+      - Mower is externally controlled within the Automower Connect mobile app.
+
+## Publishing a Release
+To perform a release of the plug-in the following steps must be performed:
+
+1. Create a new release:
+    - The tag **MUST** match the convention `v{x.x.x}` where `{x.x.x}` is the release version of the last release candidate.
+    - The title **MUST** match the tag version.
+    - Click the *Generate release notes* button.
+    - Ensure the *Pre-release* checkbox is **NOT** checked.
+    - Ensure the *Latest release* checkbox **IS** checked.
+    - Click Publish.
+2. On the 'Production' Homebridge server:
+    - Update the plug-in version to the release version.
+    - Restart Homebridge.
