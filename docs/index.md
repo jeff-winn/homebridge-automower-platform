@@ -13,7 +13,7 @@ introduction: |
   - The Automower *must* have an Automower Connect module installed, Bluetooth only models will require an upgrade. For more information, please contact your local Husqvarna Automower dealer.
 
   #### Known Issues
-  - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](/extras/removing-mower) should correct the issue.
+  - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and you are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](/extras/removing-mower) should correct the issue.
 
   #### Supported Capabilities
   - A switch to control whether each mower (based on configuration - see documentation):
