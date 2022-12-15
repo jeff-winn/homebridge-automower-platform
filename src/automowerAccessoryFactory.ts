@@ -3,10 +3,14 @@ import { API, PlatformAccessory } from 'homebridge';
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { Mower } from './model';
+import { Localization } from './primitives/localization';
+import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
+import { PlatformContainer } from './primitives/platformContainer';
 import { AccessoryInformation, AccessoryInformationImpl } from './services/accessoryInformation';
 import { ArrivingContactSensorImpl, ArrivingSensor } from './services/arrivingSensor';
-import { MowerControlServiceImpl } from './services/husqvarna/automower/mowerControlService';
 import { BatteryInformation, BatteryInformationImpl } from './services/batteryInformation';
+import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/changeSettingsService';
+import { MowerControlServiceImpl } from './services/husqvarna/automower/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
@@ -18,9 +22,6 @@ import { DeterministicMowerIsPausedPolicy } from './services/policies/mowerIsPau
 import { DeterministicMowerTamperedPolicy } from './services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from './services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from './services/scheduleSwitch';
-import { Localization } from './primitives/localization';
-import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
-import { PlatformContainer } from './primitives/platformContainer';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -123,6 +124,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return new ScheduleSwitchImpl(
             this.locale.format('SCHEDULE'),
             this.container.resolve(MowerControlServiceImpl),
+            this.container.resolve(ChangeSettingsServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
             accessory, this.locale, this.api, this.log);
     }

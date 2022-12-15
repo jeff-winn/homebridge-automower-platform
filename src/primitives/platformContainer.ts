@@ -17,6 +17,7 @@ import { DefaultErrorFactory } from '../errors/errorFactory';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
+import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
@@ -144,6 +145,12 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(AutomowerClientImpl))
         });
 
+        container.register(ChangeSettingsServiceImpl, {
+            useFactory: (context) => new ChangeSettingsServiceImpl(
+                context.resolve(AccessTokenManagerImpl),
+                context.resolve(AutomowerClientImpl))
+        });
+        
         container.register(MowerControlServiceImpl, {
             useFactory: (context) => new MowerControlServiceImpl(
                 context.resolve(AccessTokenManagerImpl),

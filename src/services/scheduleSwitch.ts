@@ -1,6 +1,6 @@
 import {
-    API, Characteristic, CharacteristicSetCallback,
-    HAPStatus, PlatformAccessory, Service
+    API, Characteristic, CharacteristicEventTypes, CharacteristicSetCallback,
+    CharacteristicValue, HAPStatus, PlatformAccessory, Service
 } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
@@ -8,6 +8,7 @@ import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Calendar, MowerState, Planner } from '../model';
 import { Localization } from '../primitives/localization';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
+import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 
@@ -43,7 +44,7 @@ export interface ScheduleSwitch extends Switch {
 export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
     private cuttingHeight?: Characteristic;
 
-    public constructor(name: string, private controlService: MowerControlService, private policy: ScheduleEnabledPolicy, 
+    public constructor(name: string, private controlService: MowerControlService, private settingsService: ChangeSettingsService, private policy: ScheduleEnabledPolicy, 
         accessory: PlatformAccessory<AutomowerContext>, private locale: Localization, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }
@@ -54,11 +55,21 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
         if (service.testCharacteristic(this.CustomCharacteristic.CuttingHeight)) {
             this.cuttingHeight = service.getCharacteristic(this.CustomCharacteristic.CuttingHeight);
         } else {
-            const cuttingHeight = new this.CustomCharacteristic.CuttingHeight();
-            cuttingHeight.localize(this.locale);
+            this.cuttingHeight = service.addCharacteristic(this.CustomCharacteristic.CuttingHeight);
+        }
 
-            service.addCharacteristic(cuttingHeight);
-            this.cuttingHeight = cuttingHeight;
+        this.cuttingHeight.on(CharacteristicEventTypes.SET, this.onSetCuttingHeightCallback.bind(this));
+    }
+
+    private async onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
+        try {
+            await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value as number);
+
+            callback(HAPStatus.SUCCESS);
+        } catch (e) {
+            this.log.error('ERROR_HANDLING_SET', this.cuttingHeight!.displayName, this.accessory.displayName, e);
+
+            callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }
     }
 
@@ -99,6 +110,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
         }
 
         this.cuttingHeight.updateValue(value);
+        this.log.info('CHANGED_VALUE', this.cuttingHeight.displayName, this.accessory.displayName, value);
     }
 
     /**

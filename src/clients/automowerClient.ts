@@ -1,5 +1,5 @@
 import { ErrorFactory } from '../errors/errorFactory';
-import { AccessToken, Mower } from '../model';
+import { AccessToken, Headlight, Mower } from '../model';
 import { PLUGIN_ID } from '../settings';
 import { FetchClient, Response } from './fetchClient';
 
@@ -7,6 +7,14 @@ import { FetchClient, Response } from './fetchClient';
  * A client used to retrieve information about automowers connected to the account.
  */
 export interface AutomowerClient {
+    /**
+     * Changes the settings of the mower.
+     * @param id The id of the mower.
+     * @param settings The settings to update.
+     * @param token The access token.
+     */
+    changeSettings(id: string, settings: ChangeSettingsRequest, token: AccessToken): Promise<void>;
+
     /**
      * Instructs the mower to do a specific action.
      * @param id The id of the mower.
@@ -29,6 +37,13 @@ export interface AutomowerClient {
     getMowers(token: AccessToken): Promise<Mower[]>;
 }
 
+/**
+ * Describes the request when changing mower settings.
+ */
+export interface ChangeSettingsRequest {
+    cuttingHeight?: number;
+    headlight?: Headlight;
+}
 
 /**
  * Describes the response while getting a specific mower.
@@ -64,7 +79,7 @@ export interface Error {
 
 export class AutomowerClientImpl implements AutomowerClient {
     public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
-        private errorFactory: ErrorFactory) { }
+        private errorFactory: ErrorFactory) { }    
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
@@ -78,6 +93,33 @@ export class AutomowerClientImpl implements AutomowerClient {
         if (this.appKey === undefined || this.appKey === '') {
             throw this.errorFactory.badConfigurationError('APP_KEY_MISSING', 'CFG0001');
         }
+    }
+    
+    public async changeSettings(id: string, settings: ChangeSettingsRequest, token: AccessToken): Promise<void> {
+        if (id === '') {
+            throw new Error('id cannot be empty.');
+        }
+
+        this.guardAppKeyMustBeProvided();
+
+        const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}/settings`, {
+            method: 'POST',
+            headers: {
+                'X-Application-Id': PLUGIN_ID,
+                'X-Api-Key': this.appKey!,
+                'Content-Type': 'application/vnd.api+json',
+                'Authorization': `Bearer ${token.value}`,
+                'Authorization-Provider': token.provider
+            },
+            body: JSON.stringify({                
+                data: {
+                    type: 'settings',
+                    attributes: settings
+                }
+            })
+        });
+
+        await this.throwIfStatusNotOk(res);
     }
 
     public async doAction(id: string, action: unknown, token: AccessToken): Promise<void> {
