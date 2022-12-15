@@ -124,7 +124,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.locale.format('SCHEDULE'),
             this.container.resolve(MowerControlServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
-            accessory, this.api, this.log);
+            accessory, this.locale, this.api, this.log);
     }
 
     protected createMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {

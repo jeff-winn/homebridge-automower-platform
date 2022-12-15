@@ -1,11 +1,12 @@
 import {
-    API, CharacteristicSetCallback,
-    HAPStatus, PlatformAccessory
+    API, Characteristic, CharacteristicSetCallback,
+    HAPStatus, PlatformAccessory, Service
 } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Calendar, MowerState, Planner } from '../model';
+import { Localization } from '../primitives/localization';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
@@ -31,12 +32,34 @@ export interface ScheduleSwitch extends Switch {
      * @param state The mower state.
      */
     setMowerState(state: MowerState): void;
+
+    /**
+     * Sets the mower cutting height.
+     * @param value The cutting height.
+     */
+    setCuttingHeight(value: number): void;
 }
 
 export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
+    private cuttingHeight?: Characteristic;
+
     public constructor(name: string, private controlService: MowerControlService, private policy: ScheduleEnabledPolicy, 
-        accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
+        accessory: PlatformAccessory<AutomowerContext>, private locale: Localization, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
+    }
+
+    protected override onInit(service: Service): void {
+        super.onInit(service);
+
+        if (service.testCharacteristic(this.CustomCharacteristic.CuttingHeight)) {
+            this.cuttingHeight = service.getCharacteristic(this.CustomCharacteristic.CuttingHeight);
+        } else {
+            const cuttingHeight = new this.CustomCharacteristic.CuttingHeight();
+            cuttingHeight.localize(this.locale);
+
+            service.addCharacteristic(cuttingHeight);
+            this.cuttingHeight = cuttingHeight;
+        }
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
@@ -68,6 +91,14 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     public setMowerState(state: MowerState): void {
         this.policy.setMowerState(state);
         this.refreshCharacteristic();
+    }
+
+    public setCuttingHeight(value: number): void {
+        if (this.cuttingHeight === undefined) {
+            return;
+        }
+
+        this.cuttingHeight.updateValue(value);
     }
 
     /**
