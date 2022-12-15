@@ -6,7 +6,6 @@ import {
 import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Calendar, MowerState, Planner } from '../model';
-import { Localization } from '../primitives/localization';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
