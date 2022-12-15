@@ -12,7 +12,7 @@ The following hardware requirements are necessary for the proper operation of th
 
 - The Automower *must* have an Automower Connect module installed, Bluetooth only models will require an upgrade. For more information, please contact your local Husqvarna Automower dealer.
 
-### Known Issues
+#### Known Issues
 - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/removing-mower) should correct the issue.
 
 #### Supported Capabilities
