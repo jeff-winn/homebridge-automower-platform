@@ -45,7 +45,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     private cuttingHeight?: Characteristic;
 
     public constructor(name: string, private controlService: MowerControlService, private settingsService: ChangeSettingsService, private policy: ScheduleEnabledPolicy, 
-        accessory: PlatformAccessory<AutomowerContext>, private locale: Localization, api: API, log: PlatformLogger) {
+        accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }
 

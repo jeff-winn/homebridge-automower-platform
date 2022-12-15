@@ -148,6 +148,7 @@ describe('AutomowerAccessory', () => {
         scheduleSwitch.setup(o => o.setCalendar(calendar)).returns(undefined);
         scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         scheduleSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
+        scheduleSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
@@ -155,7 +156,7 @@ describe('AutomowerAccessory', () => {
         leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
         leavingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
         motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
-        motionSensorService.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerMetadata(metadata)).returns(undefined);        
         
         target.refresh(mower);
 
@@ -165,6 +166,7 @@ describe('AutomowerAccessory', () => {
         scheduleSwitch.verify(o => o.setCalendar(calendar), Times.Once());
         scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
         scheduleSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
+        scheduleSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
         pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
         pauseSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
         arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
@@ -206,6 +208,28 @@ describe('AutomowerAccessory', () => {
         scheduleSwitch.verify(o => o.setCalendar(It.IsAny()), Times.Never());
     });
 
+    it('should refresh the cutting height when settings event is received', () => {    
+        batteryService.setup(o => o.init()).returns(undefined);
+        informationService.setup(o => o.init()).returns(undefined);
+        scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        scheduleSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
+        pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        arrivingSensor.setup(o => o.init()).returns(undefined);
+        leavingSensor.setup(o => o.init()).returns(undefined);
+        motionSensorService.setup(o => o.init()).returns(undefined);        
+
+        target.init();
+        target.onSettingsEventReceived({
+            id: '1234',
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: {
+                cuttingHeight: 1
+            }
+        });
+        
+        scheduleSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
+    });
+
     it('should refresh the calendar when settings event is received', () => {
         const calendar: Calendar = {
             tasks: [
@@ -220,7 +244,7 @@ describe('AutomowerAccessory', () => {
                     friday: true,
                     saturday: true                    
                 }
-            ]
+            ]            
         };
 
         batteryService.setup(o => o.init()).returns(undefined);
@@ -275,7 +299,7 @@ describe('AutomowerAccessory', () => {
                 battery: battery,
                 metadata: metadata,
                 mower: state,
-                planner: planner
+                planner: planner,
             }
         };
 
