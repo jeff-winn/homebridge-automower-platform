@@ -81,6 +81,7 @@ export class AutomowerAccessory {
         this.scheduleSwitch.setCalendar(data.attributes.calendar);
         this.scheduleSwitch.setPlanner(data.attributes.planner);
         this.scheduleSwitch.setMowerMetadata(data.attributes.metadata);
+        this.scheduleSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
 
         this.pauseSwitch.setMowerState(data.attributes.mower);
         this.pauseSwitch.setMowerMetadata(data.attributes.metadata);
@@ -126,6 +127,10 @@ export class AutomowerAccessory {
     public onSettingsEventReceived(event: SettingsEvent): void {
         if (event.attributes.calendar !== undefined) {
             this.scheduleSwitch.setCalendar(event.attributes.calendar);
+        }
+
+        if (event.attributes.cuttingHeight !== undefined) {
+            this.scheduleSwitch.setCuttingHeight(event.attributes.cuttingHeight);
         }
     }
 }

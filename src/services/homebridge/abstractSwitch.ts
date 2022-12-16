@@ -68,14 +68,18 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
 
             this.accessory.addService(this.switchService);
         }
+        
+        this.onInit(this.switchService);
+    }
 
-        this.on = this.switchService.getCharacteristic(this.Characteristic.On)
+    protected onInit(service: Service): void {
+        this.on = service.getCharacteristic(this.Characteristic.On)
             .on(CharacteristicEventTypes.SET, this.onSetCallback.bind(this));
 
-        if (this.switchService.testCharacteristic(this.Characteristic.StatusActive)) {
-            this.statusActive = this.switchService.getCharacteristic(this.Characteristic.StatusActive);
+        if (service.testCharacteristic(this.Characteristic.StatusActive)) {
+            this.statusActive = service.getCharacteristic(this.Characteristic.StatusActive);
         } else {
-            this.statusActive = this.switchService.addCharacteristic(this.Characteristic.StatusActive);
+            this.statusActive = service.addCharacteristic(this.Characteristic.StatusActive);
         }
     }
 

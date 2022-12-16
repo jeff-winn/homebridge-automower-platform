@@ -1,0 +1,35 @@
+import { AutomowerClient } from '../../../clients/automowerClient';
+import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
+import { AccessTokenManager } from '../accessTokenManager';
+
+/**
+ * A mechanism to change configuration settings for a mower.
+ */
+export interface ChangeSettingsService {
+    /**
+     * Changes the cutting height.
+     * @param mowerId The mower id.
+     * @param newValue The new cutting height value.
+     */
+    changeCuttingHeight(mowerId: string, newValue: number): Promise<void>;
+}
+
+export class ChangeSettingsServiceImpl implements ChangeSettingsService {
+    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
+    
+    public async changeCuttingHeight(mowerId: string, newValue: number): Promise<void> {
+        try {
+            const token = await this.tokenManager.getCurrentToken();
+
+            return await this.client.changeSettings(mowerId, {
+                cuttingHeight: newValue
+            }, token);            
+        } catch (e) {
+            if (e instanceof NotAuthorizedError) {
+                this.tokenManager.flagAsInvalid();
+            }
+
+            throw (e);
+        }
+    }
+}
