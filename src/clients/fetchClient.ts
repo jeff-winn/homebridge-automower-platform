@@ -1,4 +1,4 @@
-import fetch, { Headers, HeadersInit, RequestInfo, RequestInit, Response } from 'node-fetch';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import { v4 as uuid } from 'uuid';
 
 import { PlatformLogger } from '../diagnostics/platformLogger';
@@ -57,7 +57,7 @@ const EXPONENTIAL_BACKOFF_MULTIPLIER = 1.97435; // Causes a 30 second maximum ba
  * A client which uses node-fetch to perform HTTP requests and includes retryer support.
  */
 export class RetryerFetchClient implements FetchClient {
-    public constructor(private log: PlatformLogger, private policy: ShouldLogHeaderPolicy, private maxRetryAttempts: number = DEFAULT_MAX_RETRY_ATTEMPTS) { }
+    public constructor(private log: PlatformLogger, private maxRetryAttempts: number = DEFAULT_MAX_RETRY_ATTEMPTS) { }
 
     public async execute(url: RequestInfo, init?: RequestInit): Promise<Response> {
         let response: Response;
@@ -112,7 +112,6 @@ export class RetryerFetchClient implements FetchClient {
         this.log.debug('SENDING_WEB_REQUEST', attempt, this.maxRetryAttempts, id, JSON.stringify({
             url: url,
             method: init?.method,
-            headers: this.interceptRequestHeaders(init?.headers),
             body: init?.body        
         }));
 
@@ -129,7 +128,6 @@ export class RetryerFetchClient implements FetchClient {
         this.log.debug('RECEIVED_WEB_RESPONSE', id, JSON.stringify({
             status: response.status,
             statusText: response.statusText,
-            headers: this.interceptHeaders(response.headers),
             body: body
         }));
 
@@ -142,29 +140,7 @@ export class RetryerFetchClient implements FetchClient {
             timeout: response.timeout,
             url: response.url
         });
-    }
-
-    protected interceptRequestHeaders(headers: HeadersInit | undefined): { [k: string]: string[] } | undefined {
-        if (headers === undefined) {
-            return undefined;
-        }
-
-        return this.interceptHeaders(new Headers(headers));
-    }
-
-    protected interceptHeaders(headers: Headers): { [k: string]: string[] } {
-        const result = new Headers();
-
-        headers.forEach((value: string, name: string) => {
-            if (this.policy.shouldLog(name, value)) {
-                result.append(name, value);
-            } else {
-                result.append(name, 'REDACTED');
-            }
-        });
-
-        return result.raw();
-    }
+    }    
 
     protected doFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
         return fetch(url, init);
