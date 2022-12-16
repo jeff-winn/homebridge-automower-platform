@@ -60,7 +60,12 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
         this.cuttingHeight.on(CharacteristicEventTypes.SET, this.onSetCuttingHeightCallback.bind(this));
     }
 
-    private async onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
+    protected onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
+        const actualValue = value as number;
+        return this.onSetCuttingHeight(actualValue, callback);
+    }
+
+    protected async onSetCuttingHeight(value: number, callback: CharacteristicSetCallback): Promise<void> {
         try {
             await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value as number);
 
@@ -105,7 +110,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
 
     public setCuttingHeight(value: number): void {
         if (this.cuttingHeight === undefined) {
-            return;
+            throw new Error('The service has not been initialized.');
         }
 
         this.cuttingHeight.updateValue(value);

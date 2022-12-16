@@ -99,6 +99,34 @@ describe('ScheduleSwitchImpl', () => {
         policy.verify(o => o.setPlanner(planner), Times.Once());
     });
 
+    it('should be initialized with new characteristics', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+
+        const statusActive = new Mock<Characteristic>();
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(false);
+        service.setup(o => o.addCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.CuttingHeight)).returns(false);
+        service.setup(o => o.addCharacteristic(CustomCharacteristicDefinitions.CuttingHeight)).returns(cuttingHeight.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+
+        target.init(NameMode.DEFAULT);
+
+        c.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+        cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+    });
+    
     it('should be initialized with existing service', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
@@ -341,5 +369,122 @@ describe('ScheduleSwitchImpl', () => {
         };
 
         expect(() => target.setMowerMetadata(metadata)).toThrowError();
+    });
+
+    it('should set the cutting height', async () => {
+        const mowerId = '12345';
+        const cuttingHeight = 1;
+
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
+
+        changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
+
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeSetCuttingHeight(cuttingHeight, (e) => {
+            status = e;
+        });
+
+        changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeight), Times.Once());
+        expect(status).toBe(HAPStatus.SUCCESS);
+    });
+
+    it('should handle errors while changing the cutting height', async () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.displayName).returns('Cutting Height');
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+    
+        const statusActive = new Mock<Characteristic>();
+        
+        policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
+        policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
+        policy.setup(o => o.shouldApply()).returns(true);
+        policy.setup(o => o.check()).returns(false);
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.CuttingHeight)).returns(true);
+        service.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.CuttingHeight)).returns(cuttingHeight.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.init(NameMode.DEFAULT);
+
+        const mowerId = '12345';
+        const cuttingHeightValue = 1;
+        const displayName = 'Dobby';
+
+        platformAccessory.setup(o => o.displayName).returns(displayName);
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
+
+        changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeightValue)).throws(new Error('hello'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
+
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeSetCuttingHeight(cuttingHeightValue, (e) => {
+            status = e;
+        });
+
+        changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeightValue), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
+        expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+    });
+
+    it('should throw an error when setting the cutting height and not initialized', () => {
+        expect(() => target.setCuttingHeight(1)).toThrowError();
+    });
+    
+    it('should update the cutting height', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.displayName).returns('Cutting Height');
+        cuttingHeight.setup(o => o.updateValue(It.IsAny())).returns(cuttingHeight.object());
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+    
+        const statusActive = new Mock<Characteristic>();
+        
+        policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
+        policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
+        policy.setup(o => o.shouldApply()).returns(true);
+        policy.setup(o => o.check()).returns(false);
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(CustomCharacteristicDefinitions.CuttingHeight)).returns(true);
+        service.setup(o => o.getCharacteristic(CustomCharacteristicDefinitions.CuttingHeight)).returns(cuttingHeight.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
+
+        target.init(NameMode.DEFAULT);
+        target.setCuttingHeight(1);
+
+        cuttingHeight.verify(o => o.updateValue(1), Times.Once());
+        log.verify(o => o.info(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
     });
 });
