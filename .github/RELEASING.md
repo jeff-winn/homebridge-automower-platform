@@ -41,7 +41,7 @@ To perform a release of the plug-in the following steps must be performed:
 ## Patch a Release
 To patch an existing release of the plug-in the following steps must be performed:
 
-1. Decide whether a patch release is necessary
+1. Decide whether a patch release is necessary:
    - For non-critical bugs, the next expected release **SHOULD** be used.
    - For critical bugs (those bugs identified with the critical label) must be fixed immediately and a patch release **SHOULD** be used.
 2. From the `v{x.x.x}` version tag, create a new branch named `patch/v{x.x.x}`.
