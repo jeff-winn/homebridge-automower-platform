@@ -1,6 +1,6 @@
 import { It, Mock } from 'moq.ts';
 
-import { AutomowerClientImpl, ErrorResponse, GetMowerResponse, GetMowersResponse } from '../../src/clients/automowerClient';
+import { AutomowerClientImpl, ChangeSettingsRequest, ErrorResponse, GetMowerResponse, GetMowersResponse } from '../../src/clients/automowerClient';
 import { FetchClient, Response } from '../../src/clients/fetchClient';
 import { BadConfigurationError } from '../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../src/errors/errorFactory';
@@ -708,5 +708,85 @@ describe('AutomowerClientImpl', () => {
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
+    });
+
+    it('should throw an error when id is empty on change settings', async () => {
+        const request: ChangeSettingsRequest = { };
+
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+
+        await expect(target.changeSettings('', request, token)).rejects.toThrowError();
+    });
+
+    it('should throw an error when app key is undefined on changeSettings', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        target = new AutomowerClientImpl(undefined, constants.AUTOMOWER_CONNECT_API_BASE_URL, fetch.object(), errorFactory.object());
+
+        await expect(target.changeSettings('12345', { }, token)).rejects.toThrowError(BadConfigurationError);
+    });
+    
+    it('should throw an error for 500 response on changeSettings', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+
+        const r: ErrorResponse = {
+            errors: [
+                {
+                    code: '0',
+                    detail: 'detail',
+                    id: '12345',
+                    status: 'hello world',
+                    title: 'broken'
+                }
+            ]
+        };
+
+        const body = JSON.stringify(r);
+
+        const response = new Response(body, {
+            headers: { },
+            size: 0,
+            status: 500,
+            statusText: 'We are not here',
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        errorFactory.setup(o => o.unexpectedServerError(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()))
+            .returns(new UnexpectedServerError('hello world', '12345'));
+
+        await expect(target.changeSettings('12345', { }, token)).rejects.toThrow(UnexpectedServerError);
+    });
+    
+    it('should return successfully on changeSettings', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 200,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.changeSettings('12345', { }, token)).resolves.toBeUndefined();
     });
 });
