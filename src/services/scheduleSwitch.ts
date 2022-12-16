@@ -67,7 +67,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
 
     protected async onSetCuttingHeight(value: number, callback: CharacteristicSetCallback): Promise<void> {
         try {
-            await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value as number);
+            await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value);
 
             callback(HAPStatus.SUCCESS);
         } catch (e) {
