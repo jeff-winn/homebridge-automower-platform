@@ -21,7 +21,7 @@ To begin preparation for a release, a release candidate is suggested but not req
     - Verify all switches and sensors are triggered appropriately when:
       - Mower is controlled within HomeKit
       - Mower is externally controlled within the Automower Connect mobile app.
-5. A one week wait period **SHOULD** be in between the Release Candidate being published and the final Release version being published.
+5. A one week wait period **SHOULD** be in between the last Release Candidate published and the final Release version published.
     - This will give users adequate time to update and possibly file new bugs related to the release.
 
 ## Publishing a Release
