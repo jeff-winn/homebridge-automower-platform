@@ -24,7 +24,7 @@ To begin preparation for a release, a release candidate is suggested but not req
 5. A one week wait period **SHOULD** be in between the last Release Candidate published and the final Release version published.
     - This will give users adequate time to update and possibly file new bugs related to the release.
 
-## Publishing a Release
+## Publish a Release
 To perform a release of the plug-in the following steps must be performed:
 
 1. Create a new release:
@@ -38,15 +38,15 @@ To perform a release of the plug-in the following steps must be performed:
     - Update the plug-in version to the release version.
     - Restart Homebridge.
 
-## Patching the Release
-To perform a patch release of the plug-in the following steps must be performed:
+## Patch a Release
+To patch an existing release of the plug-in the following steps must be performed:
 
 1. Decide whether a patch release is necessary
    - For non-critical bugs, the next expected release **SHOULD** be used.
    - For critical bugs (those bugs identified with the critical label) must be fixed immediately and a patch release **SHOULD** be used.
 2. From the `v{x.x.x}` version tag, create a new branch named `patch/v{x.x.x}`.
 3. Fix the bug. Additional unit tests **MUST** be added which exhibits the previous behavior and enforces the correct behavior.
-4. Follow the steps to perform a new release.
+4. Follow the steps to Publish a Release.
    - The patch branch **MUST** be used as the release target.
    - The release version **MUST** be `v{x.x.p}` where `{x.x` is the major and minor of the release being patched, and `.p}` is the incremental patch number.
 
