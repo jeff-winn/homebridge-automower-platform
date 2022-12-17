@@ -10,6 +10,7 @@ import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna
 import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/automower/discoveryService';
 import { EventStreamService, EventStreamServiceImpl } from './services/husqvarna/automower/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
+import { DeviceType } from './model';
 
 /** 
  * Describes the platform configuration settings.
@@ -21,7 +22,7 @@ export interface AutomowerPlatformConfig extends PlatformConfig {
     appKey?: string;
     application_secret?: string;
     lang?: string;
-    device_type?: string;
+    device_type?: DeviceType;
 }
 
 /**
