@@ -1,16 +1,16 @@
 import { API, APIEvent, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
+import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { SettingsEvent, StatusEvent } from './events';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
+import { DeviceType } from './model';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
 import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/automower/discoveryService';
 import { EventStreamService, EventStreamServiceImpl } from './services/husqvarna/automower/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
-import { DeviceType } from './model';
 
 /** 
  * Describes the platform configuration settings.
