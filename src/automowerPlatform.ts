@@ -21,6 +21,7 @@ export interface AutomowerPlatformConfig extends PlatformConfig {
     appKey?: string;
     application_secret?: string;
     lang?: string;
+    device_type?: string;
 }
 
 /**
