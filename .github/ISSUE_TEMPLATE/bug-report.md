@@ -33,10 +33,10 @@ Show your Homebridge config.json here, remove any sensitive information.
 **Screenshots:**
 <!-- If applicable, add screenshots to help explain your problem. -->
 
-**Automower:**
+**Mower:**
 
 * **Year**: <!-- 2020 -->
-* **Model**: <!-- 430XH -->
+* **Model**: <!-- Automower 430XH -->
 
 **Environment:**
 
