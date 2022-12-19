@@ -5,6 +5,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerPlatform, AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { BadConfigurationError } from '../src/errors/badConfigurationError';
+import { AuthenticationMode, DeviceType } from '../src/model';
 import { DiscoveryService } from '../src/services/husqvarna/automower/discoveryService';
 import { EventStreamService } from '../src/services/husqvarna/automower/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
@@ -31,6 +32,49 @@ describe('AutomowerPlatform', () => {
         api.setup(o => o.on(It.IsAny<string>(), It.IsAny<() => Promise<void>>())).returns(api.object());
 
         target = new AutomowerPlatformSpy(log.object(), config, api.object());
+    });
+
+    it('should return password authentication mode when not specified', () => {
+        const t = new AutomowerPlatformConfig({
+            platform: PLATFORM_NAME
+        });
+
+        expect(t.getAuthenticationModeOrDefault()).toBe(AuthenticationMode.PASSWORD);
+    });
+    
+    it('should return password authentication mode when specified', () => {
+        const t = new AutomowerPlatformConfig({
+            platform: PLATFORM_NAME,
+            authentication_mode: 'password'
+        });
+
+        expect(t.getAuthenticationModeOrDefault()).toBe(AuthenticationMode.PASSWORD);
+    });
+
+    it('should return client credentials authentication mode when specified', () => {
+        const t = new AutomowerPlatformConfig({
+            platform: PLATFORM_NAME,
+            authentication_mode: 'client_credentials'
+        });
+
+        expect(t.getAuthenticationModeOrDefault()).toBe(AuthenticationMode.CLIENT_CREDENTIALS);
+    });
+
+    it('should return device type specified', () => {
+        const t = new AutomowerPlatformConfig({
+            platform: PLATFORM_NAME,
+            device_type: 'automower'
+        });
+
+        expect(t.getDeviceTypeOrDefault()).toBe(DeviceType.AUTOMOWER);
+    });
+
+    it('should return automower as the default device type when unspecified', () => {
+        const t = new AutomowerPlatformConfig({
+            platform: PLATFORM_NAME
+        });
+
+        expect(t.getDeviceTypeOrDefault()).toBe(DeviceType.AUTOMOWER);
     });
 
     it('should return undefined when the mower has not been created', () => {
