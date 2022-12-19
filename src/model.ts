@@ -7,6 +7,21 @@ export interface AccessToken {
 }
 
 /**
+ * Defines the supported device types.
+ */
+export enum DeviceType {
+    AUTOMOWER = 'automower'    
+}
+
+/**
+ * Defines the supported authentication modes.
+ */
+export enum AuthenticationMode {
+    PASSWORD = 'password',    
+    CLIENT_CREDENTIALS = 'client_credentials'
+}
+
+/**
  * Describes a mower.
  */
 export interface Mower {

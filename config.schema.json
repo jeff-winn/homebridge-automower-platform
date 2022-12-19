@@ -12,6 +12,21 @@
           "minLength": 1,
           "required": true          
         },
+        "device_type": {
+          "title": "Device Type",
+          "type": "string",
+          "description": "This is the type of mower device associated with your Husqvarna account.",
+          "required": true,
+          "default": "automower",
+          "oneOf": [
+            {
+              "title": "Automower",
+              "enum": [
+                "automower"
+              ]
+            }
+          ]
+        },
         "username": {
           "title": "Email Address",
           "type": "string",
@@ -115,6 +130,7 @@
           "lang"
         ]
       },
+      "device_type",
       {
         "type": "fieldset",
         "title": "Account Settings",

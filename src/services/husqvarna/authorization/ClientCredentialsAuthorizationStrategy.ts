@@ -21,7 +21,7 @@ export class ClientCredentialsAuthorizationStrategy implements OAuth2Authorizati
                 'The application secret setting is missing, please check your configuration and try again.', 
                 'CFG0002');
         }
-
-        return await client.exchangeClientCredentials(config.appKey, config.application_secret);
+        
+        return await client.exchangeClientCredentials(config.appKey, config.application_secret, config.getDeviceTypeOrDefault());
     }    
 }

@@ -1,5 +1,6 @@
 import { BodyInit } from 'node-fetch';
 import { ErrorFactory } from '../errors/errorFactory';
+import { DeviceType } from '../model';
 import { PLUGIN_ID } from '../settings';
 import { FetchClient, Response } from './fetchClient';
 
@@ -71,16 +72,18 @@ export interface AuthenticationClient {
      * Exchanges the app key and secret for an {@link OAuthToken}.
      * @param appKey The application key.
      * @param appSecret The application secret.
+     * @param deviceType The type of device.
      */
-    exchangeClientCredentials(appKey: string, appSecret: string): Promise<OAuthToken>;
+    exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken>;
 
     /**
      * Exchanges the password for an {@link OAuthToken}.
      * @param appKey The application key.
      * @param username The username.
      * @param password The password.
+     * @param deviceType The type of device.
      */
-    exchangePassword(appKey: string, username: string, password: string): Promise<OAuthToken>;
+    exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken>;
 
     /**
      * Logout the user.
@@ -104,27 +107,38 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return this.baseUrl;
     }
 
-    public async exchangeClientCredentials(appKey: string, appSecret: string): Promise<OAuthToken> {
+    public async exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken> {
         const body = this.encode({
             grant_type: 'client_credentials',
             client_id: appKey,
             client_secret: appSecret,
-            scope: 'iam:read amc:api'
+            scope: this.getScopes(deviceType)
         });
 
         return await this.exchange(body);
     }
 
-    public async exchangePassword(appKey: string, username: string, password: string): Promise<OAuthToken> {
+    public async exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken> {
         const body = this.encode({
             client_id: appKey,
             grant_type: 'password',
             username: username,
             password: password,
-            scope: 'iam:read amc:api'
+            scope: this.getScopes(deviceType)
         });
 
         return await this.exchange(body);
+    }
+
+    protected getScopes(deviceType: DeviceType): string {
+        const scopes: string[] = [];
+        scopes.push('iam:read');
+
+        if (deviceType === DeviceType.AUTOMOWER) {
+            scopes.push('amc:api');
+        }
+
+        return scopes.join(' ');
     }
 
     private async exchange(body: BodyInit): Promise<OAuthToken> {

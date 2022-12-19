@@ -3,7 +3,9 @@ import { AutomowerPlatformConfig } from '../../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authenticationClient';
 import { BadConfigurationError } from '../../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../../src/errors/errorFactory';
+import { DeviceType } from '../../../../src/model';
 import { ClientCredentialsAuthorizationStrategy } from '../../../../src/services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
+import { PLUGIN_ID } from '../../../../src/settings';
 
 describe('ClientCredentialsAuthorizationStrategy', () => {
     let client: Mock<AuthenticationClient>;
@@ -17,10 +19,12 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
     beforeEach(() => {
         client = new Mock<AuthenticationClient>();        
-        config = {
+
+        config = new AutomowerPlatformConfig({
+            platform: PLUGIN_ID,
             appKey: appKey,
             application_secret: appSecret
-        } as AutomowerPlatformConfig;
+        });
 
         errorFactory = new Mock<ErrorFactory>();
 
@@ -74,7 +78,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
             user_id: 'user_id'
         };
 
-        client.setup(o => o.exchangeClientCredentials(appKey, appSecret)).returnsAsync(token);
+        client.setup(o => o.exchangeClientCredentials(appKey, appSecret, DeviceType.AUTOMOWER)).returnsAsync(token);
 
         await expect(target.authorize(config, client.object())).resolves.toBe(token);
     });

@@ -1,5 +1,7 @@
 import { It, Mock } from 'moq.ts';
 
+import * as constants from '../../src/settings';
+
 import { AuthenticationClientImpl, AuthenticationErrorResponse, OAuthToken } from '../../src/clients/authenticationClient';
 import { FetchClient, Response } from '../../src/clients/fetchClient';
 import { AccountLockedError } from '../../src/errors/accountLockedError';
@@ -8,7 +10,7 @@ import { BadOAuthTokenError } from '../../src/errors/badOAuthTokenError';
 import { ErrorFactory } from '../../src/errors/errorFactory';
 import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
 import { SimultaneousLoginError } from '../../src/errors/simultaneousLoginError';
-import * as constants from '../../src/settings';
+import { DeviceType } from '../../src/model';
 
 describe('AuthenticationClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
@@ -53,7 +55,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(AccountLockedError);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(AccountLockedError);
     });
 
     it('should throw a bad credentials error on 400 response when incorrect response body for password exchange', async () => {
@@ -69,7 +71,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a bad credentials error on 400 response when unknown error for password exchange', async () => {
@@ -93,7 +95,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a not authorized error on 401 response', async () => {
@@ -110,7 +112,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(NotAuthorizedError);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(NotAuthorizedError);
     });
 
     it('should throw an error when response is not ok', async () => {
@@ -124,7 +126,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).rejects.toThrowError(Error);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(Error);
     });
 
     it('should return an oauth token when logged in with client credentials successfully', async () => {
@@ -150,7 +152,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD)).resolves.toStrictEqual(token);
+        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
 
     it('should throw a simultaneous login error on 400 response when simultaneous login detected for client credentials', async () => {
@@ -174,7 +176,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD)).rejects.toThrowError(SimultaneousLoginError);
+        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(SimultaneousLoginError);
     });
 
     it('should return an oauth token when logged in with password successfully', async () => {
@@ -200,7 +202,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD)).resolves.toStrictEqual(token);
+        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
 
     it('should logout successfully', async () => {
