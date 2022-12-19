@@ -19,13 +19,13 @@ describe('AutomowerPlatform', () => {
 
     beforeEach(() => {
         log = new Mock<Logging>();
-        config = {            
+        config = new AutomowerPlatformConfig({            
             name: PLATFORM_NAME,
             platform: PLUGIN_ID,
             appKey: '12345',
             password: 'password',
             username: 'me'
-        };
+        });
 
         api = new Mock<API>();
         api.setup(o => o.on(It.IsAny<string>(), It.IsAny<() => Promise<void>>())).returns(api.object());

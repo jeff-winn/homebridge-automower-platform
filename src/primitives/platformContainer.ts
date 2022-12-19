@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { API } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
@@ -13,6 +15,7 @@ import { RateLimitedAutomowerClient } from '../clients/rateLimitedAutomowerClien
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
+import { AuthenticationMode } from '../model';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
@@ -187,7 +190,7 @@ export class PlatformContainerImpl implements PlatformContainer {
     }
 
     protected getLoginStrategy(): InjectionToken<OAuth2AuthorizationStrategy> {
-        if (this.config.authentication_mode === 'client_credentials') {
+        if (this.config.getAuthenticationModeOrDefault() === AuthenticationMode.CLIENT_CREDENTIALS) {
             return ClientCredentialsAuthorizationStrategy;
         }
 

@@ -14,6 +14,14 @@ export enum DeviceType {
 }
 
 /**
+ * Defines the supported authentication modes.
+ */
+export enum AuthenticationMode {
+    PASSWORD = 'password',    
+    CLIENT_CREDENTIALS = 'client_credentials'
+}
+
+/**
  * Describes a mower.
  */
 export interface Mower {

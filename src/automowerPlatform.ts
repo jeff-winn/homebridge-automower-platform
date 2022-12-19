@@ -1,10 +1,13 @@
-import { API, APIEvent, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig } from 'homebridge';
+import {
+    API, APIEvent, BridgeConfiguration, DynamicPlatformPlugin, Logging, PlatformAccessory,
+    PlatformConfig, PlatformIdentifier, PlatformName
+} from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { SettingsEvent, StatusEvent } from './events';
-import { DeviceType } from './model';
+import { AuthenticationMode, DeviceType } from './model';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
@@ -15,14 +18,47 @@ import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 /** 
  * Describes the platform configuration settings.
  */
-export interface AutomowerPlatformConfig extends PlatformConfig {    
-    username?: string;
-    password?: string;
-    authentication_mode?: string;
-    appKey?: string;
-    application_secret?: string;
-    lang?: string;
-    device_type?: DeviceType;
+export class AutomowerPlatformConfig {
+    public name?: string;
+    public platform: PlatformName | PlatformIdentifier;
+    public _bridge?: BridgeConfiguration;
+
+    public username?: string;
+    public password?: string;
+    public authentication_mode?: AuthenticationMode;
+    public appKey?: string;
+    public application_secret?: string;
+    public lang?: string;
+    public device_type?: DeviceType;
+    
+    public constructor(config: PlatformConfig) {
+        this.name = config.name;
+        this.platform = config.platform;
+        this._bridge = config._bridge;
+        this.username = config.username;
+        this.password = config.password;
+        this.authentication_mode = config.authentication_mode;
+        this.appKey = config.appKey;
+        this.application_secret = config.application_secret;
+        this.lang = config.lang;
+        this.device_type = config.device_type;
+    }
+
+    /**
+     * Gets the configured device type, or the default value.
+     * @returns The device type.
+     */
+    public getDeviceTypeOrDefault(): DeviceType {
+        return this.device_type ?? DeviceType.AUTOMOWER;
+    }
+
+    /**
+     * Gets the configured authentication mode, or the default value.
+     * @returns The authentication mode.
+     */
+    public getAuthenticationModeOrDefault(): AuthenticationMode {
+        return this.authentication_mode ?? AuthenticationMode.PASSWORD;
+    }
 }
 
 /**
@@ -36,7 +72,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     private eventService?: EventStreamService;
 
     public constructor(private log: Logging, config: PlatformConfig, private api: API) {
-        this.config = config as AutomowerPlatformConfig;
+        this.config = new AutomowerPlatformConfig(config);
 
         api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunching.bind(this));
         api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));

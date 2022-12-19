@@ -1,10 +1,13 @@
 import { It, Mock } from 'moq.ts';
+
 import { AutomowerPlatformConfig } from '../../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authenticationClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { BadConfigurationError } from '../../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../../src/errors/errorFactory';
+import { DeviceType } from '../../../../src/model';
 import { LegacyPasswordAuthorizationStrategy } from '../../../../src/services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
+import { PLUGIN_ID } from '../../../../src/settings';
 
 describe('LegacyPasswordAuthorizationStrategy', () => {
     let client: Mock<AuthenticationClient>;
@@ -20,11 +23,12 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
     beforeEach(() => {
         client = new Mock<AuthenticationClient>();        
-        config = {
+        config = new AutomowerPlatformConfig({
+            platform: PLUGIN_ID,
             username: username,
             password: password,
             appKey: appKey
-        } as AutomowerPlatformConfig;
+        });
 
         log = new Mock<PlatformLogger>();
         errorFactory = new Mock<ErrorFactory>();
@@ -101,7 +105,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
         config.username = username;
         config.password = password;
         
-        client.setup(o => o.exchangePassword(appKey, username, password)).returnsAsync(token);
+        client.setup(o => o.exchangePassword(appKey, username, password, DeviceType.AUTOMOWER)).returnsAsync(token);
         log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
 
         await expect(target.authorize(config, client.object())).resolves.toBe(token);
