@@ -3,7 +3,10 @@
 
 name: prerelease
 
-on: push
+on: 
+  push: 
+    branches:
+    - 'main'
 
 env:
   # See LTS versions supported: https://nodejs.org/en/about/releases/
@@ -47,10 +50,7 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         registry-url: 'https://registry.npmjs.org/'
 
-    # - name: Set environment variables
-    #   uses: FranzDiebold/github-env-vars-action@v2
-
-    - run: npm version prerelease --preid beta.${GITHUB_RUN_ID}+${GITHUB_SHA::8} --git-tag-version false
-    #- run: npm publish
-    #  env:
-    #    NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+    - run: npm version prerelease --preid beta.${GITHUB_SHA::8} --git-tag-version false
+    - run: npm publish --tag next
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
