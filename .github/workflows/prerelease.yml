@@ -1,0 +1,56 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: prerelease
+
+on: push
+
+env:
+  # See LTS versions supported: https://nodejs.org/en/about/releases/
+  NODE_VERSION: 16
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+      
+    - run: npm ci
+    - run: npm run release
+  
+    - name: Upload dist
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: dist/
+  
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Download dist
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org/'
+
+    # - name: Set environment variables
+    #   uses: FranzDiebold/github-env-vars-action@v2
+
+    - run: npm version prerelease --preid beta.${GITHUB_RUN_ID}+R{GITHUB_SHA::8} --git-tag-version false
+    #- run: npm publish
+    #  env:
+    #    NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
