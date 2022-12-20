@@ -50,7 +50,7 @@ jobs:
     # - name: Set environment variables
     #   uses: FranzDiebold/github-env-vars-action@v2
 
-    - run: npm version prerelease --preid beta.${GITHUB_RUN_ID}+R{GITHUB_SHA::8} --git-tag-version false
+    - run: npm version prerelease --preid beta.${GITHUB_RUN_ID}+${GITHUB_SHA::8} --git-tag-version false
     #- run: npm publish
     #  env:
     #    NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
