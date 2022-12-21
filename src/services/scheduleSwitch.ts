@@ -7,6 +7,7 @@ import { AutomowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Calendar, MowerState, Planner } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
+import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';
 import { MowerControlService } from './husqvarna/automower/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
@@ -51,12 +52,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     protected override onInit(service: Service): void {
         super.onInit(service);
 
-        if (service.testCharacteristic(this.CustomCharacteristic.CuttingHeight)) {
-            this.cuttingHeight = service.getCharacteristic(this.CustomCharacteristic.CuttingHeight);
-        } else {
-            this.cuttingHeight = service.addCharacteristic(this.CustomCharacteristic.CuttingHeight);
-        }
-
+        this.cuttingHeight = attachCuttingHeightCharacteristic(service, this.api);
         this.cuttingHeight.on(CharacteristicEventTypes.SET, this.onSetCuttingHeightCallback.bind(this));
     }
 
