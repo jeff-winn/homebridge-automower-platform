@@ -54,7 +54,7 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         registry-url: 'https://registry.npmjs.org/'
 
-    - run: npm version preminor --preid preview.${GITHUB_SHA::8}+${GITHUB_RUN_NUMBER} --no-git-tag-version
+    - run: npm version preminor --preid preview.${GITHUB_RUN_NUMBER}+${GITHUB_SHA::8} --no-git-tag-version
     - run: npm publish --tag next
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
@@ -81,7 +81,7 @@ jobs:
     - name: Set environment variables
       uses: FranzDiebold/github-env-vars-action@v2
 
-    - run: npm version ${{ env.CI_ACTION_REF_NAME }} --git-tag-version false
+    - run: npm version ${{ env.CI_ACTION_REF_NAME }} --no-git-tag-version
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
