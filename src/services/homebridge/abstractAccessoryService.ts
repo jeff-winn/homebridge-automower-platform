@@ -1,16 +1,10 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 import { AutomowerContext } from '../../automowerAccessory';
-import { CustomCharacteristicDefinitions } from './customCharacteristicDefinitions';
 
 /**
  * An abstract class which represents a base accessory service.
  */
-export abstract class AbstractAccessoryService {
-    /**
-     * Defines the custom characteristics.
-     */
-    protected readonly CustomCharacteristic = CustomCharacteristicDefinitions;
-
+export abstract class AbstractAccessoryService {    
     /**
      * Defines the built-in characteristics.
      */

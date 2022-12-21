@@ -1,12 +1,47 @@
-import { Formats, Perms } from 'hap-nodejs';
-import { CuttingHeight } from '../../../../src/services/homebridge/characteristics/cuttingHeight';
+import { Characteristic, Formats, Perms } from 'hap-nodejs';
+import { API, HAP, Service } from 'homebridge';
+import { It, Mock } from 'moq.ts';
 
-describe('CuttingHeight', () => {
-    it('should initialize a new instance', () => {
-        const result = new CuttingHeight();
+import { attachCuttingHeightCharacteristic, DISPLAY_NAME, UUID } from '../../../../src/services/homebridge/characteristics/cuttingHeight';
 
-        expect(result.displayName).toBe('Cutting Height');
-        expect(result.UUID).toBe('536aa050-a419-4577-862e-d19a62bb04e1');
+describe('attachCuttingHeightCharacteristic', () => {
+    let api: Mock<API>;
+    let hap: Mock<HAP>;
+    
+    let target: Mock<Service>;    
+
+    beforeEach(() => {
+        hap = new Mock<HAP>();
+        hap.setup(o => o.Characteristic).returns(Characteristic);
+
+        api = new Mock<API>();
+        api.setup(o => o.hap).returns(hap.object());
+
+        target = new Mock<Service>();
+    });
+
+    it('should return the existing instance', () => {
+        const c = new Mock<Characteristic>();
+
+        target.setup(o => o.testCharacteristic(It.IsAny())).returns(true);
+        target.setup(o => o.getCharacteristic(It.IsAny())).returns(c.object());
+        
+        const result = attachCuttingHeightCharacteristic(target.object(), api.object());
+
+        expect(result).toBe(c.object());
+    });
+
+    it('should attach a new instance', () => {
+        target.setup(o => o.testCharacteristic(It.IsAny())).returns(false);
+        target.setup(o => o.addCharacteristic(It.IsAny())).callback(({ args: [chr]}) => {
+            return chr;
+        });
+        
+        const result = attachCuttingHeightCharacteristic(target.object(), api.object());
+
+        expect(result).toBeDefined();
+        expect(result.displayName).toBe(DISPLAY_NAME);
+        expect(result.UUID).toBe(UUID);
         
         expect(result.props.format).toBe(Formats.UINT8);
         expect(result.props.perms).toContain(Perms.PAIRED_READ);
