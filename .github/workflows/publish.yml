@@ -4,6 +4,9 @@
 name: publish
 
 on:
+  push:
+    branches:
+      - 'main'
   release:
     types: [published]
 
@@ -31,10 +34,36 @@ jobs:
       with:
         name: dist
         path: dist/
-  
-  publish:
+
+  publish-preview:
     needs: build
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Download dist
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org/'
+
+    - run: npm version preminor --preid preview.${GITHUB_SHA::8}+${GITHUB_RUN_NUMBER} --no-git-tag-version
+    - run: npm publish --tag next
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+  
+  publish-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+
     steps:
     - uses: actions/checkout@v2
       
@@ -56,3 +85,10 @@ jobs:
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+    - name: Bump version
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git commit -am "Bumping version"
+        git push
