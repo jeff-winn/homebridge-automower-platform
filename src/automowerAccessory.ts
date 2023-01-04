@@ -2,8 +2,8 @@ import {
     PlatformAccessory, UnknownContext
 } from 'homebridge';
 
-import { SettingsEvent, StatusEvent } from './events';
-import { Mower } from './model';
+import { Mower } from './clients/automowerClient';
+import { SettingsEvent, StatusEvent } from './clients/automowerEventStreamClient';
 import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';

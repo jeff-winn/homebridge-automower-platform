@@ -1,8 +1,8 @@
 import { API, PlatformAccessory } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
+import { MowerState } from '../clients/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { MowerState } from '../model';
 import { AbstractContactSensor, ContactSensor } from './homebridge/abstractContactSensor';
 import { MowerIsArrivingPolicy } from './policies/mowerIsArrivingPolicy';
 

@@ -5,8 +5,8 @@ import {
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
+import { SettingsEvent, StatusEvent } from './clients/automowerEventStreamClient';
 import { BadConfigurationError } from './errors/badConfigurationError';
-import { SettingsEvent, StatusEvent } from './events';
 import { AuthenticationMode, DeviceType } from './model';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';

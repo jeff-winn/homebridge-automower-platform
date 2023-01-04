@@ -1,7 +1,7 @@
 import { AutomowerAccessory } from '../../../automowerAccessory';
+import { AutomowerAccessoryFactory } from '../../../automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../../automowerPlatform';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
-import { AutomowerAccessoryFactory } from '../../../automowerAccessoryFactory';
 import { GetMowersService } from './getMowersService';
 
 /**

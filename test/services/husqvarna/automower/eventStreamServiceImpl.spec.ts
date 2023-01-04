@@ -1,9 +1,10 @@
 import { It, Mock, Times } from 'moq.ts';
 
+import { Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automowerClient';
+import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../../src/clients/automowerEventStreamClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { BadCredentialsError } from '../../../../src/errors/badCredentialsError';
-import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../../src/events';
-import { AccessToken, Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../../src/model';
+import { AccessToken } from '../../../../src/model';
 import { Timer } from '../../../../src/primitives/timer';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
 import { AutomowerEventStreamClientStub } from '../../../clients/automowerEventStreamClientStub';

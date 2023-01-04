@@ -1,8 +1,8 @@
 import { API, PlatformAccessory } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
+import { Mower } from './clients/automowerClient';
 import { PlatformLogger } from './diagnostics/platformLogger';
-import { Mower } from './model';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';

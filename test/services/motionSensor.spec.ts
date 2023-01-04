@@ -3,8 +3,8 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
+import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/clients/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/model';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';

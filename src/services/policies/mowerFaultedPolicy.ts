@@ -1,4 +1,4 @@
-import { MowerState, State } from '../../model';
+import { MowerState, State } from '../../clients/automowerClient';
 import { Policy } from './policy';
 
 /**

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AutomowerEventStreamClient } from '../../src/clients/automowerEventStreamClient';
-import { AutomowerEvent, ConnectedEvent, ErrorEvent } from '../../src/events';
+import { AutomowerEvent, AutomowerEventStreamClient, ConnectedEvent, ErrorEvent } from '../../src/clients/automowerEventStreamClient';
 import { AccessToken } from '../../src/model';
 
 export class AutomowerEventStreamClientStub implements AutomowerEventStreamClient {   

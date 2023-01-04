@@ -2,8 +2,11 @@ import { PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
-import { AutomowerEventTypes, StatusEvent } from '../src/events';
-import { Activity, Battery, Calendar, HeadlightMode, Mode, Mower, MowerMetadata, MowerState, OverrideAction, Planner, RestrictedReason, State, Statistics } from '../src/model';
+import {
+    Activity, Battery, Calendar, HeadlightMode, Mode, Mower, MowerMetadata,
+    MowerState, OverrideAction, Planner, RestrictedReason, State, Statistics
+} from '../src/clients/automowerClient';
+import { AutomowerEventTypes, StatusEvent } from '../src/clients/automowerEventStreamClient';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
