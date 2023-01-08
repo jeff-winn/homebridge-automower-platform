@@ -5,8 +5,7 @@ import { AutomowerAccessoryFactory } from '../../../src/automowerAccessoryFactor
 import { AutomowerPlatform } from '../../../src/automowerPlatform';
 import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { GetMowersService } from '../../../src/services/husqvarna/automower/getMowersService';
-import { DiscoveryServiceImpl } from '../../../src/services/husqvarna/discoveryService';
+import { DiscoveryServiceImpl, GetMowersService } from '../../../src/services/husqvarna/discoveryService';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;

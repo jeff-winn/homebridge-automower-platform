@@ -19,8 +19,8 @@ import { AuthenticationMode } from '../model';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
+import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/automowerGetMowersServiceImpl';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
-import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
 import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
 import { DiscoveryServiceImpl } from '../services/husqvarna/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
@@ -136,8 +136,8 @@ export class PlatformContainerImpl implements PlatformContainer {
             useValue: new DeterministicMowerTamperedPolicy()
         });
         
-        container.register(GetMowersServiceImpl, {
-            useFactory: (context) => new GetMowersServiceImpl(
+        container.register(AutomowerGetMowersServiceImpl, {
+            useFactory: (context) => new AutomowerGetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerClientImpl))
         });
@@ -169,7 +169,7 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(DiscoveryServiceImpl, {
             useFactory: (context) => new DiscoveryServiceImpl(
-                context.resolve(GetMowersServiceImpl), 
+                context.resolve(AutomowerGetMowersServiceImpl), 
                 context.resolve(AutomowerAccessoryFactoryImpl),               
                 context.resolve(HomebridgeImitationLogger))
         });

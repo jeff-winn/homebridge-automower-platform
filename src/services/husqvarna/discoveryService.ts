@@ -1,8 +1,24 @@
 import { AutomowerAccessory } from '../../automowerAccessory';
 import { AutomowerAccessoryFactory } from '../../automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../automowerPlatform';
+import { Mower } from '../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
-import { GetMowersService } from './automower/getMowersService';
+
+/**
+ * A service used to retrieve the mowers associated with a Husqvarna account.
+ */
+export interface GetMowersService {
+    /**
+     * Gets a mower by the id.
+     * @param id The id of the mower.
+     */
+    getMower(id: string) : Promise<Mower | undefined>;
+
+    /**
+     * Gets the mowers.
+     */
+    getMowers(): Promise<Mower[]>;
+}
 
 /**
  * A mechanism to discover any automowers associated with an account.
