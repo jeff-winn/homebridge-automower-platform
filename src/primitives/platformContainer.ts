@@ -20,10 +20,10 @@ import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
-import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
 import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
 import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
+import { DiscoveryServiceImpl } from '../services/husqvarna/discoveryService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';

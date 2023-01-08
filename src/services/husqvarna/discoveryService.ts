@@ -1,8 +1,8 @@
-import { AutomowerAccessory } from '../../../automowerAccessory';
-import { AutomowerAccessoryFactory } from '../../../automowerAccessoryFactory';
-import { AutomowerPlatform } from '../../../automowerPlatform';
-import { PlatformLogger } from '../../../diagnostics/platformLogger';
-import { GetMowersService } from './getMowersService';
+import { AutomowerAccessory } from '../../automowerAccessory';
+import { AutomowerAccessoryFactory } from '../../automowerAccessoryFactory';
+import { AutomowerPlatform } from '../../automowerPlatform';
+import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { GetMowersService } from './automower/getMowersService';
 
 /**
  * A mechanism to discover any automowers associated with an account.

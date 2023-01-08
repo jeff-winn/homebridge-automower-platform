@@ -11,8 +11,8 @@ import { AuthenticationMode, DeviceType } from './model';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/automower/discoveryService';
 import { EventStreamService, EventStreamServiceImpl } from './services/husqvarna/automower/eventStreamService';
+import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/discoveryService';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 
 /** 
