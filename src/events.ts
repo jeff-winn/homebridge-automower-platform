@@ -1,11 +1,13 @@
-import { Battery, MowerSchedule, State } from './model';
+import { Battery, MowerConnection, MowerSchedule, MowerState } from './model';
 
 /**
  * Describes a battery event.
  */
 export interface BatteryEvent {
     id: string;
-    battery: Battery;
+    attributes: {
+        battery: Battery;
+    };
 }
 
 /**
@@ -13,7 +15,9 @@ export interface BatteryEvent {
  */
 export interface StatusEvent {
     id: string;
-    mower: State;
+    attributes: {
+        mower: MowerState;
+    };
 }
 
 /**
@@ -21,5 +25,17 @@ export interface StatusEvent {
  */
 export interface ScheduleEvent {
     id: string;
-    schedule: MowerSchedule;
+    attributes: {
+        schedule: MowerSchedule;
+    };
+}
+
+/**
+ * Describes a connection event.
+ */
+export interface ConnectionEvent {
+    id: string;
+    attributes: {
+        connection: MowerConnection;
+    };
 }

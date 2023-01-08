@@ -51,6 +51,7 @@ export interface Mower {
     id: string;
     attributes: {
         metadata: MowerMetadata;
+        connection: MowerConnection;
         mower: MowerState;
         battery: Battery;
         schedule: MowerSchedule;
@@ -82,6 +83,12 @@ export interface MowerMetadata {
     manufacturer: string;
     model: string;
     serialNumber: string;
+}
+
+/**
+ * Describes a connection to a mower.
+ */
+export interface MowerConnection {
     connected: boolean;
 }
 
