@@ -7,7 +7,7 @@ import { GetMowersService } from '../discoveryService';
 export class GardenaGetMowersService implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private client: GardenaClient) { }
 
-    public getMower(mowerId: string): Promise<Mower | undefined> {
+    public getMower(id: string): Promise<Mower | undefined> {
         return Promise.resolve(undefined);
     }
 

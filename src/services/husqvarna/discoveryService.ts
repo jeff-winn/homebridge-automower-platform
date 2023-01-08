@@ -10,9 +10,9 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 export interface GetMowersService {
     /**
      * Gets a mower by the id.
-     * @param mowerId The id of the mower.
+     * @param id The id of the mower.
      */
-    getMower(mowerId: string) : Promise<Mower | undefined>;
+    getMower(id: string) : Promise<Mower | undefined>;
 
     /**
      * Gets the mowers.
