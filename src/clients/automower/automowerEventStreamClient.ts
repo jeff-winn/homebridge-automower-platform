@@ -9,7 +9,7 @@ import { Battery, Calendar, Headlight, MowerMetadata, MowerState, Planner, Posit
  */
 export interface ConnectedEvent {
     connectionId: string;
-    connected: boolean;
+    ready: boolean;
 }
 
 /**

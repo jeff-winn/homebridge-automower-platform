@@ -29,6 +29,24 @@ export interface GetLocationsResponse {
 }
 
 /**
+ * Describes an error response.
+ */
+export interface ErrorResponse {
+    errors: Error[];
+}
+
+/**
+ * Describes an error.
+ */
+export interface Error {
+    id: string;
+    status: string;
+    code: string;
+    title: string;
+    detail: string;
+}
+
+/**
  * A client used to retrieve information about automowers connected to the account.
  */
 export interface GardenaClient {
@@ -94,8 +112,15 @@ export class GardenaClientImpl implements GardenaClient {
             throw this.errorFactory.notAuthorizedError('NOT_AUTHORIZED', 'ERR0001');
         }
 
-        if (response.status === 500) {                        
-            throw this.errorFactory.unexpectedServerError('ERR: %s', 'ERR0000', response.status);
+        if (response.status === 500) {          
+            const e = await response.json() as ErrorResponse;
+
+            if (e?.errors?.length > 0) {
+                const err = e.errors[0];
+                throw this.errorFactory.unexpectedServerError('ERR: [%s] %s', 'ERR0000', err.code, err.title);
+            } else {
+                throw this.errorFactory.unexpectedServerError('ERR: %s', 'ERR0000', response.status);
+            }
         }
 
         if (!response.ok) {
