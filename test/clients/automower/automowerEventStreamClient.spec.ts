@@ -159,7 +159,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnectedReceived({
-            connected: true,
+            ready: true,
             connectionId: '12345'
         });
 
@@ -177,7 +177,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnectedReceived({
-            connected: true,
+            ready: true,
             connectionId: '12345'
         });
 
@@ -257,7 +257,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const id = '12345';
         const event: ConnectedEvent = {
-            connected: true,
+            ready: true,
             connectionId: id
         };
 
