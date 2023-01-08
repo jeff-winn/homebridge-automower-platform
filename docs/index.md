@@ -9,11 +9,11 @@ introduction: |
   Be advised, because this plug-in uses cloud services, service interruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your device(s).
 
   #### Hardware Requirements
-  The following hardware requirements are necessary for the proper operation of the plug-in. If you are unsure whether your mower is supported by the plug-in, you can find the compatibility matrix [HERE](/extras/compatibility-matrix).
+  The following hardware requirements are necessary for the proper operation of the plug-in. If you are unsure whether your mower is supported by the plug-in, you can find the compatibility matrix <a href="/extras/compatibility-matrix">HERE</a>.
   - The Automower *must* have an Automower Connect module installed, Bluetooth only models will require an upgrade. For more information, please contact your local Husqvarna Automower dealer.
 
   #### Known Issues
-  - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and you are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](/extras/removing-mower) should correct the issue.
+  - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and you are using 1.4.0 or later of the plug-in, removing the mower using the instructions found <a href="/extras/removing-mower">HERE</a> should correct the issue.
 
   #### Supported Capabilities
   - A switch to control whether each mower (based on configuration - see documentation):
