@@ -1,7 +1,7 @@
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
 import { PLUGIN_ID } from '../../settings';
-import { WebSocketWrapper, WebSocketWrapperImpl } from '../primitives/webSocketWrapper';
+import { WebSocketWrapper, WebSocketWrapperImpl } from '../../primitives/webSocketWrapper';
 import { Battery, Calendar, Headlight, MowerMetadata, MowerState, Planner, Position } from './automowerClient';
 
 /**
