@@ -324,12 +324,14 @@ export interface AutomowerClient {
      * Gets a specific mower connected to the account.
      * @param id The id of the mower.
      * @param token The access token.
+     * @returns The mower (if available), otherwise an undefined value.
      */
     getMower(id: string, token: AccessToken): Promise<Mower | undefined>;
 
     /**
      * Gets all the mowers connected to the account.
      * @param token The access token.
+     * @returns The array of mowers.
      */
     getMowers(token: AccessToken): Promise<Mower[]>;
 }
