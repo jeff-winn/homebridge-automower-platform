@@ -1,25 +1,9 @@
-import { AutomowerClient } from '../../../clients/automowerClient';
+import { AutomowerClient, Mower } from '../../../clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
-import { Mower } from '../../../model';
 import { AccessTokenManager } from '../accessTokenManager';
+import { GetMowersService } from '../discoveryService';
 
-/**
- * A service used to retrieve the mowers associated with a Husqvarna account.
- */
-export interface GetMowersService {
-    /**
-     * Gets a mower by the id.
-     * @param id The id of the mower.
-     */
-    getMower(id: string) : Promise<Mower | undefined>;
-
-    /**
-     * Gets the mowers.
-     */
-    getMowers(): Promise<Mower[]>;
-}
-
-export class GetMowersServiceImpl implements GetMowersService {
+export class AutomowerGetMowersServiceImpl implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
 
     public async getMower(id: string): Promise<Mower | undefined> {

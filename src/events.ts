@@ -1,78 +1,41 @@
-import {
-    Battery,
-    Calendar,
-    Headlight,
-    MowerMetadata,
-    MowerState,
-    Planner,
-    Position
-} from './model';
+import { Battery, MowerConnection, MowerSchedule, MowerState } from './model';
 
 /**
- * Describes a connected event.
+ * Describes a battery event.
  */
-export interface ConnectedEvent {
-    connectionId: string;
-    connected: boolean;
-}
-
-/**
- * Describes an automower event.
- */
-export interface AutomowerEvent {
+export interface BatteryEvent {
     id: string;
-    type: AutomowerEventTypes;
-}
-
-/**
- * Describes the automower event types.
- */
-export enum AutomowerEventTypes {
-    UNKNOWN = 'unknown-event',
-    STATUS = 'status-event',
-    POSITIONS = 'positions-event',
-    SETTINGS = 'settings-event'
+    attributes: {
+        battery: Battery;
+    };
 }
 
 /**
  * Describes a status event.
  */
-export interface StatusEvent extends AutomowerEvent {
+export interface StatusEvent {
+    id: string;
     attributes: {
-        battery: Battery;
         mower: MowerState;
-        planner: Planner;
-        metadata: MowerMetadata;
     };
 }
 
 /**
- * Describes a positions event.
+ * Describes a schedule event.
  */
-export interface PositionsEvent extends AutomowerEvent {
+export interface ScheduleEvent {
+    id: string;
     attributes: {
-        positions: Position[];
+        schedule: MowerSchedule;
     };
 }
 
 /**
- * Describes a settings event.
- * <p>
- * This event occurs when the settings have been modified on a mower.
+ * Describes a connection event.
  */
-export interface SettingsEvent extends AutomowerEvent {
+export interface ConnectionEvent {
+    id: string;
     attributes: {
-        calendar?: Calendar;
-        cuttingHeight?: number;
-        headlight?: Headlight;
+        connection: MowerConnection;
     };
-}
-
-/**
- * Describes an error event.
- */
-export interface ErrorEvent {
-    error: string;
-    message: string;
-    type: string;
 }

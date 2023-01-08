@@ -1,10 +1,10 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import * as constants from '../../src/settings';
+import * as constants from '../../../src/settings';
 
-import { WebSocketWrapper } from '../../src/clients/primitives/webSocketWrapper';
-import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../src/events';
+import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../../src/clients/automower/automowerEventStreamClient';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { WebSocketWrapper } from '../../../src/primitives/webSocketWrapper';
 import { AutomowerEventStreamClientImplSpy } from './automowerEventStreamClientImplSpy';
 
 describe('AutomowerEventStreamClientImpl', () => {
@@ -159,7 +159,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnectedReceived({
-            connected: true,
+            ready: true,
             connectionId: '12345'
         });
 
@@ -177,7 +177,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnectedReceived({
-            connected: true,
+            ready: true,
             connectionId: '12345'
         });
 
@@ -257,7 +257,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const id = '12345';
         const event: ConnectedEvent = {
-            connected: true,
+            ready: true,
             connectionId: id
         };
 

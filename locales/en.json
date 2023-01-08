@@ -37,6 +37,7 @@
   "ERROR_PROCESSING_MESSAGE": "An unexpected error occurred while processing the message.",
   "ERROR_HANDLING_SET": "An unexpected error occurred while attempting to set '%s' for '%s'.",
   "USERNAME_PASSWORD_INVALID": "The username and/or password supplied were not valid, please check your configuration and try again.",
+  "ERROR_INVALID_DEVICE_TYPE": "The device type '%s' provided is invalid, please check your configuration and try again.",
   "PAUSE": "Pause",
   "SCHEDULE": "Schedule",
   "MOTION_SENSOR": "Motion Sensor",

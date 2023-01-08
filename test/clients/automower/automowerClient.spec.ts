@@ -1,13 +1,17 @@
 import { It, Mock } from 'moq.ts';
 
-import { AutomowerClientImpl, ChangeSettingsRequest, ErrorResponse, GetMowerResponse, GetMowersResponse } from '../../src/clients/automowerClient';
-import { FetchClient, Response } from '../../src/clients/fetchClient';
-import { BadConfigurationError } from '../../src/errors/badConfigurationError';
-import { ErrorFactory } from '../../src/errors/errorFactory';
-import { NotAuthorizedError } from '../../src/errors/notAuthorizedError';
-import { UnexpectedServerError } from '../../src/errors/unexpectedServerError';
-import { AccessToken, Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../src/model';
-import * as constants from '../../src/settings';
+import {
+    Activity, AutomowerClientImpl, ChangeSettingsRequest, ErrorResponse,
+    GetMowerResponse, GetMowersResponse, HeadlightMode, Mode, Mower, RestrictedReason, State
+} from '../../../src/clients/automower/automowerClient';
+import { FetchClient, Response } from '../../../src/clients/fetchClient';
+import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
+import { ErrorFactory } from '../../../src/errors/errorFactory';
+import { NotAuthorizedError } from '../../../src/errors/notAuthorizedError';
+import { UnexpectedServerError } from '../../../src/errors/unexpectedServerError';
+import { AccessToken } from '../../../src/model';
+
+import * as constants from '../../../src/settings';
 
 describe('AutomowerClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.

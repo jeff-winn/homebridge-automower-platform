@@ -1,21 +1,21 @@
 import { Mock, Times } from 'moq.ts';
 
-import { AutomowerClient } from '../../../../src/clients/automowerClient';
+import { Activity, AutomowerClient, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
-import { AccessToken, Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/model';
+import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
-import { GetMowersServiceImpl } from '../../../../src/services/husqvarna/automower/getMowersService';
+import { AutomowerGetMowersServiceImpl } from '../../../../src/services/husqvarna/automower/automowerGetMowersServiceImpl';
 
 describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
-    let target: GetMowersServiceImpl;
+    let target: AutomowerGetMowersServiceImpl;
 
     beforeEach(() => {        
         tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<AutomowerClient>();
 
-        target = new GetMowersServiceImpl(tokenManager.object(), client.object());
+        target = new AutomowerGetMowersServiceImpl(tokenManager.object(), client.object());
     });
 
     it('should flag the token as invalid on getMower', async () => {

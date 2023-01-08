@@ -1,8 +1,8 @@
 import { It, Mock } from 'moq.ts';
 
-import { FetchClient, Response } from '../../src/clients/fetchClient';
-import { ErrorFactory } from '../../src/errors/errorFactory';
-import { AccessToken } from '../../src/model';
+import { FetchClient, Response } from '../../../src/clients/fetchClient';
+import { ErrorFactory } from '../../../src/errors/errorFactory';
+import { AccessToken } from '../../../src/model';
 import { RateLimitedAutomowerClientSpy } from './rateLimitedAutomowerClientSpy';
 
 describe('RateLimitedAutomowerClient', () => {

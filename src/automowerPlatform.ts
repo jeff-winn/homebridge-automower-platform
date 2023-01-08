@@ -5,14 +5,16 @@ import {
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
+import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
 import { BadConfigurationError } from './errors/badConfigurationError';
-import { SettingsEvent, StatusEvent } from './events';
+import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
+import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
 import { AuthenticationMode, DeviceType } from './model';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
-import { DiscoveryService, DiscoveryServiceImpl } from './services/husqvarna/automower/discoveryService';
-import { EventStreamService, EventStreamServiceImpl } from './services/husqvarna/automower/eventStreamService';
+import { DiscoveryService } from './services/husqvarna/discoveryService';
+import { EventStreamService } from './services/husqvarna/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from './settings';
 
 /** 
@@ -110,19 +112,21 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async startReceivingEvents(): Promise<void> {
         const service = this.getEventService();
-        
+                
         service.onStatusEventReceived(this.onStatusEventReceived.bind(this));
         service.onSettingsEventReceived(this.onSettingsEventReceived.bind(this));
         
         await service.start();
     }
 
-    protected getEventService(): EventStreamService {
+    protected getEventService(): EventStreamService {        
         if (this.eventService !== undefined) {
             return this.eventService;
         }
 
-        this.eventService = this.container!.resolve(EventStreamServiceImpl);
+        const factory = this.container!.resolve(EventStreamServiceFactoryImpl);
+        this.eventService = factory.create(this.container!);
+        
         return this.eventService;
     }
 
@@ -149,7 +153,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * @returns The service instance.
      */
     protected getDiscoveryService(): DiscoveryService {
-        return this.container!.resolve(DiscoveryServiceImpl);
+        const factory = this.container!.resolve(DiscoveryServiceFactoryImpl);
+        return factory.create(this.container!);
     }
 
     /**

@@ -8,28 +8,31 @@ import * as settings from '../settings';
 import { AutomowerAccessoryFactoryImpl } from '../automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
-import { AutomowerClientImpl } from '../clients/automowerClient';
-import { AutomowerEventStreamClientImpl } from '../clients/automowerEventStreamClient';
+import { AutomowerClientImpl } from '../clients/automower/automowerClient';
+import { AutomowerEventStreamClientImpl } from '../clients/automower/automowerEventStreamClient';
+import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAutomowerClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
-import { RateLimitedAutomowerClient } from '../clients/rateLimitedAutomowerClient';
+import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
-import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
+import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
+import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
 import { AuthenticationMode } from '../model';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
+import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/automowerGetMowersServiceImpl';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
-import { DiscoveryServiceImpl } from '../services/husqvarna/automower/discoveryService';
-import { EventStreamServiceImpl } from '../services/husqvarna/automower/eventStreamService';
-import { GetMowersServiceImpl } from '../services/husqvarna/automower/getMowersService';
 import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
+import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
+import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
+import { ConsoleWrapperImpl } from './consoleWrapper';
 import { NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
@@ -106,6 +109,12 @@ export class PlatformContainerImpl implements PlatformContainer {
             container.resolve(this.getLoginStrategy()),
             container.resolve(HomebridgeImitationLogger)));
 
+        container.registerInstance(GardenaClientImpl, new GardenaClientImpl(
+            this.config.appKey,
+            settings.GARDENA_SMART_SYSTEM_API_BASE_URL,
+            container.resolve(RetryerFetchClient),
+            container.resolve(DefaultErrorFactory)));
+
         container.registerInstance(AutomowerClientImpl, new RateLimitedAutomowerClient(
             this.config.appKey,
             settings.AUTOMOWER_CONNECT_API_BASE_URL,
@@ -136,8 +145,14 @@ export class PlatformContainerImpl implements PlatformContainer {
             useValue: new DeterministicMowerTamperedPolicy()
         });
         
-        container.register(GetMowersServiceImpl, {
-            useFactory: (context) => new GetMowersServiceImpl(
+        container.register(GardenaGetMowersService, {
+            useFactory: (context) => new GardenaGetMowersService(
+                context.resolve(AccessTokenManagerImpl),
+                context.resolve(GardenaClientImpl))
+        });
+        
+        container.register(AutomowerGetMowersServiceImpl, {
+            useFactory: (context) => new AutomowerGetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerClientImpl))
         });
@@ -167,11 +182,14 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(Y18nLocalization))
         });
 
-        container.register(DiscoveryServiceImpl, {
-            useFactory: (context) => new DiscoveryServiceImpl(
-                context.resolve(GetMowersServiceImpl), 
-                context.resolve(AutomowerAccessoryFactoryImpl),               
-                context.resolve(HomebridgeImitationLogger))
+        container.register(DiscoveryServiceFactoryImpl, {
+            useFactory: (context) => new DiscoveryServiceFactoryImpl(
+                this.config, context.resolve(DefaultErrorFactory))
+        });
+
+        container.register(EventStreamServiceFactoryImpl, {
+            useFactory: (context) => new EventStreamServiceFactoryImpl(
+                this.config, context.resolve(DefaultErrorFactory))
         });
 
         container.register(AutomowerEventStreamClientImpl, {

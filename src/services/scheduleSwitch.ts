@@ -4,8 +4,8 @@ import {
 } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
+import { Calendar, MowerState, Planner } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { Calendar, MowerState, Planner } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';

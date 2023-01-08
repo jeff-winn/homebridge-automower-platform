@@ -6,8 +6,8 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerPlatform, AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { BadConfigurationError } from '../src/errors/badConfigurationError';
 import { AuthenticationMode, DeviceType } from '../src/model';
-import { DiscoveryService } from '../src/services/husqvarna/automower/discoveryService';
-import { EventStreamService } from '../src/services/husqvarna/automower/eventStreamService';
+import { DiscoveryService } from '../src/services/husqvarna/discoveryService';
+import { EventStreamService } from '../src/services/husqvarna/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
 import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 

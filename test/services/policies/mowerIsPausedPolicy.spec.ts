@@ -1,4 +1,4 @@
-import { Activity, Mode, State } from '../../../src/model';
+import { Activity, Mode, State } from '../../../src/clients/automower/automowerClient';
 import { DeterministicMowerIsPausedPolicy } from '../../../src/services/policies/mowerIsPausedPolicy';
 
 describe('DeterministicMowerIsPausedPolicy', () => {

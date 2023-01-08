@@ -1,8 +1,8 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
 import { AutomowerContext } from '../automowerAccessory';
+import { MowerMetadata, MowerState } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { MowerMetadata, MowerState } from '../model';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';

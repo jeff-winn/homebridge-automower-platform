@@ -1,5 +1,5 @@
-import { AccessToken, Mower } from '../model';
-import { AutomowerClientImpl } from './automowerClient';
+import { AccessToken } from '../../model';
+import { AutomowerClientImpl, Mower } from './automowerClient';
 
 /**
  * The duration that must occur in between calls.

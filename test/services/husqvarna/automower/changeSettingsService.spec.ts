@@ -1,4 +1,4 @@
-import { AutomowerClient, ChangeSettingsRequest } from '../../../../src/clients/automowerClient';
+import { AutomowerClient, ChangeSettingsRequest } from '../../../../src/clients/automower/automowerClient';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
 import { Mock, It, Times } from 'moq.ts';
 import { ChangeSettingsServiceImpl } from '../../../../src/services/husqvarna/automower/changeSettingsService';

@@ -3,8 +3,8 @@ import { API, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../../src/automowerAccessory';
+import { MowerMetadata } from '../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { MowerMetadata } from '../../../src/model';
 import { NameMode } from '../../../src/services/homebridge/abstractSwitch';
 import { SwitchSpy } from './switchSpy';
 
