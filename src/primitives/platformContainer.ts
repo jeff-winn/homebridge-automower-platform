@@ -13,7 +13,6 @@ import { AutomowerEventStreamClientImpl } from '../clients/automower/automowerEv
 import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAutomowerClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
-import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { AuthenticationMode } from '../model';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
@@ -30,6 +29,7 @@ import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIs
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
+import { ConsoleWrapperImpl } from './consoleWrapper';
 import { NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';

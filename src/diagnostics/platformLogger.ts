@@ -1,10 +1,10 @@
 import chalk, { Chalk } from 'chalk';
 import { LogLevel } from 'homebridge';
 
+import { ConsoleWrapper } from '../primitives/consoleWrapper';
 import { Environment } from '../primitives/environment';
 import { Localization } from '../primitives/localization';
 import { PLUGIN_ID } from '../settings';
-import { ConsoleWrapper } from './primitives/consoleWrapper';
 
 /**
  * A logger which handles logging events that occur within the platform accessories.
