@@ -16,6 +16,7 @@ import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
 import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
+import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
 import { AuthenticationMode } from '../model';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
@@ -23,7 +24,6 @@ import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/autho
 import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/automowerGetMowersServiceImpl';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
-import { DiscoveryServiceImpl } from '../services/husqvarna/discoveryService';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
@@ -182,9 +182,14 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(Y18nLocalization))
         });
 
-        container.register(DiscoveryServiceImpl, {
+        container.register(DiscoveryServiceFactoryImpl, {
             useFactory: (context) => new DiscoveryServiceFactoryImpl(
-                this.config, context.resolve(DefaultErrorFactory)).create(context)
+                this.config, context.resolve(DefaultErrorFactory))
+        });
+
+        container.register(EventStreamServiceFactoryImpl, {
+            useFactory: (context) => new EventStreamServiceFactoryImpl(
+                this.config, context.resolve(DefaultErrorFactory))
         });
 
         container.register(AutomowerEventStreamClientImpl, {
