@@ -10,7 +10,8 @@ export interface AccessToken {
  * Defines the supported device types.
  */
 export enum DeviceType {
-    AUTOMOWER = 'automower'    
+    AUTOMOWER = 'automower',
+    GARDENA = 'gardena'
 }
 
 /**

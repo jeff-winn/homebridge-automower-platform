@@ -24,6 +24,12 @@
               "enum": [
                 "automower"
               ]
+            },
+            {
+              "title": "Gardena Smart (Preview)",
+              "enum": [
+                "gardena"
+              ]
             }
           ]
         },
