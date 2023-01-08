@@ -1,7 +1,7 @@
-import { ErrorFactory } from '../errors/errorFactory';
-import { AccessToken } from '../model';
-import { PLUGIN_ID } from '../settings';
-import { FetchClient, Response } from './fetchClient';
+import { ErrorFactory } from '../../errors/errorFactory';
+import { AccessToken } from '../../model';
+import { PLUGIN_ID } from '../../settings';
+import { FetchClient, Response } from '../fetchClient';
 
 /**
  * Describes a mower.

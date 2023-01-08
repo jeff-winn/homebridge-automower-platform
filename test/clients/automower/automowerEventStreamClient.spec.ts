@@ -1,10 +1,10 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import * as constants from '../../src/settings';
+import * as constants from '../../../src/settings';
 
-import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../src/clients/automowerEventStreamClient';
-import { WebSocketWrapper } from '../../src/clients/primitives/webSocketWrapper';
-import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../../src/clients/automower/automowerEventStreamClient';
+import { WebSocketWrapper } from '../../../src/clients/primitives/webSocketWrapper';
+import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { AutomowerEventStreamClientImplSpy } from './automowerEventStreamClientImplSpy';
 
 describe('AutomowerEventStreamClientImpl', () => {

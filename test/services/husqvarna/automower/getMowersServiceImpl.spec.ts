@@ -1,6 +1,6 @@
 import { Mock, Times } from 'moq.ts';
 
-import { Activity, AutomowerClient, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automowerClient';
+import { Activity, AutomowerClient, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';

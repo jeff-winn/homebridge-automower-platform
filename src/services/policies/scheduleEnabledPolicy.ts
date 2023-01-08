@@ -1,4 +1,4 @@
-import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../clients/automowerClient';
+import { Calendar, MowerState, Planner, RestrictedReason, State } from '../../clients/automower/automowerClient';
 import { OptionalPolicy } from './policy';
 
 /**

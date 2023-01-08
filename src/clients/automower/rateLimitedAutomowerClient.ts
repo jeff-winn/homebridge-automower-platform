@@ -1,4 +1,4 @@
-import { AccessToken } from '../model';
+import { AccessToken } from '../../model';
 import { AutomowerClientImpl, Mower } from './automowerClient';
 
 /**

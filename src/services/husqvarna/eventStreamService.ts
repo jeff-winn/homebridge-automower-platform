@@ -1,7 +1,7 @@
 import {
     AutomowerEvent, AutomowerEventStreamClient, AutomowerEventTypes, ErrorEvent,
     PositionsEvent, SettingsEvent, StatusEvent
-} from '../../clients/automowerEventStreamClient';
+} from '../../clients/automower/automowerEventStreamClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
 import { Timer } from '../../primitives/timer';

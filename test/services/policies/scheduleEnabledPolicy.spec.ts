@@ -1,4 +1,4 @@
-import { Activity, Calendar, Mode, RestrictedReason, State } from '../../../src/clients/automowerClient';
+import { Activity, Calendar, Mode, RestrictedReason, State } from '../../../src/clients/automower/automowerClient';
 import { DeterministicScheduleEnabledPolicy } from '../../../src/services/policies/scheduleEnabledPolicy';
 
 describe('DeterministicScheduleEnabledPolicy', () => {

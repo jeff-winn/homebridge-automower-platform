@@ -1,4 +1,4 @@
-import { RateLimitedAutomowerClient } from '../../src/clients/rateLimitedAutomowerClient';
+import { RateLimitedAutomowerClient } from '../../../src/clients/automower/rateLimitedAutomowerClient';
 
 export class RateLimitedAutomowerClientSpy extends RateLimitedAutomowerClient {
     public waited = false;

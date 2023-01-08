@@ -1,4 +1,4 @@
-import { AutomowerClient } from '../../../clients/automowerClient';
+import { AutomowerClient } from '../../../clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 

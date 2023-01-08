@@ -1,4 +1,4 @@
-import { Activity, Mode, MowerState, State } from '../../../src/clients/automowerClient';
+import { Activity, Mode, MowerState, State } from '../../../src/clients/automower/automowerClient';
 import { DeterministicMowerTamperedPolicy } from '../../../src/services/policies/mowerTamperedPolicy';
 
 describe('DeterministicMowerTamperedPolicy', () => {

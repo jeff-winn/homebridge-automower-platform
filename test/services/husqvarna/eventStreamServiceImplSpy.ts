@@ -1,4 +1,4 @@
-import { AutomowerEvent, ErrorEvent } from '../../../src/clients/automowerEventStreamClient';
+import { AutomowerEvent, ErrorEvent } from '../../../src/clients/automower/automowerEventStreamClient';
 import { EventStreamServiceImpl } from '../../../src/services/husqvarna/eventStreamService';
 
 export class EventStreamServiceImplSpy extends EventStreamServiceImpl {

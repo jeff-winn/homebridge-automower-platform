@@ -4,7 +4,7 @@ import {
 } from 'homebridge';
 
 import { AutomowerContext } from '../../automowerAccessory';
-import { MowerMetadata } from '../../clients/automowerClient';
+import { MowerMetadata } from '../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 

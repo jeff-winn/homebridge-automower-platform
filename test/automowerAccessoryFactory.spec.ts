@@ -2,7 +2,7 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
-import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../src/clients/automowerClient';
+import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';

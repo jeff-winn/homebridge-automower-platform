@@ -5,8 +5,8 @@ import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory'
 import {
     Activity, Battery, Calendar, HeadlightMode, Mode, Mower, MowerMetadata,
     MowerState, OverrideAction, Planner, RestrictedReason, State, Statistics
-} from '../src/clients/automowerClient';
-import { AutomowerEventTypes, StatusEvent } from '../src/clients/automowerEventStreamClient';
+} from '../src/clients/automower/automowerClient';
+import { AutomowerEventTypes, StatusEvent } from '../src/clients/automower/automowerEventStreamClient';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';

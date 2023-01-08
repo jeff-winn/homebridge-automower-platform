@@ -3,7 +3,7 @@ import { API, CharacteristicEventTypes, CharacteristicSetCallback, Characteristi
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/clients/automowerClient';
+import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { MowerControlService } from '../../src/services/husqvarna/automower/mowerControlService';

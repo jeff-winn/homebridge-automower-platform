@@ -1,4 +1,4 @@
-import { Activity, MowerState } from '../../clients/automowerClient';
+import { Activity, MowerState } from '../../clients/automower/automowerClient';
 import { Policy } from './policy';
 
 /**

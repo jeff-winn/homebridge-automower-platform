@@ -1,6 +1,6 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 import { AutomowerContext } from '../automowerAccessory';
-import { Activity, Battery, MowerState } from '../clients/automowerClient';
+import { Activity, Battery, MowerState } from '../clients/automower/automowerClient';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**

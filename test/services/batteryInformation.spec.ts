@@ -3,7 +3,7 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, State } from '../../src/clients/automowerClient';
+import { Activity, Mode, State } from '../../src/clients/automower/automowerClient';
 import { BatteryInformationImpl } from '../../src/services/batteryInformation';
 
 describe('BatteryServiceImpl', () => {
