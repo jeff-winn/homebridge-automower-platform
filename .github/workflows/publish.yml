@@ -9,6 +9,11 @@ on:
       - 'main'
     paths:
       - 'src'
+      - 'config.schema.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'tsconfig.release.json'
   release:
     types: [published]
 
