@@ -4,6 +4,7 @@ import { ErrorFactory } from '../errors/errorFactory';
 import { DeviceType } from '../model';
 import { PlatformContainer } from '../primitives/platformContainer';
 import { EventStreamService, EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
+import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 
 /**
  * A mechanism for creating a {@link EventStreamService} instance.
@@ -24,6 +25,8 @@ export class EventStreamServiceFactoryImpl implements EventStreamServiceFactory 
 
         if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
             eventStreamServiceClass = EventStreamServiceImpl;        
+        } else if (this.config.device_type === DeviceType.GARDENA) {
+            eventStreamServiceClass = GardenaEventStreamService;
         } else {
             throw this.errorFactory.badConfigurationError('ERROR_INVALID_DEVICE_TYPE', 'CFG0003', this.config.device_type);
         }
