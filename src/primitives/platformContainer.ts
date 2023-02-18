@@ -25,6 +25,7 @@ import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/a
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
+import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
@@ -203,8 +204,12 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerEventStreamClientImpl),
                 context.resolve(HomebridgeImitationLogger),
-                context.resolve(TimerImpl))
-        });        
+                context.resolve(TimerImpl))                
+        });
+
+        container.register(GardenaEventStreamService, {
+            useValue: new GardenaEventStreamService()
+        });
     }
 
     protected getLoginStrategy(): InjectionToken<OAuth2AuthorizationStrategy> {
