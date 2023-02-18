@@ -1,4 +1,4 @@
-import { GardenaEventStreamService } from "../../../../src/services/husqvarna/gardena/gardenaEventStreamService";
+import { GardenaEventStreamService } from '../../../../src/services/husqvarna/gardena/gardenaEventStreamService';
 
 describe('GardenaEventStreamService', () => {
     let target: GardenaEventStreamService;
