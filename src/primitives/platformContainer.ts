@@ -15,7 +15,7 @@ import { RetryerFetchClient } from '../clients/fetchClient';
 import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
 import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
 import { HomebridgeImitationLogger } from '../diagnostics/loggers/homebridgeImitationLogger';
-import { PlatformLogger } from '../diagnostics/platformLogger';
+import { LoggerType, PlatformLogger } from '../diagnostics/platformLogger';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
@@ -223,6 +223,10 @@ export class PlatformContainerImpl implements PlatformContainer {
     }
 
     public getLoggerClass(): InjectionToken<PlatformLogger> {
+        if (this.config.logger_type !== undefined || this.config.logger_type === LoggerType.IMITATION) {
+            return HomebridgeImitationLogger;
+        }
+
         return DefaultLogger;
     }
 

@@ -1,4 +1,19 @@
 /**
+ * Defines the various loggers available.
+ */
+export enum LoggerType {
+    /**
+     * The default using the Homebridge provided logger.
+     */
+    DEFAULT = 'default',
+
+    /**
+     * An logger which imitates the Homebridge logger for expanded capabilities.
+     */
+    IMITATION = 'imitation'
+}
+
+/**
  * A logger which handles logging events that occur within the platform accessories.
  */
 export interface PlatformLogger {
