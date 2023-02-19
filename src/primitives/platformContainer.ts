@@ -14,6 +14,7 @@ import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAuto
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
 import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
+import { ForceDebugLogger } from '../diagnostics/loggers/forceDebugLogger';
 import { HomebridgeImitationLogger } from '../diagnostics/loggers/homebridgeImitationLogger';
 import { LoggerType, PlatformLogger } from '../diagnostics/platformLogger';
 import { DefaultErrorFactory } from '../errors/errorFactory';
@@ -70,14 +71,23 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(DefaultLogger, {
             useFactory: (context) => new DefaultLogger(
                 this.log,
-                context.resolve(Y18nLocalization))
+                context.resolve(Y18nLocalization),
+                context.resolve(NodeJsEnvironment))
+        });
+
+        container.register(ForceDebugLogger, {
+            useFactory: (context) => new ForceDebugLogger(
+                context.resolve(ConsoleWrapperImpl),
+                this.log,
+                context.resolve(Y18nLocalization),
+                context.resolve(NodeJsEnvironment))
         });
 
         container.register(HomebridgeImitationLogger, {
             useFactory: (context) => new HomebridgeImitationLogger(
                 context.resolve(NodeJsEnvironment),
                 settings.PLATFORM_NAME, 
-                this.config.name,                
+                this.config.name,
                 context.resolve(ConsoleWrapperImpl),
                 context.resolve(Y18nLocalization))
         });
@@ -223,8 +233,12 @@ export class PlatformContainerImpl implements PlatformContainer {
     }
 
     public getLoggerClass(): InjectionToken<PlatformLogger> {
-        if (this.config.logger_type !== undefined || this.config.logger_type === LoggerType.IMITATION) {
-            return HomebridgeImitationLogger;
+        if (this.config.logger_type !== undefined) {
+            if (this.config.logger_type === LoggerType.IMITATION) {
+                return HomebridgeImitationLogger;
+            } else if (this.config.logger_type === LoggerType.FORCE_DEBUG) {
+                return ForceDebugLogger;
+            }            
         }
 
         return DefaultLogger;
