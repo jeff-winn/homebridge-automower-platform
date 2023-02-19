@@ -1,3 +1,6 @@
+import { Environment } from '../primitives/environment';
+import { PLUGIN_ID } from '../settings';
+
 /**
  * Defines the various loggers available.
  */
@@ -8,9 +11,14 @@ export enum LoggerType {
     DEFAULT = 'default',
 
     /**
-     * An logger which imitates the Homebridge logger for expanded capabilities.
+     * A logger which imitates the Homebridge logger for expanded capabilities.
      */
-    IMITATION = 'imitation'
+    IMITATION = 'imitation',
+
+    /**
+     * A logger which forces the writing of debug message to stdout.
+     */
+    FORCE_DEBUG = 'force_debug'
 }
 
 /**
@@ -44,4 +52,32 @@ export interface PlatformLogger {
      * @param parameters Any parameters used to format the message.
      */
      debug(message: string, ...parameters: unknown[]): void;
+}
+
+/**
+ * An abstract {@link PlatformLogger}.
+ */
+export abstract class AbstractPlatformLogger implements PlatformLogger {
+    private isDebugEnabled?: boolean;
+
+    protected constructor(private env: Environment) { }
+
+    public abstract info(message: string, ...parameters: unknown[]): void;
+
+    public abstract warn(message: string, ...parameters: unknown[]): void;
+
+    public abstract error(message: string, ...parameters: unknown[]): void;
+
+    public abstract debug(message: string, ...parameters: unknown[]): void;
+
+    protected checkIsDebugEnabled(): boolean {
+        if (this.isDebugEnabled !== undefined) {
+            return this.isDebugEnabled;
+        }
+
+        const debug = this.env.getDebugEnvironmentVariable();
+        this.isDebugEnabled = (debug === PLUGIN_ID || debug === '*');
+
+        return this.isDebugEnabled;
+    }
 }

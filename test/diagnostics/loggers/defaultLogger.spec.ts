@@ -2,19 +2,22 @@ import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { DefaultLogger } from '../../../src/diagnostics/loggers/defaultLogger';
+import { Environment } from '../../../src/primitives/environment';
 import { Localization } from '../../../src/primitives/localization';
 
 describe('DefaultLogger', () => {
     let logger: Mock<Logging>;
     let locale: Mock<Localization>;
+    let env: Mock<Environment>;
 
     let target: DefaultLogger;
 
     beforeEach(() => {
         logger = new Mock<Logging>();
         locale = new Mock<Localization>();
+        env = new Mock<Environment>();
 
-        target = new DefaultLogger(logger.object(), locale.object());
+        target = new DefaultLogger(logger.object(), locale.object(), env.object());
     });
 
     it('should log debug to the homebridge logger', () => {
