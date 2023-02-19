@@ -6,6 +6,7 @@ import {
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
+import { LoggerType } from './diagnostics/platformLogger';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
@@ -32,6 +33,7 @@ export class AutomowerPlatformConfig {
     public application_secret?: string;
     public lang?: string;
     public device_type?: DeviceType;
+    public logger_type?: LoggerType;
     
     public constructor(config: PlatformConfig) {
         this.name = config.name;
@@ -44,6 +46,7 @@ export class AutomowerPlatformConfig {
         this.application_secret = config.application_secret;
         this.lang = config.lang;
         this.device_type = config.device_type;
+        this.logger_type = config.logger_type;
     }
 
     /**
@@ -101,7 +104,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             return;
         }        
 
-        this.container = new PlatformContainerImpl(this.config, this.api);
+        this.container = new PlatformContainerImpl(this.config, this.api, this.log);
         this.container.registerEverything();
     }
 

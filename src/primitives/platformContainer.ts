@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { API } from 'homebridge';
+import { API, Logging } from 'homebridge';
 import { container, InjectionToken } from 'tsyringe';
 
 import * as settings from '../settings';
@@ -13,7 +13,9 @@ import { AutomowerEventStreamClientImpl } from '../clients/automower/automowerEv
 import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAutomowerClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
-import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
+import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
+import { HomebridgeImitationLogger } from '../diagnostics/loggers/homebridgeImitationLogger';
+import { LoggerType, PlatformLogger } from '../diagnostics/platformLogger';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
@@ -43,10 +45,12 @@ export interface PlatformContainer {
     registerEverything(): void;
     
     resolve<T>(token: InjectionToken<T>): T;
+
+    getLoggerClass(): InjectionToken<PlatformLogger>;
 }
 
 export class PlatformContainerImpl implements PlatformContainer {
-    public constructor(private config: AutomowerPlatformConfig, private api: API) { }
+    public constructor(private config: AutomowerPlatformConfig, private api: API, private log: Logging) { }
 
     public registerEverything(): void {
         container.register(NodeJsEnvironment, {
@@ -63,6 +67,12 @@ export class PlatformContainerImpl implements PlatformContainer {
                 container.resolve(NodeJsEnvironment))
         });
 
+        container.register(DefaultLogger, {
+            useFactory: (context) => new DefaultLogger(
+                this.log,
+                context.resolve(Y18nLocalization))
+        });
+
         container.register(HomebridgeImitationLogger, {
             useFactory: (context) => new HomebridgeImitationLogger(
                 context.resolve(NodeJsEnvironment),
@@ -74,7 +84,7 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(RetryerFetchClient, {
             useFactory: (context) => new RetryerFetchClient(
-                context.resolve(HomebridgeImitationLogger))
+                context.resolve(this.getLoggerClass()))
         });
 
         container.register(TimerImpl, {
@@ -96,7 +106,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(LegacyPasswordAuthorizationStrategy, {
             useFactory: (context) => new LegacyPasswordAuthorizationStrategy(
                 context.resolve(DefaultErrorFactory),
-                context.resolve(HomebridgeImitationLogger))
+                context.resolve(this.getLoggerClass()))
         });
 
         container.register(ClientCredentialsAuthorizationStrategy, {
@@ -108,7 +118,7 @@ export class PlatformContainerImpl implements PlatformContainer {
             container.resolve(AuthenticationClientImpl),
             this.config,
             container.resolve(this.getLoginStrategy()),
-            container.resolve(HomebridgeImitationLogger)));
+            container.resolve(this.getLoggerClass())));
 
         container.registerInstance(GardenaClientImpl, new GardenaClientImpl(
             this.config.appKey,
@@ -178,7 +188,7 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: (context) => new AutomowerAccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
-                context.resolve(HomebridgeImitationLogger),
+                context.resolve(this.getLoggerClass()),
                 this,
                 context.resolve(Y18nLocalization))
         });
@@ -196,20 +206,28 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(AutomowerEventStreamClientImpl, {
             useFactory: (context) => new AutomowerEventStreamClientImpl(
                 settings.AUTOMOWER_STREAM_API_BASE_URL, 
-                context.resolve(HomebridgeImitationLogger))
+                context.resolve(this.getLoggerClass()))
         });
 
         container.register(EventStreamServiceImpl, {
             useFactory: (context) => new EventStreamServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerEventStreamClientImpl),
-                context.resolve(HomebridgeImitationLogger),
+                context.resolve(this.getLoggerClass()),
                 context.resolve(TimerImpl))                
         });
 
         container.register(GardenaEventStreamService, {
             useValue: new GardenaEventStreamService()
         });
+    }
+
+    public getLoggerClass(): InjectionToken<PlatformLogger> {
+        if (this.config.logger_type !== undefined || this.config.logger_type === LoggerType.IMITATION) {
+            return HomebridgeImitationLogger;
+        }
+
+        return DefaultLogger;
     }
 
     protected getLoginStrategy(): InjectionToken<OAuth2AuthorizationStrategy> {

@@ -1,7 +1,6 @@
 import { InjectionToken } from 'tsyringe';
 import { AutomowerAccessoryFactoryImpl } from '../automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
-import { HomebridgeImitationLogger } from '../diagnostics/platformLogger';
 import { ErrorFactory } from '../errors/errorFactory';
 import { DeviceType } from '../model';
 import { PlatformContainer } from '../primitives/platformContainer';
@@ -37,6 +36,6 @@ export class DiscoveryServiceFactoryImpl implements DiscoveryServiceFactory {
         return new DiscoveryServiceImpl(
             container.resolve(getMowerServiceClass), 
             container.resolve(AutomowerAccessoryFactoryImpl),               
-            container.resolve(HomebridgeImitationLogger));
+            container.resolve(container.getLoggerClass()));
     }
 }
