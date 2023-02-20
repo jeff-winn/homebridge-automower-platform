@@ -1,5 +1,5 @@
 import { Mock, Times } from 'moq.ts';
-import { GardenaClient, LocationReference } from '../../../../src/clients/gardena/gardenaClient';
+import { GardenaClient, LocationRef } from '../../../../src/clients/gardena/gardenaClient';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 
@@ -34,7 +34,7 @@ describe('GardenaGetMowersService', () => {
             value: '12345'
         };
 
-        const locationRef: LocationReference = {
+        const locationRef: LocationRef = {
             id: 'abcd1234',
             type: 'LOCATION',
             attributes: {
