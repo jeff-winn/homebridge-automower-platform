@@ -6,7 +6,29 @@ import { FetchClient, Response } from '../fetchClient';
 /**
  * Describes a location.
  */
-export interface Location {
+export interface Location extends LocationReference {
+    relationships: Relationship[];
+}
+
+/**
+ * Describes a relationship.
+ */
+export interface Relationship {
+    devices: Device[];
+}
+
+/**
+ * Describes a device.
+ */
+export interface Device {
+    id: string;
+    type: string;
+}
+
+/**
+ * Describes a location reference.
+ */
+export interface LocationReference {
     id: string;
     type: string;
     attributes: {
@@ -25,7 +47,7 @@ export interface GetLocationResponse {
  * Describes a get locations response.
  */
 export interface GetLocationsResponse {
-    data: Location[];
+    data: LocationReference[];
 }
 
 /**
@@ -54,14 +76,21 @@ export interface GardenaClient {
      * Gets all the mowers connected to the account.
      * @param token The access token.
      */
-    getLocations(token: AccessToken): Promise<Location[]>;
+    getLocations(token: AccessToken): Promise<LocationReference[]>;
+
+    /**
+     * Gets a location connected to the account.
+     * @param locationId The location id.
+     * @param token The access token.
+     */
+    getLocation(locationId: string, token: AccessToken): Promise<Location>;
 }
 
 export class GardenaClientImpl implements GardenaClient {
     public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
         private errorFactory: ErrorFactory) { }
 
-    public async getLocation(locationId: string, token: AccessToken): Promise<Location[]> {
+    public async getLocation(locationId: string, token: AccessToken): Promise<Location> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations/${locationId}`, {
@@ -77,11 +106,11 @@ export class GardenaClientImpl implements GardenaClient {
 
         await this.throwIfStatusNotOk(res);
 
-        const response = await res.json() as GetLocationsResponse;
+        const response = await res.json() as GetLocationResponse;
         return response.data;
     }
 
-    public async getLocations(token: AccessToken): Promise<Location[]> {
+    public async getLocations(token: AccessToken): Promise<LocationReference[]> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations`, {
