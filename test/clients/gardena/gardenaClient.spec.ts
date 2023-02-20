@@ -1,16 +1,17 @@
 import { It, Mock } from 'moq.ts';
-import { FetchClient } from '../../../src/clients/fetchClient';
 
+import { FetchClient, Response } from '../../../src/clients/fetchClient';
 import { GardenaClientImpl } from '../../../src/clients/gardena/gardenaClient';
 import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../src/errors/errorFactory';
+import { AccessToken } from '../../../src/model';
 
 import * as constants from '../../../src/settings';
 
 describe('GardenaClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
     const APPKEY: string = process.env.HUSQVARNA_APPKEY || 'APPKEY';
-    const MOWER_ID: string = process.env.MOWER_ID || '12345';
+    const LOCATION_ID: string = process.env.LOCATION_ID || 'location1';
 
     let fetch: Mock<FetchClient>;
     let errorFactory: Mock<ErrorFactory>;
@@ -47,9 +48,50 @@ describe('GardenaClientImpl', () => {
 
         target = new GardenaClientImpl(undefined, constants.GARDENA_SMART_SYSTEM_API_BASE_URL, fetch.object(), errorFactory.object());
 
-        await expect(target.getLocation(MOWER_ID, {
+        await expect(target.getLocation(LOCATION_ID, {
             provider: 'husqvarna',
             value: 'abcd1234'
         })).rejects.toThrowError(BadConfigurationError);
+    });
+
+    it('should return undefined when empty 404 response', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+            
+        const response = new Response('{ }', {
+            headers: { },
+            size: 0,
+            status: 404,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+        
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returnsAsync(response);
+        
+        await expect(target.getLocation(LOCATION_ID, token)).resolves.toBeUndefined();
+    });
+
+    it('should return empty array when 404 response', async () => {
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+            
+        const response = new Response('{ }', {
+            headers: { },
+            size: 0,
+            status: 404,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+        
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returnsAsync(response);
+        
+        const result = await target.getLocations(token);
+
+        expect(result).toBeDefined();
+        expect(result).toHaveLength(0);
     });
 });
