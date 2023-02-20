@@ -90,6 +90,14 @@ export class GardenaClientImpl implements GardenaClient {
     public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
         private errorFactory: ErrorFactory) { }
 
+    public getApplicationKey(): string | undefined {
+        return this.appKey;
+    }
+
+    public getBaseUrl(): string {
+        return this.baseUrl;
+    }
+
     public async getLocation(locationId: string, token: AccessToken): Promise<Location> {
         this.guardAppKeyMustBeProvided();
         
