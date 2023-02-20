@@ -6,7 +6,7 @@ import { FetchClient, Response } from '../fetchClient';
 /**
  * Describes a location.
  */
-export interface Location extends LocationReference {
+export interface Location extends LocationRef {
     relationships: Relationship[];
 }
 
@@ -28,7 +28,7 @@ export interface Device {
 /**
  * Describes a location reference.
  */
-export interface LocationReference {
+export interface LocationRef {
     id: string;
     type: string;
     attributes: {
@@ -47,7 +47,7 @@ export interface GetLocationResponse {
  * Describes a get locations response.
  */
 export interface GetLocationsResponse {
-    data: LocationReference[];
+    data: LocationRef[];
 }
 
 /**
@@ -76,7 +76,7 @@ export interface GardenaClient {
      * Gets all the mowers connected to the account.
      * @param token The access token.
      */
-    getLocations(token: AccessToken): Promise<LocationReference[]>;
+    getLocations(token: AccessToken): Promise<LocationRef[]>;
 
     /**
      * Gets a location connected to the account.
@@ -110,7 +110,7 @@ export class GardenaClientImpl implements GardenaClient {
         return response.data;
     }
 
-    public async getLocations(token: AccessToken): Promise<LocationReference[]> {
+    public async getLocations(token: AccessToken): Promise<LocationRef[]> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations`, {
