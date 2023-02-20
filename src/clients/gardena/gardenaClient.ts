@@ -6,7 +6,29 @@ import { FetchClient, Response } from '../fetchClient';
 /**
  * Describes a location.
  */
-export interface Location {
+export interface Location extends LocationRef {
+    relationships: Relationship[];
+}
+
+/**
+ * Describes a relationship.
+ */
+export interface Relationship {
+    devices: Device[];
+}
+
+/**
+ * Describes a device.
+ */
+export interface Device {
+    id: string;
+    type: string;
+}
+
+/**
+ * Describes a location reference.
+ */
+export interface LocationRef {
     id: string;
     type: string;
     attributes: {
@@ -25,7 +47,7 @@ export interface GetLocationResponse {
  * Describes a get locations response.
  */
 export interface GetLocationsResponse {
-    data: Location[];
+    data: LocationRef[];
 }
 
 /**
@@ -54,14 +76,29 @@ export interface GardenaClient {
      * Gets all the mowers connected to the account.
      * @param token The access token.
      */
-    getLocations(token: AccessToken): Promise<Location[]>;
+    getLocations(token: AccessToken): Promise<LocationRef[]>;
+
+    /**
+     * Gets a location connected to the account.
+     * @param locationId The location id.
+     * @param token The access token.
+     */
+    getLocation(locationId: string, token: AccessToken): Promise<Location | undefined>;
 }
 
 export class GardenaClientImpl implements GardenaClient {
     public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
         private errorFactory: ErrorFactory) { }
 
-    public async getLocation(locationId: string, token: AccessToken): Promise<Location[]> {
+    public getApplicationKey(): string | undefined {
+        return this.appKey;
+    }
+
+    public getBaseUrl(): string {
+        return this.baseUrl;
+    }
+
+    public async getLocation(locationId: string, token: AccessToken): Promise<Location | undefined> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations/${locationId}`, {
@@ -75,13 +112,17 @@ export class GardenaClientImpl implements GardenaClient {
             }
         });
 
+        if (res.status === 404) {
+            return undefined;  // The location request does not exist.
+        }
+
         await this.throwIfStatusNotOk(res);
 
-        const response = await res.json() as GetLocationsResponse;
+        const response = await res.json() as GetLocationResponse;
         return response.data;
     }
 
-    public async getLocations(token: AccessToken): Promise<Location[]> {
+    public async getLocations(token: AccessToken): Promise<LocationRef[]> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations`, {
@@ -94,6 +135,10 @@ export class GardenaClientImpl implements GardenaClient {
                 'Authorization-Provider': token.provider
             }
         });
+
+        if (res.status === 404) {
+            return []; // No locations available.
+        }
 
         await this.throwIfStatusNotOk(res);
 
