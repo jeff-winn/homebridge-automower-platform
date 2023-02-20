@@ -2,6 +2,7 @@ import { Mower } from '../../../clients/automower/automowerClient';
 import { GardenaClient } from '../../../clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
+import { AccessToken } from '../../../model';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
 
@@ -19,14 +20,20 @@ export class GardenaGetMowersService implements GetMowersService {
             const token = await this.tokenManager.getCurrentToken();
 
             const locations = await this.client.getLocations(token);
-            // if (locations.length === 0) { // TODO: This likely needs to be more robust.
-            //     return [];
-            // }
+            if (locations.length === 0) {
+                return [];
+            }
 
-            const location = locations[0]; // TODO: This should not assume data being present.
-            await this.client.getLocation(location.id, token);
+            const result: Mower[] = [];
 
-            return [];
+            locations.forEach(async (location) => {
+                const mowers = await this.findMowersAtLocation(location.id, token);
+                if (mowers !== undefined) {
+                    result.push(...mowers);
+                }
+            });
+
+            return result;
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();
@@ -34,6 +41,11 @@ export class GardenaGetMowersService implements GetMowersService {
 
             throw (e);
         }
+    }
+
+    protected async findMowersAtLocation(locationId: string, token: AccessToken): Promise<Mower[]> {
+        await this.client.getLocation(locationId, token);
+        return Promise.resolve([]);
     }
     
     /**
