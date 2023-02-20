@@ -169,7 +169,8 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(GardenaGetMowersService, {
             useFactory: (context) => new GardenaGetMowersService(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(GardenaClientImpl))
+                context.resolve(GardenaClientImpl),
+                context.resolve(this.getLoggerClass()))
         });
         
         container.register(AutomowerGetMowersServiceImpl, {

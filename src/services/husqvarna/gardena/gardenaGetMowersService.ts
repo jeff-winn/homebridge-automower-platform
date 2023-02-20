@@ -1,17 +1,20 @@
 import { Mower } from '../../../clients/automower/automowerClient';
 import { GardenaClient } from '../../../clients/gardena/gardenaClient';
+import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
 
 export class GardenaGetMowersService implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private client: GardenaClient) { }
+    public constructor(private tokenManager: AccessTokenManager, private client: GardenaClient, private log: PlatformLogger) { }
 
     public getMower(id: string): Promise<Mower | undefined> {
         return Promise.resolve(undefined);
     }
 
     public async getMowers(): Promise<Mower[]> {
+        this.notifyPreviewFeatureIsBeingUsed();
+        
         try {
             const token = await this.tokenManager.getCurrentToken();
 
@@ -31,5 +34,12 @@ export class GardenaGetMowersService implements GetMowersService {
 
             throw (e);
         }
-    }    
+    }
+    
+    /**
+     * Notifies the user that the preview feature is currently being used, to ensure they're aware.
+     */
+    protected notifyPreviewFeatureIsBeingUsed(): void {
+        this.log.warn('GARDENA_PREVIEW_IN_USE');
+    }
 }
