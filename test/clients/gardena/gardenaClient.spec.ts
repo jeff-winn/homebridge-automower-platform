@@ -47,7 +47,7 @@ describe('GardenaClientImpl', () => {
 
         target = new GardenaClientImpl(undefined, constants.GARDENA_SMART_SYSTEM_API_BASE_URL, fetch.object(), errorFactory.object());
 
-        await expect(target.getLocation('12345', {
+        await expect(target.getLocation(MOWER_ID, {
             provider: 'husqvarna',
             value: 'abcd1234'
         })).rejects.toThrowError(BadConfigurationError);
