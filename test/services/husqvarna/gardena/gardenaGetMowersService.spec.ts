@@ -1,5 +1,6 @@
 import { Mock, Times } from 'moq.ts';
 import { GardenaClient, LocationRef } from '../../../../src/clients/gardena/gardenaClient';
+import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 
@@ -9,6 +10,7 @@ import { GardenaGetMowersService } from '../../../../src/services/husqvarna/gard
 describe('GardenaGetMowersService', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<GardenaClient>;
+    let log: Mock<PlatformLogger>;
 
     let target: GardenaGetMowersService;
 
@@ -16,7 +18,14 @@ describe('GardenaGetMowersService', () => {
         tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<GardenaClient>();
 
-        target = new GardenaGetMowersService(tokenManager.object(), client.object());
+        log = new Mock<PlatformLogger>();
+        log.setup(o => o.warn('GARDENA_PREVIEW_IN_USE')).returns(undefined);
+
+        target = new GardenaGetMowersService(tokenManager.object(), client.object(), log.object());
+    });
+
+    afterEach(() => {
+        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 
     it('should flag the token as invalid if not authorized', async () => {
