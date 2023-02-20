@@ -11,7 +11,6 @@ describe('GardenaGetMowersService', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<GardenaClient>;
     let log: Mock<PlatformLogger>;
-
     let target: GardenaGetMowersService;
 
     beforeEach(() => {
