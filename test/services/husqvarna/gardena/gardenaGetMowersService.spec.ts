@@ -36,6 +36,21 @@ describe('GardenaGetMowersService', () => {
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
     });
 
+    it('should return an empty array when no locations are found', async () => {
+        const token: AccessToken = {
+            provider: 'husqvarna',
+            value: '12345'
+        };
+
+        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        client.setup(o => o.getLocations(token)).returnsAsync([ ]);        
+
+        const result = await target.getMowers();
+
+        expect(result).toBeDefined();
+        expect(result).toHaveLength(0);
+    });
+
     it('should return an array of values', async () => {
         const token: AccessToken = {
             provider: 'husqvarna',
