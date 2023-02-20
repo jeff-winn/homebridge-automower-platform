@@ -83,7 +83,7 @@ export interface GardenaClient {
      * @param locationId The location id.
      * @param token The access token.
      */
-    getLocation(locationId: string, token: AccessToken): Promise<Location>;
+    getLocation(locationId: string, token: AccessToken): Promise<Location | undefined>;
 }
 
 export class GardenaClientImpl implements GardenaClient {
@@ -98,7 +98,7 @@ export class GardenaClientImpl implements GardenaClient {
         return this.baseUrl;
     }
 
-    public async getLocation(locationId: string, token: AccessToken): Promise<Location> {
+    public async getLocation(locationId: string, token: AccessToken): Promise<Location | undefined> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations/${locationId}`, {
@@ -111,6 +111,10 @@ export class GardenaClientImpl implements GardenaClient {
                 'Authorization-Provider': token.provider
             }
         });
+
+        if (res.status === 404) {
+            return undefined;  // The location request does not exist.
+        }
 
         await this.throwIfStatusNotOk(res);
 
@@ -131,6 +135,10 @@ export class GardenaClientImpl implements GardenaClient {
                 'Authorization-Provider': token.provider
             }
         });
+
+        if (res.status === 404) {
+            return []; // No locations available.
+        }
 
         await this.throwIfStatusNotOk(res);
 
