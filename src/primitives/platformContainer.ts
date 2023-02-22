@@ -13,6 +13,7 @@ import { AutomowerEventStreamClientImpl } from '../clients/automower/automowerEv
 import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAutomowerClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
+import { FakeGardenaClientImpl } from '../clients/gardena/gardenaClient.fake';
 import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
 import { ForceDebugLogger } from '../diagnostics/loggers/forceDebugLogger';
 import { HomebridgeImitationLogger } from '../diagnostics/loggers/homebridgeImitationLogger';
@@ -169,7 +170,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(GardenaGetMowersService, {
             useFactory: (context) => new GardenaGetMowersService(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(GardenaClientImpl),
+                context.resolve(FakeGardenaClientImpl),
                 context.resolve(this.getLoggerClass()))
         });
         

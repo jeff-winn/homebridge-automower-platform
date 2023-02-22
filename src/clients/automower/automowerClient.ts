@@ -42,7 +42,7 @@ export interface Calendar {
 export interface Device {
     name: string;
     model: string;
-    serialNumber: number;
+    serialNumber: string;
 }
 
 /**
