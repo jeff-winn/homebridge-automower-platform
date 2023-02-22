@@ -3,6 +3,9 @@ import { AccessToken } from '../../model';
 import { PLUGIN_ID } from '../../settings';
 import { FetchClient, Response } from '../fetchClient';
 
+/**
+ * Defines the types of things.
+ */
 export enum ThingType {
     LOCATION = 'LOCATION',
     DEVICE = 'DEVICE',
@@ -103,7 +106,7 @@ export interface Common extends DeviceRef {
         };
         rfLinkState: {
             value: string;
-        }
+        };
     };
 }
 
