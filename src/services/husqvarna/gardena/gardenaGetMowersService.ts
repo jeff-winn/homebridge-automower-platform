@@ -97,7 +97,7 @@ export class GardenaGetMowersService implements GetMowersService {
     protected createMower(mower: Mower, common: Common): model.Mower {
         return {
             id: mower.id,
-            type: '',
+            type: 'mower', // To match the automower stuff
             attributes: {
                 battery: {
                     batteryPercent: common.attributes.batteryLevel.value                                
