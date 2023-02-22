@@ -1,5 +1,5 @@
 import { Mock, Times } from 'moq.ts';
-import { GardenaClient, LocationRef } from '../../../../src/clients/gardena/gardenaClient';
+import { GardenaClient, LocationSearchRef, ThingType } from '../../../../src/clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
@@ -42,23 +42,34 @@ describe('GardenaGetMowersService', () => {
             value: '12345'
         };
 
-        const locationRef: LocationRef = {
+        const locationRef: LocationSearchRef = {
             id: 'abcd1234',
-            type: 'LOCATION',
+            type: ThingType.LOCATION,
             attributes: {
-                name: 'My Garden'
+                name: 'Tommy Boy'
             }
         };
 
         tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
-        client.setup(o => o.getLocations(token)).returnsAsync([ locationRef ]);
+        client.setup(o => o.getLocations(token)).returnsAsync({
+            data: [
+                locationRef
+            ]
+        });
         client.setup(o => o.getLocation('abcd1234', token)).returnsAsync({
-            id: 'abcd1234',
-            type: 'TBD',
-            attributes: {
-                name: 'My Garden'
+            data: {
+                id: 'abcd1234',
+                type: ThingType.DEVICE,
+                attributes: {
+                    name: 'My Garden'
+                },
+                relationships: {
+                    devices: {
+                        data: []
+                    }
+                }
             },
-            relationships: []
+            included: []
         });
 
         const result = await target.getMowers();

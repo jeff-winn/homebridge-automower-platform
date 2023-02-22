@@ -8,6 +8,11 @@ import { env } from 'process';
  */
 export interface Environment {
     /**
+     * Indicates whether the plugin is running within a development environment.
+     */
+    isDevelopmentEnvironment(): boolean;
+
+    /**
      * Gets the 'DEBUG' environment variable.
      */
     getDebugEnvironmentVariable(): string | undefined;
@@ -23,6 +28,10 @@ export interface Environment {
  * An implementation of an environment running within node.js.
  */
 export class NodeJsEnvironment implements Environment {
+    public isDevelopmentEnvironment(): boolean {
+        return env.DEVELOPMENT !== undefined && env.DEVELOPMENT === '1';
+    }
+
     public getDebugEnvironmentVariable(): string | undefined {
         return env.DEBUG;
     }

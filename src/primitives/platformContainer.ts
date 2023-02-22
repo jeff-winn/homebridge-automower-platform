@@ -12,7 +12,7 @@ import { AutomowerClientImpl } from '../clients/automower/automowerClient';
 import { AutomowerEventStreamClientImpl } from '../clients/automower/automowerEventStreamClient';
 import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAutomowerClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
-import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
+import { GardenaClient, GardenaClientImpl } from '../clients/gardena/gardenaClient';
 import { FakeGardenaClientImpl } from '../clients/gardena/gardenaClient.fake';
 import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
 import { ForceDebugLogger } from '../diagnostics/loggers/forceDebugLogger';
@@ -128,7 +128,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(
             container.resolve(AuthenticationClientImpl),
             this.config,
-            container.resolve(this.getLoginStrategy()),
+            container.resolve(this.getLoginStrategyClass()),
             container.resolve(this.getLoggerClass())));
 
         container.registerInstance(GardenaClientImpl, new GardenaClientImpl(
@@ -170,7 +170,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(GardenaGetMowersService, {
             useFactory: (context) => new GardenaGetMowersService(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(FakeGardenaClientImpl),
+                context.resolve(this.getGardenaClientClass()),
                 context.resolve(this.getLoggerClass()))
         });
         
@@ -234,6 +234,15 @@ export class PlatformContainerImpl implements PlatformContainer {
         });
     }
 
+    protected getGardenaClientClass(): InjectionToken<GardenaClient> {
+        const env = container.resolve(NodeJsEnvironment);
+        if (env.isDevelopmentEnvironment()) {
+            return FakeGardenaClientImpl;
+        }
+
+        return GardenaClientImpl;
+    }
+
     public getLoggerClass(): InjectionToken<PlatformLogger> {
         if (this.config.logger_type !== undefined) {
             if (this.config.logger_type === LoggerType.IMITATION) {
@@ -246,7 +255,7 @@ export class PlatformContainerImpl implements PlatformContainer {
         return DefaultLogger;
     }
 
-    protected getLoginStrategy(): InjectionToken<OAuth2AuthorizationStrategy> {
+    protected getLoginStrategyClass(): InjectionToken<OAuth2AuthorizationStrategy> {
         if (this.config.getAuthenticationModeOrDefault() === AuthenticationMode.CLIENT_CREDENTIALS) {
             return ClientCredentialsAuthorizationStrategy;
         }

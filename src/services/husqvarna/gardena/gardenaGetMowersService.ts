@@ -105,7 +105,7 @@ export class GardenaGetMowersService implements GetMowersService {
                 system: {
                     model: common.attributes.modelType.value,
                     name: common.attributes.name.value,
-                    serialNumber: common.attributes.serial.value
+                    serialNumber: 0 // common.attributes.serial.value
                 },
                 calendar: {
                     tasks: []
