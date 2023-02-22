@@ -23,8 +23,8 @@ describe('GardenaGetMowersService', () => {
         target = new GardenaGetMowersService(tokenManager.object(), client.object(), log.object());
     });
 
-    afterEach(() => {
-        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
+    it('always returns an undefined value for get mower', async () => {
+        await expect(target.getMower('any')).resolves.toBeUndefined();
     });
 
     it('should flag the token as invalid if not authorized', async () => {
@@ -34,6 +34,23 @@ describe('GardenaGetMowersService', () => {
         await expect(target.getMowers()).rejects.toThrowError(NotAuthorizedError);
 
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
+        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
+    });
+
+    it('should return an empty array when no locations are found', async () => {
+        const token: AccessToken = {
+            provider: 'husqvarna',
+            value: '12345'
+        };
+
+        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        client.setup(o => o.getLocations(token)).returnsAsync([ ]);        
+
+        const result = await target.getMowers();
+        expect(result).toBeDefined();
+        expect(result).toHaveLength(0);
+
+        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 
     it('should return an array of values', async () => {
@@ -74,5 +91,7 @@ describe('GardenaGetMowersService', () => {
 
         const result = await target.getMowers();
         expect(result).toBeDefined();
+
+        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 });

@@ -28,7 +28,7 @@ export class GardenaGetMowersService implements GetMowersService {
                 }
             }
 
-            return [];
+            return result;
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
                 this.tokenManager.flagAsInvalid();
