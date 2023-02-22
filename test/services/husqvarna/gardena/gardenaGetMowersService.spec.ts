@@ -1,9 +1,9 @@
 import { Mock, Times } from 'moq.ts';
+
 import { GardenaClient, LocationSearchRef, ThingType } from '../../../../src/clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
-
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
 import { GardenaGetMowersService } from '../../../../src/services/husqvarna/gardena/gardenaGetMowersService';
 
@@ -44,7 +44,9 @@ describe('GardenaGetMowersService', () => {
         };
 
         tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
-        client.setup(o => o.getLocations(token)).returnsAsync([ ]);        
+        client.setup(o => o.getLocations(token)).returnsAsync({
+            data: []
+        });        
 
         const result = await target.getMowers();
         expect(result).toBeDefined();
