@@ -1,19 +1,22 @@
-import * as model from '../../../clients/automower/automowerClient';
+import * as model from '../../../model';
 
-import { Common, Device, DeviceRef, GardenaClient, GetLocationResponse, LocationRef, Mower, ThingType } from '../../../clients/gardena/gardenaClient';
+import { Common, Device, DeviceLink, GardenaClient, GetLocationResponse, LocationLink, Mower, RfLinkState, ThingType } from '../../../clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
-import { AccessToken } from '../../../model';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
 
+/**
+ * Describes the model information parsed from the model data.
+ */
+interface ModelInformation {
+    manufacturer: string;
+    model: string;
+}
+
 export class GardenaGetMowersService implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private client: GardenaClient, private log: PlatformLogger) { }
-
-    public getMower(id: string): Promise<model.Mower | undefined> {
-        return Promise.resolve(undefined);
-    }
-
+    
     public async getMowers(): Promise<model.Mower[]> {
         this.notifyPreviewFeatureIsBeingUsed();
         
@@ -21,7 +24,6 @@ export class GardenaGetMowersService implements GetMowersService {
             const token = await this.tokenManager.getCurrentToken();
 
             const refs = await this.getLocationsForAccount(token);
-
             for (const ref of refs) {
                 const location = await this.client.getLocation(ref.id, token);
                 if (location !== undefined) {
@@ -39,13 +41,13 @@ export class GardenaGetMowersService implements GetMowersService {
         }
     }
 
-    protected async getLocationsForAccount(token: AccessToken): Promise<LocationRef[]> {
+    protected async getLocationsForAccount(token: model.AccessToken): Promise<LocationLink[]> {
         const locations = await this.client.getLocations(token);
         if (locations === undefined || locations.data === undefined || locations.data.length === 0) {
             return [];
         }
 
-        const result: LocationRef[] = [];
+        const result: LocationLink[] = [];
 
         for (const location of locations.data) {
             result.push(location);
@@ -66,7 +68,7 @@ export class GardenaGetMowersService implements GetMowersService {
                 // Mower detected!
                 const common = services.filter(o => o.type === ThingType.COMMON).shift() as Common; // The common service is always required.
 
-                const mowerInstance = this.createMower(mower, common);
+                const mowerInstance = this.createMower(mower, common, location.data);
                 result.push(mowerInstance);
             }
         }
@@ -89,8 +91,8 @@ export class GardenaGetMowersService implements GetMowersService {
         return result;
     }
     
-    protected findDeviceServicesAtLocation(device: Device, location: GetLocationResponse): DeviceRef[] {
-        const result: DeviceRef[] = [];
+    protected findDeviceServicesAtLocation(device: Device, location: GetLocationResponse): DeviceLink[] {
+        const result: DeviceLink[] = [];
 
         for (const ref of device.relationships.services.data) {
             const service = location.included.filter(o => o.id === ref.id && o.type === ref.type).shift();
@@ -102,56 +104,53 @@ export class GardenaGetMowersService implements GetMowersService {
         return result;
     }
 
-    protected createMower(mower: Mower, common: Common): model.Mower {
+    protected createMower(mower: Mower, common: Common, location: LocationLink): model.Mower {
+        const modelInformation = this.parseModelInformation(common.attributes.modelType.value);
+
         return {
             id: mower.id,
-            type: 'mower', // To match the automower stuff
             attributes: {
+                location: {
+                    id: location.id
+                },
                 battery: {
-                    batteryPercent: common.attributes.batteryLevel.value                                
+                    isCharging: false,
+                    level: common.attributes.batteryLevel.value,                    
                 },
-                system: {
-                    model: common.attributes.modelType.value,
-                    name: common.attributes.name.value,
-                    serialNumber: 0 // common.attributes.serial.value
-                },
-                calendar: {
-                    tasks: []
-                },
-                mower: {
-                    mode: model.Mode.HOME,
-                    activity: model.Activity.PARKED_IN_CS,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    state: model.State.NOT_APPLICABLE
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: { }
+                connection: {
+                    connected: common.attributes.rfLinkState.value === RfLinkState.ONLINE
                 },
                 metadata: {
-                    connected: common.attributes.rfLinkState.value === 'CONNECTED', // This will likely need to be corrected.
-                    statusTimestamp: 1
+                    manufacturer: modelInformation.manufacturer,
+                    model: modelInformation.model,
+                    name: common.attributes.name.value,
+                    serialNumber: common.attributes.serial.value
                 },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: model.HeadlightMode.ALWAYS_OFF
-                    }                                
-                },
-                statistics: {
-                    numberOfChargingCycles: 0,
-                    numberOfCollisions: 0,
-                    totalChargingTime: 0,
-                    totalCuttingTime: 0,
-                    totalRunningTime: 0,
-                    totalSearchingTime: 0
-                }
+                mower: {
+                    activity: model.Activity.UNKNOWN, // TODO: Fix this.
+                    state: this.convertMowerState(mower)
+                }                
             }
-        };
+        };       
+    }
+
+    protected convertMowerState(mower: Mower): model.State {
+        if (mower.attributes.lastErrorCode.value === 'OFF_DISABLED') {
+            return model.State.OFF;
+        }
+
+        return model.State.UNKNOWN;
     }
     
+    private parseModelInformation(value: string): ModelInformation {
+        const firstIndex = value.indexOf(' ');
+
+        return {
+            manufacturer: value.substring(0, firstIndex),
+            model: value.substring(firstIndex + 1)
+        };
+    }
+
     /**
      * Notifies the user that the preview feature is currently being used, to ensure they're aware.
      */

@@ -2,7 +2,6 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
-import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
@@ -24,6 +23,7 @@ import { DeterministicMowerTamperedPolicy } from '../src/services/policies/mower
 import { DeterministicScheduleEnabledPolicy } from '../src/services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from '../src/services/scheduleSwitch';
 import { AutomowerAccessoryFactorySpy } from './automowerAccessoryFactorySpy';
+import { Activity, Mower, State } from '../src/model';
 
 describe('AutomowerAccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
@@ -62,55 +62,28 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const mowerId = '1234';
 
         const mower: Mower = {
-            type: 'mower',
             id: mowerId,
             attributes: {
-                system: {
-                    name: mowerName,
-                    model: 'HUSQVARNA AUTOMOWER® 430XH',
-                    serialNumber: 123456
-                },
                 battery: {
-                    batteryPercent: 100
+                    isCharging: false,
+                    level: 100
+                },
+                connection: {
+                    connected: false                    
+                },
+                location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER® 430XH',
+                    name: mowerName,
+                    serialNumber: '123456'
                 },
                 mower: {
-                    mode: Mode.MAIN_AREA,
-                    activity: Activity.NOT_APPLICABLE,
-                    state: State.STOPPED,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0
-                },
-                calendar: {
-                    tasks: []
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: OverrideAction.NOT_ACTIVE
-                    },
-                    restrictedReason: RestrictedReason.NOT_APPLICABLE
-                },
-                metadata: {
-                    connected: false,
-                    statusTimestamp: 1670007077108
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 8,
-                    headlight: {
-                        mode: HeadlightMode.EVENING_AND_NIGHT
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 275,
-                    numberOfCollisions: 9370,
-                    totalChargingTime: 928800,
-                    totalCuttingTime: 2779200,
-                    totalRunningTime: 3027600,
-                    totalSearchingTime: 248400
+                    activity: Activity.MOWING,
+                    state: State.STOPPED
                 }
             }
-        };
+        };        
 
         const uuid = 'my-uuid';
         const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();

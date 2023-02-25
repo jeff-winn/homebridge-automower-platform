@@ -3,9 +3,10 @@ import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory } from '../../../src/automowerAccessory';
 import { AutomowerAccessoryFactory } from '../../../src/automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../../src/automowerPlatform';
-import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { DiscoveryServiceImpl, GetMowersService } from '../../../src/services/husqvarna/discoveryService';
+
+import * as model from '../../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
@@ -43,104 +44,50 @@ describe('DiscoveryServiceImpl', () => {
         const mower2Id = '678910';
         const mower2Name = 'Ernie';
 
-        const mower1: Mower = {
+        const mower1: model.Mower = {
             id: mower1Id,
-            type: 'mower',
             attributes: {
                 battery: {
-                    batteryPercent: 0
+                    isCharging: true,
+                    level: 0
                 },
-                calendar: {
-                    tasks: []
+                connection: {
+                    connected: true
+                },
+                location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER 430XH',
+                    name: mower1Name,
+                    serialNumber: '0'
                 },
                 mower: {
-                    activity: Activity.CHARGING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.HOME,
-                    state: State.RESTRICTED
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: OverrideAction.NO_SOURCE
-                    },
-                    restrictedReason: RestrictedReason.NOT_APPLICABLE
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: HeadlightMode.ALWAYS_ON
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 0,
-                    numberOfCollisions: 0,
-                    totalChargingTime: 0,
-                    totalCuttingTime: 0,
-                    totalRunningTime: 0,
-                    totalSearchingTime: 0
-                },
-                system: {
-                    model: 'HUSQVARNA AUTOMOWER 430XH',
-                    name: mower1Name,
-                    serialNumber: 0
-                },
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
+                    activity: model.Activity.PARKED,
+                    state: model.State.STOPPED
                 }
             }
         };
 
-        const mower2: Mower = {
+        const mower2: model.Mower = {
             id: mower2Id,
-            type: 'mower',
             attributes: {
                 battery: {
-                    batteryPercent: 0
+                    isCharging: true,
+                    level: 0
                 },
-                calendar: {
-                    tasks: []
+                connection: {
+                    connected: true
+                },
+                location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER 430XH',
+                    name: mower2Name,
+                    serialNumber: '0'
                 },
                 mower: {
-                    activity: Activity.MOWING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.IN_OPERATION
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: OverrideAction.NOT_ACTIVE
-                    },
-                    restrictedReason: RestrictedReason.NOT_APPLICABLE
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: HeadlightMode.ALWAYS_ON
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 0,
-                    numberOfCollisions: 0,
-                    totalChargingTime: 0,
-                    totalCuttingTime: 0,
-                    totalRunningTime: 0,
-                    totalSearchingTime: 0
-                },
-                system: {
-                    model: 'HUSQVARNA AUTOMOWER 430XH',
-                    name: mower2Name,
-                    serialNumber: 0
-                },
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
+                    activity: model.Activity.MOWING,
+                    state: model.State.IN_OPERATION
                 }
             }
         };
@@ -178,108 +125,54 @@ describe('DiscoveryServiceImpl', () => {
         const mower2Id = '678910';
         const mower2Name = 'Ernie';
 
-        const mower1: Mower = {
+        const mower1: model.Mower = {
             id: mower1Id,
-            type: 'mower',
             attributes: {
                 battery: {
-                    batteryPercent: 0
+                    isCharging: true,
+                    level: 0
                 },
-                calendar: {
-                    tasks: []
+                connection: {
+                    connected: true
                 },
-                mower: {
-                    activity: Activity.MOWING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.IN_OPERATION
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: OverrideAction.NOT_ACTIVE
-                    },
-                    restrictedReason: RestrictedReason.NOT_APPLICABLE
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: HeadlightMode.ALWAYS_ON
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 0,
-                    numberOfCollisions: 0,
-                    totalChargingTime: 0,
-                    totalCuttingTime: 0,
-                    totalRunningTime: 0,
-                    totalSearchingTime: 0
-                },
-                system: {
-                    model: 'HUSQVARNA AUTOMOWER 430XH',
+                location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER 430XH',
                     name: mower1Name,
-                    serialNumber: 0
-                },
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
-                }
-            }
-        };
-
-        const mower2: Mower = {
-            id: mower2Id,
-            type: 'mower',
-            attributes: {
-                battery: {
-                    batteryPercent: 0
-                },
-                calendar: {
-                    tasks: []
+                    serialNumber: '0'
                 },
                 mower: {
-                    activity: Activity.MOWING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.IN_OPERATION
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: OverrideAction.NOT_ACTIVE
-                    },
-                    restrictedReason: RestrictedReason.NOT_APPLICABLE
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: HeadlightMode.ALWAYS_ON
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 0,
-                    numberOfCollisions: 0,
-                    totalChargingTime: 0,
-                    totalCuttingTime: 0,
-                    totalRunningTime: 0,
-                    totalSearchingTime: 0
-                },
-                system: {
-                    model: 'HUSQVARNA AUTOMOWER 430XH',
-                    name: mower2Name,
-                    serialNumber: 0
-                },
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
+                    activity: model.Activity.PARKED,
+                    state: model.State.STOPPED
                 }
             }
         };
 
+        const mower2: model.Mower = {
+            id: mower2Id,
+            attributes: {
+                battery: {
+                    isCharging: true,
+                    level: 0
+                },
+                connection: {
+                    connected: true
+                },
+                location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER 430XH',
+                    name: mower2Name,
+                    serialNumber: '0'
+                },
+                mower: {
+                    activity: model.Activity.MOWING,
+                    state: model.State.IN_OPERATION
+                }
+            }
+        };
+        
         const mower1Accessory = new Mock<AutomowerAccessory>();
         const mower2Accessory = new Mock<AutomowerAccessory>();
 

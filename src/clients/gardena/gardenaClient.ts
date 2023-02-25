@@ -145,10 +145,10 @@ export enum Activity {
 /**
  * Describes a location.
  */
-export interface Location extends LocationRef {
+export interface Location extends LocationLink {
     relationships: {
         devices: {
-            data: DeviceRef[];
+            data: DeviceLink[];
         };
     };
     attributes: {
@@ -157,9 +157,9 @@ export interface Location extends LocationRef {
 }
 
 /**
- * Describes a location reference.
+ * Describes a location link.
  */
-export interface LocationRef {
+export interface LocationLink {
     id: string;
     type: ThingType;    
 }
@@ -167,10 +167,10 @@ export interface LocationRef {
 /**
  * Describes a device.
  */
-export interface Device extends DeviceRef {
+export interface Device extends DeviceLink {
     relationships: {
         location: {
-            data: LocationRef;
+            data: LocationLink;
         };
         services: {
             data: ServiceRef[];
@@ -181,9 +181,9 @@ export interface Device extends DeviceRef {
 /**
  * Describes a mower.
  */
-export interface Mower extends DeviceRef {
+export interface Mower extends DeviceLink {
     relationships: {
-        data: DeviceRef;
+        data: DeviceLink;
     };
     attributes: {
         state: {
@@ -207,9 +207,9 @@ export interface Mower extends DeviceRef {
 /**
  * Describes a common object.
  */
-export interface Common extends DeviceRef {
+export interface Common extends DeviceLink {
     relationships: {
-        data: DeviceRef;
+        data: DeviceLink;
     };
     attributes: {
         name: {
@@ -242,7 +242,7 @@ export interface Common extends DeviceRef {
 /**
  * Describes a device reference.
  */
-export interface DeviceRef {
+export interface DeviceLink {
     id: string;
     type: ThingType;
 }
@@ -260,7 +260,7 @@ export interface ServiceRef {
  */
 export interface GetLocationResponse {
     data: Location;
-    included: DeviceRef[];
+    included: DeviceLink[];
 }
 
 /**
@@ -273,7 +273,7 @@ export interface GetLocationsResponse {
 /**
  * Describes a location search reference.
  */
-export interface LocationSearchRef extends LocationRef {
+export interface LocationSearchRef extends LocationLink {
     attributes: {
         name: string;
     };

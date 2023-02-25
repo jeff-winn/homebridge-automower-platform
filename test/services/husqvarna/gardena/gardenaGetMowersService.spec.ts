@@ -23,10 +23,6 @@ describe('GardenaGetMowersService', () => {
         target = new GardenaGetMowersService(tokenManager.object(), client.object(), log.object());
     });
 
-    it('always returns an undefined value for get mower', async () => {
-        await expect(target.getMower('any')).resolves.toBeUndefined();
-    });
-
     it('should flag the token as invalid if not authorized', async () => {
         tokenManager.setup(o => o.getCurrentToken()).throws(new NotAuthorizedError('Unable to authenticate', 'ERR0000'));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);

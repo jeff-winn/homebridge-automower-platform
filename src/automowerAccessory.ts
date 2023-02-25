@@ -2,8 +2,8 @@ import {
     PlatformAccessory, UnknownContext
 } from 'homebridge';
 
-import { Mower } from './clients/automower/automowerClient';
 import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
+import { Mower } from './model';
 import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
@@ -65,26 +65,27 @@ export class AutomowerAccessory {
      * @param data The mower data.
      */
     public refresh(data: Mower): void {
-        this.batteryInformation.setBatteryLevel(data.attributes.battery);
-        this.batteryInformation.setChargingState(data.attributes.mower);
+        // TODO: Clean this up.
+        // this.batteryInformation.setBatteryLevel(data.attributes.battery);
+        // this.batteryInformation.setChargingState(data.attributes.mower);
 
-        this.arrivingSensor.setMowerState(data.attributes.mower);
-        this.arrivingSensor.setMowerMetadata(data.attributes.metadata);
+        // this.arrivingSensor.setMowerState(data.attributes.mower);
+        // this.arrivingSensor.setMowerMetadata(data.attributes.metadata);
 
-        this.leavingSensor.setMowerState(data.attributes.mower);
-        this.leavingSensor.setMowerMetadata(data.attributes.metadata);
+        // this.leavingSensor.setMowerState(data.attributes.mower);
+        // this.leavingSensor.setMowerMetadata(data.attributes.metadata);
 
-        this.motionSensor.setMowerState(data.attributes.mower);
-        this.motionSensor.setMowerMetadata(data.attributes.metadata);
+        // this.motionSensor.setMowerState(data.attributes.mower);
+        // this.motionSensor.setMowerMetadata(data.attributes.metadata);
 
-        this.scheduleSwitch.setMowerState(data.attributes.mower);
-        this.scheduleSwitch.setCalendar(data.attributes.calendar);
-        this.scheduleSwitch.setPlanner(data.attributes.planner);
-        this.scheduleSwitch.setMowerMetadata(data.attributes.metadata);
-        this.scheduleSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
+        // this.scheduleSwitch.setMowerState(data.attributes.mower);
+        // this.scheduleSwitch.setCalendar(data.attributes.calendar);
+        // this.scheduleSwitch.setPlanner(data.attributes.planner);
+        // this.scheduleSwitch.setMowerMetadata(data.attributes.metadata);
+        // this.scheduleSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
 
-        this.pauseSwitch.setMowerState(data.attributes.mower);
-        this.pauseSwitch.setMowerMetadata(data.attributes.metadata);
+        // this.pauseSwitch.setMowerState(data.attributes.mower);
+        // this.pauseSwitch.setMowerMetadata(data.attributes.metadata);
     }
 
     /**
@@ -100,24 +101,25 @@ export class AutomowerAccessory {
      * @param event The event data.
      */
     public onStatusEventReceived(event: StatusEvent): void {
-        this.batteryInformation.setBatteryLevel(event.attributes.battery);
-        this.batteryInformation.setChargingState(event.attributes.mower);
+        // TODO: Clean this up.
+        // this.batteryInformation.setBatteryLevel(event.attributes.battery);
+        // this.batteryInformation.setChargingState(event.attributes.mower);
         
-        this.arrivingSensor.setMowerState(event.attributes.mower);
-        this.arrivingSensor.setMowerMetadata(event.attributes.metadata);
+        // this.arrivingSensor.setMowerState(event.attributes.mower);
+        // this.arrivingSensor.setMowerMetadata(event.attributes.metadata);
 
-        this.leavingSensor.setMowerState(event.attributes.mower);
-        this.leavingSensor.setMowerMetadata(event.attributes.metadata);
+        // this.leavingSensor.setMowerState(event.attributes.mower);
+        // this.leavingSensor.setMowerMetadata(event.attributes.metadata);
 
-        this.motionSensor.setMowerState(event.attributes.mower);
-        this.motionSensor.setMowerMetadata(event.attributes.metadata);
+        // this.motionSensor.setMowerState(event.attributes.mower);
+        // this.motionSensor.setMowerMetadata(event.attributes.metadata);
         
-        this.scheduleSwitch.setMowerState(event.attributes.mower);
-        this.scheduleSwitch.setPlanner(event.attributes.planner);
-        this.scheduleSwitch.setMowerMetadata(event.attributes.metadata);
+        // this.scheduleSwitch.setMowerState(event.attributes.mower);
+        // this.scheduleSwitch.setPlanner(event.attributes.planner);
+        // this.scheduleSwitch.setMowerMetadata(event.attributes.metadata);
 
-        this.pauseSwitch.setMowerState(event.attributes.mower);
-        this.pauseSwitch.setMowerMetadata(event.attributes.metadata);
+        // this.pauseSwitch.setMowerState(event.attributes.mower);
+        // this.pauseSwitch.setMowerMetadata(event.attributes.metadata);
     }
 
     /**
@@ -125,12 +127,13 @@ export class AutomowerAccessory {
      * @param event The event data.
      */
     public onSettingsEventReceived(event: SettingsEvent): void {
-        if (event.attributes.calendar !== undefined) {
-            this.scheduleSwitch.setCalendar(event.attributes.calendar);
-        }
+        // TODO: Clean this up.
+        // if (event.attributes.calendar !== undefined) {
+        //     this.scheduleSwitch.setCalendar(event.attributes.calendar);
+        // }
 
-        if (event.attributes.cuttingHeight !== undefined) {
-            this.scheduleSwitch.setCuttingHeight(event.attributes.cuttingHeight);
-        }
+        // if (event.attributes.cuttingHeight !== undefined) {
+        //     this.scheduleSwitch.setCuttingHeight(event.attributes.cuttingHeight);
+        // }
     }
 }

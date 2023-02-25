@@ -1,8 +1,8 @@
 import { API, PlatformAccessory } from 'homebridge';
 
 import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { Mower } from './clients/automower/automowerClient';
 import { PlatformLogger } from './diagnostics/platformLogger';
+import { Mower } from './model';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -40,14 +40,6 @@ export interface AutomowerAccessoryFactory {
     createAccessoryFromCache(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory;
 }
 
-/**
- * Describes the model information parsed from the model data.
- */
-interface ModelInformation {
-    manufacturer: string;
-    model: string;
-}
-
 export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory {
     public constructor(
         private factory: PlatformAccessoryFactory, 
@@ -56,17 +48,21 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         private container: PlatformContainer,
         private locale: Localization) { }
 
-    public createAccessory(mower: Mower): AutomowerAccessory {
-        const displayName = mower.attributes.system.name;
-        const modelInformation = this.parseModelInformation(mower.attributes.system.model);
-
+    public createAccessory(mower: Mower): AutomowerAccessory {        
+        const displayName = mower.attributes.metadata.name;
         const accessory = this.factory.create(displayName, this.factory.generateUuid(mower.id));
+
+        let locationId: string | undefined;
+        if (mower.attributes.location !== undefined) {
+            locationId = mower.attributes.location.id;
+        }
 
         accessory.context = {
             mowerId: mower.id,
-            manufacturer: modelInformation.manufacturer,
-            model: modelInformation.model,
-            serialNumber: mower.attributes.system.serialNumber.toString()
+            locationId: locationId,
+            manufacturer: mower.attributes.metadata.manufacturer,
+            model: mower.attributes.metadata.model,
+            serialNumber: mower.attributes.metadata.serialNumber
         };
 
         return this.createAccessoryCore(accessory);
@@ -140,14 +136,5 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.container.resolve(DeterministicMowerFaultedPolicy),
             this.container.resolve(DeterministicMowerTamperedPolicy),
             accessory, this.api, this.log);
-    }
-
-    private parseModelInformation(value: string): ModelInformation {
-        const firstIndex = value.indexOf(' ');
-
-        return {
-            manufacturer: value.substring(0, firstIndex),
-            model: value.substring(firstIndex + 1)
-        };
     }
 }

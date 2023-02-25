@@ -42,6 +42,7 @@ export enum State {
     STOPPED = 'stopped',
     FAULTED = 'faulted',
     TAMPERED = 'tampered',
+    OFF = 'off',
     UNKNOWN = 'unknown'
 }
 
@@ -49,14 +50,22 @@ export enum State {
  * Describes a mower.
  */
 export interface Mower {
-    id: string;
+    id: string;    
     attributes: {
+        location: Location | undefined;
         metadata: MowerMetadata;
         connection: MowerConnection;
         mower: MowerState;
         battery: Battery;
-        schedule: MowerSchedule;
+        schedule?: MowerSchedule;
     };
+}
+
+/**
+ * Describes the location associated with a mower.
+ */
+export interface Location {
+    id: string;
 }
 
 /**
@@ -72,7 +81,6 @@ export interface MowerState {
  */
 export interface Battery {
     level: number;
-    isLowBattery: boolean;
     isCharging: boolean;
 }
 
