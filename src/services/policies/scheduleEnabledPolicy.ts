@@ -76,12 +76,12 @@ export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy
     protected isSetToRunOnASchedule(): boolean {
         let result = false;
 
-        this.calendar!.tasks.forEach(task => {
+        for (const task of this.calendar!.tasks) {
             if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || 
                 task.thursday || task.friday || task.saturday)) {
                 result = true;
             }
-        });
+        }
 
         return result;
     }

@@ -197,10 +197,10 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     public registerMowers(mowers: AutomowerAccessory[]): void {
         const accessories: PlatformAccessory<AutomowerContext>[] = [];
 
-        mowers.forEach(mower => {
+        for (const mower of mowers) {
             this.mowers.push(mower);
             accessories.push(mower.getUnderlyingAccessory());
-        });
+        }
 
         this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }

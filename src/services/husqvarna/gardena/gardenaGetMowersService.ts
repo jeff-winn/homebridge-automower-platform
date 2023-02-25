@@ -20,8 +20,9 @@ export class GardenaGetMowersService implements GetMowersService {
         try {
             const token = await this.tokenManager.getCurrentToken();
 
-            const ref = await this.getLocationReference(token);
-            if (ref !== undefined) {
+            const refs = await this.getLocationsForAccount(token);
+
+            for (const ref of refs) {
                 const location = await this.client.getLocation(ref.id, token);
                 if (location !== undefined) {
                     return this.findMowersAtLocation(location);
@@ -38,20 +39,26 @@ export class GardenaGetMowersService implements GetMowersService {
         }
     }
 
-    protected async getLocationReference(token: AccessToken): Promise<LocationRef | undefined> {
+    protected async getLocationsForAccount(token: AccessToken): Promise<LocationRef[]> {
         const locations = await this.client.getLocations(token);
         if (locations === undefined || locations.data === undefined || locations.data.length === 0) {
-            return undefined;
+            return [];
         }
 
-        return locations.data[0];
+        const result: LocationRef[] = [];
+
+        for (const location of locations.data) {
+            result.push(location);
+        }
+
+        return result;
     }
 
     protected findMowersAtLocation(location: GetLocationResponse): model.Mower[] {
         const result: model.Mower[] = [];
         const devices = this.findDevicesAtLocation(location);
 
-        devices.forEach(device => {
+        for (const device of devices) {
             const services = this.findDeviceServicesAtLocation(device, location);
 
             const mower = services.filter(o => o.type === ThingType.MOWER).shift() as Mower | undefined;
@@ -62,7 +69,7 @@ export class GardenaGetMowersService implements GetMowersService {
                 const mowerInstance = this.createMower(mower, common);
                 result.push(mowerInstance);
             }
-        });
+        }
 
         return result;
     }
@@ -71,12 +78,13 @@ export class GardenaGetMowersService implements GetMowersService {
         const result: Device[] = [];
 
         const refs = location.data.relationships.devices.data.filter(device => device.type === ThingType.DEVICE).flat();
-        refs.forEach(ref => {
+
+        for (const ref of refs) {
             const device = location.included.filter(o => o.id === ref.id && o.type === ThingType.DEVICE).shift() as Device | undefined;
             if (device !== undefined) {
                 result.push(device);
             }
-        });
+        }
         
         return result;
     }
@@ -84,12 +92,12 @@ export class GardenaGetMowersService implements GetMowersService {
     protected findDeviceServicesAtLocation(device: Device, location: GetLocationResponse): DeviceRef[] {
         const result: DeviceRef[] = [];
 
-        device.relationships.services.data.forEach(ref => {
+        for (const ref of device.relationships.services.data) {
             const service = location.included.filter(o => o.id === ref.id && o.type === ref.type).shift();
             if (service !== undefined) {
                 result.push(service);
             }
-        });
+        }
 
         return result;
     }

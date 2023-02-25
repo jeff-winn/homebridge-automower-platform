@@ -11,8 +11,9 @@ export interface GetMowersService {
     /**
      * Gets a mower by the id.
      * @param id The id of the mower.
+     * @param locationId (Optional) The location id associated with the mower.
      */
-    getMower(id: string) : Promise<Mower | undefined>;
+    getMower(id: string, locationId: string | undefined) : Promise<Mower | undefined>;
 
     /**
      * Gets the mowers.
@@ -43,7 +44,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         const found: AutomowerAccessory[] = [];
         const mowers = await this.mowerService.getMowers();
         
-        mowers.forEach(mower => {
+        for (const mower of mowers) {
             let accessory = platform.getMower(mower.id);
             if (accessory === undefined) {
                 // The mower was not already present, create a new accessory instance.
@@ -52,7 +53,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
             }
 
             accessory.refresh(mower);
-        });
+        }
 
         if (found.length > 0) {
             platform.registerMowers(found);
