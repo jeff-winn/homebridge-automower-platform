@@ -1,6 +1,6 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
-import { AutomowerContext } from '../../automowerAccessory';
+import { MowerContext } from '../../automowerAccessory';
 import { MowerMetadata } from '../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { Policy } from '../policies/policy';
@@ -42,7 +42,7 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
 
     private lastValue?: number;
 
-    public constructor(protected name: string, protected policy: Policy, protected accessory: PlatformAccessory<AutomowerContext>, 
+    public constructor(protected name: string, protected policy: Policy, protected accessory: PlatformAccessory<MowerContext>, 
         protected api: API, protected log: PlatformLogger) {
         super(accessory, api);
     }

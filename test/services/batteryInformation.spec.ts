@@ -2,19 +2,19 @@ import { Characteristic, CharacteristicValue, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
+import { MowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, State } from '../../src/clients/automower/automowerClient';
 import { BatteryInformationImpl } from '../../src/services/batteryInformation';
 
 describe('BatteryServiceImpl', () => {
-    let accessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let accessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
 
     let target: BatteryInformationImpl;
 
     beforeEach(() => {
-        accessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        accessory = new Mock<PlatformAccessory<MowerContext>>();
 
         hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);

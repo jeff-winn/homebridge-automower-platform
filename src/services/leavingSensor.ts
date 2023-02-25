@@ -1,6 +1,6 @@
 import { API, PlatformAccessory } from 'homebridge';
 
-import { AutomowerContext } from '../automowerAccessory';
+import { MowerContext } from '../automowerAccessory';
 import { MowerState } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AbstractContactSensor, ContactSensor } from './homebridge/abstractContactSensor';
@@ -22,7 +22,7 @@ export interface LeavingSensor extends ContactSensor {
  */
 export class LeavingContactSensorImpl extends AbstractContactSensor implements LeavingSensor {
     public constructor(protected name: string, protected policy: MowerIsLeavingPolicy, 
-        protected accessory: PlatformAccessory<AutomowerContext>, protected api: API, protected log: PlatformLogger) {
+        protected accessory: PlatformAccessory<MowerContext>, protected api: API, protected log: PlatformLogger) {
         super(name, policy, accessory, api, log);
     }
 

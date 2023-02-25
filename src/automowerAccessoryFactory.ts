@@ -1,6 +1,6 @@
 import { API, PlatformAccessory } from 'homebridge';
 
-import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
+import { AutomowerAccessory, MowerContext } from './automowerAccessory';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { Mower } from './model';
 import { Localization } from './primitives/localization';
@@ -37,7 +37,7 @@ export interface AutomowerAccessoryFactory {
      * Creates an accessory instance from cached accessory information.
      * @param accessory The platform accessory.
      */
-    createAccessoryFromCache(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory;
+    createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory;
 }
 
 export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory {
@@ -68,18 +68,18 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return this.createAccessoryCore(accessory);
     }
 
-    public createAccessoryFromCache(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+    public createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
         return this.createAccessoryCore(accessory);
     }
 
-    protected createAccessoryCore(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+    protected createAccessoryCore(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
         const result = this.createAutomowerAccessoryImpl(accessory);
         result.init();
 
         return result;
     }
     
-    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
         return new AutomowerAccessory(accessory,
             this.createBatteryInformation(accessory),
             this.createAccessoryInformation(accessory),
@@ -90,7 +90,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createScheduleSwitch(accessory));
     }
 
-    protected createPauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
+    protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         return new PauseSwitchImpl(
             this.locale.format('PAUSE'),
             this.container.resolve(MowerControlServiceImpl),
@@ -98,29 +98,29 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             accessory, this.api, this.log);
     }
 
-    protected createArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
+    protected createArrivingSensor(accessory: PlatformAccessory<MowerContext>): ArrivingSensor {
         return new ArrivingContactSensorImpl(
             this.locale.format('ARRIVING_SENSOR'),
             this.container.resolve(DeterministicMowerIsArrivingPolicy),
             accessory, this.api, this.log);
     }
 
-    protected createLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
+    protected createLeavingSensor(accessory: PlatformAccessory<MowerContext>): LeavingSensor {
         return new LeavingContactSensorImpl(
             this.locale.format('LEAVING_SENSOR'),
             this.container.resolve(DeterministicMowerIsLeavingPolicy),
             accessory, this.api, this.log);
     }
 
-    protected createBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
+    protected createBatteryInformation(accessory: PlatformAccessory<MowerContext>): BatteryInformation {
         return new BatteryInformationImpl(accessory, this.api);
     }
 
-    protected createAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+    protected createAccessoryInformation(accessory: PlatformAccessory<MowerContext>): AccessoryInformation {
         return new AccessoryInformationImpl(accessory, this.api);
     }
 
-    protected createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
+    protected createScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
         return new ScheduleSwitchImpl(
             this.locale.format('SCHEDULE'),
             this.container.resolve(MowerControlServiceImpl),
@@ -129,7 +129,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             accessory, this.api, this.log);
     }
 
-    protected createMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
+    protected createMotionSensor(accessory: PlatformAccessory<MowerContext>): MotionSensor {
         return new MotionSensorImpl(
             this.locale.format('MOTION_SENSOR'),
             this.container.resolve(DeterministicMowerInMotionPolicy),

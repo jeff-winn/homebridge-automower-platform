@@ -14,9 +14,9 @@ import { PauseSwitch } from './services/pauseSwitch';
 import { ScheduleSwitch } from './services/scheduleSwitch';
 
 /**
- * Provides contextual information for an Automower accessory.
+ * Provides contextual information for a mower accessory.
  */
-export interface AutomowerContext extends UnknownContext {
+export interface MowerContext extends UnknownContext {
     mowerId: string;
     manufacturer: string;
     model: string;
@@ -28,7 +28,7 @@ export interface AutomowerContext extends UnknownContext {
  */
 export class AutomowerAccessory {
     public constructor(
-        private accessory: PlatformAccessory<AutomowerContext>,
+        private accessory: PlatformAccessory<MowerContext>,
         private batteryInformation: BatteryInformation,
         private accessoryInformation: AccessoryInformation,
         private motionSensor: MotionSensor,
@@ -42,7 +42,7 @@ export class AutomowerAccessory {
      * Gets the underlying platform accessory.
      * @returns The {@link PlatformAccessory} instance.
      */
-    public getUnderlyingAccessory(): PlatformAccessory<AutomowerContext> {
+    public getUnderlyingAccessory(): PlatformAccessory<MowerContext> {
         return this.accessory;
     }
 

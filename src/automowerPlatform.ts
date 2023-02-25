@@ -3,7 +3,7 @@ import {
     PlatformConfig, PlatformIdentifier, PlatformName
 } from 'homebridge';
 
-import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
+import { AutomowerAccessory, MowerContext } from './automowerAccessory';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
 import { LoggerType } from './diagnostics/platformLogger';
@@ -195,7 +195,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * @param accessories The accessories to register.
      */
     public registerMowers(mowers: AutomowerAccessory[]): void {
-        const accessories: PlatformAccessory<AutomowerContext>[] = [];
+        const accessories: PlatformAccessory<MowerContext>[] = [];
 
         for (const mower of mowers) {
             this.mowers.push(mower);
@@ -209,7 +209,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * This function is invoked when homebridge restores cached accessories from disk at startup.
      * It should be used to setup event handlers for characteristics and update respective values.
      */
-    public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
+    public configureAccessory(accessory: PlatformAccessory<MowerContext>): void {
         try {
             this.ensureContainerIsInitialized();
             this.info('CONFIGURING_CACHED_ACCESSORY', accessory.displayName);

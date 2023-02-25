@@ -1,6 +1,6 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
+import { MowerContext } from '../automowerAccessory';
 
-import { AutomowerContext } from '../automowerAccessory';
 import { MowerMetadata, MowerState } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
@@ -45,7 +45,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
     private lastMotionValue?: boolean;
 
     public constructor(private name: string, private motionPolicy: MowerInMotionPolicy, private faultedPolicy: MowerFaultedPolicy, 
-        private tamperedPolicy: MowerTamperedPolicy, accessory: PlatformAccessory<AutomowerContext>, 
+        private tamperedPolicy: MowerTamperedPolicy, accessory: PlatformAccessory<MowerContext>, 
         api: API, private log: PlatformLogger) { 
             
         super(accessory, api);

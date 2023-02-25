@@ -2,7 +2,7 @@ import { Characteristic, HAPStatus, Service } from 'hap-nodejs';
 import { API, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
+import { MowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
@@ -14,7 +14,7 @@ describe('PauseSwitchImpl', () => {
     let controlService: Mock<MowerControlService>;
     let policy: Mock<MowerIsPausedPolicy>;
 
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
@@ -25,7 +25,7 @@ describe('PauseSwitchImpl', () => {
         controlService = new Mock<MowerControlService>();
         policy = new Mock<MowerIsPausedPolicy>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);
         hap.setup(o => o.Characteristic).returns(Characteristic);

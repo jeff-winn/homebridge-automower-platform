@@ -3,7 +3,7 @@ import {
     CharacteristicValue, HAPStatus, PlatformAccessory, Service
 } from 'homebridge';
 
-import { AutomowerContext } from '../automowerAccessory';
+import { MowerContext } from '../automowerAccessory';
 import { Calendar, MowerState, Planner } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
@@ -45,7 +45,7 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
     private cuttingHeight?: Characteristic;
 
     public constructor(name: string, private controlService: MowerControlService, private settingsService: ChangeSettingsService, private policy: ScheduleEnabledPolicy, 
-        accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
+        accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }
 

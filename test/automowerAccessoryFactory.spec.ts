@@ -1,7 +1,7 @@
 import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
-import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
+import { AutomowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
 import { Activity, Mower, State } from '../src/model';
 import { Localization } from '../src/primitives/localization';
@@ -85,7 +85,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         };        
 
         const uuid = 'my-uuid';
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         factory.setup(o => o.generateUuid(mowerId)).returns(uuid);
         factory.setup(o => o.create(mowerName, uuid)).returns(platformAccessory.object());
@@ -111,7 +111,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const expected = new Mock<AutomowerAccessory>();
         expected.setup(o => o.init()).returns(undefined);
 
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         target.setAccessory(expected.object());
 
@@ -151,7 +151,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         target.setBatteryInformation(batteryInformation.object());
         target.setAccessoryInformation(accessoryInformation.object());
 
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const actual = target.createAccessoryFromCache(platformAccessory.object());
 
@@ -173,7 +173,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
         
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateScheduleSwitch(platformAccessory.object()) as ScheduleSwitchImpl;
 
@@ -189,7 +189,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         locale.setup(o => o.format('PAUSE')).returns('Pause');
         
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreatePauseSwitch(platformAccessory.object()) as PauseSwitchImpl;
 
@@ -203,7 +203,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         locale.setup(o => o.format('ARRIVING_SENSOR')).returns('Arriving');
         
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as ArrivingContactSensorImpl;
 
@@ -217,7 +217,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         locale.setup(o => o.format('LEAVING_SENSOR')).returns('Leaving');
         
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateLeavingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
 
@@ -236,7 +236,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         locale.setup(o => o.format('MOTION_SENSOR')).returns('Motion');
         
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateMotionSensor(platformAccessory.object()) as MotionSensorImpl;
 
@@ -245,7 +245,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
 
     it('should create battery information', () => {
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateBatteryInformation(platformAccessory.object()) as BatteryInformationImpl;
 
@@ -254,7 +254,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
 
     it('should create accessory information', () => {
-        const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateAccessoryInformation(platformAccessory.object()) as AccessoryInformationImpl;
 

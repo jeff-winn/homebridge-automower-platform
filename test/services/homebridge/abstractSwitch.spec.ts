@@ -2,7 +2,7 @@ import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, Ch
 import { API, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../../src/automowerAccessory';
+import { MowerContext } from '../../../src/automowerAccessory';
 import { MowerMetadata } from '../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { NameMode } from '../../../src/services/homebridge/abstractSwitch';
@@ -10,7 +10,7 @@ import { SwitchSpy } from './switchSpy';
 
 describe('AbstractSwitch', () => {
     let name: string;
-    let accessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let accessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let log: Mock<PlatformLogger>;
 
@@ -18,7 +18,7 @@ describe('AbstractSwitch', () => {
 
     beforeEach(() => {
         name = 'Switch';
-        accessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        accessory = new Mock<PlatformAccessory<MowerContext>>();
         api = new Mock<API>();
         log = new Mock<PlatformLogger>();
 

@@ -1,5 +1,5 @@
 import { PlatformAccessory } from 'homebridge';
-import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
+import { AutomowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { AutomowerAccessoryFactoryImpl } from '../src/automowerAccessoryFactory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
@@ -52,7 +52,7 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         this.motionSensor = motionSensor;
     }
 
-    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
         if (this.accessory !== undefined) {
             return this.accessory;
         }
@@ -60,11 +60,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createAutomowerAccessoryImpl(accessory);
     }
 
-    public unsafeCreatePauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
+    public unsafeCreatePauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         return this.createPauseSwitch(accessory);
     }
 
-    protected override createPauseSwitch(accessory: PlatformAccessory<AutomowerContext>): PauseSwitch {
+    protected override createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         if (this.pauseSwitch !== undefined) {
             return this.pauseSwitch;
         }
@@ -72,11 +72,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createPauseSwitch(accessory);
     }
 
-    public unsafeCreateAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+    public unsafeCreateAccessoryInformation(accessory: PlatformAccessory<MowerContext>): AccessoryInformation {
         return this.createAccessoryInformation(accessory);
     }
 
-    protected override createAccessoryInformation(accessory: PlatformAccessory<AutomowerContext>): AccessoryInformation {
+    protected override createAccessoryInformation(accessory: PlatformAccessory<MowerContext>): AccessoryInformation {
         if (this.accessoryInformation !== undefined) {
             return this.accessoryInformation;
         }
@@ -84,11 +84,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createAccessoryInformation(accessory);
     }
 
-    public unsafeCreateBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
+    public unsafeCreateBatteryInformation(accessory: PlatformAccessory<MowerContext>): BatteryInformation {
         return this.createBatteryInformation(accessory);
     }
 
-    protected override createBatteryInformation(accessory: PlatformAccessory<AutomowerContext>): BatteryInformation {
+    protected override createBatteryInformation(accessory: PlatformAccessory<MowerContext>): BatteryInformation {
         if (this.batteryInformation !== undefined) {
             return this.batteryInformation;
         }
@@ -96,11 +96,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createBatteryInformation(accessory);
     }
 
-    public unsafeCreateArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
+    public unsafeCreateArrivingSensor(accessory: PlatformAccessory<MowerContext>): ArrivingSensor {
         return this.createArrivingSensor(accessory);
     }
 
-    protected override createArrivingSensor(accessory: PlatformAccessory<AutomowerContext>): ArrivingSensor {
+    protected override createArrivingSensor(accessory: PlatformAccessory<MowerContext>): ArrivingSensor {
         if (this.arrivingSensor !== undefined) {
             return this.arrivingSensor;
         }
@@ -108,11 +108,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createArrivingSensor(accessory);
     }
 
-    public unsafeCreateLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
+    public unsafeCreateLeavingSensor(accessory: PlatformAccessory<MowerContext>): LeavingSensor {
         return this.createLeavingSensor(accessory);
     }
 
-    protected override createLeavingSensor(accessory: PlatformAccessory<AutomowerContext>): LeavingSensor {
+    protected override createLeavingSensor(accessory: PlatformAccessory<MowerContext>): LeavingSensor {
         if (this.leavingSensor !== undefined) {
             return this.leavingSensor;
         }
@@ -120,11 +120,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createLeavingSensor(accessory);
     }
 
-    public unsafeCreateMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
+    public unsafeCreateMotionSensor(accessory: PlatformAccessory<MowerContext>): MotionSensor {
         return this.createMotionSensor(accessory);
     }
 
-    protected override createMotionSensor(accessory: PlatformAccessory<AutomowerContext>): MotionSensor {
+    protected override createMotionSensor(accessory: PlatformAccessory<MowerContext>): MotionSensor {
         if (this.motionSensor !== undefined) {
             return this.motionSensor;
         }
@@ -132,11 +132,11 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createMotionSensor(accessory);
     }
 
-    public unsafeCreateScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
+    public unsafeCreateScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
         return this.createScheduleSwitch(accessory);
     }
 
-    protected override createScheduleSwitch(accessory: PlatformAccessory<AutomowerContext>): ScheduleSwitch {
+    protected override createScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
         if (this.scheduleSwitch !== undefined) {
             return this.scheduleSwitch;
         }

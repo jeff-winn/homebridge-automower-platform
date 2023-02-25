@@ -2,7 +2,7 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
+import { MowerContext } from '../../src/automowerAccessory';
 import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
@@ -15,7 +15,7 @@ describe('MotionSensorImpl', () => {
     let motionPolicy: Mock<MowerInMotionPolicy>;
     let faultedPolicy: Mock<MowerFaultedPolicy>;
     let tamperedPolicy: Mock<MowerTamperedPolicy>;
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
@@ -25,7 +25,7 @@ describe('MotionSensorImpl', () => {
         faultedPolicy = new Mock<MowerFaultedPolicy>();
         tamperedPolicy = new Mock<MowerTamperedPolicy>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         log = new Mock<PlatformLogger>();
         
         hap = new Mock<HAP>();

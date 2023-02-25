@@ -2,7 +2,7 @@ import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, Ch
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
+import { MowerContext } from '../../src/automowerAccessory';
 import { Activity, Calendar, Mode, MowerMetadata, MowerState, Planner, RestrictedReason, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
@@ -15,7 +15,7 @@ import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
 describe('ScheduleSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
     let changeSettingsService: Mock<ChangeSettingsService>;
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
@@ -27,7 +27,7 @@ describe('ScheduleSwitchImpl', () => {
         mowerControlService = new Mock<MowerControlService>();
         changeSettingsService = new Mock<ChangeSettingsService>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         policy = new Mock<ScheduleEnabledPolicy>();
 
         hap = new Mock<HAP>();

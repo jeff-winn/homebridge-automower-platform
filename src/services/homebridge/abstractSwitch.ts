@@ -3,7 +3,7 @@ import {
     CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service
 } from 'homebridge';
 
-import { AutomowerContext } from '../../automowerAccessory';
+import { MowerContext } from '../../automowerAccessory';
 import { MowerMetadata } from '../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AbstractAccessoryService } from './abstractAccessoryService';
@@ -50,7 +50,7 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
     
     private lastValue?: boolean;
 
-    public constructor(protected name: string, accessory: PlatformAccessory<AutomowerContext>, api: API, protected log: PlatformLogger) {
+    public constructor(protected name: string, accessory: PlatformAccessory<MowerContext>, api: API, protected log: PlatformLogger) {
         super(accessory, api);
     }
     

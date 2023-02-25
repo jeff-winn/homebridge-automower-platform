@@ -2,18 +2,18 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
+import { MowerContext } from '../../src/automowerAccessory';
 import { AccessoryInformationImpl } from '../../src/services/accessoryInformation';
 
 describe('AccessoryInformationService', () => {
-    let accessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let accessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
 
     let target: AccessoryInformationImpl;
 
     beforeEach(() => {
-        accessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        accessory = new Mock<PlatformAccessory<MowerContext>>();
         api = new Mock<API>();
         hap = new Mock<HAP>();
 
