@@ -14,6 +14,135 @@ export enum ThingType {
 }
 
 /**
+ * Defines the battery states.
+ */
+export enum BatteryState {
+    /**
+     * The battery operates normally.
+     */
+    OK = 'OK',
+
+    /**
+     * The battery is getting depleted but is still OK for the short term device operation.
+     */
+    LOW = 'LOW',
+
+    /**
+     * The battery must be replaced now, the next device operation might fail with it.
+     */
+    REPLACE_NOW = 'REPLACE_NOW',
+
+    /**
+     * The battery must be replaced because device fails to operate with it.
+     */
+    OUT_OF_OPERATION = 'OUT_OF_OPERATION',
+
+    /**
+     * The battery is being charged.
+     */
+    CHARGING = 'CHARGING',
+
+    /**
+     * This device has no battery.
+     */
+    NO_BATTERY = 'NO_BATTERY',
+
+    /**
+     * The battery state can not be determined.
+     */
+    UNKNOWN = 'UNKNOWN'
+}
+
+/**
+ * Defines the RF link states.
+ */
+export enum RfLinkState {
+    ONLINE = 'ONLINE',
+    OFFLINE = 'OFFLINE',
+    UNKNOWN = 'UNKNOWN'
+}
+
+/**
+ * Defines the mower states.
+ */
+export enum State {
+    /**
+     * The service is fully operation can receive commands.
+     */
+    OK = 'OK',
+
+    /**
+     * The user must pay attention to the "lastErrorCode" field. Automatic operation might be impaired.
+     */
+    WARNING = 'WARNING',
+
+    /**
+     * The user must pay attention to the "lastErrorCode" field. Automatic operation is impossible.
+     */
+    ERROR = 'ERROR',
+
+    /**
+     * The service is online but can not be used. See service description for more details.
+     */
+    UNAVAILABLE = 'UNAVAILABLE'    
+}
+
+/**
+ * Defines the mower activities.
+ */
+export enum Activity {
+    /**
+     * The mower in a waiting state with hatch closed.
+     */
+    PAUSED = 'PAUSED',
+
+    /**
+     * The mower is cutting in AUTO mode (schedule).
+     */
+    OK_CUTTING = 'OK_CUTTING',
+
+    /**
+     * The mower is cutting outside schedule.
+     */
+    OK_CUTTING_TIMER_OVERRIDDEN = 'OK_CUTTING_TIMER_OVERRIDDEN',
+
+    /**
+     * The mower is searching for the charging station.
+     */
+    OK_SEARCHING = 'OK_SEARCHING',
+
+    /**
+     * The mower is leaving charging station.
+     */
+    OK_LEAVING = 'OK_LEAVING',
+
+    /**
+     * The mower has to be mowing but insufficient charge level keeps it in the charging station.
+     */
+    OK_CHARGING = 'OK_CHARGING',
+    
+    /**
+     * The mower is parked according to timer, will start again at configured time.
+     */
+    PARKED_TIMER = 'PARKED_TIMER',
+
+    /**
+     * The mower is parked until further notice.
+     */
+    PARKED_PARK_SELECTED = 'PARKED_PARK_SELECTED',
+
+    /**
+     * The mower skips mowing because of insufficient grass height.
+     */
+    PARKED_AUTOTIMER = 'PARKED_AUTOTIMER',
+
+    /**
+     * No activity is happening, perhaps due to an error.
+     */
+    NONE = 'NONE'
+}
+
+/**
  * Describes a location.
  */
 export interface Location extends LocationRef {
@@ -58,11 +187,11 @@ export interface Mower extends DeviceRef {
     };
     attributes: {
         state: {
-            value: string;
+            value: State;
             timestamp: string;
         };
         activity: {
-            value: string;
+            value: Activity;
             timestamp: string;
         };
         lastErrorCode: {
@@ -91,7 +220,7 @@ export interface Common extends DeviceRef {
             timestamp: string;
         };
         batteryState: {
-            value: string;
+            value: BatteryState;
             timestamp: string;
         };
         rfLinkLevel: {
@@ -105,7 +234,7 @@ export interface Common extends DeviceRef {
             value: string;
         };
         rfLinkState: {
-            value: string;
+            value: RfLinkState;
         };
     };
 }
