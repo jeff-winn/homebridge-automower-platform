@@ -48,7 +48,6 @@ describe('DiscoveryServiceImpl', () => {
             id: mower1Id,
             attributes: {
                 battery: {
-                    isCharging: true,
                     level: 0
                 },
                 connection: {
@@ -62,7 +61,7 @@ describe('DiscoveryServiceImpl', () => {
                     serialNumber: '0'
                 },
                 mower: {
-                    activity: model.Activity.PARKED,
+                    activity: model.Activity.CHARGING,
                     state: model.State.STOPPED
                 }
             }
@@ -72,7 +71,6 @@ describe('DiscoveryServiceImpl', () => {
             id: mower2Id,
             attributes: {
                 battery: {
-                    isCharging: true,
                     level: 0
                 },
                 connection: {
@@ -129,7 +127,6 @@ describe('DiscoveryServiceImpl', () => {
             id: mower1Id,
             attributes: {
                 battery: {
-                    isCharging: true,
                     level: 0
                 },
                 connection: {
@@ -143,7 +140,7 @@ describe('DiscoveryServiceImpl', () => {
                     serialNumber: '0'
                 },
                 mower: {
-                    activity: model.Activity.PARKED,
+                    activity: model.Activity.CHARGING,
                     state: model.State.STOPPED
                 }
             }
@@ -153,7 +150,6 @@ describe('DiscoveryServiceImpl', () => {
             id: mower2Id,
             attributes: {
                 battery: {
-                    isCharging: true,
                     level: 0
                 },
                 connection: {
@@ -167,7 +163,7 @@ describe('DiscoveryServiceImpl', () => {
                     serialNumber: '0'
                 },
                 mower: {
-                    activity: model.Activity.MOWING,
+                    activity: model.Activity.CHARGING,
                     state: model.State.IN_OPERATION
                 }
             }

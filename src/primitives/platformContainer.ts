@@ -177,7 +177,8 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(AutomowerGetMowersServiceImpl, {
             useFactory: (context) => new AutomowerGetMowersServiceImpl(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(AutomowerClientImpl))
+                context.resolve(AutomowerClientImpl),
+                context.resolve(this.getLoggerClass()))
         });
 
         container.register(ChangeSettingsServiceImpl, {

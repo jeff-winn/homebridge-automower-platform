@@ -57,7 +57,14 @@ export enum BatteryState {
  * Defines the RF link states.
  */
 export enum RfLinkState {
+    /**
+     * The device is ONLINE if radio exchange is expected to be possible.
+     */
     ONLINE = 'ONLINE',
+
+    /**
+     * The device is OFFLINE if radio exchange is not possible.
+     */
     OFFLINE = 'OFFLINE',
     UNKNOWN = 'UNKNOWN'
 }
@@ -143,6 +150,51 @@ export enum Activity {
 }
 
 /**
+ * Defines the error codes.
+ */
+export enum ErrorCode {
+    /**
+     * Trapped.
+     */
+    TRAPPED = 'TRAPPED',
+
+    /**
+     * Upside down.
+     */
+    UPSIDE_DOWN = 'UPSIDE_DOWN',
+
+    /**
+     * Alarm! Mower lifted.
+     */
+    ALARM_MOWER_LIFTED = 'ALARM_MOWER_LIFTED',
+
+    /**
+     * Lifted.
+     */
+    LIFTED = 'LIFTED',
+
+    /**
+     * Mower lifted.
+     */
+    TEMPORARILY_LIFTED = 'TEMPORARILY_LIFTED',
+
+    /**
+     * Mower disabled on main switch.
+     */
+    OFF_DISABLED = 'OFF_DISABLED',
+
+    /**
+     * Mower in waiting state with hatch open.
+     */
+    OFF_HATCH_OPEN = 'OFF_HATCH_OPEN',
+
+    /**
+     * Mower in waiting state with hatch closed.
+     */
+    OFF_HATCH_CLOSED = 'OFF_HATCH_CLOSED'
+}
+
+/**
  * Describes a location.
  */
 export interface Location extends LocationLink {
@@ -195,7 +247,7 @@ export interface Mower extends DeviceLink {
             timestamp: string;
         };
         lastErrorCode: {
-            value: string;
+            value: ErrorCode;
             timestamp: string;
         };
         operatingHours: {

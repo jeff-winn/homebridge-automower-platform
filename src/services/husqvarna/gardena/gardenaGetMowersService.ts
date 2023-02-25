@@ -1,6 +1,9 @@
 import * as model from '../../../model';
 
-import { Common, Device, DeviceLink, GardenaClient, GetLocationResponse, LocationLink, Mower, RfLinkState, ThingType } from '../../../clients/gardena/gardenaClient';
+import { 
+    Activity, Common, Device, DeviceLink, ErrorCode, GardenaClient, GetLocationResponse, LocationLink, 
+    Mower, RfLinkState, State, ThingType 
+} from '../../../clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
@@ -114,7 +117,6 @@ export class GardenaGetMowersService implements GetMowersService {
                     id: location.id
                 },
                 battery: {
-                    isCharging: false,
                     level: common.attributes.batteryLevel.value,                    
                 },
                 connection: {
@@ -131,15 +133,75 @@ export class GardenaGetMowersService implements GetMowersService {
                     state: this.convertMowerState(mower)
                 }                
             }
-        };       
+        };
+    }
+
+    protected convertMowerActivity(mower: Mower): model.Activity {
+        switch (mower.attributes.activity.value) {
+            case Activity.OK_CHARGING:
+                return model.Activity.CHARGING;
+
+            case Activity.OK_CUTTING:
+            case Activity.OK_CUTTING_TIMER_OVERRIDDEN:
+            case Activity.PAUSED:
+                return model.Activity.MOWING;
+
+            case Activity.OK_LEAVING:
+                return model.Activity.LEAVING_HOME;
+
+            case Activity.OK_SEARCHING:
+                return model.Activity.GOING_HOME;
+
+            case Activity.PARKED_AUTOTIMER:
+            case Activity.PARKED_PARK_SELECTED:
+            case Activity.PARKED_TIMER:
+                return model.Activity.PARKED;
+
+            case Activity.NONE:
+                return model.Activity.UNKNOWN;
+
+            default:
+                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.activity.value);
+                return model.Activity.UNKNOWN;
+        }
     }
 
     protected convertMowerState(mower: Mower): model.State {
-        if (mower.attributes.lastErrorCode.value === 'OFF_DISABLED') {
-            return model.State.OFF;
+        if (mower.attributes.activity.value === Activity.PAUSED) {
+            return model.State.PAUSED;
         }
 
-        return model.State.UNKNOWN;
+        switch (mower.attributes.lastErrorCode.value) {
+            case ErrorCode.OFF_DISABLED:
+            case ErrorCode.OFF_HATCH_CLOSED:
+            case ErrorCode.OFF_HATCH_OPEN:
+                return model.State.OFF;
+            
+            case ErrorCode.ALARM_MOWER_LIFTED:
+            case ErrorCode.LIFTED:
+            case ErrorCode.TEMPORARILY_LIFTED:
+                return model.State.TAMPERED;
+
+            case ErrorCode.TRAPPED:
+            case ErrorCode.UPSIDE_DOWN:
+                return model.State.FAULTED;
+
+            default:                
+                switch (mower.attributes.state.value) {
+                    case State.OK:
+                        return model.State.IN_OPERATION;
+        
+                    case State.WARNING:
+                    case State.ERROR:
+                        return model.State.FAULTED;
+        
+                    case State.UNAVAILABLE:
+                        return model.State.UNKNOWN;
+
+                    default:
+                        return model.State.UNKNOWN;
+                }
+        }
     }
     
     private parseModelInformation(value: string): ModelInformation {

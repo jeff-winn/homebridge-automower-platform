@@ -3,6 +3,7 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 import { AutomowerAccessory, AutomowerContext } from '../src/automowerAccessory';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
+import { Activity, Mower, State } from '../src/model';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
 import { PlatformContainer } from '../src/primitives/platformContainer';
@@ -23,7 +24,6 @@ import { DeterministicMowerTamperedPolicy } from '../src/services/policies/mower
 import { DeterministicScheduleEnabledPolicy } from '../src/services/policies/scheduleEnabledPolicy';
 import { ScheduleSwitch, ScheduleSwitchImpl } from '../src/services/scheduleSwitch';
 import { AutomowerAccessoryFactorySpy } from './automowerAccessoryFactorySpy';
-import { Activity, Mower, State } from '../src/model';
 
 describe('AutomowerAccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
@@ -65,7 +65,6 @@ describe('AutomowerAccessoryFactoryImpl', () => {
             id: mowerId,
             attributes: {
                 battery: {
-                    isCharging: false,
                     level: 100
                 },
                 connection: {

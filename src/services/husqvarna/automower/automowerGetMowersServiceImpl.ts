@@ -4,6 +4,7 @@ import { Activity, AutomowerClient, Mower, State } from '../../../clients/automo
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
+import { PlatformLogger } from '../../../diagnostics/platformLogger';
 
 /**
  * Describes the model information parsed from the model data.
@@ -14,7 +15,7 @@ interface ModelInformation {
 }
 
 export class AutomowerGetMowersServiceImpl implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }    
+    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: PlatformLogger) { }    
 
     public async getMowers(): Promise<model.Mower[]> {
         try {
@@ -46,7 +47,6 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
             attributes: {
                 location: undefined,
                 battery: {
-                    isCharging: mower.attributes.mower.activity === Activity.CHARGING,
                     level: mower.attributes.battery.batteryPercent
                 },
                 connection: {
@@ -69,6 +69,8 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
     protected convertMowerActivity(mower: Mower): model.Activity {
         switch (mower.attributes.mower.activity) {
             case Activity.CHARGING:
+                return model.Activity.CHARGING;
+                
             case Activity.PARKED_IN_CS:
             case Activity.NOT_APPLICABLE:
                 return model.Activity.PARKED;
@@ -84,6 +86,10 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
                 return model.Activity.MOWING;
 
             case Activity.UNKNOWN:
+                return model.Activity.UNKNOWN;
+
+            default:
+                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.mower.activity);
                 return model.Activity.UNKNOWN;
         }
     }
@@ -108,10 +114,14 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
             case State.NOT_APPLICABLE:
             case State.OFF:
                 return model.State.OFF;
-
+            
             case State.WAIT_POWER_UP:
             case State.WAIT_UPDATING:
             case State.UNKNOWN:
+                return model.State.UNKNOWN;
+
+            default:
+                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.mower.state);
                 return model.State.UNKNOWN;
         }
     }

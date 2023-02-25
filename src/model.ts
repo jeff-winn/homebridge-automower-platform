@@ -30,6 +30,7 @@ export enum Activity {
     PARKED = 'parked',
     GOING_HOME = 'going_home',
     LEAVING_HOME = 'leaving_home',
+    CHARGING = 'charging',
     UNKNOWN = 'unknown'
 }
 
@@ -81,7 +82,6 @@ export interface MowerState {
  */
 export interface Battery {
     level: number;
-    isCharging: boolean;
 }
 
 /**
