@@ -143,7 +143,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         target.setAccessory(expected.object());
 
-        const actual = target.createAutomowerAccessory(platformAccessory.object());
+        const actual = target.createAccessoryFromCache(platformAccessory.object());
 
         expect(actual).toBe(expected.object());            
         expected.verify(o => o.init(), Times.Once());
@@ -181,7 +181,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
 
         const platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
 
-        const actual = target.createAutomowerAccessory(platformAccessory.object());
+        const actual = target.createAccessoryFromCache(platformAccessory.object());
 
         expect(actual).toBeDefined();
         scheduleSwitch.verify(o => o.init(NameMode.DISPLAY_NAME), Times.Once());

@@ -34,10 +34,10 @@ export interface AutomowerAccessoryFactory {
     createAccessory(data: Mower): AutomowerAccessory;
 
     /**
-     * Creates an accessory instance.
+     * Creates an accessory instance from cached accessory information.
      * @param accessory The platform accessory.
      */
-    createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory;
+    createAccessoryFromCache(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory;
 }
 
 /**
@@ -69,10 +69,14 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             serialNumber: mower.attributes.system.serialNumber.toString()
         };
 
-        return this.createAutomowerAccessory(accessory);
+        return this.createAccessoryCore(accessory);
     }
 
-    public createAutomowerAccessory(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+    public createAccessoryFromCache(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
+        return this.createAccessoryCore(accessory);
+    }
+
+    protected createAccessoryCore(accessory: PlatformAccessory<AutomowerContext>): AutomowerAccessory {
         const result = this.createAutomowerAccessoryImpl(accessory);
         result.init();
 

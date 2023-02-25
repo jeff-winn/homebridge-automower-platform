@@ -214,18 +214,18 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             this.ensureContainerIsInitialized();
             this.info('CONFIGURING_CACHED_ACCESSORY', accessory.displayName);
 
-            const automower = this.getAccessoryFactory().createAutomowerAccessory(accessory);
+            const automower = this.getAccessoryFactory().createAccessoryFromCache(accessory);
             this.mowers.push(automower);
         } catch (e) {
             this.error('ERROR_CONFIGURING_ACCESSORY', e);
         }
     }
 
-    protected getAccessoryFactory(): AutomowerAccessoryFactory {
+    private getAccessoryFactory(): AutomowerAccessoryFactory {
         return this.container!.resolve(AutomowerAccessoryFactoryImpl);
     }
 
-    protected getLocalization(): Localization | undefined {
+    private getLocalization(): Localization | undefined {
         if (this.container === undefined) {
             return undefined;
         }
@@ -233,7 +233,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.container.resolve(Y18nLocalization);
     }
 
-    protected info(message: string, ...params: unknown[]): void {
+    private info(message: string, ...params: unknown[]): void {
         const locale = this.getLocalization();
         if (locale !== undefined) {
             this.log.info(locale.format(message, ...params));
@@ -242,7 +242,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }        
     }
 
-    protected error(message: string, ...params: unknown[]): void {
+    private error(message: string, ...params: unknown[]): void {
         const locale = this.getLocalization();
         if (locale !== undefined) {
             this.log.error(locale.format(message, ...params));
