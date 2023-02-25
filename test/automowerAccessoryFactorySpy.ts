@@ -1,5 +1,5 @@
 import { PlatformAccessory } from 'homebridge';
-import { AutomowerAccessory, MowerContext } from '../src/automowerAccessory';
+import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { AutomowerAccessoryFactoryImpl } from '../src/automowerAccessoryFactory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
@@ -10,7 +10,7 @@ import { PauseSwitch } from '../src/services/pauseSwitch';
 import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
 export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl {
-    private accessory?: AutomowerAccessory;
+    private accessory?: MowerAccessory;
 
     private scheduleSwitch?: ScheduleSwitch;
     private pauseSwitch?: PauseSwitch;
@@ -20,7 +20,7 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
     private leavingSensor?: LeavingSensor;
     private motionSensor?: MotionSensor;
 
-    public setAccessory(accessory: AutomowerAccessory): void {
+    public setAccessory(accessory: MowerAccessory): void {
         this.accessory = accessory;
     }
 
@@ -52,7 +52,7 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         this.motionSensor = motionSensor;
     }
 
-    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
+    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
         if (this.accessory !== undefined) {
             return this.accessory;
         }

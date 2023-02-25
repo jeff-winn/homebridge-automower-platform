@@ -1,6 +1,6 @@
 import { API, PlatformAccessory } from 'homebridge';
 
-import { AutomowerAccessory, MowerContext } from './automowerAccessory';
+import { MowerAccessory, MowerContext } from './automowerAccessory';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { Mower } from './model';
 import { Localization } from './primitives/localization';
@@ -31,13 +31,13 @@ export interface AutomowerAccessoryFactory {
      * Creates an accessory instance.
      * @param data The mower data.
      */
-    createAccessory(data: Mower): AutomowerAccessory;
+    createAccessory(data: Mower): MowerAccessory;
 
     /**
      * Creates an accessory instance from cached accessory information.
      * @param accessory The platform accessory.
      */
-    createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory;
+    createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): MowerAccessory;
 }
 
 export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory {
@@ -48,7 +48,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         private container: PlatformContainer,
         private locale: Localization) { }
 
-    public createAccessory(mower: Mower): AutomowerAccessory {        
+    public createAccessory(mower: Mower): MowerAccessory {        
         const displayName = mower.attributes.metadata.name;
         const accessory = this.factory.create(displayName, this.factory.generateUuid(mower.id));
 
@@ -68,19 +68,19 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return this.createAccessoryCore(accessory);
     }
 
-    public createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
+    public createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
         return this.createAccessoryCore(accessory);
     }
 
-    protected createAccessoryCore(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
+    protected createAccessoryCore(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
         const result = this.createAutomowerAccessoryImpl(accessory);
         result.init();
 
         return result;
     }
     
-    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): AutomowerAccessory {
-        return new AutomowerAccessory(accessory,
+    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
+        return new MowerAccessory(accessory,
             this.createBatteryInformation(accessory),
             this.createAccessoryInformation(accessory),
             this.createMotionSensor(accessory),

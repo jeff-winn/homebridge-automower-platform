@@ -24,9 +24,9 @@ export interface MowerContext extends UnknownContext {
 }
 
 /**
- * Represents an automower accessory.
+ * Represents a robotic mower accessory.
  */
-export class AutomowerAccessory {
+export class MowerAccessory {
     public constructor(
         private accessory: PlatformAccessory<MowerContext>,
         private batteryInformation: BatteryInformation,

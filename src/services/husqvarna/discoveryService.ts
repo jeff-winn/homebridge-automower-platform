@@ -1,4 +1,4 @@
-import { AutomowerAccessory } from '../../automowerAccessory';
+import { MowerAccessory } from '../../automowerAccessory';
 import { AutomowerAccessoryFactory } from '../../automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../automowerPlatform';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
@@ -34,7 +34,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
     public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('DISCOVERING_NEW_MOWERS');
 
-        const found: AutomowerAccessory[] = [];
+        const found: MowerAccessory[] = [];
         const mowers = await this.mowerService.getMowers();
         
         for (const mower of mowers) {

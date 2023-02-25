@@ -3,7 +3,7 @@ import {
     PlatformConfig, PlatformIdentifier, PlatformName
 } from 'homebridge';
 
-import { AutomowerAccessory, MowerContext } from './automowerAccessory';
+import { MowerAccessory, MowerContext } from './automowerAccessory';
 import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
 import { LoggerType } from './diagnostics/platformLogger';
@@ -67,10 +67,10 @@ export class AutomowerPlatformConfig {
 }
 
 /**
- * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.
+ * A homebridge platform plugin which integrates with the Husqvarna Connect cloud services.
  */
 export class AutomowerPlatform implements DynamicPlatformPlugin {
-    private readonly mowers: AutomowerAccessory[] = [];
+    private readonly mowers: MowerAccessory[] = [];
     private readonly config: AutomowerPlatformConfig;
 
     private container?: PlatformContainer;
@@ -165,7 +165,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * @param mowerId The mower id.
      * @returns The accessory instance.
      */
-    public getMower(mowerId: string): AutomowerAccessory | undefined {
+    public getMower(mowerId: string): MowerAccessory | undefined {
         return this.mowers.find(o => o.getId() === mowerId);
     }
 
@@ -194,7 +194,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Registers the accessories with the platform.
      * @param accessories The accessories to register.
      */
-    public registerMowers(mowers: AutomowerAccessory[]): void {
+    public registerMowers(mowers: MowerAccessory[]): void {
         const accessories: PlatformAccessory<MowerContext>[] = [];
 
         for (const mower of mowers) {
@@ -214,8 +214,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             this.ensureContainerIsInitialized();
             this.info('CONFIGURING_CACHED_ACCESSORY', accessory.displayName);
 
-            const automower = this.getAccessoryFactory().createAccessoryFromCache(accessory);
-            this.mowers.push(automower);
+            const mower = this.getAccessoryFactory().createAccessoryFromCache(accessory);
+            this.mowers.push(mower);
         } catch (e) {
             this.error('ERROR_CONFIGURING_ACCESSORY', e);
         }

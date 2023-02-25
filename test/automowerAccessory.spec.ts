@@ -1,7 +1,7 @@
 import { PlatformAccessory } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 
-import { AutomowerAccessory, MowerContext } from '../src/automowerAccessory';
+import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
@@ -11,7 +11,7 @@ import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
 import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
-describe('AutomowerAccessory', () => {
+describe('MowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<MowerContext>>;
     let batteryService: Mock<BatteryInformation>;
     let informationService: Mock<AccessoryInformation>;
@@ -21,7 +21,7 @@ describe('AutomowerAccessory', () => {
     let pauseSwitch: Mock<PauseSwitch>;
     let scheduleSwitch: Mock<ScheduleSwitch>;
 
-    let target: AutomowerAccessory;
+    let target: MowerAccessory;
 
     beforeEach(() => {
         accessory = new Mock<PlatformAccessory<MowerContext>>();
@@ -33,7 +33,7 @@ describe('AutomowerAccessory', () => {
         leavingSensor = new Mock<LeavingSensor>();
         scheduleSwitch = new Mock<ScheduleSwitch>();
     
-        target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
+        target = new MowerAccessory(accessory.object(), batteryService.object(), 
             informationService.object(), motionSensorService.object(), arrivingSensor.object(),
             leavingSensor.object(), pauseSwitch.object(), scheduleSwitch.object());
     });

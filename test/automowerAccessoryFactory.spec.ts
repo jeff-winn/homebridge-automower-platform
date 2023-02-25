@@ -1,7 +1,7 @@
 import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
-import { AutomowerAccessory, MowerContext } from '../src/automowerAccessory';
+import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
 import { Activity, Mower, State } from '../src/model';
 import { Localization } from '../src/primitives/localization';
@@ -90,7 +90,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         factory.setup(o => o.generateUuid(mowerId)).returns(uuid);
         factory.setup(o => o.create(mowerName, uuid)).returns(platformAccessory.object());
 
-        const expected = new Mock<AutomowerAccessory>();
+        const expected = new Mock<MowerAccessory>();
         expected.setup(o => o.init()).returns(undefined);
         expected.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
         target.setAccessory(expected.object());
@@ -108,7 +108,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
 
     it('should initialize the accessory instance', () => {
-        const expected = new Mock<AutomowerAccessory>();
+        const expected = new Mock<MowerAccessory>();
         expected.setup(o => o.init()).returns(undefined);
 
         const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();

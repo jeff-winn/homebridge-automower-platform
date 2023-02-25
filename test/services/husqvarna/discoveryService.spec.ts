@@ -1,6 +1,6 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerAccessory } from '../../../src/automowerAccessory';
+import { MowerAccessory } from '../../../src/automowerAccessory';
 import { AutomowerAccessoryFactory } from '../../../src/automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../../src/automowerPlatform';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
@@ -90,8 +90,8 @@ describe('DiscoveryServiceImpl', () => {
             }
         };
 
-        const mower1Accessory = new Mock<AutomowerAccessory>();
-        const mower2Accessory = new Mock<AutomowerAccessory>();
+        const mower1Accessory = new Mock<MowerAccessory>();
+        const mower2Accessory = new Mock<MowerAccessory>();
 
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
 
@@ -100,7 +100,7 @@ describe('DiscoveryServiceImpl', () => {
 
         platform.setup(o => o.getMower(mower1Id)).returns(undefined);
         platform.setup(o => o.getMower(mower2Id)).returns(mower2Accessory.object());
-        platform.setup(o => o.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
+        platform.setup(o => o.registerMowers(It.IsAny<MowerAccessory[]>())).returns(undefined);
 
         mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
         mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
@@ -109,7 +109,7 @@ describe('DiscoveryServiceImpl', () => {
 
         mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
         mower2Accessory.verify(o => o.refresh(mower2), Times.Once());
-        platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(o => 
+        platform.verify(x => x.registerMowers(It.Is<MowerAccessory[]>(o => 
             o.length === 1 && o[0] === mower1Accessory.object()))
         , Times.Once());
     });
@@ -169,8 +169,8 @@ describe('DiscoveryServiceImpl', () => {
             }
         };
         
-        const mower1Accessory = new Mock<AutomowerAccessory>();
-        const mower2Accessory = new Mock<AutomowerAccessory>();
+        const mower1Accessory = new Mock<MowerAccessory>();
+        const mower2Accessory = new Mock<MowerAccessory>();
 
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
 
@@ -180,7 +180,7 @@ describe('DiscoveryServiceImpl', () => {
 
         platform.setup(x => x.getMower(mower1Id)).returns(undefined);
         platform.setup(x => x.getMower(mower2Id)).returns(undefined);
-        platform.setup(x => x.registerMowers(It.IsAny<AutomowerAccessory[]>())).returns(undefined);
+        platform.setup(x => x.registerMowers(It.IsAny<MowerAccessory[]>())).returns(undefined);
         mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
         mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
 
@@ -188,7 +188,7 @@ describe('DiscoveryServiceImpl', () => {
 
         mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
         mower2Accessory.verify(o => o.refresh(mower2), Times.Once());
-        platform.verify(x => x.registerMowers(It.Is<AutomowerAccessory[]>(x => 
+        platform.verify(x => x.registerMowers(It.Is<MowerAccessory[]>(x => 
             x.length === 2 && x[0] === mower1Accessory.object() && x[1] === mower2Accessory.object()))
         , Times.Once());
     });
