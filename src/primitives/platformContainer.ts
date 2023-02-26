@@ -13,7 +13,7 @@ import { AutomowerEventStreamClientImpl } from '../clients/automower/automowerEv
 import { RateLimitedAutomowerClient } from '../clients/automower/rateLimitedAutomowerClient';
 import { RetryerFetchClient } from '../clients/fetchClient';
 import { GardenaClient, GardenaClientImpl } from '../clients/gardena/gardenaClient';
-import { FakeGardenaClientImpl } from '../clients/gardena/gardenaClient.fake';
+import { SampleGardenaClientImpl } from '../clients/gardena/sampleGardenaClient';
 import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
 import { ForceDebugLogger } from '../diagnostics/loggers/forceDebugLogger';
 import { HomebridgeImitationLogger } from '../diagnostics/loggers/homebridgeImitationLogger';
@@ -38,7 +38,7 @@ import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPa
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
 import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { ConsoleWrapperImpl } from './consoleWrapper';
-import { NodeJsEnvironment } from './environment';
+import { isDevelopmentEnvironment, NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';
 import { TimerImpl } from './timer';
@@ -136,6 +136,11 @@ export class PlatformContainerImpl implements PlatformContainer {
             settings.GARDENA_SMART_SYSTEM_API_BASE_URL,
             container.resolve(RetryerFetchClient),
             container.resolve(DefaultErrorFactory)));
+
+        container.register(SampleGardenaClientImpl, {
+            useFactory: (context) => new SampleGardenaClientImpl(
+                context.resolve(NodeJsEnvironment))
+        });
 
         container.registerInstance(AutomowerClientImpl, new RateLimitedAutomowerClient(
             this.config.appKey,
@@ -236,9 +241,8 @@ export class PlatformContainerImpl implements PlatformContainer {
     }
 
     protected getGardenaClientClass(): InjectionToken<GardenaClient> {
-        const env = container.resolve(NodeJsEnvironment);
-        if (env.isDevelopmentEnvironment()) {
-            return FakeGardenaClientImpl;
+        if (isDevelopmentEnvironment()) {
+            return SampleGardenaClientImpl;
         }
 
         return GardenaClientImpl;
