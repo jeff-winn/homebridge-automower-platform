@@ -1,4 +1,4 @@
-import { MowerState, State } from '../../clients/automower/automowerClient';
+import { MowerState, State } from '../../model';
 import { Policy } from './policy';
 
 /**
@@ -23,9 +23,7 @@ export class DeterministicMowerFaultedPolicy implements MowerFaultedPolicy {
             return false;
         }
 
-
-        return (this.mower.state === State.ERROR || this.mower.state === State.FATAL_ERROR || 
-                this.mower.state === State.ERROR_AT_POWER_UP) && this.mower.errorCode !== 0;
+        return this.mower.state === State.FAULTED;
     }
 
     public setMowerState(mower: MowerState): void {

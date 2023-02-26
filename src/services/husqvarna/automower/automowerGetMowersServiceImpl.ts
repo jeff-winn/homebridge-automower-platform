@@ -1,10 +1,10 @@
 import * as model from '../../../model';
 
 import { Activity, AutomowerClient, Mower, State } from '../../../clients/automower/automowerClient';
+import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
-import { PlatformLogger } from '../../../diagnostics/platformLogger';
 
 /**
  * Describes the model information parsed from the model data.
@@ -95,6 +95,10 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
     }
 
     protected convertMowerState(mower: Mower): model.State {
+        if (mower.attributes.mower.state === State.STOPPED && mower.attributes.mower.errorCode !== 0) {
+            return model.State.TAMPERED;
+        }
+        
         switch (mower.attributes.mower.state) {
             case State.IN_OPERATION:
                 return model.State.IN_OPERATION;
