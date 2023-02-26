@@ -19,7 +19,7 @@
 				"env": {
 					"FORCE_COLOR": "1",
 					"DEBUG": "homebridge-automower-platform",
-					"DEVELOPMENT": "1"
+					"NODE_ENV": "development"
 				}
 			}
 		}

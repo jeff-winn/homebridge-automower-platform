@@ -7,7 +7,7 @@ import { env } from 'process';
  * Indicates whether the plugin is running within a development environment.
  */
 export function isDevelopmentEnvironment(): boolean {
-    return env.DEVELOPMENT !== undefined && env.DEVELOPMENT === '1';
+    return env.NODE_ENV !== undefined && env.NODE_ENV === 'development';
 }
 
 /**
