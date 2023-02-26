@@ -4,8 +4,8 @@ import {
 } from 'homebridge';
 
 import { MowerContext } from '../../automowerAccessory';
-import { MowerMetadata } from '../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { MowerConnection } from '../../model';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**
@@ -37,7 +37,7 @@ export interface Switch {
      * Sets the mower metadata.
      * @param metadata The metadata.
      */
-     setMowerMetadata(metadata: MowerMetadata): void;
+     setMowerConnection(connection: MowerConnection): void;
 }
 
 /**
@@ -83,12 +83,12 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
         }
     }
 
-    public setMowerMetadata(metadata: MowerMetadata): void {
+    public setMowerConnection(connection: MowerConnection): void {
         if (this.statusActive === undefined) {
             throw new Error('The service has not been initialized.');
         }
 
-        this.statusActive.updateValue(metadata.connected);
+        this.statusActive.updateValue(connection.connected);
     }
     
     protected getDisplayName(mode: NameMode): string {
