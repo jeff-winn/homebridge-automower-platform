@@ -50,5 +50,7 @@
   "CONFIGURING_CACHED_ACCESSORY": "Configuring '%s' from the accessory cache.",
   "REFRESHING_TOKEN": "Refreshing the current token...",
   "REFRESHED_TOKEN": "Refreshed the token!",
-  "VALUE_NOT_SUPPORTED": "The value '%s' is not supported."
+  "VALUE_NOT_SUPPORTED": "The value '%s' is not supported.",
+  "GARDENA_MISSING_REQUIRED_COMMON_SERVICE": "A Gardena mower with id '%s' is missing the required common service and cannot be processed.",
+  "GARDENA_MOWER_DETECTED": "A Gardena mower with id '%s' has been detected."
 }

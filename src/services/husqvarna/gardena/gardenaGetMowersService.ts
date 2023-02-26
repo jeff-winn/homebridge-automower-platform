@@ -66,13 +66,18 @@ export class GardenaGetMowersService implements GetMowersService {
         for (const device of devices) {
             const services = this.findDeviceServicesAtLocation(device, location);
 
+            // Check if the device has the mower service available.
             const mower = services.filter(o => o.type === ThingType.MOWER).shift() as Mower | undefined;
             if (mower !== undefined) {
-                // Mower detected!
-                const common = services.filter(o => o.type === ThingType.COMMON).shift() as Common; // The common service is always required.
-
-                const mowerInstance = this.createMower(mower, common, location.data);
-                result.push(mowerInstance);
+                this.log.debug('GARDENA_MOWER_DETECTED', mower.id);
+                
+                const common = services.filter(o => o.type === ThingType.COMMON).shift() as Common | undefined; // The common service is always required.
+                if (common === undefined) {
+                    this.log.warn('GARDENA_MISSING_REQUIRED_COMMON_SERVICE', mower.id);
+                } else {
+                    const mowerInstance = this.createMower(mower, common, location.data);
+                    result.push(mowerInstance);    
+                }
             }
         }
 
@@ -129,7 +134,7 @@ export class GardenaGetMowersService implements GetMowersService {
                     serialNumber: common.attributes.serial.value
                 },
                 mower: {
-                    activity: model.Activity.UNKNOWN, // TODO: Fix this.
+                    activity: this.convertMowerActivity(mower),
                     state: this.convertMowerState(mower)
                 }                
             }
