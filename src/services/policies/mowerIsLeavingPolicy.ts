@@ -1,4 +1,4 @@
-import { Activity, MowerState, State } from '../../clients/automower/automowerClient';
+import { Activity, MowerState, State } from '../../model';
 import { Policy } from './policy';
 
 /**
@@ -27,6 +27,6 @@ export class DeterministicMowerIsLeavingPolicy implements MowerIsLeavingPolicy {
             return false;
         }
 
-        return this.state.activity === Activity.LEAVING && this.state.state === State.IN_OPERATION;
+        return this.state.activity === Activity.LEAVING_HOME && this.state.state === State.IN_OPERATION;
     }
 }

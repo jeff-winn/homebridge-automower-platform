@@ -61,20 +61,20 @@ export class MowerAccessory {
     }
 
     /**
-     * Refreshes the mower values.
-     * @param mower The mower data.
+     * Refreshes the mower data.
+     * @param data The mower data.
      */
-    public refresh(mower: Mower): void {
-        this.batteryInformation.setBatteryLevel(mower.attributes.battery);
-        this.batteryInformation.setChargingState(mower.attributes.mower);
+    public refresh(data: Mower): void {
+        this.batteryInformation.setBatteryLevel(data.attributes.battery);
+        this.batteryInformation.setChargingState(data.attributes.mower);
+
+        this.arrivingSensor.setMowerState(data.attributes.mower);
+        this.arrivingSensor.setMowerConnection(data.attributes.connection);
+
+        this.leavingSensor.setMowerState(data.attributes.mower);
+        this.leavingSensor.setMowerConnection(data.attributes.connection);
 
         // TODO: Clean this up.
-        // this.arrivingSensor.setMowerState(data.attributes.mower);
-        // this.arrivingSensor.setMowerMetadata(data.attributes.metadata);
-
-        // this.leavingSensor.setMowerState(data.attributes.mower);
-        // this.leavingSensor.setMowerMetadata(data.attributes.metadata);
-
         // this.motionSensor.setMowerState(data.attributes.mower);
         // this.motionSensor.setMowerMetadata(data.attributes.metadata);
 
