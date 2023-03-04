@@ -1,0 +1,11 @@
+{
+    "data": [
+        {
+            "id": "40e23bb2-3334-495b-aa4f-20dea16079e5",
+            "type": "LOCATION",
+            "attributes": {
+                "name": "My Garden"
+            }
+        }
+    ]
+}

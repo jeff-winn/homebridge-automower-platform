@@ -2,9 +2,6 @@
 ### HAP-NodeJS files
 .homebridge
 
-# Don't include any samples that may be used for testing purposes provided by plugin users.
-samples/
-
 ### Node template
 # Logs
 logs
