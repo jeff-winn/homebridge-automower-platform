@@ -3,8 +3,8 @@ import { API, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { MowerContext } from '../../../src/automowerAccessory';
-import { MowerMetadata } from '../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { MowerConnection } from '../../../src/model';
 import { NameMode } from '../../../src/services/homebridge/abstractSwitch';
 import { SwitchSpy } from './switchSpy';
 
@@ -189,12 +189,11 @@ describe('AbstractSwitch', () => {
     });
 
     it('should throw an error when not initialized on set mower metadata', () => {
-        const metadata: MowerMetadata = {
-            connected: false,
-            statusTimestamp: 1
+        const metadata: MowerConnection = {
+            connected: false
         };
 
-        expect(() => target.setMowerMetadata(metadata)).toThrowError();
+        expect(() => target.setMowerConnection(metadata)).toThrowError();
     });
     
     it('should set active status to true when connected', () => {
@@ -215,9 +214,8 @@ describe('AbstractSwitch', () => {
         accessory.setup(o => o.getServiceById(Service.Switch, 'Switch')).returns(service.object());
 
         target.init(NameMode.DEFAULT);
-        target.setMowerMetadata({
-            connected: true,
-            statusTimestamp: 1
+        target.setMowerConnection({
+            connected: true
         });
 
         statusActive.verify(o => o.updateValue(true), Times.Once());
@@ -241,9 +239,8 @@ describe('AbstractSwitch', () => {
         accessory.setup(o => o.getServiceById(Service.Switch, 'Switch')).returns(service.object());
 
         target.init(NameMode.DEFAULT);
-        target.setMowerMetadata({
-            connected: false,
-            statusTimestamp: 1
+        target.setMowerConnection({
+            connected: false
         });
 
         statusActive.verify(o => o.updateValue(false), Times.Once());
