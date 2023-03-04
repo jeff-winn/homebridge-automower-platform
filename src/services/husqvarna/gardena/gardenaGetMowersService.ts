@@ -135,10 +135,19 @@ export class GardenaGetMowersService implements GetMowersService {
                 },
                 mower: {
                     activity: this.convertMowerActivity(mower),
-                    state: this.convertMowerState(mower)
+                    state: this.convertMowerState(mower),
+                    enabled: this.isMowerEnabled(mower)
                 }                
             }
         };
+    }
+
+    protected isMowerEnabled(mower: MowerServiceDataItem): boolean {
+        if (mower.attributes.lastErrorCode.value === MowerError.OFF_DISABLED) {
+            return false;
+        }
+
+        return mower.attributes.activity.value !== MowerActivity.PARKED_PARK_SELECTED;
     }
 
     protected convertMowerActivity(mower: MowerServiceDataItem): model.Activity {
@@ -194,7 +203,7 @@ export class GardenaGetMowersService implements GetMowersService {
             default:                
                 switch (mower.attributes.state.value) {
                     case ServiceState.OK:
-                        return model.State.IN_OPERATION;
+                        return model.State.READY;
         
                     case ServiceState.WARNING:
                     case ServiceState.ERROR:

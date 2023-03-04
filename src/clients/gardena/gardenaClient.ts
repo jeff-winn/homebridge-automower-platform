@@ -154,6 +154,11 @@ export enum MowerActivity {
  */
 export enum MowerError {
     /**
+     * No explanation provided.
+     */
+    NO_MESSAGE = 'NO_MESSAGE',
+
+    /**
      * Trapped.
      */
     TRAPPED = 'TRAPPED',

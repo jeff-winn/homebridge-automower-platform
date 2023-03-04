@@ -4,8 +4,8 @@ import {
 } from 'homebridge';
 
 import { MowerContext } from '../automowerAccessory';
-import { Calendar, MowerState, Planner } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
+import { MowerState } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';
@@ -16,18 +16,6 @@ import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
  * A service which encapsulates the schedule switch for an automower.
  */
 export interface ScheduleSwitch extends Switch {
-    /**
-     * Sets the calendar.
-     * @param calendar The calendar.
-     */
-    setCalendar(calendar: Calendar): void;
-
-    /**
-     * Sets the planner.
-     * @param planner The planner.
-     */
-    setPlanner(planner: Planner): void;
-
     /**
      * Sets the state of the mower.
      * @param state The mower state.
@@ -87,16 +75,6 @@ export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch
 
             callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }        
-    }
-
-    public setCalendar(calendar: Calendar): void {    
-        this.policy.setCalendar(calendar);
-        this.refreshCharacteristic();
-    }
-
-    public setPlanner(planner: Planner): void {
-        this.policy.setPlanner(planner);
-        this.refreshCharacteristic();
     }
 
     public setMowerState(state: MowerState): void {

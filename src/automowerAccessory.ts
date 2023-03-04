@@ -77,11 +77,10 @@ export class MowerAccessory {
         this.motionSensor.setMowerState(data.attributes.mower);
         this.motionSensor.setMowerConnection(data.attributes.connection);
 
-        // TODO: Clean this up.
-        // this.scheduleSwitch.setMowerState(data.attributes.mower);
-        // this.scheduleSwitch.setCalendar(data.attributes.calendar);
-        // this.scheduleSwitch.setPlanner(data.attributes.planner);
+        this.scheduleSwitch.setMowerState(data.attributes.mower);
         this.scheduleSwitch.setMowerConnection(data.attributes.connection);
+
+        // TODO: Clean this up.
         // this.scheduleSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
 
         this.pauseSwitch.setMowerState(data.attributes.mower);

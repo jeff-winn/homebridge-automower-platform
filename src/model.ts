@@ -38,9 +38,9 @@ export enum Activity {
  * Describes the states of a mower.
  */
 export enum State {
+    READY = 'ready',
     IN_OPERATION = 'in_operation',
     PAUSED = 'paused',
-    STOPPED = 'stopped',
     FAULTED = 'faulted',
     TAMPERED = 'tampered',
     OFF = 'off',
@@ -58,7 +58,6 @@ export interface Mower {
         connection: MowerConnection;
         mower: MowerState;
         battery: Battery;
-        schedule?: MowerSchedule;
     };
 }
 
@@ -75,6 +74,7 @@ export interface Location {
 export interface MowerState {
     activity: Activity;
     state: State;
+    enabled: boolean;
 }
 
 /**
@@ -99,13 +99,4 @@ export interface MowerMetadata {
  */
 export interface MowerConnection {
     connected: boolean;
-}
-
-/**
- * Describes the mower schedule.
- */
-export interface MowerSchedule {
-    isRunContinuously: boolean;
-    isRunOnSchedule: boolean;
-    isRunInFuture: boolean;
 }

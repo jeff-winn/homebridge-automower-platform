@@ -60,10 +60,16 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
                 },
                 mower: {
                     activity: this.convertMowerActivity(mower),
-                    state: this.convertMowerState(mower)
+                    state: this.convertMowerState(mower),
+                    enabled: this.isMowerEnabled(mower)
                 }
             }
         };
+    }
+
+    protected isMowerEnabled(mower: Mower): boolean {
+        // TODO: Fix this.
+        return true;
     }
 
     protected convertMowerActivity(mower: Mower): model.Activity {
@@ -107,13 +113,11 @@ export class AutomowerGetMowersServiceImpl implements GetMowersService {
             case State.ERROR_AT_POWER_UP:
             case State.FATAL_ERROR:
             case State.RESTRICTED:
+            case State.STOPPED:
                 return model.State.FAULTED;
 
             case State.PAUSED:
                 return model.State.PAUSED;
-
-            case State.STOPPED:
-                return model.State.STOPPED;
 
             case State.NOT_APPLICABLE:
             case State.OFF:
