@@ -1,9 +1,12 @@
 import { Characteristic, Service } from 'hap-nodejs';
-import { API, HAP, PlatformAccessory } from 'homebridge';
-import { Mock } from 'moq.ts';
+import { API, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, HAP, HAPStatus, PlatformAccessory } from 'homebridge';
+import { It, Mock, Times } from 'moq.ts';
 
 import { MowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, MowerState, State } from '../../src/model';
+import { NameMode } from '../../src/services/homebridge/abstractSwitch';
+import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from '../../src/services/husqvarna/automower/changeSettingsService';
 import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
 import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
@@ -65,22 +68,20 @@ describe('ScheduleSwitchImpl', () => {
     //     policy.verify(o => o.setCalendar(calendar), Times.Once());
     // });
 
-    // it('should set the policy mower state', () => {
-    //     const mowerState: MowerState = {
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.HOME,
-    //         state: State.NOT_APPLICABLE
-    //     };
+    it('should set the policy mower state', () => {
+        const mowerState: MowerState = {
+            activity: Activity.MOWING,            
+            state: State.IN_OPERATION,
+            enabled: true
+        };
 
-    //     policy.setup(o => o.shouldApply()).returns(false);
-    //     policy.setup(o => o.setMowerState(mowerState)).returns(undefined);
+        policy.setup(o => o.shouldApply()).returns(false);
+        policy.setup(o => o.setMowerState(mowerState)).returns(undefined);
 
-    //     target.setMowerState(mowerState);
+        target.setMowerState(mowerState);
 
-    //     policy.verify(o => o.setMowerState(mowerState), Times.Once());
-    // });
+        policy.verify(o => o.setMowerState(mowerState), Times.Once());
+    });
 
     // it('should set the policy planner', () => {
     //     const planner: Planner = {
@@ -97,121 +98,121 @@ describe('ScheduleSwitchImpl', () => {
     //     policy.verify(o => o.setPlanner(planner), Times.Once());
     // });
     
-    // it('should be initialized with existing service', () => {
-    //     const c = new Mock<Characteristic>();
-    //     c.setup(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+    it('should be initialized with existing service', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
-    //     const cuttingHeight = new Mock<Characteristic>();
-    //     cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
 
-    //     const statusActive = new Mock<Characteristic>();
+        const statusActive = new Mock<Characteristic>();
 
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-    //     service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-    //     service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-    //     service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
+        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
-    //     platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
 
-    //     target.init(NameMode.DEFAULT);
+        target.init(NameMode.DEFAULT);
 
-    //     c.verify(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
-    //     cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
-    // });
+        c.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+        cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+    });
 
-    // it('should resume the schedule', async () => {
-    //     const mowerId = '12345';
+    it('should resume the schedule', async () => {
+        const mowerId = '12345';
 
-    //     platformAccessory.setup(o => o.context).returns({
-    //         manufacturer: 'HUSQVARNA',
-    //         model: 'AUTOMOWER 430XH',
-    //         serialNumber: '12345',
-    //         mowerId: mowerId
-    //     });
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
 
-    //     mowerControlService.setup(o => o.resumeSchedule(mowerId)).returns(Promise.resolve(undefined));
+        mowerControlService.setup(o => o.resumeSchedule(mowerId)).returns(Promise.resolve(undefined));
 
-    //     let status: Error | HAPStatus | null | undefined = undefined;
-    //     await target.unsafeOnSet(true, (e) => {
-    //         status = e;
-    //     });
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(true, (e) => {
+            status = e;
+        });
 
-    //     mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
-    //     expect(status).toBe(HAPStatus.SUCCESS);
-    // });
+        mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        expect(status).toBe(HAPStatus.SUCCESS);
+    });
 
-    // it('should park until further notice', async () => {
-    //     const mowerId = '12345';
+    it('should park until further notice', async () => {
+        const mowerId = '12345';
 
-    //     platformAccessory.setup(o => o.context).returns({
-    //         manufacturer: 'HUSQVARNA',
-    //         model: 'AUTOMOWER 430XH',
-    //         serialNumber: '12345',
-    //         mowerId: mowerId
-    //     });
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
 
-    //     mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).returns(Promise.resolve(undefined));
+        mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).returns(Promise.resolve(undefined));
 
-    //     let status: Error | HAPStatus | null | undefined = undefined;
-    //     await target.unsafeOnSet(false, (e) => {
-    //         status = e;
-    //     });
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(false, (e) => {
+            status = e;
+        });
 
-    //     mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
-    //     expect(status).toBe(HAPStatus.SUCCESS);
-    // });
+        mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        expect(status).toBe(HAPStatus.SUCCESS);
+    });
 
-    // it('should handle errors while resuming schedule', async () => {
-    //     const mowerId = '12345';
+    it('should handle errors while resuming schedule', async () => {
+        const mowerId = '12345';
 
-    //     platformAccessory.setup(o => o.context).returns({
-    //         manufacturer: 'HUSQVARNA',
-    //         model: 'AUTOMOWER 430XH',
-    //         serialNumber: '12345',
-    //         mowerId: mowerId
-    //     });
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
 
-    //     mowerControlService.setup(o => o.resumeSchedule(mowerId)).throws(new Error('hello'));
-    //     log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
+        mowerControlService.setup(o => o.resumeSchedule(mowerId)).throws(new Error('hello'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
-    //     let status: Error | HAPStatus | null | undefined = undefined;
-    //     await target.unsafeOnSet(true, (e) => {
-    //         status = e;
-    //     });
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(true, (e) => {
+            status = e;
+        });
 
-    //     mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
-    //     log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
-    //     expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
-    // });
+        mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
+        expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+    });
 
-    // it('should handle errors while parking until further notice', async () => {
-    //     const mowerId = '12345';
+    it('should handle errors while parking until further notice', async () => {
+        const mowerId = '12345';
 
-    //     platformAccessory.setup(o => o.context).returns({
-    //         manufacturer: 'HUSQVARNA',
-    //         model: 'AUTOMOWER 430XH',
-    //         serialNumber: '12345',
-    //         mowerId: mowerId
-    //     });
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
 
-    //     mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).throws(new Error('hello'));
-    //     log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
+        mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).throws(new Error('hello'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
-    //     let status: Error | HAPStatus | null | undefined = undefined;
-    //     await target.unsafeOnSet(false, (e) => {
-    //         status = e;
-    //     });
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeOnSet(false, (e) => {
+            status = e;
+        });
 
-    //     mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
-    //     log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
-    //     expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
-    // });
+        mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
+        expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+    });
 
     // it('should update the characteristic as true when scheduled to start', () => {
     //     const c = new Mock<Characteristic>();
