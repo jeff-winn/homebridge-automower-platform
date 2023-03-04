@@ -3,7 +3,7 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { MowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, State } from '../../src/clients/automower/automowerClient';
+import { Activity, State } from '../../src/model';
 import { BatteryInformationImpl } from '../../src/services/batteryInformation';
 
 describe('BatteryServiceImpl', () => {
@@ -28,17 +28,15 @@ describe('BatteryServiceImpl', () => {
 
     it('should throw an error when not initialized on set battery level', () => {
         expect(() => target.setBatteryLevel({
-            batteryPercent: 99
+            level: 99
         })).toThrowError();
     });
 
     it('should throw an error when not initialized on set charging state', () => {
         expect(() => target.setChargingState({
-            activity: Activity.MOWING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
-            state: State.NOT_APPLICABLE
+            activity: Activity.MOWING,            
+            state: State.IN_OPERATION,
+            enabled: true
         })).toThrowError();
     });
 
@@ -97,7 +95,7 @@ describe('BatteryServiceImpl', () => {
         target.init();
 
         target.setBatteryLevel({
-            batteryPercent: 20
+            level: 20
         });
 
         lowBattery.verify(o => o.updateValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW), Times.Once());
@@ -123,7 +121,7 @@ describe('BatteryServiceImpl', () => {
         target.init();
 
         target.setBatteryLevel({
-            batteryPercent: 100
+            level: 100
         });
 
         lowBattery.verify(o => o.updateValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL), Times.Once());
@@ -150,10 +148,8 @@ describe('BatteryServiceImpl', () => {
 
         target.setChargingState({
             activity: Activity.CHARGING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.HOME,
-            state: State.OFF
+            state: State.READY,
+            enabled: true
         });
 
         chargingState.verify(o => o.updateValue(Characteristic.ChargingState.CHARGING), Times.Once());
@@ -179,10 +175,8 @@ describe('BatteryServiceImpl', () => {
         
         target.setChargingState({
             activity: Activity.MOWING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.HOME,
-            state: State.OFF
+            state: State.IN_OPERATION,
+            enabled: true
         });
 
         chargingState.verify(o => o.updateValue(Characteristic.ChargingState.NOT_CHARGING), Times.Once());
