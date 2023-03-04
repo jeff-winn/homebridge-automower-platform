@@ -2,7 +2,9 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
+import { AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
+import { ErrorFactory } from '../src/errors/errorFactory';
 import { Activity, Mower, State } from '../src/model';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
@@ -11,7 +13,7 @@ import { AccessoryInformation, AccessoryInformationImpl } from '../src/services/
 import { ArrivingContactSensorImpl, ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation, BatteryInformationImpl } from '../src/services/batteryInformation';
 import { NameMode } from '../src/services/homebridge/abstractSwitch';
-import { MowerControlServiceImpl } from '../src/services/husqvarna/automower/mowerControlService';
+import { AutomowerMowerControlService } from '../src/services/husqvarna/automower/automowerMowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from '../src/services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from '../src/services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../src/services/pauseSwitch';
@@ -32,6 +34,8 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     let log: Mock<PlatformLogger>;
     let container: Mock<PlatformContainer>;
     let locale: Mock<Localization>;
+    let config: AutomowerPlatformConfig;
+    let errorFactory: Mock<ErrorFactory>;
 
     let target: AutomowerAccessoryFactorySpy;
 
@@ -48,13 +52,20 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         log = new Mock<PlatformLogger>();
         container = new Mock<PlatformContainer>();
         locale = new Mock<Localization>();
+        errorFactory = new Mock<ErrorFactory>();
+
+        config = new AutomowerPlatformConfig({
+            platform: 'Homebridge Automower Platform'
+        });
 
         target = new AutomowerAccessoryFactorySpy(
             factory.object(), 
             api.object(), 
             log.object(), 
             container.object(), 
-            locale.object());
+            locale.object(),
+            config,
+            errorFactory.object());
     });
 
     it('should create the accessory from mower data', () => {        
@@ -79,7 +90,8 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                 },
                 mower: {
                     activity: Activity.MOWING,
-                    state: State.STOPPED
+                    state: State.IN_OPERATION,
+                    enabled: true
                 }
             }
         };        
@@ -166,9 +178,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
     
     it('should create the schedule switch', () => {
-        const service = new Mock<MowerControlServiceImpl>();
+        const service = new Mock<AutomowerMowerControlService>();
         const policy = new Mock<DeterministicScheduleEnabledPolicy>();
-        container.setup(o => o.resolve(MowerControlServiceImpl)).returns(service.object());
+        container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
         container.setup(o => o.resolve(DeterministicScheduleEnabledPolicy)).returns(policy.object());
 
         locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
@@ -182,9 +194,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
     
     it('should create a pause switch', () => {
-        const service = new Mock<MowerControlServiceImpl>();
+        const service = new Mock<AutomowerMowerControlService>();
         const policy = new Mock<DeterministicMowerIsPausedPolicy>();
-        container.setup(o => o.resolve(MowerControlServiceImpl)).returns(service.object());
+        container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
         container.setup(o => o.resolve(DeterministicMowerIsPausedPolicy)).returns(policy.object());
 
         locale.setup(o => o.format('PAUSE')).returns('Pause');
