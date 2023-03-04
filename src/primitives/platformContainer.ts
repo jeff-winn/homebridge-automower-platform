@@ -26,11 +26,12 @@ import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
 import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
-import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { AutomowerMowerControlService } from '../services/husqvarna/automower/automowerMowerControlService';
+import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
+import { GardenaMowerControlService } from '../services/husqvarna/gardena/gardenaMowerControlService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
@@ -208,7 +209,9 @@ export class PlatformContainerImpl implements PlatformContainer {
                 this.api,
                 context.resolve(this.getLoggerClass()),
                 this,
-                context.resolve(Y18nLocalization))
+                context.resolve(Y18nLocalization),
+                this.config,
+                context.resolve(DefaultErrorFactory))
         });
 
         container.register(DiscoveryServiceFactoryImpl, {
@@ -237,6 +240,10 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(GardenaEventStreamService, {
             useValue: new GardenaEventStreamService()
+        });
+
+        container.register(GardenaMowerControlService, {
+            useValue: new GardenaMowerControlService()
         });
     }
 

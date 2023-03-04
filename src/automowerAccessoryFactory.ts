@@ -1,8 +1,11 @@
 import { API, PlatformAccessory } from 'homebridge';
+import { InjectionToken } from 'tsyringe';
 
 import { MowerAccessory, MowerContext } from './automowerAccessory';
+import { AutomowerPlatformConfig } from './automowerPlatform';
 import { PlatformLogger } from './diagnostics/platformLogger';
-import { Mower } from './model';
+import { ErrorFactory } from './errors/errorFactory';
+import { DeviceType, Mower } from './model';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -11,6 +14,8 @@ import { ArrivingContactSensorImpl, ArrivingSensor } from './services/arrivingSe
 import { BatteryInformation, BatteryInformationImpl } from './services/batteryInformation';
 import { AutomowerMowerControlService } from './services/husqvarna/automower/automowerMowerControlService';
 import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/changeSettingsService';
+import { GardenaMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
+import { MowerControlService } from './services/husqvarna/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
@@ -46,7 +51,9 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         private api: API, 
         private log: PlatformLogger,
         private container: PlatformContainer,
-        private locale: Localization) { }
+        private locale: Localization,
+        private config: AutomowerPlatformConfig,
+        private errorFactory: ErrorFactory) { }
 
     public createAccessory(mower: Mower): MowerAccessory {        
         const displayName = mower.attributes.metadata.name;
@@ -93,7 +100,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         return new PauseSwitchImpl(
             this.locale.format('PAUSE'),
-            this.container.resolve(AutomowerMowerControlService),
+            this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(DeterministicMowerIsPausedPolicy),
             accessory, this.api, this.log);
     }
@@ -123,7 +130,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     protected createScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
         return new ScheduleSwitchImpl(
             this.locale.format('SCHEDULE'),
-            this.container.resolve(AutomowerMowerControlService),
+            this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(ChangeSettingsServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
             accessory, this.api, this.log);
@@ -136,5 +143,15 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.container.resolve(DeterministicMowerFaultedPolicy),
             this.container.resolve(DeterministicMowerTamperedPolicy),
             accessory, this.api, this.log);
+    }
+
+    protected getContolServiceClass(): InjectionToken<MowerControlService> {
+        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
+            return AutomowerMowerControlService;
+        } else if (this.config.device_type === DeviceType.GARDENA) {
+            return GardenaMowerControlService;
+        } else {
+            throw this.errorFactory.badConfigurationError('ERROR_INVALID_DEVICE_TYPE', 'CFG0003', this.config.device_type);
+        }
     }
 }
