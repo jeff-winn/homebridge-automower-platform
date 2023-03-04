@@ -1,6 +1,6 @@
 import { Mock, Times } from 'moq.ts';
 
-import { GardenaClient, LocationSearchRef, ThingType } from '../../../../src/clients/gardena/gardenaClient';
+import { GardenaClient, ItemType, LocationDataItem } from '../../../../src/clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
@@ -57,9 +57,9 @@ describe('GardenaGetMowersService', () => {
             value: '12345'
         };
 
-        const locationRef: LocationSearchRef = {
+        const locationRef: LocationDataItem = {
             id: 'abcd1234',
-            type: ThingType.LOCATION,
+            type: ItemType.LOCATION,
             attributes: {
                 name: 'Tommy Boy'
             }
@@ -74,7 +74,7 @@ describe('GardenaGetMowersService', () => {
         client.setup(o => o.getLocation('abcd1234', token)).returnsAsync({
             data: {
                 id: 'abcd1234',
-                type: ThingType.DEVICE,
+                type: ItemType.DEVICE,
                 attributes: {
                     name: 'My Garden'
                 },
