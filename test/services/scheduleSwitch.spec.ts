@@ -83,6 +83,7 @@ describe('ScheduleSwitchImpl', () => {
         policy.verify(o => o.setMowerState(mowerState), Times.Once());
     });
 
+    // TODO: Clean this up.
     // it('should set the policy planner', () => {
     //     const planner: Planner = {
     //         nextStartTimestamp: 12345,
@@ -214,6 +215,7 @@ describe('ScheduleSwitchImpl', () => {
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
 
+    // TODO: Clean this up.
     // it('should update the characteristic as true when scheduled to start', () => {
     //     const c = new Mock<Characteristic>();
     //     c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
