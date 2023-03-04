@@ -9,8 +9,8 @@ import { PlatformContainer } from './primitives/platformContainer';
 import { AccessoryInformation, AccessoryInformationImpl } from './services/accessoryInformation';
 import { ArrivingContactSensorImpl, ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation, BatteryInformationImpl } from './services/batteryInformation';
+import { AutomowerMowerControlService } from './services/husqvarna/automower/automowerMowerControlService';
 import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/changeSettingsService';
-import { MowerControlServiceImpl } from './services/husqvarna/automower/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
@@ -93,7 +93,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         return new PauseSwitchImpl(
             this.locale.format('PAUSE'),
-            this.container.resolve(MowerControlServiceImpl),
+            this.container.resolve(AutomowerMowerControlService),
             this.container.resolve(DeterministicMowerIsPausedPolicy),
             accessory, this.api, this.log);
     }
@@ -123,7 +123,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     protected createScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
         return new ScheduleSwitchImpl(
             this.locale.format('SCHEDULE'),
-            this.container.resolve(MowerControlServiceImpl),
+            this.container.resolve(AutomowerMowerControlService),
             this.container.resolve(ChangeSettingsServiceImpl),
             this.container.resolve(DeterministicScheduleEnabledPolicy),
             accessory, this.api, this.log);

@@ -25,9 +25,9 @@ import { AuthenticationMode } from '../model';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
-import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/automowerGetMowersServiceImpl';
+import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
-import { MowerControlServiceImpl } from '../services/husqvarna/automower/mowerControlService';
+import { AutomowerMowerControlService } from '../services/husqvarna/automower/automowerMowerControlService';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
@@ -179,8 +179,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(this.getLoggerClass()))
         });
         
-        container.register(AutomowerGetMowersServiceImpl, {
-            useFactory: (context) => new AutomowerGetMowersServiceImpl(
+        container.register(AutomowerGetMowersService, {
+            useFactory: (context) => new AutomowerGetMowersService(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerClientImpl),
                 context.resolve(this.getLoggerClass()))
@@ -192,8 +192,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(AutomowerClientImpl))
         });
         
-        container.register(MowerControlServiceImpl, {
-            useFactory: (context) => new MowerControlServiceImpl(
+        container.register(AutomowerMowerControlService, {
+            useFactory: (context) => new AutomowerMowerControlService(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerClientImpl)) 
         });

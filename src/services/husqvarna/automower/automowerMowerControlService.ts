@@ -13,7 +13,7 @@ export interface Action {
     type: string;
 }
 
-export class MowerControlServiceImpl implements MowerControlService {
+export class AutomowerMowerControlService implements MowerControlService {
     public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
 
     public async pause(mowerId: string): Promise<void> {

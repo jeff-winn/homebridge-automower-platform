@@ -4,10 +4,10 @@ import { AutomowerClient } from '../../../../src/clients/automower/automowerClie
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
-import { Action, MowerControlServiceImpl } from '../../../../src/services/husqvarna/automower/mowerControlService';
+import { Action, AutomowerMowerControlService } from '../../../../src/services/husqvarna/automower/automowerMowerControlService';
 
-describe('MowerControlService', () => {
-    let target: MowerControlServiceImpl;
+describe('AutomowerMowerControlService', () => {
+    let target: AutomowerMowerControlService;
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
 
@@ -15,7 +15,7 @@ describe('MowerControlService', () => {
         tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<AutomowerClient>();
 
-        target = new MowerControlServiceImpl(tokenManager.object(), client.object());
+        target = new AutomowerMowerControlService(tokenManager.object(), client.object());
     });
 
     it('should pause the mower', async () => {

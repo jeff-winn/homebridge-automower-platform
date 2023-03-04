@@ -4,7 +4,7 @@ import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { ErrorFactory } from '../errors/errorFactory';
 import { DeviceType } from '../model';
 import { PlatformContainer } from '../primitives/platformContainer';
-import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/automowerGetMowersServiceImpl';
+import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
 import { DiscoveryService, DiscoveryServiceImpl, GetMowersService } from '../services/husqvarna/discoveryService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 
@@ -26,7 +26,7 @@ export class DiscoveryServiceFactoryImpl implements DiscoveryServiceFactory {
         let getMowerServiceClass: InjectionToken<GetMowersService>;
 
         if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
-            getMowerServiceClass = AutomowerGetMowersServiceImpl;
+            getMowerServiceClass = AutomowerGetMowersService;
         } else if (this.config.device_type === DeviceType.GARDENA) {
             getMowerServiceClass = GardenaGetMowersService;
         } else {

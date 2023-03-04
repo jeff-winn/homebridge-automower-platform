@@ -14,7 +14,7 @@ interface ModelInformation {
     model: string;
 }
 
-export class AutomowerGetMowersServiceImpl implements GetMowersService {
+export class AutomowerGetMowersService implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: PlatformLogger) { }    
 
     public async getMowers(): Promise<model.Mower[]> {

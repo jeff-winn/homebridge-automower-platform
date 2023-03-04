@@ -4,7 +4,7 @@ import { Activity, AutomowerClient, HeadlightMode, Mode, Mower, OverrideAction, 
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
-import { AutomowerGetMowersServiceImpl } from '../../../../src/services/husqvarna/automower/automowerGetMowersServiceImpl';
+import { AutomowerGetMowersService } from '../../../../src/services/husqvarna/automower/automowerGetMowersService';
 
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import * as model from '../../../../src/model';
@@ -13,14 +13,14 @@ describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
     let client: Mock<AutomowerClient>;
     let log: Mock<PlatformLogger>;
-    let target: AutomowerGetMowersServiceImpl;
+    let target: AutomowerGetMowersService;
 
     beforeEach(() => {        
         tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<AutomowerClient>();
         log = new Mock<PlatformLogger>();
 
-        target = new AutomowerGetMowersServiceImpl(tokenManager.object(), client.object(), log.object());
+        target = new AutomowerGetMowersService(tokenManager.object(), client.object(), log.object());
     });
 
     it('should flag the token as invalid on getMowers', async () => {
@@ -123,7 +123,8 @@ describe('GetMowersServiceImpl', () => {
                 },
                 mower: {
                     activity: model.Activity.MOWING,
-                    state: model.State.IN_OPERATION
+                    state: model.State.IN_OPERATION,
+                    enabled: true
                 }
             }
         });
