@@ -4,7 +4,7 @@ import { MowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Activity, MowerState, State } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
-import { MowerControlService } from './husqvarna/automower/mowerControlService';
+import { MowerControlService } from './husqvarna/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
 
 /**

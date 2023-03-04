@@ -9,7 +9,7 @@ import { MowerState } from '../model';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';
-import { MowerControlService } from './husqvarna/automower/mowerControlService';
+import { MowerControlService } from './husqvarna/mowerControlService';
 import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
 
 /**
