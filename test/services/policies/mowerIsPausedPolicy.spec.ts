@@ -1,4 +1,4 @@
-import { Activity, Mode, State } from '../../../src/clients/automower/automowerClient';
+import { Activity, State } from '../../../src/model';
 import { DeterministicMowerIsPausedPolicy } from '../../../src/services/policies/mowerIsPausedPolicy';
 
 describe('DeterministicMowerIsPausedPolicy', () => {
@@ -14,13 +14,11 @@ describe('DeterministicMowerIsPausedPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return false when the mower state is not paused', () => {
+    it('should return false when the mower is in operation', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
-            state: State.IN_OPERATION
+            state: State.IN_OPERATION,
+            enabled: true
         });
 
         const result = target.check();
@@ -28,13 +26,11 @@ describe('DeterministicMowerIsPausedPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return true when the mower state is paused', () => {
+    it('should return true when the mower is paused', () => {
         target.setMowerState({
-            activity: Activity.NOT_APPLICABLE,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
-            state: State.PAUSED
+            activity: Activity.MOWING,
+            state: State.PAUSED,
+            enabled: true
         });
 
         const result = target.check();
