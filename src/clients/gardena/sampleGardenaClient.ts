@@ -1,7 +1,7 @@
 
 import * as fs from 'fs';
 import { Environment } from '../../primitives/environment';
-import { GardenaClient, GetLocationResponse, GetLocationsResponse } from './gardenaClient';
+import { GardenaClient, LocationResponse, LocationsResponse } from './gardenaClient';
 
 /**
  * A {@link GardenaClient} which uses sample files to simulate responses from the server.
@@ -9,10 +9,10 @@ import { GardenaClient, GetLocationResponse, GetLocationsResponse } from './gard
 export class SampleGardenaClientImpl implements GardenaClient {
     public constructor(private env: Environment) { }
 
-    public getLocations(): Promise<GetLocationsResponse | undefined> {
+    public getLocations(): Promise<LocationsResponse | undefined> {
         const txt = fs.readFileSync(this.getLocationsSampleFile(), 'utf-8');
 
-        const result = JSON.parse(txt) as GetLocationsResponse;
+        const result = JSON.parse(txt) as LocationsResponse;
         return Promise.resolve(result);
     }
 
@@ -20,10 +20,10 @@ export class SampleGardenaClientImpl implements GardenaClient {
         return this.env.unsafeGetEnvironmentVariable('GET_LOCATIONS_SAMPLE')!;
     }
 
-    public getLocation(): Promise<GetLocationResponse | undefined> {
+    public getLocation(): Promise<LocationResponse | undefined> {
         const txt = fs.readFileSync(this.getSingleLocationSampleFile(), 'utf-8');
 
-        const result = JSON.parse(txt) as GetLocationResponse;
+        const result = JSON.parse(txt) as LocationResponse;
         return Promise.resolve(result);
     }
 

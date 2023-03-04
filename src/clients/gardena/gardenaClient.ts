@@ -4,9 +4,9 @@ import { PLUGIN_ID } from '../../settings';
 import { FetchClient, Response } from '../fetchClient';
 
 /**
- * Defines the types of things.
+ * Defines the types of items.
  */
-export enum ThingType {
+export enum ItemType {
     LOCATION = 'LOCATION',
     DEVICE = 'DEVICE',
     MOWER = 'MOWER',
@@ -56,7 +56,7 @@ export enum BatteryState {
 /**
  * Defines the RF link states.
  */
-export enum RfLinkState {
+export enum RFLinkState {
     /**
      * The device is ONLINE if radio exchange is expected to be possible.
      */
@@ -70,9 +70,9 @@ export enum RfLinkState {
 }
 
 /**
- * Defines the mower states.
+ * Defines the service states.
  */
-export enum State {
+export enum ServiceState {
     /**
      * The service is fully operation can receive commands.
      */
@@ -97,7 +97,7 @@ export enum State {
 /**
  * Defines the mower activities.
  */
-export enum Activity {
+export enum MowerActivity {
     /**
      * The mower in a waiting state with hatch closed.
      */
@@ -150,9 +150,9 @@ export enum Activity {
 }
 
 /**
- * Defines the error codes.
+ * Defines the mower errors.
  */
-export enum ErrorCode {
+export enum MowerError {
     /**
      * Trapped.
      */
@@ -195,9 +195,17 @@ export enum ErrorCode {
 }
 
 /**
+ * Describes a data item.
+ */
+export interface DataItem {
+    id: string;
+    type: ItemType;
+}
+
+/**
  * Describes a location.
  */
-export interface Location extends LocationLink {
+export interface FullLocationDataItem extends DataItem {
     relationships: {
         devices: {
             data: DeviceLink[];
@@ -213,19 +221,19 @@ export interface Location extends LocationLink {
  */
 export interface LocationLink {
     id: string;
-    type: ThingType;    
+    type: ItemType;    
 }
 
 /**
  * Describes a device.
  */
-export interface Device extends DeviceLink {
+export interface DeviceDataItem extends DataItem {
     relationships: {
         location: {
             data: LocationLink;
         };
         services: {
-            data: ServiceRef[];
+            data: ServiceLink[];
         };
     };
 }
@@ -233,21 +241,21 @@ export interface Device extends DeviceLink {
 /**
  * Describes a mower.
  */
-export interface Mower extends DeviceLink {
+export interface MowerServiceDataItem extends DataItem {
     relationships: {
         data: DeviceLink;
     };
     attributes: {
         state: {
-            value: State;
+            value: ServiceState;
             timestamp: string;
         };
         activity: {
-            value: Activity;
+            value: MowerActivity;
             timestamp: string;
         };
         lastErrorCode: {
-            value: ErrorCode;
+            value: MowerError;
             timestamp: string;
         };
         operatingHours: {
@@ -259,7 +267,7 @@ export interface Mower extends DeviceLink {
 /**
  * Describes a common object.
  */
-export interface Common extends DeviceLink {
+export interface CommonServiceDataItem extends DataItem {
     relationships: {
         data: DeviceLink;
     };
@@ -286,46 +294,46 @@ export interface Common extends DeviceLink {
             value: string;
         };
         rfLinkState: {
-            value: RfLinkState;
+            value: RFLinkState;
         };
     };
 }
 
 /**
- * Describes a device reference.
+ * Describes a device link.
  */
 export interface DeviceLink {
     id: string;
-    type: ThingType;
+    type: ItemType;
 }
 
 /**
- * Describes a service reference.
+ * Describes a service link.
  */
-export interface ServiceRef {
+export interface ServiceLink {
     id: string;
-    type: ThingType;
+    type: ItemType;
 }
 
 /**
- * Describes a get locations response.
+ * The location with the included data items and their associated services.
  */
-export interface GetLocationResponse {
-    data: Location;
-    included: DeviceLink[];
+export interface LocationResponse {
+    data: FullLocationDataItem;
+    included: DataItem[];
 }
 
 /**
- * Describes a get locations response.
+ * The list of locations that belong to this user, without devices or services. Used to find out valid location IDs.
  */
-export interface GetLocationsResponse {
-    data: LocationSearchRef[];
+export interface LocationsResponse {
+    data: LocationDataItem[];
 }
 
 /**
  * Describes a location search reference.
  */
-export interface LocationSearchRef extends LocationLink {
+export interface LocationDataItem extends DataItem {
     attributes: {
         name: string;
     };
@@ -357,14 +365,14 @@ export interface GardenaClient {
      * Gets all the mowers connected to the account.
      * @param token The access token.
      */
-    getLocations(token: AccessToken): Promise<GetLocationsResponse | undefined>;
+    getLocations(token: AccessToken): Promise<LocationsResponse | undefined>;
 
     /**
      * Gets a location connected to the account.
      * @param locationId The location id.
      * @param token The access token.
      */
-    getLocation(locationId: string, token: AccessToken): Promise<GetLocationResponse | undefined>;
+    getLocation(locationId: string, token: AccessToken): Promise<LocationResponse | undefined>;
 }
 
 export class GardenaClientImpl implements GardenaClient {
@@ -379,7 +387,7 @@ export class GardenaClientImpl implements GardenaClient {
         return this.baseUrl;
     }
 
-    public async getLocation(locationId: string, token: AccessToken): Promise<GetLocationResponse | undefined> {
+    public async getLocation(locationId: string, token: AccessToken): Promise<LocationResponse | undefined> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations/${locationId}`, {
@@ -399,11 +407,11 @@ export class GardenaClientImpl implements GardenaClient {
 
         await this.throwIfStatusNotOk(res);
 
-        const response = await res.json() as GetLocationResponse;
+        const response = await res.json() as LocationResponse;
         return response;
     }
 
-    public async getLocations(token: AccessToken): Promise<GetLocationsResponse | undefined> {
+    public async getLocations(token: AccessToken): Promise<LocationsResponse | undefined> {
         this.guardAppKeyMustBeProvided();
         
         const res = await this.fetch.execute(`${this.baseUrl}/locations`, {
@@ -423,7 +431,7 @@ export class GardenaClientImpl implements GardenaClient {
 
         await this.throwIfStatusNotOk(res);
 
-        const response = await res.json() as GetLocationsResponse;
+        const response = await res.json() as LocationsResponse;
         return response;
     }
 

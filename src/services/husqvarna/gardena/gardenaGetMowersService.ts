@@ -1,8 +1,8 @@
 import * as model from '../../../model';
 
 import { 
-    Activity, Common, Device, DeviceLink, ErrorCode, GardenaClient, GetLocationResponse, LocationLink, 
-    Mower, RfLinkState, State, ThingType 
+    CommonServiceDataItem, DeviceDataItem, DeviceLink, GardenaClient, LocationLink, LocationResponse, MowerActivity, MowerError, 
+    MowerServiceDataItem, ServiceState, ItemType, RFLinkState 
 } from '../../../clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
@@ -59,7 +59,7 @@ export class GardenaGetMowersService implements GetMowersService {
         return result;
     }
 
-    protected findMowersAtLocation(location: GetLocationResponse): model.Mower[] {
+    protected findMowersAtLocation(location: LocationResponse): model.Mower[] {
         const result: model.Mower[] = [];
         const devices = this.findDevicesAtLocation(location);
 
@@ -67,11 +67,11 @@ export class GardenaGetMowersService implements GetMowersService {
             const services = this.findDeviceServicesAtLocation(device, location);
 
             // Check if the device has the mower service available.
-            const mower = services.filter(o => o.type === ThingType.MOWER).shift() as Mower | undefined;
+            const mower = services.filter(o => o.type === ItemType.MOWER).shift() as MowerServiceDataItem | undefined;
             if (mower !== undefined) {
                 this.log.debug('GARDENA_MOWER_DETECTED', mower.id);
                 
-                const common = services.filter(o => o.type === ThingType.COMMON).shift() as Common | undefined; // The common service is always required.
+                const common = services.filter(o => o.type === ItemType.COMMON).shift() as CommonServiceDataItem | undefined; // The common service is always required.
                 if (common === undefined) {
                     this.log.warn('GARDENA_MISSING_REQUIRED_COMMON_SERVICE', mower.id);
                 } else {
@@ -84,13 +84,13 @@ export class GardenaGetMowersService implements GetMowersService {
         return result;
     }
 
-    protected findDevicesAtLocation(location: GetLocationResponse): Device[] {
-        const result: Device[] = [];
+    protected findDevicesAtLocation(location: LocationResponse): DeviceDataItem[] {
+        const result: DeviceDataItem[] = [];
 
-        const refs = location.data.relationships.devices.data.filter(device => device.type === ThingType.DEVICE).flat();
+        const refs = location.data.relationships.devices.data.filter(device => device.type === ItemType.DEVICE).flat();
 
         for (const ref of refs) {
-            const device = location.included.filter(o => o.id === ref.id && o.type === ThingType.DEVICE).shift() as Device | undefined;
+            const device = location.included.filter(o => o.id === ref.id && o.type === ItemType.DEVICE).shift() as DeviceDataItem | undefined;
             if (device !== undefined) {
                 result.push(device);
             }
@@ -99,7 +99,7 @@ export class GardenaGetMowersService implements GetMowersService {
         return result;
     }
     
-    protected findDeviceServicesAtLocation(device: Device, location: GetLocationResponse): DeviceLink[] {
+    protected findDeviceServicesAtLocation(device: DeviceDataItem, location: LocationResponse): DeviceLink[] {
         const result: DeviceLink[] = [];
 
         for (const ref of device.relationships.services.data) {
@@ -112,7 +112,7 @@ export class GardenaGetMowersService implements GetMowersService {
         return result;
     }
 
-    protected createMower(mower: Mower, common: Common, location: LocationLink): model.Mower {
+    protected createMower(mower: MowerServiceDataItem, common: CommonServiceDataItem, location: LocationLink): model.Mower {
         const modelInformation = this.parseModelInformation(common.attributes.modelType.value);
 
         return {
@@ -125,7 +125,7 @@ export class GardenaGetMowersService implements GetMowersService {
                     level: common.attributes.batteryLevel.value,                    
                 },
                 connection: {
-                    connected: common.attributes.rfLinkState.value === RfLinkState.ONLINE
+                    connected: common.attributes.rfLinkState.value === RFLinkState.ONLINE
                 },
                 metadata: {
                     manufacturer: modelInformation.manufacturer,
@@ -141,28 +141,28 @@ export class GardenaGetMowersService implements GetMowersService {
         };
     }
 
-    protected convertMowerActivity(mower: Mower): model.Activity {
+    protected convertMowerActivity(mower: MowerServiceDataItem): model.Activity {
         switch (mower.attributes.activity.value) {
-            case Activity.OK_CHARGING:
+            case MowerActivity.OK_CHARGING:
                 return model.Activity.CHARGING;
 
-            case Activity.OK_CUTTING:
-            case Activity.OK_CUTTING_TIMER_OVERRIDDEN:
-            case Activity.PAUSED:
+            case MowerActivity.OK_CUTTING:
+            case MowerActivity.OK_CUTTING_TIMER_OVERRIDDEN:
+            case MowerActivity.PAUSED:
                 return model.Activity.MOWING;
 
-            case Activity.OK_LEAVING:
+            case MowerActivity.OK_LEAVING:
                 return model.Activity.LEAVING_HOME;
 
-            case Activity.OK_SEARCHING:
+            case MowerActivity.OK_SEARCHING:
                 return model.Activity.GOING_HOME;
 
-            case Activity.PARKED_AUTOTIMER:
-            case Activity.PARKED_PARK_SELECTED:
-            case Activity.PARKED_TIMER:
+            case MowerActivity.PARKED_AUTOTIMER:
+            case MowerActivity.PARKED_PARK_SELECTED:
+            case MowerActivity.PARKED_TIMER:
                 return model.Activity.PARKED;
 
-            case Activity.NONE:
+            case MowerActivity.NONE:
                 return model.Activity.UNKNOWN;
 
             default:
@@ -171,36 +171,36 @@ export class GardenaGetMowersService implements GetMowersService {
         }
     }
 
-    protected convertMowerState(mower: Mower): model.State {
-        if (mower.attributes.activity.value === Activity.PAUSED) {
+    protected convertMowerState(mower: MowerServiceDataItem): model.State {
+        if (mower.attributes.activity.value === MowerActivity.PAUSED) {
             return model.State.PAUSED;
         }
 
         switch (mower.attributes.lastErrorCode.value) {
-            case ErrorCode.OFF_DISABLED:
-            case ErrorCode.OFF_HATCH_CLOSED:
-            case ErrorCode.OFF_HATCH_OPEN:
+            case MowerError.OFF_DISABLED:
+            case MowerError.OFF_HATCH_CLOSED:
+            case MowerError.OFF_HATCH_OPEN:
                 return model.State.OFF;
             
-            case ErrorCode.ALARM_MOWER_LIFTED:
-            case ErrorCode.LIFTED:
-            case ErrorCode.TEMPORARILY_LIFTED:
+            case MowerError.ALARM_MOWER_LIFTED:
+            case MowerError.LIFTED:
+            case MowerError.TEMPORARILY_LIFTED:
                 return model.State.TAMPERED;
 
-            case ErrorCode.TRAPPED:
-            case ErrorCode.UPSIDE_DOWN:
+            case MowerError.TRAPPED:
+            case MowerError.UPSIDE_DOWN:
                 return model.State.FAULTED;
 
             default:                
                 switch (mower.attributes.state.value) {
-                    case State.OK:
+                    case ServiceState.OK:
                         return model.State.IN_OPERATION;
         
-                    case State.WARNING:
-                    case State.ERROR:
+                    case ServiceState.WARNING:
+                    case ServiceState.ERROR:
                         return model.State.FAULTED;
         
-                    case State.UNAVAILABLE:
+                    case ServiceState.UNAVAILABLE:
                         return model.State.UNKNOWN;
 
                     default:
