@@ -54,6 +54,113 @@ describe('GardenaGetMowersService', () => {
         log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 
+    it('should return an empty array when common is not provided', async () => {
+        const token: AccessToken = {
+            provider: 'husqvarna',
+            value: '12345'
+        };
+
+        const mowerDevice: DeviceDataItem = {
+            id: '12345',
+            type: ItemType.DEVICE,
+            relationships: {
+                location: {
+                    data: {
+                        id: 'abcd1234',
+                        type: ItemType.LOCATION
+                    }
+                },
+                services: {
+                    data: [
+                        {
+                            id: '12345',
+                            type: ItemType.MOWER
+                        },
+                        {
+                            id: '12345',
+                            type: ItemType.COMMON
+                        }
+                    ]
+                }
+            }
+        };
+
+        const mowerService: MowerServiceDataItem = {
+            id: '12345',
+            type: ItemType.MOWER,
+            relationships: {
+                data: {
+                    id: '12345',
+                    type: ItemType.DEVICE
+                }
+            },
+            attributes: {
+                state: {
+                    value: ServiceState.WARNING,
+                    timestamp: '2022-12-09T09:59:16.505+00:00'
+                },
+                activity: {
+                    value: MowerActivity.OK_CHARGING,
+                    timestamp: '2022-12-09T09:59:16.505+00:00'
+                },
+                lastErrorCode: {
+                    value: MowerError.OFF_DISABLED,
+                    timestamp: '2022-12-09T09:59:16.505+00:00'
+                },
+                operatingHours: {
+                    value: 12345
+                }
+            }
+        };
+
+        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        client.setup(o => o.getLocations(token)).returnsAsync({
+            data: [
+                {
+                    id: 'abcd1234',
+                    type: ItemType.LOCATION,
+                    attributes: {
+                        name: 'My Garden'
+                    }
+                }
+            ]
+        });
+
+        client.setup(o => o.getLocation('abcd1234', token)).returnsAsync({
+            data: {
+                id: 'abcd1234',
+                type: ItemType.LOCATION,
+                relationships: {
+                    devices: {
+                        data: [
+                            {
+                                id: '12345',
+                                type: ItemType.DEVICE
+                            }
+                        ]
+                    }
+                },
+                attributes: {
+                    name: 'My Garden'
+                }
+            },
+            included: [
+                mowerDevice,
+                mowerService
+            ]
+        });
+
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.warn(It.IsAny(), It.IsAny())).returns(undefined);
+
+        const mowers = await target.getMowers();
+        expect(mowers).toBeDefined();
+        expect(mowers.length).toBe(0);
+
+        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
+        log.verify(o => o.warn('GARDENA_MISSING_REQUIRED_COMMON_SERVICE', '12345'), Times.Once());
+    });
+
     it('should return an array of values', async () => {
         const token: AccessToken = {
             provider: 'husqvarna',
