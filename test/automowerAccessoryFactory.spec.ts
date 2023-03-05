@@ -14,6 +14,7 @@ import { ArrivingContactSensorImpl, ArrivingSensor } from '../src/services/arriv
 import { BatteryInformation, BatteryInformationImpl } from '../src/services/batteryInformation';
 import { NameMode } from '../src/services/homebridge/abstractSwitch';
 import { AutomowerMowerControlService } from '../src/services/husqvarna/automower/automowerMowerControlService';
+import { GardenaMowerControlService } from '../src/services/husqvarna/gardena/gardenaMowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from '../src/services/leavingSensor';
 import { MotionSensor, MotionSensorImpl } from '../src/services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../src/services/pauseSwitch';
@@ -65,62 +66,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
             config);
     });
 
-    it('should create the automower accessory from mower data by default', () => {
+    it('should create the automower accessory from mower data', () => {
         config.device_type = undefined;
 
-        const mowerName = 'Test';
-        const mowerId = '1234';
-
-        const mower: Mower = {
-            id: mowerId,
-            attributes: {
-                battery: {
-                    level: 100
-                },
-                connection: {
-                    connected: false                    
-                },
-                location: undefined,
-                metadata: {
-                    manufacturer: 'HUSQVARNA',
-                    model: 'AUTOMOWER® 430XH',
-                    name: mowerName,
-                    serialNumber: '123456'
-                },
-                mower: {
-                    activity: Activity.MOWING,
-                    state: State.IN_OPERATION,
-                    enabled: true
-                }
-            }
-        };        
-
-        const uuid = 'my-uuid';
-        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
-
-        factory.setup(o => o.generateUuid(mowerId)).returns(uuid);
-        factory.setup(o => o.create(mowerName, uuid)).returns(platformAccessory.object());
-
-        const expected = new Mock<MowerAccessory>();
-        expected.setup(o => o.init()).returns(undefined);
-        expected.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
-        target.setAccessory(expected.object());
-
-        const actual = target.createAccessory(mower);
-
-        const underlyingAccessory = actual.getUnderlyingAccessory();
-        expect(underlyingAccessory.context.mowerId).toBe(mowerId);
-        expect(underlyingAccessory.context.manufacturer).toBe('HUSQVARNA');
-        expect(underlyingAccessory.context.model).toBe('AUTOMOWER® 430XH');
-        expect(underlyingAccessory.context.serialNumber).toBe('123456');
-
-        expect(actual).toBe(expected.object());
-        expected.verify(o => o.init(), Times.Once());
-    });
-
-    it('should create the automower accessory from mower data when device type is automower', () => {
-        config.device_type = DeviceType.AUTOMOWER;
-              
         const mowerName = 'Test';
         const mowerId = '1234';
 
@@ -284,7 +232,27 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         accessoryInformation.verify(o => o.init(), Times.Once());
     });
     
-    it('should create the schedule switch', () => {
+    it('should create the schedule switch for automower by default', () => {
+        config.device_type = undefined;
+
+        const service = new Mock<AutomowerMowerControlService>();
+        const policy = new Mock<DeterministicScheduleEnabledPolicy>();
+        container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicScheduleEnabledPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateScheduleSwitch(platformAccessory.object()) as ScheduleSwitchImpl;
+
+        expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(ScheduleSwitchImpl);
+    });
+
+    it('should create the schedule switch for automower by default', () => {
+        config.device_type = DeviceType.AUTOMOWER;
+        
         const service = new Mock<AutomowerMowerControlService>();
         const policy = new Mock<DeterministicScheduleEnabledPolicy>();
         container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
@@ -300,10 +268,66 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         expect(result).toBeInstanceOf(ScheduleSwitchImpl);
     });
     
-    it('should create a pause switch', () => {
+    it('should create the schedule switch for gardena', () => {
+        config.device_type = DeviceType.GARDENA;
+        
+        const service = new Mock<GardenaMowerControlService>();
+        const policy = new Mock<DeterministicScheduleEnabledPolicy>();
+        container.setup(o => o.resolve(GardenaMowerControlService)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicScheduleEnabledPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateScheduleSwitch(platformAccessory.object()) as ScheduleSwitchImpl;
+
+        expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(ScheduleSwitchImpl);
+    });
+
+    it('should create a pause switch for automower by default', () => {
+        config.device_type = undefined;
+
         const service = new Mock<AutomowerMowerControlService>();
         const policy = new Mock<DeterministicMowerIsPausedPolicy>();
         container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicMowerIsPausedPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('PAUSE')).returns('Pause');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreatePauseSwitch(platformAccessory.object()) as PauseSwitchImpl;
+
+        expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(PauseSwitchImpl);
+    });
+
+    it('should create a pause switch for automower', () => {
+        config.device_type = DeviceType.AUTOMOWER;
+        
+        const service = new Mock<AutomowerMowerControlService>();
+        const policy = new Mock<DeterministicMowerIsPausedPolicy>();
+        container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicMowerIsPausedPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('PAUSE')).returns('Pause');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreatePauseSwitch(platformAccessory.object()) as PauseSwitchImpl;
+
+        expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(PauseSwitchImpl);
+    });
+
+    it('should create a pause switch for gardena', () => {
+        config.device_type = DeviceType.GARDENA;
+        
+        const service = new Mock<GardenaMowerControlService>();
+        const policy = new Mock<DeterministicMowerIsPausedPolicy>();
+        container.setup(o => o.resolve(GardenaMowerControlService)).returns(service.object());
         container.setup(o => o.resolve(DeterministicMowerIsPausedPolicy)).returns(policy.object());
 
         locale.setup(o => o.format('PAUSE')).returns('Pause');
