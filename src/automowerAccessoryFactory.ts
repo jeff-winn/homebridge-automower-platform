@@ -4,7 +4,6 @@ import { InjectionToken } from 'tsyringe';
 import { MowerAccessory, MowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatform';
 import { PlatformLogger } from './diagnostics/platformLogger';
-import { ErrorFactory } from './errors/errorFactory';
 import { DeviceType, Mower } from './model';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
@@ -52,8 +51,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         private log: PlatformLogger,
         private container: PlatformContainer,
         private locale: Localization,
-        private config: AutomowerPlatformConfig,
-        private errorFactory: ErrorFactory) { }
+        private config: AutomowerPlatformConfig) { }
 
     public createAccessory(mower: Mower): MowerAccessory {        
         const displayName = mower.attributes.metadata.name;
@@ -146,12 +144,12 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected getContolServiceClass(): InjectionToken<MowerControlService> {
-        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
+        if (this.config.device_type === DeviceType.AUTOMOWER) {
             return AutomowerMowerControlService;
         } else if (this.config.device_type === DeviceType.GARDENA) {
             return GardenaMowerControlService;
-        } else {
-            throw this.errorFactory.badConfigurationError('ERROR_INVALID_DEVICE_TYPE', 'CFG0003', this.config.device_type);
         }
+
+        return AutomowerMowerControlService;
     }
 }

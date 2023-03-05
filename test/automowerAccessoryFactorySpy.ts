@@ -1,4 +1,5 @@
 import { PlatformAccessory } from 'homebridge';
+
 import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { AutomowerAccessoryFactoryImpl } from '../src/automowerAccessoryFactory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';

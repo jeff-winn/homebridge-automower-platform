@@ -1,11 +1,11 @@
 import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
+
 import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
-import { ErrorFactory } from '../src/errors/errorFactory';
-import { Activity, Mower, State } from '../src/model';
+import { Activity, DeviceType, Mower, State } from '../src/model';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
 import { PlatformContainer } from '../src/primitives/platformContainer';
@@ -35,7 +35,6 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     let container: Mock<PlatformContainer>;
     let locale: Mock<Localization>;
     let config: AutomowerPlatformConfig;
-    let errorFactory: Mock<ErrorFactory>;
 
     let target: AutomowerAccessoryFactorySpy;
 
@@ -52,7 +51,6 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         log = new Mock<PlatformLogger>();
         container = new Mock<PlatformContainer>();
         locale = new Mock<Localization>();
-        errorFactory = new Mock<ErrorFactory>();
 
         config = new AutomowerPlatformConfig({
             platform: 'Homebridge Automower Platform'
@@ -64,11 +62,12 @@ describe('AutomowerAccessoryFactoryImpl', () => {
             log.object(), 
             container.object(), 
             locale.object(),
-            config,
-            errorFactory.object());
+            config);
     });
 
-    it('should create the accessory from mower data', () => {        
+    it('should create the automower accessory from mower data by default', () => {
+        config.device_type = undefined;
+
         const mowerName = 'Test';
         const mowerId = '1234';
 
@@ -82,6 +81,114 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                     connected: false                    
                 },
                 location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER® 430XH',
+                    name: mowerName,
+                    serialNumber: '123456'
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    state: State.IN_OPERATION,
+                    enabled: true
+                }
+            }
+        };        
+
+        const uuid = 'my-uuid';
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        factory.setup(o => o.generateUuid(mowerId)).returns(uuid);
+        factory.setup(o => o.create(mowerName, uuid)).returns(platformAccessory.object());
+
+        const expected = new Mock<MowerAccessory>();
+        expected.setup(o => o.init()).returns(undefined);
+        expected.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
+        target.setAccessory(expected.object());
+
+        const actual = target.createAccessory(mower);
+
+        const underlyingAccessory = actual.getUnderlyingAccessory();
+        expect(underlyingAccessory.context.mowerId).toBe(mowerId);
+        expect(underlyingAccessory.context.manufacturer).toBe('HUSQVARNA');
+        expect(underlyingAccessory.context.model).toBe('AUTOMOWER® 430XH');
+        expect(underlyingAccessory.context.serialNumber).toBe('123456');
+
+        expect(actual).toBe(expected.object());
+        expected.verify(o => o.init(), Times.Once());
+    });
+
+    it('should create the automower accessory from mower data when device type is automower', () => {
+        config.device_type = DeviceType.AUTOMOWER;
+              
+        const mowerName = 'Test';
+        const mowerId = '1234';
+
+        const mower: Mower = {
+            id: mowerId,
+            attributes: {
+                battery: {
+                    level: 100
+                },
+                connection: {
+                    connected: false                    
+                },
+                location: undefined,
+                metadata: {
+                    manufacturer: 'HUSQVARNA',
+                    model: 'AUTOMOWER® 430XH',
+                    name: mowerName,
+                    serialNumber: '123456'
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    state: State.IN_OPERATION,
+                    enabled: true
+                }
+            }
+        };        
+
+        const uuid = 'my-uuid';
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        factory.setup(o => o.generateUuid(mowerId)).returns(uuid);
+        factory.setup(o => o.create(mowerName, uuid)).returns(platformAccessory.object());
+
+        const expected = new Mock<MowerAccessory>();
+        expected.setup(o => o.init()).returns(undefined);
+        expected.setup(o => o.getUnderlyingAccessory()).returns(platformAccessory.object());
+        target.setAccessory(expected.object());
+
+        const actual = target.createAccessory(mower);
+
+        const underlyingAccessory = actual.getUnderlyingAccessory();
+        expect(underlyingAccessory.context.mowerId).toBe(mowerId);
+        expect(underlyingAccessory.context.manufacturer).toBe('HUSQVARNA');
+        expect(underlyingAccessory.context.model).toBe('AUTOMOWER® 430XH');
+        expect(underlyingAccessory.context.serialNumber).toBe('123456');
+
+        expect(actual).toBe(expected.object());
+        expected.verify(o => o.init(), Times.Once());
+    });
+
+    it('should create the automower accessory from mower data when device type is gardena', () => {
+        config.device_type = DeviceType.GARDENA;
+              
+        const mowerName = 'Test';
+        const mowerId = '1234';
+
+        const mower: Mower = {
+            id: mowerId,
+            attributes: {
+                battery: {
+                    level: 100
+                },
+                connection: {
+                    connected: false                    
+                },
+                location: {
+                    id: '12345'
+                },
                 metadata: {
                     manufacturer: 'HUSQVARNA',
                     model: 'AUTOMOWER® 430XH',

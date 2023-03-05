@@ -210,8 +210,7 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(this.getLoggerClass()),
                 this,
                 context.resolve(Y18nLocalization),
-                this.config,
-                context.resolve(DefaultErrorFactory))
+                this.config)
         });
 
         container.registerInstance(DiscoveryServiceFactoryImpl, 
