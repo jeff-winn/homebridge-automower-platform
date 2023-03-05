@@ -214,10 +214,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(DefaultErrorFactory))
         });
 
-        container.register(DiscoveryServiceFactoryImpl, {
-            useFactory: (context) => new DiscoveryServiceFactoryImpl(
-                this.config, context.resolve(DefaultErrorFactory))
-        });
+        container.registerInstance(DiscoveryServiceFactoryImpl, 
+            new DiscoveryServiceFactoryImpl(this.config));
 
         container.register(EventStreamServiceFactoryImpl, {
             useFactory: (context) => new EventStreamServiceFactoryImpl(
