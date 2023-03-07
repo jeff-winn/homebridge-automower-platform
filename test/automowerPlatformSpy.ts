@@ -1,5 +1,7 @@
 import { AutomowerPlatform } from '../src/automowerPlatform';
 import { PlatformContainer } from '../src/primitives/platformContainer';
+import { DiscoveryService } from '../src/services/husqvarna/discoveryService';
+import { EventStreamService } from '../src/services/husqvarna/eventStreamService';
 
 export class AutomowerPlatformSpy extends AutomowerPlatform {
     public containerConfigured = false;
@@ -7,6 +9,14 @@ export class AutomowerPlatformSpy extends AutomowerPlatform {
 
     public unsafeEnsureContainerIsInitialized(): void {
         this.ensureContainerIsInitialized();
+    }
+
+    public unsafeGetEventService(): EventStreamService {
+        return this.getEventService();
+    }
+
+    public unsafeGetDiscoveryService(): DiscoveryService {
+        return this.getDiscoveryService();
     }
 
     public unsafeOnFinishedLaunching(): Promise<void> {

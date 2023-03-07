@@ -10,7 +10,7 @@ import { EventStreamServiceFactoryImpl } from '../src/factories/eventStreamServi
 import { AuthenticationMode, DeviceType } from '../src/model';
 import { PlatformContainer } from '../src/primitives/platformContainer';
 import { DiscoveryService } from '../src/services/husqvarna/discoveryService';
-import { EventStreamService } from '../src/services/husqvarna/eventStreamService';
+import { EventStreamService, EventStreamServiceImpl } from '../src/services/husqvarna/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
 import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 
