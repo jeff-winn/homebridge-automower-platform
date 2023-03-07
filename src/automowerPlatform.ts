@@ -104,8 +104,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             return;
         }        
 
-        this.container = new PlatformContainerImpl(this.config, this.api, this.log);
+        this.container = this.createContainer();
         this.container.registerEverything();
+    }
+
+    protected createContainer(): PlatformContainer {
+        return new PlatformContainerImpl(this.config, this.api, this.log);
     }
 
     protected async discoverMowers(): Promise<void> {
