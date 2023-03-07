@@ -40,6 +40,15 @@ describe('AutomowerPlatform', () => {
         target.platformContainer = container.object();
     });
 
+    it('should only initialize the container once', () => {
+        container.setup(o => o.registerEverything()).returns(undefined);
+
+        target.unsafeEnsureContainerIsInitialized();
+        target.unsafeEnsureContainerIsInitialized();
+
+        container.verify(o => o.registerEverything(), Times.Once());
+    });
+
     it('should return password authentication mode when not specified', () => {
         const t = new AutomowerPlatformConfig({
             platform: PLATFORM_NAME

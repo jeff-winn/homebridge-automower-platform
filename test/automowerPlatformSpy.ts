@@ -5,6 +5,10 @@ export class AutomowerPlatformSpy extends AutomowerPlatform {
     public containerConfigured = false;
     public platformContainer?: PlatformContainer;
 
+    public unsafeEnsureContainerIsInitialized(): void {
+        this.ensureContainerIsInitialized();
+    }
+
     public unsafeOnFinishedLaunching(): Promise<void> {
         return this.onFinishedLaunching();
     }
