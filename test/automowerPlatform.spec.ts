@@ -10,7 +10,7 @@ import { EventStreamServiceFactoryImpl } from '../src/factories/eventStreamServi
 import { AuthenticationMode, DeviceType } from '../src/model';
 import { PlatformContainer } from '../src/primitives/platformContainer';
 import { DiscoveryService } from '../src/services/husqvarna/discoveryService';
-import { EventStreamService, EventStreamServiceImpl } from '../src/services/husqvarna/eventStreamService';
+import { EventStreamService } from '../src/services/husqvarna/eventStreamService';
 import { PLATFORM_NAME, PLUGIN_ID } from '../src/settings';
 import { AutomowerPlatformSpy } from './automowerPlatformSpy';
 
@@ -173,5 +173,41 @@ describe('AutomowerPlatform', () => {
         await target.unsafeOnShutdown();
 
         log.verify(o => o.error(It.IsAny<string>(), It.IsAny<Error>()), Times.Once());
+    });
+
+    it('should only resolve the event stream service once', () => {
+        container.setup(o => o.registerEverything()).returns(undefined);
+
+        const eventStreamService = new Mock<EventStreamService>();
+        const eventStreamServiceFactory = new Mock<EventStreamServiceFactoryImpl>();
+        eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
+        container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
+
+        target.unsafeEnsureContainerIsInitialized();
+        const result1 = target.unsafeGetEventService();
+        const result2 = target.unsafeGetEventService();
+
+        expect(result1).toBe(eventStreamService.object());
+        expect(result2).toBe(eventStreamService.object());
+
+        container.verify(o => o.resolve(EventStreamServiceFactoryImpl), Times.Once());
+    });
+
+    it('should only resolve the discovery service once', () => {
+        container.setup(o => o.registerEverything()).returns(undefined);
+
+        const discoveryService = new Mock<DiscoveryService>();
+        const discoveryServiceFactory = new Mock<DiscoveryServiceFactoryImpl>();
+        discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
+        container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
+
+        target.unsafeEnsureContainerIsInitialized();
+        const result1 = target.unsafeGetDiscoveryService();
+        const result2 = target.unsafeGetDiscoveryService();
+
+        expect(result1).toBe(discoveryService.object());
+        expect(result2).toBe(discoveryService.object());
+
+        container.verify(o => o.resolve(DiscoveryServiceFactoryImpl), Times.Once());
     });
 });

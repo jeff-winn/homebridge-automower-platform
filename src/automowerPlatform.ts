@@ -75,6 +75,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     private container?: PlatformContainer;
     private eventService?: EventStreamService;
+    private discoveryService?: DiscoveryService;
 
     public constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = new AutomowerPlatformConfig(config);
@@ -155,13 +156,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
-    /**
-     * Gets {@link DiscoveryService}.
-     * @returns The service instance.
-     */
     protected getDiscoveryService(): DiscoveryService {
+        if (this.discoveryService !== undefined) {
+            return this.discoveryService;
+        }
+
         const factory = this.container!.resolve(DiscoveryServiceFactoryImpl);
-        return factory.create(this.container!);
+        this.discoveryService = factory.create(this.container!);
+
+        return this.discoveryService;
     }
 
     /**
