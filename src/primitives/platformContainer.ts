@@ -28,6 +28,9 @@ import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/autho
 import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
 import { AutomowerMowerControlService } from '../services/husqvarna/automower/automowerMowerControlService';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
+import { AutomowerActivityConverterImpl } from '../services/husqvarna/automower/converters/automowerActivityConverter';
+import { AutomowerEnabledConverterImpl } from '../services/husqvarna/automower/converters/automowerEnabledConverter';
+import { AutomowerStateConverterImpl } from '../services/husqvarna/automower/converters/automowerStateConverter';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
 import { GardenaActivityConverterImpl } from '../services/husqvarna/gardena/converters/gardenaActivityConverter';
 import { GardenaStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaStateConverter';
@@ -192,9 +195,16 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(this.getLoggerClass()))
         });
         
+        container.registerInstance(AutomowerEnabledConverterImpl, new AutomowerEnabledConverterImpl(this.log));
+        container.registerInstance(AutomowerActivityConverterImpl, new AutomowerActivityConverterImpl(this.log));
+        container.registerInstance(AutomowerStateConverterImpl, new AutomowerStateConverterImpl(this.log));
+
         container.register(AutomowerGetMowersService, {
             useFactory: (context) => new AutomowerGetMowersService(
                 context.resolve(AccessTokenManagerImpl),
+                context.resolve(AutomowerEnabledConverterImpl),
+                context.resolve(AutomowerActivityConverterImpl),
+                context.resolve(AutomowerStateConverterImpl),
                 context.resolve(AutomowerClientImpl),
                 context.resolve(this.getLoggerClass()))
         });

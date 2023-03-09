@@ -1,10 +1,13 @@
 import * as model from '../../../model';
 
-import { Activity, AutomowerClient, Mower, State } from '../../../clients/automower/automowerClient';
+import { AutomowerClient, Mower } from '../../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
+import { AutomowerActivityConverter } from './converters/automowerActivityConverter';
+import { AutomowerEnabledConverter } from './converters/automowerEnabledConverter';
+import { AutomowerStateConverter } from './converters/automowerStateConverter';
 
 /**
  * Describes the model information parsed from the model data.
@@ -15,7 +18,9 @@ interface ModelInformation {
 }
 
 export class AutomowerGetMowersService implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient, private log: PlatformLogger) { }    
+    public constructor(private tokenManager: AccessTokenManager, private enabledConverter: AutomowerEnabledConverter, 
+        private activityConverter: AutomowerActivityConverter, private stateConverter: AutomowerStateConverter,
+        private client: AutomowerClient, private log: PlatformLogger) { }    
 
     public async getMowers(): Promise<model.Mower[]> {
         try {
@@ -68,70 +73,15 @@ export class AutomowerGetMowersService implements GetMowersService {
     }
 
     protected isMowerEnabled(mower: Mower): boolean {
-        // TODO: Fix this.
-        return true;
+        return this.enabledConverter.convert(mower);
     }
 
     protected convertMowerActivity(mower: Mower): model.Activity {
-        switch (mower.attributes.mower.activity) {
-            case Activity.CHARGING:
-                return model.Activity.CHARGING;
-                
-            case Activity.PARKED_IN_CS:
-            case Activity.NOT_APPLICABLE:
-                return model.Activity.PARKED;
-            
-            case Activity.GOING_HOME:
-                return model.Activity.GOING_HOME;
-            
-            case Activity.LEAVING:
-                return model.Activity.LEAVING_HOME;
-
-            case Activity.STOPPED_IN_GARDEN:
-            case Activity.MOWING:
-                return model.Activity.MOWING;
-
-            case Activity.UNKNOWN:
-                return model.Activity.UNKNOWN;
-
-            default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.mower.activity);
-                return model.Activity.UNKNOWN;
-        }
+        return this.activityConverter.convert(mower);
     }
 
     protected convertMowerState(mower: Mower): model.State {
-        if (mower.attributes.mower.state === State.STOPPED && mower.attributes.mower.errorCode !== 0) {
-            return model.State.TAMPERED;
-        }
-        
-        switch (mower.attributes.mower.state) {
-            case State.IN_OPERATION:
-                return model.State.IN_OPERATION;
-
-            case State.ERROR:
-            case State.ERROR_AT_POWER_UP:
-            case State.FATAL_ERROR:
-            case State.RESTRICTED:
-            case State.STOPPED:
-                return model.State.FAULTED;
-
-            case State.PAUSED:
-                return model.State.PAUSED;
-
-            case State.NOT_APPLICABLE:
-            case State.OFF:
-                return model.State.OFF;
-            
-            case State.WAIT_POWER_UP:
-            case State.WAIT_UPDATING:
-            case State.UNKNOWN:
-                return model.State.UNKNOWN;
-
-            default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.mower.state);
-                return model.State.UNKNOWN;
-        }
+        return this.stateConverter.convert(mower);
     }
 
     private parseModelInformation(value: string): ModelInformation {
