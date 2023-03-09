@@ -18,7 +18,7 @@ export class AutomowerStateConverterImpl implements AutomowerStateConverter {
     public constructor(private log: PlatformLogger) { }
 
     public convert(mower: Mower): model.State {
-if (mower.attributes.mower.state === State.STOPPED && mower.attributes.mower.errorCode !== 0) {
+        if (mower.attributes.mower.state === State.STOPPED && mower.attributes.mower.errorCode !== 0) {
             return model.State.TAMPERED;
         }
         
