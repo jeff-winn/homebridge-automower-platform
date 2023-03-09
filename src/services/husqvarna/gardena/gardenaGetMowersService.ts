@@ -8,6 +8,8 @@ import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
+import { GardenaStateConverter } from './converters/gardenaStateConverter';
+import { GardenaActivityConverter } from './converters/gardenaActivityConverter';
 
 /**
  * Describes the model information parsed from the model data.
@@ -18,7 +20,8 @@ interface ModelInformation {
 }
 
 export class GardenaGetMowersService implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private client: GardenaClient, private log: PlatformLogger) { }
+    public constructor(private tokenManager: AccessTokenManager, private activityConverter: GardenaActivityConverter, private stateConverter: GardenaStateConverter, 
+        private client: GardenaClient, private log: PlatformLogger) { }
     
     public async getMowers(): Promise<model.Mower[]> {
         this.notifyPreviewFeatureIsBeingUsed();
@@ -151,71 +154,11 @@ export class GardenaGetMowersService implements GetMowersService {
     }
 
     protected convertMowerActivity(mower: MowerServiceDataItem): model.Activity {
-        switch (mower.attributes.activity.value) {
-            case MowerActivity.OK_CHARGING:
-                return model.Activity.CHARGING;
-
-            case MowerActivity.OK_CUTTING:
-            case MowerActivity.OK_CUTTING_TIMER_OVERRIDDEN:
-            case MowerActivity.PAUSED:
-                return model.Activity.MOWING;
-
-            case MowerActivity.OK_LEAVING:
-                return model.Activity.LEAVING_HOME;
-
-            case MowerActivity.OK_SEARCHING:
-                return model.Activity.GOING_HOME;
-
-            case MowerActivity.PARKED_AUTOTIMER:
-            case MowerActivity.PARKED_PARK_SELECTED:
-            case MowerActivity.PARKED_TIMER:
-                return model.Activity.PARKED;
-
-            case MowerActivity.NONE:
-                return model.Activity.UNKNOWN;
-
-            default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.activity.value);
-                return model.Activity.UNKNOWN;
-        }
+        return this.activityConverter.convert(mower);
     }
 
     protected convertMowerState(mower: MowerServiceDataItem): model.State {
-        if (mower.attributes.activity.value === MowerActivity.PAUSED) {
-            return model.State.PAUSED;
-        }
-
-        switch (mower.attributes.lastErrorCode.value) {
-            case MowerError.OFF_DISABLED:
-            case MowerError.OFF_HATCH_CLOSED:
-            case MowerError.OFF_HATCH_OPEN:
-                return model.State.OFF;
-            
-            case MowerError.ALARM_MOWER_LIFTED:
-            case MowerError.LIFTED:
-            case MowerError.TEMPORARILY_LIFTED:
-                return model.State.TAMPERED;
-
-            case MowerError.TRAPPED:
-            case MowerError.UPSIDE_DOWN:
-                return model.State.FAULTED;
-
-            default:                
-                switch (mower.attributes.state.value) {
-                    case ServiceState.OK:
-                        return model.State.READY;
-        
-                    case ServiceState.WARNING:
-                    case ServiceState.ERROR:
-                        return model.State.FAULTED;
-        
-                    case ServiceState.UNAVAILABLE:
-                        return model.State.UNKNOWN;
-
-                    default:
-                        return model.State.UNKNOWN;
-                }
-        }
+        return this.stateConverter.convert(mower);
     }
     
     private parseModelInformation(value: string): ModelInformation {

@@ -29,6 +29,8 @@ import { AutomowerGetMowersService } from '../services/husqvarna/automower/autom
 import { AutomowerMowerControlService } from '../services/husqvarna/automower/automowerMowerControlService';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
+import { GardenaActivityConverterImpl } from '../services/husqvarna/gardena/converters/gardenaActivityConverter';
+import { GardenaStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaStateConverter';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 import { GardenaMowerControlService } from '../services/husqvarna/gardena/gardenaMowerControlService';
@@ -172,10 +174,20 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(DeterministicMowerTamperedPolicy, {
             useValue: new DeterministicMowerTamperedPolicy()
         });
+
+        container.register(GardenaActivityConverterImpl, {
+            useFactory: () => new GardenaActivityConverterImpl(this.log)
+        });
         
+        container.register(GardenaStateConverterImpl, {
+            useFactory: () => new GardenaStateConverterImpl(this.log)
+        });
+
         container.register(GardenaGetMowersService, {
             useFactory: (context) => new GardenaGetMowersService(
                 context.resolve(AccessTokenManagerImpl),
+                context.resolve(GardenaActivityConverterImpl),
+                context.resolve(GardenaStateConverterImpl),
                 context.resolve(this.getGardenaClientClass()),
                 context.resolve(this.getLoggerClass()))
         });
