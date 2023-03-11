@@ -127,7 +127,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
 
     protected createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
         return new MainSwitchImpl(
-            this.locale.format('SCHEDULE'),
+            this.locale.format('MAIN'),
             this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(ChangeSettingsServiceImpl),
             this.container.resolve(DeterministicMowerIsEnabledPolicy),
