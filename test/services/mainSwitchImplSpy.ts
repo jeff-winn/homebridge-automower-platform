@@ -1,7 +1,7 @@
 import { CharacteristicSetCallback } from 'homebridge';
-import { ScheduleSwitchImpl } from '../../src/services/scheduleSwitch';
+import { MainSwitchImpl } from '../../src/services/mainSwitch';
 
-export class ScheduleSwitchImplSpy extends ScheduleSwitchImpl {
+export class MainSwitchImplSpy extends MainSwitchImpl {
     public unsafeOnSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         return this.onSetCallback(on, callback);
     }

@@ -8,9 +8,9 @@ import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
 import { NameMode } from '../src/services/homebridge/abstractSwitch';
 import { LeavingSensor } from '../src/services/leavingSensor';
+import { MainSwitch } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
-import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
 describe('MowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<MowerContext>>;
@@ -20,7 +20,7 @@ describe('MowerAccessory', () => {
     let arrivingSensor: Mock<ArrivingSensor>;
     let leavingSensor: Mock<LeavingSensor>;
     let pauseSwitch: Mock<PauseSwitch>;
-    let scheduleSwitch: Mock<ScheduleSwitch>;
+    let mainSwitch: Mock<MainSwitch>;
 
     let target: MowerAccessory;
 
@@ -32,11 +32,11 @@ describe('MowerAccessory', () => {
         pauseSwitch = new Mock<PauseSwitch>();
         arrivingSensor = new Mock<ArrivingSensor>();
         leavingSensor = new Mock<LeavingSensor>();
-        scheduleSwitch = new Mock<ScheduleSwitch>();
+        mainSwitch = new Mock<MainSwitch>();
     
         target = new MowerAccessory(accessory.object(), batteryService.object(), 
             informationService.object(), motionSensorService.object(), arrivingSensor.object(),
-            leavingSensor.object(), pauseSwitch.object(), scheduleSwitch.object());
+            leavingSensor.object(), pauseSwitch.object(), mainSwitch.object());
     });
 
     it('should return the underlying platform accessory', () => {
@@ -52,7 +52,7 @@ describe('MowerAccessory', () => {
         arrivingSensor.setup(o => o.init()).returns(undefined);
         leavingSensor.setup(o => o.init()).returns(undefined);
         pauseSwitch.setup(o => o.init(NameMode.DEFAULT)).returns(undefined);
-        scheduleSwitch.setup(o => o.init(NameMode.DISPLAY_NAME)).returns(undefined);
+        mainSwitch.setup(o => o.init(NameMode.DISPLAY_NAME)).returns(undefined);
 
         target.init();
         
@@ -62,7 +62,7 @@ describe('MowerAccessory', () => {
         leavingSensor.verify(o => o.init(), Times.Once());
         motionSensorService.verify(o => o.init(), Times.Once());
         pauseSwitch.verify(o => o.init(NameMode.DEFAULT), Times.Once());
-        scheduleSwitch.verify(o => o.init(NameMode.DISPLAY_NAME), Times.Once());
+        mainSwitch.verify(o => o.init(NameMode.DISPLAY_NAME), Times.Once());
     });
 
     it('should refresh the services', () => {
@@ -98,9 +98,9 @@ describe('MowerAccessory', () => {
 
         batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-        scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
-        scheduleSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
-        scheduleSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        mainSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
         arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
@@ -114,10 +114,10 @@ describe('MowerAccessory', () => {
 
         batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
         batteryService.verify(o => o.setChargingState(state), Times.Once());
-        scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
-        scheduleSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        mainSwitch.verify(o => o.setMowerState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
         // TODO: Clean this up.
-        // scheduleSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
+        // mainSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
         pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
         pauseSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
         arrivingSensor.verify(o => o.setMowerState(state), Times.Once());

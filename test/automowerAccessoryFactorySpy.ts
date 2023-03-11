@@ -6,14 +6,14 @@ import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
 import { LeavingSensor } from '../src/services/leavingSensor';
+import { MainSwitch } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
-import { ScheduleSwitch } from '../src/services/scheduleSwitch';
 
 export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl {
     private accessory?: MowerAccessory;
 
-    private scheduleSwitch?: ScheduleSwitch;
+    private mainSwitch?: MainSwitch;
     private pauseSwitch?: PauseSwitch;
     private accessoryInformation?: AccessoryInformation;
     private batteryInformation?: BatteryInformation;
@@ -25,8 +25,8 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         this.accessory = accessory;
     }
 
-    public setScheduleSwitch(scheduleSwitch: ScheduleSwitch): void {
-        this.scheduleSwitch = scheduleSwitch;
+    public setMainSwitch(mainSwitch: MainSwitch): void {
+        this.mainSwitch = mainSwitch;
     }
 
     public setPauseSwitch(pauseSwitch: PauseSwitch): void {
@@ -133,15 +133,15 @@ export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl 
         return super.createMotionSensor(accessory);
     }
 
-    public unsafeCreateScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
-        return this.createScheduleSwitch(accessory);
+    public unsafeCreateMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+        return this.createMainSwitch(accessory);
     }
 
-    protected override createScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
-        if (this.scheduleSwitch !== undefined) {
-            return this.scheduleSwitch;
+    protected override createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+        if (this.mainSwitch !== undefined) {
+            return this.mainSwitch;
         }
 
-        return super.createScheduleSwitch(accessory);
+        return super.createMainSwitch(accessory);
     }
 }

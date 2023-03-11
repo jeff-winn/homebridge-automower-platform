@@ -10,12 +10,12 @@ import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';
 import { MowerControlService } from './husqvarna/mowerControlService';
-import { ScheduleEnabledPolicy } from './policies/scheduleEnabledPolicy';
+import { MowerIsEnabledPolicy } from './policies/mowerIsEnabledPolicy';
 
 /**
- * A service which encapsulates the schedule switch for an automower.
+ * A service which encapsulates the primary switch for a mower.
  */
-export interface ScheduleSwitch extends Switch {
+export interface MainSwitch extends Switch {
     /**
      * Sets the state of the mower.
      * @param state The mower state.
@@ -29,10 +29,10 @@ export interface ScheduleSwitch extends Switch {
     setCuttingHeight(value: number): void;
 }
 
-export class ScheduleSwitchImpl extends AbstractSwitch implements ScheduleSwitch {
+export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
     private cuttingHeight?: Characteristic;
 
-    public constructor(name: string, private controlService: MowerControlService, private settingsService: ChangeSettingsService, private policy: ScheduleEnabledPolicy, 
+    public constructor(name: string, private controlService: MowerControlService, private settingsService: ChangeSettingsService, private policy: MowerIsEnabledPolicy, 
         accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }

@@ -2,9 +2,9 @@ import { MowerState, State } from '../../model';
 import { OptionalPolicy } from './policy';
 
 /**
- * A policy which decides whether the mower schedule is enabled.
+ * A policy which decides whether the mower is enabled.
  */
-export interface ScheduleEnabledPolicy extends OptionalPolicy {    
+export interface MowerIsEnabledPolicy extends OptionalPolicy {    
      /**
       * Sets the state of the mower.
       * @param state The mower state.
@@ -13,9 +13,9 @@ export interface ScheduleEnabledPolicy extends OptionalPolicy {
 }
 
 /**
- * A policy which determines whether the mower schedule is enabled based on mower information.
+ * A policy which determines whether the mower is enabled based on mower information.
  */
-export class DeterministicScheduleEnabledPolicy implements ScheduleEnabledPolicy {
+export class DeterministicMowerIsEnabledPolicy implements MowerIsEnabledPolicy {
     private mowerState?: MowerState;
 
     public shouldApply(): boolean {

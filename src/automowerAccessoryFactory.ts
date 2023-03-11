@@ -16,16 +16,16 @@ import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/change
 import { GardenaMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
 import { MowerControlService } from './services/husqvarna/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
+import { MainSwitch, MainSwitchImpl } from './services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from './services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from './services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from './services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsEnabledPolicy } from './services/policies/mowerIsEnabledPolicy';
 import { DeterministicMowerIsLeavingPolicy } from './services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from './services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from './services/policies/mowerTamperedPolicy';
-import { DeterministicScheduleEnabledPolicy } from './services/policies/scheduleEnabledPolicy';
-import { ScheduleSwitch, ScheduleSwitchImpl } from './services/scheduleSwitch';
 
 /**
  * A mechanism to create {@link AutomowerAccessory} instances.
@@ -92,7 +92,7 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
             this.createArrivingSensor(accessory),
             this.createLeavingSensor(accessory),
             this.createPauseSwitch(accessory),            
-            this.createScheduleSwitch(accessory));
+            this.createMainSwitch(accessory));
     }
 
     protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
@@ -125,12 +125,12 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
         return new AccessoryInformationImpl(accessory, this.api);
     }
 
-    protected createScheduleSwitch(accessory: PlatformAccessory<MowerContext>): ScheduleSwitch {
-        return new ScheduleSwitchImpl(
+    protected createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+        return new MainSwitchImpl(
             this.locale.format('SCHEDULE'),
             this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(ChangeSettingsServiceImpl),
-            this.container.resolve(DeterministicScheduleEnabledPolicy),
+            this.container.resolve(DeterministicMowerIsEnabledPolicy),
             accessory, this.api, this.log);
     }
 

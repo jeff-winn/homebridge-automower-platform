@@ -9,9 +9,9 @@ import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
 import { NameMode } from './services/homebridge/abstractSwitch';
 import { LeavingSensor } from './services/leavingSensor';
+import { MainSwitch } from './services/mainSwitch';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
-import { ScheduleSwitch } from './services/scheduleSwitch';
 
 /**
  * Provides contextual information for a mower accessory.
@@ -35,7 +35,7 @@ export class MowerAccessory {
         private arrivingSensor: ArrivingSensor,
         private leavingSensor: LeavingSensor,
         private pauseSwitch: PauseSwitch,
-        private scheduleSwitch: ScheduleSwitch) {
+        private mainSwitch: MainSwitch) {
     }
 
     /**
@@ -57,7 +57,7 @@ export class MowerAccessory {
         this.leavingSensor.init();
 
         this.pauseSwitch.init(NameMode.DEFAULT);
-        this.scheduleSwitch.init(NameMode.DISPLAY_NAME);
+        this.mainSwitch.init(NameMode.DISPLAY_NAME);
     }
 
     /**
@@ -77,8 +77,8 @@ export class MowerAccessory {
         this.motionSensor.setMowerState(data.attributes.mower);
         this.motionSensor.setMowerConnection(data.attributes.connection);
 
-        this.scheduleSwitch.setMowerState(data.attributes.mower);
-        this.scheduleSwitch.setMowerConnection(data.attributes.connection);
+        this.mainSwitch.setMowerState(data.attributes.mower);
+        this.mainSwitch.setMowerConnection(data.attributes.connection);
 
         // TODO: Clean this up.
         // this.scheduleSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);

@@ -1,11 +1,11 @@
 import { Activity, State } from '../../../src/model';
-import { DeterministicScheduleEnabledPolicy } from '../../../src/services/policies/scheduleEnabledPolicy';
+import { DeterministicMowerIsEnabledPolicy } from '../../../src/services/policies/mowerIsEnabledPolicy';
 
-describe('DeterministicScheduleEnabledPolicy', () => {
-    let target: DeterministicScheduleEnabledPolicy;
+describe('DeterministicMowerIsEnabledPolicy', () => {
+    let target: DeterministicMowerIsEnabledPolicy;
 
     beforeEach(() => {
-        target = new DeterministicScheduleEnabledPolicy();
+        target = new DeterministicMowerIsEnabledPolicy();
     });
 
     it('should not apply when the mower state is not set', () => {

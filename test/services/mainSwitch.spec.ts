@@ -9,26 +9,26 @@ import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from '../../src/services/husqvarna/automower/changeSettingsService';
 import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
-import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
-import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
+import { MowerIsEnabledPolicy } from '../../src/services/policies/mowerIsEnabledPolicy';
+import { MainSwitchImplSpy } from './mainSwitchImplSpy';
 
-describe('ScheduleSwitchImpl', () => {
+describe('MainSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
     let changeSettingsService: Mock<ChangeSettingsService>;
     let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
-    let policy: Mock<ScheduleEnabledPolicy>;
+    let policy: Mock<MowerIsEnabledPolicy>;
 
-    let target: ScheduleSwitchImplSpy;
+    let target: MainSwitchImplSpy;
 
     beforeEach(() => {
         mowerControlService = new Mock<MowerControlService>();
         changeSettingsService = new Mock<ChangeSettingsService>();
 
         platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
-        policy = new Mock<ScheduleEnabledPolicy>();
+        policy = new Mock<MowerIsEnabledPolicy>();
 
         hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);
@@ -38,7 +38,7 @@ describe('ScheduleSwitchImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         log = new Mock<PlatformLogger>();        
 
-        target = new ScheduleSwitchImplSpy('Schedule', mowerControlService.object(), changeSettingsService.object(), policy.object(), 
+        target = new MainSwitchImplSpy('Schedule', mowerControlService.object(), changeSettingsService.object(), policy.object(), 
             platformAccessory.object(), api.object(), log.object());
     });
 

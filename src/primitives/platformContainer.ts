@@ -40,9 +40,9 @@ import { GardenaMowerControlService } from '../services/husqvarna/gardena/garden
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsEnabledPolicy } from '../services/policies/mowerIsEnabledPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
-import { DeterministicScheduleEnabledPolicy } from '../services/policies/scheduleEnabledPolicy';
 import { ConsoleWrapperImpl } from './consoleWrapper';
 import { isDevelopmentEnvironment, NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
@@ -170,8 +170,8 @@ export class PlatformContainerImpl implements PlatformContainer {
             useValue: new DeterministicMowerFaultedPolicy()
         });
 
-        container.register(DeterministicScheduleEnabledPolicy, {
-            useValue: new DeterministicScheduleEnabledPolicy()
+        container.register(DeterministicMowerIsEnabledPolicy, {
+            useValue: new DeterministicMowerIsEnabledPolicy()
         });
 
         container.register(DeterministicMowerTamperedPolicy, {
