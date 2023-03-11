@@ -13,6 +13,7 @@
 		"eslint.enable": true,
 		"editor.tabSize": 4,
 		"files.exclude": {
+			"*.code-workspace": true,
 			".vscode": true,
 			"build": true,
 			"dist": true,
