@@ -39,7 +39,7 @@
   "ERROR_HANDLING_SET": "An unexpected error occurred while attempting to set '%s' for '%s'.",
   "USERNAME_PASSWORD_INVALID": "The username and/or password supplied were not valid, please check your configuration and try again.",
   "ERROR_INVALID_DEVICE_TYPE": "The device type '%s' provided is invalid, please check your configuration and try again.",
-  "MAIN": "Main",
+  "SCHEDULE": "Schedule",
   "PAUSE": "Pause",
   "MOTION_SENSOR": "Motion Sensor",
   "LEAVING_SENSOR": "Leaving Sensor",

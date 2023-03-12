@@ -97,7 +97,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
 
     protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         return new PauseSwitchImpl(
-            this.locale.format('PAUSE'),
+            this.locale.format('PAUSE'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(DeterministicMowerIsPausedPolicy),
             accessory, this.api, this.log);
@@ -105,14 +105,14 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
 
     protected createArrivingSensor(accessory: PlatformAccessory<MowerContext>): ArrivingSensor {
         return new ArrivingContactSensorImpl(
-            this.locale.format('ARRIVING_SENSOR'),
+            this.locale.format('ARRIVING_SENSOR'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(DeterministicMowerIsArrivingPolicy),
             accessory, this.api, this.log);
     }
 
     protected createLeavingSensor(accessory: PlatformAccessory<MowerContext>): LeavingSensor {
         return new LeavingContactSensorImpl(
-            this.locale.format('LEAVING_SENSOR'),
+            this.locale.format('LEAVING_SENSOR'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(DeterministicMowerIsLeavingPolicy),
             accessory, this.api, this.log);
     }
@@ -126,9 +126,11 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
 
     protected createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+        const name = 'SCHEDULE'; // WARNING: Changing the name will cause a breaking change!
+
         if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
             return new AutomowerMainSwitchImpl(
-                this.locale.format('MAIN'),
+                this.locale.format(name),
                 this.container.resolve(this.getContolServiceClass()),
                 this.container.resolve(ChangeSettingsServiceImpl),
                 this.container.resolve(DeterministicMowerIsActivePolicy),
@@ -136,7 +138,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
         }
         
         return new MainSwitchImpl(
-            this.locale.format('MAIN'),
+            this.locale.format(name),
             this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(DeterministicMowerIsActivePolicy),
             accessory, this.api, this.log);
@@ -144,7 +146,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
 
     protected createMotionSensor(accessory: PlatformAccessory<MowerContext>): MotionSensor {
         return new MotionSensorImpl(
-            this.locale.format('MOTION_SENSOR'),
+            this.locale.format('MOTION_SENSOR'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(DeterministicMowerInMotionPolicy),
             this.container.resolve(DeterministicMowerFaultedPolicy),
             this.container.resolve(DeterministicMowerTamperedPolicy),
