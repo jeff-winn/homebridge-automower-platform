@@ -227,188 +227,175 @@ describe('MotionSensorImpl', () => {
         motionDetected.verify(o => o.updateValue(true), Times.Once());
     });
 
-    // TODO: Clean this
-    // it('should refresh the faulted characteristic when the value has changed from undefined to false', () => {
-    //     log.setup(o => o.info(It.IsAny())).returns(undefined);
+    it('should refresh the faulted characteristic when the value has changed from undefined to false', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
 
-    //     const motionDetected = new Mock<Characteristic>();
-    //     motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
 
-    //     const faulted = new Mock<Characteristic>();
-    //     faulted.setup(o => o.updateValue(false)).returns(faulted.object());
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(false)).returns(faulted.object());
 
-    //     const tampered = new Mock<Characteristic>();
-    //     tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
-    //     const state: MowerState = {
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 10,
-    //         errorCodeTimestamp: 10000,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.ERROR
-    //     };
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            state: State.FAULTED
+        };
         
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
-    //     platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
-    //     motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     motionPolicy.setup(o => o.check()).returns(false);
-    //     faultedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
-    //     faultedPolicy.setup(o => o.check()).returns(false);
-    //     tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     tamperedPolicy.setup(o => o.check()).returns(false);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
-    //     target.unsafeSetLastFaultedValue(undefined);
-    //     target.unsafeSetLastMotionValue(false);
-    //     target.init();
+        target.unsafeSetLastFaultedValue(undefined);
+        target.unsafeSetLastMotionValue(false);
+        target.init();
 
-    //     target.setMowerState(state);
+        target.setMowerState(state);
 
-    //     const result = target.unsafeGetLastFaultedValue();
-    //     expect(result).toBeFalsy();
+        const result = target.unsafeGetLastFaultedValue();
+        expect(result).toBeFalsy();
 
-    //     faulted.verify(o => o.updateValue(Characteristic.StatusFault.NO_FAULT), Times.Once());
-    // });
+        faulted.verify(o => o.updateValue(Characteristic.StatusFault.NO_FAULT), Times.Once());
+    });
 
-    // it('should refresh the faulted characteristic when the value has changed from false to true', () => {
-    //     log.setup(o => o.info(It.IsAny())).returns(undefined);
+    it('should refresh the faulted characteristic when the value has changed from false to true', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
 
-    //     const motionDetected = new Mock<Characteristic>();
-    //     motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
 
-    //     const faulted = new Mock<Characteristic>();
-    //     faulted.setup(o => o.updateValue(true)).returns(faulted.object());
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(true)).returns(faulted.object());
 
-    //     const tampered = new Mock<Characteristic>();
-    //     tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
-    //     const state: MowerState = {
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 10,
-    //         errorCodeTimestamp: 10000,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.ERROR
-    //     };
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            state: State.FAULTED
+        };
         
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
-    //     platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
-    //     motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
-    //     motionPolicy.setup(o => o.check()).returns(false);
-    //     faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     faultedPolicy.setup(o => o.check()).returns(true);
-    //     tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     tamperedPolicy.setup(o => o.check()).returns(false);
+        motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(true);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
-    //     target.unsafeSetLastFaultedValue(false);
-    //     target.unsafeSetLastMotionValue(false);
-    //     target.init();
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastMotionValue(false);
+        target.init();
 
-    //     target.setMowerState(state);
+        target.setMowerState(state);
 
-    //     const result = target.unsafeGetLastFaultedValue();
-    //     expect(result).toBeTruthy();
+        const result = target.unsafeGetLastFaultedValue();
+        expect(result).toBeTruthy();
 
-    //     faulted.verify(o => o.updateValue(Characteristic.StatusFault.GENERAL_FAULT), Times.Once());
-    // });
+        faulted.verify(o => o.updateValue(Characteristic.StatusFault.GENERAL_FAULT), Times.Once());
+    });
 
-    // it('should refresh the tampered characteristic when the value has changed from undefined to false', () => {
-    //     log.setup(o => o.info(It.IsAny())).returns(undefined);
+    it('should refresh the tampered characteristic when the value has changed from undefined to false', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
 
-    //     const motionDetected = new Mock<Characteristic>();
-    //     motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
 
-    //     const faulted = new Mock<Characteristic>();
-    //     faulted.setup(o => o.updateValue(false)).returns(faulted.object());
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(false)).returns(faulted.object());
 
-    //     const tampered = new Mock<Characteristic>();
-    //     tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
-    //     const state: MowerState = {
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 10,
-    //         errorCodeTimestamp: 10000,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.ERROR
-    //     };
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            state: State.TAMPERED
+        };
         
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
-    //     platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
-    //     motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     motionPolicy.setup(o => o.check()).returns(false);
-    //     faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     faultedPolicy.setup(o => o.check()).returns(false);
-    //     tamperedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
-    //     tamperedPolicy.setup(o => o.check()).returns(false);
+        motionPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(false);
 
-    //     target.unsafeSetLastFaultedValue(false);
-    //     target.unsafeSetLastMotionValue(false);
-    //     target.unsafeSetLastTamperedValue(undefined);
-    //     target.init();
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastMotionValue(false);
+        target.unsafeSetLastTamperedValue(undefined);
+        target.init();
 
-    //     target.setMowerState(state);
+        target.setMowerState(state);
 
-    //     const result = target.unsafeGetLastTamperedValue();
-    //     expect(result).toBeFalsy();
+        const result = target.unsafeGetLastTamperedValue();
+        expect(result).toBeFalsy();
 
-    //     tampered.verify(o => o.updateValue(Characteristic.StatusTampered.NOT_TAMPERED), Times.Once());
-    // });
+        tampered.verify(o => o.updateValue(Characteristic.StatusTampered.NOT_TAMPERED), Times.Once());
+    });
 
-    // it('should refresh the tampered characteristic when the value has changed from false to true', () => {
-    //     log.setup(o => o.info(It.IsAny())).returns(undefined);
+    it('should refresh the tampered characteristic when the value has changed from false to true', () => {
+        log.setup(o => o.info(It.IsAny())).returns(undefined);
 
-    //     const motionDetected = new Mock<Characteristic>();
-    //     motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
+        const motionDetected = new Mock<Characteristic>();
+        motionDetected.setup(o => o.updateValue(It.IsAny())).returns(motionDetected.object());
 
-    //     const faulted = new Mock<Characteristic>();
-    //     faulted.setup(o => o.updateValue(true)).returns(faulted.object());
+        const faulted = new Mock<Characteristic>();
+        faulted.setup(o => o.updateValue(true)).returns(faulted.object());
 
-    //     const tampered = new Mock<Characteristic>();
-    //     tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
+        const tampered = new Mock<Characteristic>();
+        tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
-    //     const state: MowerState = {
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 10,
-    //         errorCodeTimestamp: 10000,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.ERROR
-    //     };
+        const state: MowerState = {
+            activity: Activity.GOING_HOME,
+            state: State.TAMPERED
+        };
         
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
-    //     platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.MotionDetected)).returns(motionDetected.object());        
+        service.setup(o => o.getCharacteristic(Characteristic.StatusFault)).returns(faulted.object());
+        service.setup(o => o.getCharacteristic(Characteristic.StatusTampered)).returns(tampered.object());
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
-    //     motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
-    //     motionPolicy.setup(o => o.check()).returns(false);
-    //     faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     faultedPolicy.setup(o => o.check()).returns(false);
-    //     tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
-    //     tamperedPolicy.setup(o => o.check()).returns(true);
+        motionPolicy.setup(o => o.setMowerState(state)).returns(undefined);
+        motionPolicy.setup(o => o.check()).returns(false);
+        faultedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        faultedPolicy.setup(o => o.check()).returns(false);
+        tamperedPolicy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        tamperedPolicy.setup(o => o.check()).returns(true);
 
-    //     target.unsafeSetLastFaultedValue(false);
-    //     target.unsafeSetLastMotionValue(false);
-    //     target.unsafeSetLastTamperedValue(false);
-    //     target.init();
+        target.unsafeSetLastFaultedValue(false);
+        target.unsafeSetLastMotionValue(false);
+        target.unsafeSetLastTamperedValue(false);
+        target.init();
 
-    //     target.setMowerState(state);
+        target.setMowerState(state);
 
-    //     const result = target.unsafeGetLastTamperedValue();
-    //     expect(result).toBeTruthy();
+        const result = target.unsafeGetLastTamperedValue();
+        expect(result).toBeTruthy();
 
-    //     tampered.verify(o => o.updateValue(Characteristic.StatusTampered.TAMPERED), Times.Once());
-    // });
+        tampered.verify(o => o.updateValue(Characteristic.StatusTampered.TAMPERED), Times.Once());
+    });
 
     it('should throw an error when not initialized on set mower metadata', () => {
         const metadata: MowerConnection = {
