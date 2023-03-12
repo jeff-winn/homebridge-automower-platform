@@ -16,12 +16,13 @@ import { NameMode } from '../src/services/homebridge/abstractSwitch';
 import { AutomowerMowerControlService } from '../src/services/husqvarna/automower/automowerMowerControlService';
 import { GardenaMowerControlService } from '../src/services/husqvarna/gardena/gardenaMowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from '../src/services/leavingSensor';
-import { AutomowerMainSwitch, MainSwitch } from '../src/services/mainSwitch';
+import { AutomowerMainSwitch, AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from '../src/services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from '../src/services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../src/services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../src/services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../src/services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../src/services/policies/mowerIsArrivingPolicy';
+import { DeterministicMowerIsActivePolicy } from '../src/services/policies/mowerIsEnabledPolicy';
 import { DeterministicMowerIsLeavingPolicy } from '../src/services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../src/services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../src/services/policies/mowerTamperedPolicy';
@@ -323,6 +324,38 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         motionSensor.verify(o => o.init(), Times.Once());
         batteryInformation.verify(o => o.init(), Times.Once());
         accessoryInformation.verify(o => o.init(), Times.Once());
+    });
+
+    it('should create a schedule switch for a gardena mower', () => {
+        const service = new Mock<GardenaMowerControlService>();
+        const policy = new Mock<DeterministicMowerIsActivePolicy>();
+        container.setup(o => o.resolve(GardenaMowerControlService)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicMowerIsActivePolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateMainSwitch(platformAccessory.object()) as MainSwitchImpl;
+
+        expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(MainSwitchImpl);
+    });
+
+    it('should create an schedule switch for automower', () => {
+        const service = new Mock<AutomowerMowerControlService>();
+        const policy = new Mock<DeterministicMowerIsActivePolicy>();
+        container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
+        container.setup(o => o.resolve(DeterministicMowerIsActivePolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateAutomowerMainSwitch(platformAccessory.object()) as AutomowerMainSwitchImpl;
+
+        expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(AutomowerMainSwitchImpl);
     });
 
     it('should create a pause switch for automower by default', () => {
