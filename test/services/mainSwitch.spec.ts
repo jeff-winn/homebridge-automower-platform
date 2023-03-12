@@ -71,8 +71,7 @@ describe('MainSwitchImpl', () => {
     it('should set the policy mower state', () => {
         const mowerState: MowerState = {
             activity: Activity.MOWING,            
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         policy.setup(o => o.shouldApply()).returns(false);

@@ -17,8 +17,7 @@ describe('DeterministicMowerTamperedPolicy', () => {
     it('should return true when the mower state is in operation', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.check();
@@ -29,8 +28,7 @@ describe('DeterministicMowerTamperedPolicy', () => {
     it('should return true when the mower state is tampered', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.TAMPERED,
-            enabled: true
+            state: State.TAMPERED
         });
 
         const result = target.check();

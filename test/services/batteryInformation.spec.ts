@@ -35,8 +35,7 @@ describe('BatteryServiceImpl', () => {
     it('should throw an error when not initialized on set charging state', () => {
         expect(() => target.setChargingState({
             activity: Activity.MOWING,            
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         })).toThrowError();
     });
 
@@ -148,8 +147,7 @@ describe('BatteryServiceImpl', () => {
 
         target.setChargingState({
             activity: Activity.CHARGING,
-            state: State.READY,
-            enabled: true
+            state: State.READY
         });
 
         chargingState.verify(o => o.updateValue(Characteristic.ChargingState.CHARGING), Times.Once());
@@ -175,8 +173,7 @@ describe('BatteryServiceImpl', () => {
         
         target.setChargingState({
             activity: Activity.MOWING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         chargingState.verify(o => o.updateValue(Characteristic.ChargingState.NOT_CHARGING), Times.Once());

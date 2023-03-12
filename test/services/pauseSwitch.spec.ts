@@ -129,8 +129,7 @@ describe('PauseSwitchImpl', () => {
     it('should refresh the characteristic value based on the policy result', () => {
         const mowerState: MowerState = {
             activity: Activity.MOWING,            
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         const c = new Mock<Characteristic>();
@@ -160,8 +159,7 @@ describe('PauseSwitchImpl', () => {
     it('should park on resume when the mower was previously going home', async () => {
         const mowerState: MowerState = {
             activity: Activity.GOING_HOME,            
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         const mowerId = '12345';
@@ -207,14 +205,12 @@ describe('PauseSwitchImpl', () => {
     it('should not update the last activity when paused', () => {
         const mowerState1: MowerState = {
             activity: Activity.GOING_HOME,            
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         const mowerState2: MowerState = {
             activity: Activity.GOING_HOME,
-            state: State.PAUSED,
-            enabled: true
+            state: State.PAUSED
         };
 
         policy.setup(o => o.check()).returns(true);
@@ -292,8 +288,7 @@ describe('PauseSwitchImpl', () => {
     it('should update the last activity when going home', () => {
         const mowerState: MowerState = {
             activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         policy.setup(o => o.check()).returns(true);

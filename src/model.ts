@@ -58,6 +58,7 @@ export interface Mower {
         connection: MowerConnection;
         mower: MowerState;
         battery: Battery;
+        schedule?: MowerSchedule;
     };
 }
 
@@ -74,7 +75,6 @@ export interface Location {
 export interface MowerState {
     activity: Activity;
     state: State;
-    enabled: boolean;
 }
 
 /**
@@ -99,4 +99,13 @@ export interface MowerMetadata {
  */
 export interface MowerConnection {
     connected: boolean;
+}
+
+/**
+ * Describes a mower schedule.
+ */
+export interface MowerSchedule {
+    runContinuously: boolean;
+    runInFuture: boolean;
+    runOnSchedule: boolean;
 }

@@ -1,8 +1,8 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { 
-    BatteryState, CommonServiceDataItem, DeviceDataItem, GardenaClient, ItemType, MowerActivity, 
-    MowerError, MowerServiceDataItem, RFLinkState, ServiceState 
+import {
+    BatteryState, CommonServiceDataItem, DeviceDataItem, GardenaClient, ItemType, MowerActivity,
+    MowerError, MowerServiceDataItem, RFLinkState, ServiceState
 } from '../../../../src/clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
@@ -321,7 +321,6 @@ describe('GardenaGetMowersService', () => {
         expect(result.attributes.metadata.name).toBe('SILENO');
         expect(result.attributes.metadata.serialNumber).toBe('1234567890');
         expect(result.attributes.mower.activity).toBe(Activity.CHARGING);
-        expect(result.attributes.mower.enabled).toBeFalsy();
         expect(result.attributes.mower.state).toBe(State.OFF);
 
         log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());

@@ -1,11 +1,11 @@
 import { Activity, State } from '../../../src/model';
-import { DeterministicMowerIsEnabledPolicy } from '../../../src/services/policies/mowerIsEnabledPolicy';
+import { DeterministicMowerIsActivePolicy } from '../../../src/services/policies/mowerIsEnabledPolicy';
 
-describe('DeterministicMowerIsEnabledPolicy', () => {
-    let target: DeterministicMowerIsEnabledPolicy;
+describe('DeterministicMowerIsActivePolicy', () => {
+    let target: DeterministicMowerIsActivePolicy;
 
     beforeEach(() => {
-        target = new DeterministicMowerIsEnabledPolicy();
+        target = new DeterministicMowerIsActivePolicy();
     });
 
     it('should not apply when the mower state is not set', () => {
@@ -17,8 +17,7 @@ describe('DeterministicMowerIsEnabledPolicy', () => {
     it('should not apply when the mower is paused', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.PAUSED,
-            enabled: true
+            state: State.PAUSED
         });
 
         const result = target.shouldApply();
@@ -29,8 +28,7 @@ describe('DeterministicMowerIsEnabledPolicy', () => {
     it('should always apply by default', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.shouldApply();
@@ -44,11 +42,10 @@ describe('DeterministicMowerIsEnabledPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return true when mower state is enabled', () => {
+    it('should return true when mower state is mowing', () => {
         target.setMowerState({
-            activity: Activity.PARKED,
-            state: State.READY,
-            enabled: true
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
         });
 
         const result = target.check();
@@ -59,8 +56,7 @@ describe('DeterministicMowerIsEnabledPolicy', () => {
     it('should return true when mower state is disabled', () => {
         target.setMowerState({
             activity: Activity.PARKED,
-            state: State.READY,
-            enabled: false
+            state: State.READY
         });
 
         const result = target.check();

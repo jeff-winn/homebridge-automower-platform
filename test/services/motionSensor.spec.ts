@@ -3,8 +3,8 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { MowerContext } from '../../src/automowerAccessory';
-import { Activity, MowerConnection, MowerState, State } from '../../src/model';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, MowerConnection, MowerState, State } from '../../src/model';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';
@@ -90,8 +90,7 @@ describe('MotionSensorImpl', () => {
         
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         })).toThrowError();
     });
 
@@ -113,8 +112,7 @@ describe('MotionSensorImpl', () => {
 
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         })).toThrowError();
     });
 
@@ -143,8 +141,7 @@ describe('MotionSensorImpl', () => {
 
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         })).toThrowError();
     });
 
@@ -162,8 +159,7 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
         
         const service = new Mock<Service>();
@@ -204,8 +200,7 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
         
         const service = new Mock<Service>();

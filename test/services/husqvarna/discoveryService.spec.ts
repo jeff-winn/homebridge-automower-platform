@@ -62,8 +62,7 @@ describe('DiscoveryServiceImpl', () => {
                 },
                 mower: {
                     activity: model.Activity.CHARGING,
-                    state: model.State.READY,
-                    enabled: true
+                    state: model.State.READY
                 }
             }
         };
@@ -86,8 +85,7 @@ describe('DiscoveryServiceImpl', () => {
                 },
                 mower: {
                     activity: model.Activity.MOWING,
-                    state: model.State.IN_OPERATION,
-                    enabled: true
+                    state: model.State.IN_OPERATION
                 }
             }
         };
@@ -143,8 +141,7 @@ describe('DiscoveryServiceImpl', () => {
                 },
                 mower: {
                     activity: model.Activity.CHARGING,
-                    state: model.State.READY,
-                    enabled: true
+                    state: model.State.READY
                 }
             }
         };
@@ -167,8 +164,7 @@ describe('DiscoveryServiceImpl', () => {
                 },
                 mower: {
                     activity: model.Activity.CHARGING,
-                    state: model.State.IN_OPERATION,
-                    enabled: true
+                    state: model.State.IN_OPERATION
                 }
             }
         };

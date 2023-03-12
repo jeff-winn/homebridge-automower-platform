@@ -1,4 +1,4 @@
-import { MowerState, State } from '../../model';
+import { Activity, MowerSchedule, MowerState, State } from '../../model';
 import { OptionalPolicy } from './policy';
 
 /**
@@ -13,9 +13,20 @@ export interface MowerIsEnabledPolicy extends OptionalPolicy {
 }
 
 /**
- * A policy which determines whether the mower is enabled based on mower information.
+ * Identifies a policy as supporting mower schedule information.
  */
-export class DeterministicMowerIsEnabledPolicy implements MowerIsEnabledPolicy {
+export interface SupportMowerScheduleInformation {
+    /**
+     * Sets the schedule.
+     * @param schedule The mower schedule.
+     */
+    setMowerSchedule(schedule: MowerSchedule): void;
+}
+
+/**
+ * An abstract {@link MowerIsEnabledPolicy} which supports base functionality indicating whether the policy should be applied.
+ */
+export abstract class AbstractMowerIsEnabledPolicy implements MowerIsEnabledPolicy {
     private mowerState?: MowerState;
 
     public shouldApply(): boolean {
@@ -28,78 +39,72 @@ export class DeterministicMowerIsEnabledPolicy implements MowerIsEnabledPolicy {
             return false;
         }
 
-        // TODO: Clean this up.
-        // if (this.calendar === undefined || this.planner === undefined || this.mowerState === undefined) {
-        //     return false;
-        // }
+        return this.shouldApplyCore(this.mowerState);
+    }
 
-        // if (this.mowerState.state === State.PAUSED) {
-        //     // The mower was paused, don't worry about updating anything.
-        //     return false;
-        // }
-
-        // if (!this.isSetToRunContinuously()) {
-        //     return this.mowerState.state !== State.IN_OPERATION;
-        // }
-
+    protected shouldApplyCore(mowerState: MowerState): boolean {
         return true;
     }
 
-    public check(): boolean {            
+    public check(): boolean {
         if (this.mowerState === undefined) {
             return false;
         }
 
-        return this.mowerState.enabled;
-
-        // TODO: Clean this up.
-        // if (this.isSetToRunContinuously()) {
-        //     // The mower is set to run continuously, which means the switch is now being used to control whether the
-        //     // mower is actually mowing the yard rather than whether a schedule is enabled.
-        //     return this.isMowerActive();
-        // } else {
-        //     // Checks whether any days have been enabled on any of the schedules.
-        //     const anyDaysEnabled = this.isSetToRunOnASchedule();            
-
-        //     // Checks whether the mower is waiting to run in the future (seen when in charge station).
-        //     const isFutureScheduled = this.isFutureScheduled();       
-
-        //     return anyDaysEnabled && isFutureScheduled;
-        // }
+        return this.checkCore(this.mowerState);
     }
 
-    // protected isMowerActive(): boolean {
-    //     return this.mowerState!.state === State.IN_OPERATION;
-    // }
+    protected abstract checkCore(mowerState: MowerState): boolean;
 
-    // protected isFutureScheduled(): boolean {      
-    //     return this.planner!.nextStartTimestamp > 0 && this.planner!.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
-    // }
-
-    // protected isSetToRunOnASchedule(): boolean {
-    //     let result = false;
-
-    //     for (const task of this.calendar!.tasks) {
-    //         if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || 
-    //             task.thursday || task.friday || task.saturday)) {
-    //             result = true;
-    //         }
-    //     }
-
-    //     return result;
-    // }
-
-    // protected isSetToRunContinuously(): boolean {
-    //     const task = this.calendar!.tasks[0];
-    //     if (task === undefined) {
-    //         return false;
-    //     }
-        
-    //     return this.planner!.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
-    //         task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
-    // }
-    
     public setMowerState(state: MowerState): void {
         this.mowerState = state;
-    }    
+    }
+}
+
+/**
+ * A policy which determines whether the mower is scheduled based on mower information.
+ */
+export class DeterministicMowerIsScheduledPolicy extends AbstractMowerIsEnabledPolicy implements SupportMowerScheduleInformation {
+    private mowerSchedule?: MowerSchedule;
+
+    public setMowerSchedule(schedule: MowerSchedule): void {
+        this.mowerSchedule = schedule;
+    }
+
+    protected shouldApplyCore(mowerState: MowerState): boolean {
+        if (this.mowerSchedule === undefined) {
+            return false;
+        }
+
+        if (!this.mowerSchedule.runContinuously) {
+            return mowerState.state !== State.IN_OPERATION;
+        }
+
+        return super.shouldApplyCore(mowerState);
+    }
+
+    protected checkCore(mowerState: MowerState): boolean {
+        if (this.mowerSchedule === undefined) {
+            return false;
+        }
+
+        if (this.mowerSchedule.runContinuously) {
+            // The mower is set to run continuously, which means the switch is now being used to control whether the
+            // mower is actually mowing the yard rather than whether a schedule is enabled.
+            return mowerState.state === State.IN_OPERATION;
+        }
+
+        return this.mowerSchedule.runOnSchedule && this.mowerSchedule.runInFuture;
+    }
+}
+
+/**
+ * A policy which determines whether the mower is active based on mower information.
+ */
+export class DeterministicMowerIsActivePolicy extends AbstractMowerIsEnabledPolicy {
+    protected override checkCore(mowerState: MowerState): boolean {
+        return mowerState.activity === Activity.MOWING || 
+               mowerState.activity === Activity.GOING_HOME || 
+               mowerState.activity === Activity.LEAVING_HOME;
+    }
 }

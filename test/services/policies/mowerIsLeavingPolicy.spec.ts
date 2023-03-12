@@ -17,8 +17,7 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
     it('should return true when leaving home and in operation', () => {
         target.setMowerState({
             activity: Activity.LEAVING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.check();
@@ -29,8 +28,7 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
     it('should return false when leaving home and paused', () => {
         target.setMowerState({
             activity: Activity.LEAVING_HOME,
-            state: State.PAUSED,
-            enabled: true
+            state: State.PAUSED
         });
 
         const result = target.check();
@@ -41,8 +39,7 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
     it('should return false when leaving home and faulted', () => {
         target.setMowerState({
             activity: Activity.LEAVING_HOME,
-            state: State.FAULTED,
-            enabled: true
+            state: State.FAULTED
         });
 
         const result = target.check();
@@ -53,8 +50,7 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
     it('should return false when leaving home and tampered', () => {
         target.setMowerState({
             activity: Activity.LEAVING_HOME,
-            state: State.TAMPERED,
-            enabled: true
+            state: State.TAMPERED
         });
 
         const result = target.check();

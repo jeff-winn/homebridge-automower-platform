@@ -17,8 +17,7 @@ describe('DeterministicMowerInMotionPolicy', () => {
     it('should return true when mower is going home', () => {
         target.setMowerState({
             activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.check();
@@ -29,8 +28,7 @@ describe('DeterministicMowerInMotionPolicy', () => {
     it('should return true when mower is leaving home', () => {
         target.setMowerState({
             activity: Activity.LEAVING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.check();
@@ -41,8 +39,7 @@ describe('DeterministicMowerInMotionPolicy', () => {
     it('should return true when mower is mowing', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.check();

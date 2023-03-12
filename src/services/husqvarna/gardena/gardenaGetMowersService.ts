@@ -1,15 +1,14 @@
 import * as model from '../../../model';
 
-import { 
-    CommonServiceDataItem, DeviceDataItem, DeviceLink, GardenaClient, LocationLink, LocationResponse, MowerActivity, MowerError, 
-    MowerServiceDataItem, ServiceState, ItemType, RFLinkState 
+import {
+    CommonServiceDataItem, DeviceDataItem, DeviceLink, GardenaClient, ItemType, LocationLink, LocationResponse, MowerServiceDataItem, RFLinkState
 } from '../../../clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
-import { GardenaStateConverter } from './converters/gardenaStateConverter';
 import { GardenaActivityConverter } from './converters/gardenaActivityConverter';
+import { GardenaStateConverter } from './converters/gardenaStateConverter';
 
 /**
  * Describes the model information parsed from the model data.
@@ -138,20 +137,20 @@ export class GardenaGetMowersService implements GetMowersService {
                 },
                 mower: {
                     activity: this.convertMowerActivity(mower),
-                    state: this.convertMowerState(mower),
-                    enabled: this.isMowerEnabled(mower)
-                }                
+                    state: this.convertMowerState(mower)
+                }
             }
         };
     }
 
-    protected isMowerEnabled(mower: MowerServiceDataItem): boolean {
-        if (mower.attributes.lastErrorCode.value === MowerError.OFF_DISABLED) {
-            return false;
-        }
+    // TODO: Clean this up.
+    // protected isMowerEnabled(mower: MowerServiceDataItem): boolean {
+    //     if (mower.attributes.lastErrorCode.value === MowerError.OFF_DISABLED) {
+    //         return false;
+    //     }
 
-        return mower.attributes.activity.value !== MowerActivity.PARKED_PARK_SELECTED;
-    }
+    //     return mower.attributes.activity.value !== MowerActivity.PARKED_PARK_SELECTED;
+    // }
 
     protected convertMowerActivity(mower: MowerServiceDataItem): model.Activity {
         return this.activityConverter.convert(mower);

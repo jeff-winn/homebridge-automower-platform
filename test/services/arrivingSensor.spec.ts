@@ -3,8 +3,8 @@ import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { MowerContext } from '../../src/automowerAccessory';
-import { Activity, MowerState, State } from '../../src/model';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, MowerState, State } from '../../src/model';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsArrivingPolicy } from '../../src/services/policies/mowerIsArrivingPolicy';
 import { ArrivingContactSensorImplSpy } from './arrivingContactSensorImplSpy';
@@ -74,8 +74,7 @@ describe('ArrivingContactSensorImpl', () => {
         
         expect(() => target.setMowerState({
             activity: Activity.CHARGING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         })).toThrowError();
     });
 
@@ -91,8 +90,7 @@ describe('ArrivingContactSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         policy.setup(o => o.setMowerState(state)).returns(undefined);
@@ -121,8 +119,7 @@ describe('ArrivingContactSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };
 
         policy.setup(o => o.setMowerState(state)).returns(undefined);

@@ -17,8 +17,7 @@ describe('DeterministicMowerFaultedPolicy', () => {
     it('should return true when mower state is faulted', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.FAULTED,
-            enabled: true
+            state: State.FAULTED
         });
 
         const result = target.check();
@@ -29,8 +28,7 @@ describe('DeterministicMowerFaultedPolicy', () => {
     it('should return false when mower state is not faulted', () => {
         target.setMowerState({
             activity: Activity.MOWING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         });
 
         const result = target.check();

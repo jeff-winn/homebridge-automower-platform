@@ -72,8 +72,7 @@ describe('MowerAccessory', () => {
 
         const state: MowerState = {
             activity: Activity.MOWING,
-            state: State.IN_OPERATION,
-            enabled: true
+            state: State.IN_OPERATION
         };        
         
         const connection: MowerConnection = {

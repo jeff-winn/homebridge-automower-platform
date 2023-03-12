@@ -136,8 +136,12 @@ describe('GetMowersServiceImpl', () => {
                 },
                 mower: {
                     activity: model.Activity.MOWING,
-                    state: model.State.IN_OPERATION,
-                    enabled: true
+                    state: model.State.IN_OPERATION
+                },
+                schedule: {
+                    runContinuously: false,
+                    runInFuture: false,
+                    runOnSchedule: false
                 }
             }
         });

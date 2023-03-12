@@ -22,7 +22,7 @@ import { PauseSwitch, PauseSwitchImpl } from '../src/services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../src/services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../src/services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../src/services/policies/mowerIsArrivingPolicy';
-import { DeterministicMowerIsEnabledPolicy } from '../src/services/policies/mowerIsEnabledPolicy';
+import { DeterministicMowerIsActivePolicy } from '../src/services/policies/mowerIsEnabledPolicy';
 import { DeterministicMowerIsLeavingPolicy } from '../src/services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../src/services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../src/services/policies/mowerTamperedPolicy';
@@ -90,8 +90,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                 },
                 mower: {
                     activity: Activity.MOWING,
-                    state: State.IN_OPERATION,
-                    enabled: true
+                    state: State.IN_OPERATION
                 }
             }
         };        
@@ -145,8 +144,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                 },
                 mower: {
                     activity: Activity.MOWING,
-                    state: State.IN_OPERATION,
-                    enabled: true
+                    state: State.IN_OPERATION
                 }
             }
         };        
@@ -236,9 +234,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         config.device_type = undefined;
 
         const service = new Mock<AutomowerMowerControlService>();
-        const policy = new Mock<DeterministicMowerIsEnabledPolicy>();
+        const policy = new Mock<DeterministicMowerIsActivePolicy>();
         container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
-        container.setup(o => o.resolve(DeterministicMowerIsEnabledPolicy)).returns(policy.object());
+        container.setup(o => o.resolve(DeterministicMowerIsActivePolicy)).returns(policy.object());
 
         locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
         
@@ -254,9 +252,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         config.device_type = DeviceType.AUTOMOWER;
         
         const service = new Mock<AutomowerMowerControlService>();
-        const policy = new Mock<DeterministicMowerIsEnabledPolicy>();
+        const policy = new Mock<DeterministicMowerIsActivePolicy>();
         container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
-        container.setup(o => o.resolve(DeterministicMowerIsEnabledPolicy)).returns(policy.object());
+        container.setup(o => o.resolve(DeterministicMowerIsActivePolicy)).returns(policy.object());
 
         locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
         
@@ -272,9 +270,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         config.device_type = DeviceType.GARDENA;
         
         const service = new Mock<GardenaMowerControlService>();
-        const policy = new Mock<DeterministicMowerIsEnabledPolicy>();
+        const policy = new Mock<DeterministicMowerIsActivePolicy>();
         container.setup(o => o.resolve(GardenaMowerControlService)).returns(service.object());
-        container.setup(o => o.resolve(DeterministicMowerIsEnabledPolicy)).returns(policy.object());
+        container.setup(o => o.resolve(DeterministicMowerIsActivePolicy)).returns(policy.object());
 
         locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
         
