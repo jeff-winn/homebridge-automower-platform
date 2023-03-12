@@ -3,7 +3,7 @@ import { API, CharacteristicEventTypes, CharacteristicSetCallback, Characteristi
 import { It, Mock, Times } from 'moq.ts';
 
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { Activity, MowerState, State } from '../../src/model';
+import { Activity, MowerConnection, MowerState, State } from '../../src/model';
 import { MowerContext } from '../../src/mowerAccessory';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
@@ -38,33 +38,7 @@ describe('MainSwitchImpl', () => {
 
         target = new MainSwitchImplSpy('Schedule', mowerControlService.object(), policy.object(),
             platformAccessory.object(), api.object(), log.object());
-    });
-
-    // TODO: Clean this up.
-    // it('should set the policy calendar', () => {
-    //     const calendar: Calendar = {
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true
-    //             }
-    //         ]
-    //     };
-
-    //     policy.setup(o => o.shouldApply()).returns(false);
-    //     policy.setup(o => o.setCalendar(calendar)).returns(undefined);
-
-    //     target.setCalendar(calendar);
-
-    //     policy.verify(o => o.setCalendar(calendar), Times.Once());
-    // });
+    });    
 
     it('should set the policy mower state', () => {
         const mowerState: MowerState = {
@@ -79,22 +53,6 @@ describe('MainSwitchImpl', () => {
 
         policy.verify(o => o.setMowerState(mowerState), Times.Once());
     });
-
-    // TODO: Clean this up.
-    // it('should set the policy planner', () => {
-    //     const planner: Planner = {
-    //         nextStartTimestamp: 12345,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.WEEK_SCHEDULE
-    //     };
-
-    //     policy.setup(o => o.shouldApply()).returns(false);
-    //     policy.setup(o => o.setPlanner(planner)).returns(undefined);
-
-    //     target.setPlanner(planner);
-
-    //     policy.verify(o => o.setPlanner(planner), Times.Once());
-    // });
     
     it('should be initialized with existing service', () => {
         const c = new Mock<Characteristic>();
@@ -205,134 +163,13 @@ describe('MainSwitchImpl', () => {
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
 
-    // TODO: Clean this up.
-    // it('should update the characteristic as true when scheduled to start', () => {
-    //     const c = new Mock<Characteristic>();
-    //     c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-    //     c.setup(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());        
+    it('should throw an error when not initialized on set mower connection', () => {
+        const connection: MowerConnection = {
+            connected: false
+        };
 
-    //     const cuttingHeight = new Mock<Characteristic>();
-    //     cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
-    
-    //     const statusActive = new Mock<Characteristic>();
-
-    //     policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.shouldApply()).returns(true);
-    //     policy.setup(o => o.check()).returns(true);
-
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-    //     service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-    //     service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-    //     service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
-
-    //     platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-    //     log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
-
-    //     target.init(NameMode.DEFAULT);
-
-    //     const calendar: Calendar = {
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true
-    //             }
-    //         ]
-    //     };
-
-    //     const planner: Planner = {
-    //         nextStartTimestamp: 12345,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.WEEK_SCHEDULE
-    //     };
-
-    //     target.setCalendar(calendar);
-    //     target.setPlanner(planner);
-
-    //     policy.verify(o => o.setCalendar(calendar), Times.Once());
-    //     policy.verify(o => o.setPlanner(planner), Times.Once());
-    //     c.verify(o => o.updateValue(true), Times.Once());
-    // });
-
-    // it('should update the characteristic as false when planner is not scheduled to start', () => {
-    //     const c = new Mock<Characteristic>();
-    //     c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-    //     c.setup(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-        
-    //     const cuttingHeight = new Mock<Characteristic>();
-    //     cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
-    
-    //     const statusActive = new Mock<Characteristic>();
-        
-    //     policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.shouldApply()).returns(true);
-    //     policy.setup(o => o.check()).returns(false);
-
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-    //     service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-    //     service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-    //     service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
-
-    //     platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-    //     log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
-
-    //     target.init(NameMode.DEFAULT);
-    //     target.unsafeSetLastValue(true);
-
-    //     const calendar: Calendar = {
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true
-    //             }
-    //         ]
-    //     };
-
-    //     const planner: Planner = {
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.NOT_APPLICABLE
-    //     };
-
-    //     target.setCalendar(calendar);
-    //     target.setPlanner(planner);
-
-    //     policy.verify(o => o.setCalendar(calendar), Times.Once());
-    //     policy.verify(o => o.setPlanner(planner), Times.Once());
-    //     c.verify(o => o.updateValue(false), Times.Once());
-    // });
-
-    // it('should throw an error when not initialized on set mower metadata', () => {
-    //     const metadata: MowerMetadata = {
-    //         connected: false,
-    //         statusTimestamp: 1
-    //     };
-
-    //     expect(() => target.setMowerMetadata(metadata)).toThrowError();
-    // });
+        expect(() => target.setMowerConnection(connection)).toThrowError();
+    });
 });
 
 describe('AutomowerMainSwitchImpl', () => {
