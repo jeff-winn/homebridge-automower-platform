@@ -1,4 +1,5 @@
 
+import { Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
 import { AutomowerMowerScheduleConverterImpl } from '../../../../../src/services/husqvarna/automower/converters/automowerMowerScheduleConverter';
 
 describe('AutomowerScheduleConverterImpl', () => {
@@ -8,446 +9,980 @@ describe('AutomowerScheduleConverterImpl', () => {
         target = new AutomowerMowerScheduleConverterImpl();
     });
 
-    it('should be truthy', () => { // TODO: Clean this up.
-        expect(true).toBeTruthy();
+    it('should return true when set to run continuously', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { }
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [
+                        {
+                            start: 0,
+                            duration: 1440, // 24 hours
+                            sunday: true,
+                            monday: true,
+                            tuesday: true,
+                            wednesday: true,
+                            thursday: true,
+                            friday: true,
+                            saturday: true
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result.runContinuously).toBeTruthy();
     });
     
-    // TODO: Clean this up.
-    // it('should not apply the policy when the mower is paused', () => {
-    //     target.setMowerState({
-    //         activity: Activity.NOT_APPLICABLE,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.PAUSED
-    //     });
+    it('should return false when not set to run continuously', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { }
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [
+                        {
+                            start: 0,
+                            duration: 1440, // 24 hours
+                            sunday: true,
+                            monday: true,
+                            tuesday: false,
+                            wednesday: true,
+                            thursday: true,
+                            friday: true,
+                            saturday: true
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     target.setCalendar({
-    //         tasks: [ ]
-    //     });
-        
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //     });  
+        const result = target.convert(mower);
 
-    //     const result = target.shouldApply();
+        expect(result.runContinuously).toBeFalsy();
+    });
 
-    //     expect(result).toBeFalsy();
-    // });
+    it('should return false indicating not set to run continuously when no tasks', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { }
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ ]
+                }
+            }
+        };
 
-    // it('should apply the policy when the mower is set to run continously', () => {
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
+        const result = target.convert(mower);
 
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 0,
-    //                 duration: 1440, // 24 hours
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true
-    //             }
-    //         ]
-    //     });
-        
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //     });  
+        expect(result.runContinuously).toBeFalsy();
+    });
 
-    //     const result = target.shouldApply();
+    it('should return true indicating set to run in future', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 1653984000000,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ ]
+                }
+            }
+        };
 
-    //     expect(result).toBeTruthy();
-    // });
+        const result = target.convert(mower);
 
-    // it('should return false when mower is not in operation and scheduled to run continuously', () => {
-    //     target.setMowerState({
-    //         activity: Activity.PARKED_IN_CS,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.HOME,
-    //         state: State.NOT_APPLICABLE
-    //     });
+        expect(result.runInFuture).toBeTruthy();
+    });
 
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 0,
-    //                 duration: 1440, // 24 hours
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true
-    //             }
-    //         ]
-    //     });
-        
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { }            
-    //     });
+    it('should return false indicating not set to run in future', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ ]
+                }
+            }
+        };
 
-    //     const result = target.check();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
+        expect(result.runInFuture).toBeFalsy();
+    });
 
-    // it('should return true when mower is in operation and scheduled to run continuously', () => {
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
+    it('should return false indicating not set to run in future when park is overridden', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 0,
-    //                 duration: 1440, // 24 hours
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true
-    //             }
-    //         ]
-    //     });
-        
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { }            
-    //     });
+        const result = target.convert(mower);
 
-    //     const result = target.check();
+        expect(result.runInFuture).toBeFalsy();
+    });
 
-    //     expect(result).toBeTruthy();
-    // });
+    it('should return true indicating set to run on schedule with task for sunday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    // it('should return false when the calendar is defined with an empty value', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             undefined!
-    //         ]
-    //     });
+        const result = target.convert(mower);
 
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //     });
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
+    it('should return true indicating set to run on schedule with task for monday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: true,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     const result = target.check();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    // it('should return false when the mower state is undefined', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
-        
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //     });
+    it('should return true indicating set to run on schedule with task for tuesday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: false,
+                            tuesday: true,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     const result = target.shouldApply();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    // it('should return false when the mower is in operation and not set to run continuously', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
-        
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //     });
+    it('should return true indicating set to run on schedule with task for wednesday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: true,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
+        const result = target.convert(mower);
 
-    //     const result = target.shouldApply();
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    //     expect(result).toBeFalsy();
-    // });
+    it('should return true indicating set to run on schedule with task for thursday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: true,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    // it('should return false when nothing is set', () => {
-    //     const result = target.shouldApply();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    // it('should return false when calendar is not set', () => {
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //     });
+    it('should return true indicating set to run on schedule with task for friday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: true,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     const result = target.shouldApply();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    // it('should return false when planner is not set', () => {
-    //     const calendar: Calendar = {
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     };
+    it('should return true indicating set to run on schedule with task for saturday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: true
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     target.setCalendar(calendar);
-        
-    //     const result = target.shouldApply();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
-    
-    // it('should return false when calendar is not scheduled to start', () => {
-    //     const calendar: Calendar = {
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     };
+        expect(result.runOnSchedule).toBeTruthy();
+    });
 
-    //     target.setCalendar(calendar);
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.WEEK_SCHEDULE
-    //     });
+    it('should return true indicating set to run on schedule when a task is scheduled to start', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: false,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        },
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     const result = target.check();
+        const result = target.convert(mower);
 
-    //     expect(result).toBeFalsy();
-    // });
+        expect(result.runOnSchedule).toBeTruthy();
+    });   
 
-    // it('should return false when the planner has park overridden', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
+    it('should return true indicating set to run on schedule with task for sunday', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
 
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.PARK_OVERRIDE
-    //     });
+        const result = target.convert(mower);
 
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the only task is scheduled to start', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
-
-    //     target.setPlanner({
-    //         nextStartTimestamp: 1653984000000,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.WEEK_SCHEDULE
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return true when one of the calendar tasks is scheduled to start', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             },
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
-
-    //     target.setPlanner({
-    //         nextStartTimestamp: 1653984000000,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.WEEK_SCHEDULE
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return false when calendar is not scheduled to start', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
-
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.WEEK_SCHEDULE
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should throw an error when calendar is undefined', () => {
-    //     target.setPlanner({
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.NONE
-    //     });
-
-    //     expect(() => target.check()).toThrowError();
-    // });
-
-    // it('should throw an error when planner is undefined', () => {
-    //     target.setCalendar({
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: false,
-    //                 monday: false,
-    //                 tuesday: false,
-    //                 wednesday: false,
-    //                 thursday: false,
-    //                 friday: false,
-    //                 saturday: false
-    //             }
-    //         ]
-    //     });
-        
-    //     expect(() => target.check()).toThrowError();
-    // });
+        expect(result.runOnSchedule).toBeFalsy();
+    });
 });
