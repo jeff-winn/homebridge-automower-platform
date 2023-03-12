@@ -91,7 +91,9 @@ describe('MowerAccessory', () => {
                     model: 'model',
                     name: 'name',
                     serialNumber: '1234'
-                }
+                },
+                schedule: undefined,
+                settings: undefined
             }
         };
 
@@ -99,7 +101,7 @@ describe('MowerAccessory', () => {
         batteryService.setup(o => o.setChargingState(state)).returns(undefined);
         mainSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         mainSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
-        mainSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
+        // mainSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
         pauseSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
         arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);

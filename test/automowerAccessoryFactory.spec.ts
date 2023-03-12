@@ -91,7 +91,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                 mower: {
                     activity: Activity.MOWING,
                     state: State.IN_OPERATION
-                }
+                },
+                schedule: undefined,
+                settings: undefined
             }
         };        
 
@@ -145,7 +147,9 @@ describe('AutomowerAccessoryFactoryImpl', () => {
                 mower: {
                     activity: Activity.MOWING,
                     state: State.IN_OPERATION
-                }
+                },
+                schedule: undefined,
+                settings: undefined
             }
         };        
 

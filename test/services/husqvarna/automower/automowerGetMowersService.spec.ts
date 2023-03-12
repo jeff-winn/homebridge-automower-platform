@@ -142,6 +142,9 @@ describe('GetMowersServiceImpl', () => {
                     runContinuously: false,
                     runInFuture: false,
                     runOnSchedule: false
+                },
+                settings: {
+                    cuttingHeight: 1
                 }
             }
         });

@@ -71,6 +71,9 @@ export class AutomowerGetMowersService implements GetMowersService {
                     runContinuously: this.isSetToRunContinuously(mower),
                     runInFuture: this.isSetToRunInFuture(mower),
                     runOnSchedule: this.isSetToRunOnASchedule(mower)
+                },
+                settings: {
+                    cuttingHeight: mower.attributes.settings.cuttingHeight
                 }
             }
         };

@@ -7,14 +7,13 @@ import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, MowerState, State } from '../../src/model';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
-import { ChangeSettingsService } from '../../src/services/husqvarna/automower/changeSettingsService';
 import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
 import { MowerIsEnabledPolicy } from '../../src/services/policies/mowerIsEnabledPolicy';
 import { MainSwitchImplSpy } from './mainSwitchImplSpy';
 
 describe('MainSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
-    let changeSettingsService: Mock<ChangeSettingsService>;
+    // let changeSettingsService: Mock<ChangeSettingsService>;
     let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
@@ -25,7 +24,7 @@ describe('MainSwitchImpl', () => {
 
     beforeEach(() => {
         mowerControlService = new Mock<MowerControlService>();
-        changeSettingsService = new Mock<ChangeSettingsService>();
+        // changeSettingsService = new Mock<ChangeSettingsService>();
 
         platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         policy = new Mock<MowerIsEnabledPolicy>();
@@ -38,7 +37,7 @@ describe('MainSwitchImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         log = new Mock<PlatformLogger>();        
 
-        target = new MainSwitchImplSpy('Schedule', mowerControlService.object(), changeSettingsService.object(), policy.object(), 
+        target = new MainSwitchImplSpy('Schedule', mowerControlService.object(), policy.object(),
             platformAccessory.object(), api.object(), log.object());
     });
 
@@ -103,9 +102,10 @@ describe('MainSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
-        const cuttingHeight = new Mock<Characteristic>();
-        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+        // TODO: Clean this up.
+        // const cuttingHeight = new Mock<Characteristic>();
+        // cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+        //     It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
 
         const statusActive = new Mock<Characteristic>();
 
@@ -114,7 +114,7 @@ describe('MainSwitchImpl', () => {
         service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
         service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
+        // service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
 
@@ -122,8 +122,8 @@ describe('MainSwitchImpl', () => {
 
         c.verify(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
-        cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+        // cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
+        //     It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
     });
 
     it('should resume the schedule', async () => {

@@ -138,7 +138,9 @@ export class GardenaGetMowersService implements GetMowersService {
                 mower: {
                     activity: this.convertMowerActivity(mower),
                     state: this.convertMowerState(mower)
-                }
+                },
+                schedule: undefined,
+                settings: undefined
             }
         };
     }
