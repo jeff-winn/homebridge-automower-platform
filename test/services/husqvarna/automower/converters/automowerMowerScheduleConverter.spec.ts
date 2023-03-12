@@ -919,7 +919,7 @@ describe('AutomowerScheduleConverterImpl', () => {
         expect(result.runOnSchedule).toBeTruthy();
     });   
 
-    it('should return true indicating set to run on schedule with task for sunday', () => {
+    it('should return false indicating set to run on schedule when parked', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -983,6 +983,6 @@ describe('AutomowerScheduleConverterImpl', () => {
 
         const result = target.convert(mower);
 
-        expect(result.runOnSchedule).toBeFalsy();
+        expect(result.runInFuture).toBeFalsy();
     });
 });
