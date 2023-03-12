@@ -145,15 +145,6 @@ export class GardenaGetMowersService implements GetMowersService {
         };
     }
 
-    // TODO: Clean this up.
-    // protected isMowerEnabled(mower: MowerServiceDataItem): boolean {
-    //     if (mower.attributes.lastErrorCode.value === MowerError.OFF_DISABLED) {
-    //         return false;
-    //     }
-
-    //     return mower.attributes.activity.value !== MowerActivity.PARKED_PARK_SELECTED;
-    // }
-
     protected convertMowerActivity(mower: MowerServiceDataItem): model.Activity {
         return this.activityConverter.convert(mower);
     }
