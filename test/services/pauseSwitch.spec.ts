@@ -241,49 +241,44 @@ describe('PauseSwitchImpl', () => {
         expect(result).toEqual(Activity.GOING_HOME);
     });
 
-    // TODO: Clean this up.
-    // it('should not update the last activity when paused', () => {
-    //     const mowerState1: MowerState = {
-    //         activity: Activity.GOING_HOME,            
-    //         state: State.IN_OPERATION,
-    //         enabled: true
-    //     };
+    it('should not update the last activity when paused', () => {
+        const mowerState1: MowerState = {
+            activity: Activity.GOING_HOME,            
+            state: State.IN_OPERATION
+        };
 
-    //     const mowerState2: MowerState = {
-    //         activity: Activity.NOT_APPLICABLE,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.HOME,
-    //         state: State.PAUSED
-    //     };
+        const mowerState2: MowerState = {
+            activity: Activity.GOING_HOME,
+            state: State.PAUSED
+        };
 
-    //     policy.setup(o => o.check()).returns(true);
-    //     policy.setup(o => o.setMowerState(mowerState1)).returns(undefined);
-    //     policy.setup(o => o.setMowerState(mowerState2)).returns(undefined);
+        policy.setup(o => o.check()).returns(true);
+        policy.setup(o => o.setMowerState(mowerState1)).returns(undefined);
+        policy.setup(o => o.setMowerState(mowerState2)).returns(undefined);
 
-    //     const c = new Mock<Characteristic>();
-    //     c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-    //     c.setup(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
-    //     const statusActive = new Mock<Characteristic>();
+        const statusActive = new Mock<Characteristic>();
 
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-    //     service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
-    //     platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
-    //     log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
+        log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
-    //     target.init(NameMode.DEFAULT);
-    //     target.setMowerState(mowerState1);
-    //     target.setMowerState(mowerState2);
+        target.init(NameMode.DEFAULT);
+        target.setMowerState(mowerState1);
+        target.setMowerState(mowerState2);
 
-    //     const result = target.getLastActivity();
+        const result = target.getLastActivity();
 
-    //     expect(result).toEqual(Activity.GOING_HOME);
-    // });
+        expect(result).toEqual(Activity.GOING_HOME);
+    });
 
     it('should update the last activity when going home', () => {
         const mowerState: MowerState = {
