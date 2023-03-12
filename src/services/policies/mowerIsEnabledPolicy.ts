@@ -104,7 +104,6 @@ export class DeterministicMowerIsScheduledPolicy extends AbstractMowerIsEnabledP
 export class DeterministicMowerIsActivePolicy extends AbstractMowerIsEnabledPolicy {
     protected override checkCore(mowerState: MowerState): boolean {
         return mowerState.activity === Activity.MOWING || 
-               mowerState.activity === Activity.GOING_HOME || 
                mowerState.activity === Activity.LEAVING_HOME;
     }
 }
