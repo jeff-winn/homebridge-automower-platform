@@ -1,5 +1,6 @@
 import { PlatformAccessory } from 'homebridge';
-import { Mock, Times } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
+import { MowerStatusChangedEvent } from '../src/events';
 
 import { Activity, Battery, Mower, MowerConnection, MowerState, State } from '../src/model';
 import { AutomowerAccessory, MowerAccessory, MowerContext } from '../src/mowerAccessory';
@@ -135,156 +136,96 @@ describe('MowerAccessory', () => {
         expect(result).toBe(id);
     });
 
-    // TODO: Clean this up.
-    // it('should not refresh the calendar when settings event is received with no calendar data', () => {
-    //     batteryService.setup(o => o.init()).returns(undefined);
-    //     informationService.setup(o => o.init()).returns(undefined);
-    //     scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
-    //     scheduleSwitch.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-    //     pauseSwitch.setup(o => o.init(NameMode.DEFAULT)).returns(undefined);
-    //     arrivingSensor.setup(o => o.init()).returns(undefined);
-    //     leavingSensor.setup(o => o.init()).returns(undefined);
-    //     motionSensorService.setup(o => o.init()).returns(undefined);
+    it('should refresh no services when no status event data is received', () => {        
+        const event: MowerStatusChangedEvent = {
+            mowerId: '12345',
+            attributes: {
+                battery: undefined,
+                connection: undefined,
+                mower: undefined
+            }
+        };
 
-    //     target.init();
-    //     target.onSettingsEventReceived({
-    //         id: '1234',
-    //         type: AutomowerEventTypes.SETTINGS,
-    //         attributes: {
-    //             calendar: undefined
-    //         }
-    //     });
-        
-    //     scheduleSwitch.verify(o => o.setCalendar(It.IsAny()), Times.Never());
-    // });
+        batteryService.setup(o => o.setBatteryLevel(It.IsAny())).returns(undefined);
+        batteryService.setup(o => o.setChargingState(It.IsAny())).returns(undefined);
+        mainSwitch.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        mainSwitch.setup(o => o.setMowerConnection(It.IsAny())).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerConnection(It.IsAny())).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerConnection(It.IsAny())).returns(undefined);
+        leavingSensor.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        leavingSensor.setup(o => o.setMowerConnection(It.IsAny())).returns(undefined);
+        motionSensorService.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
+        motionSensorService.setup(o => o.setMowerConnection(It.IsAny())).returns(undefined);
 
-    // it('should refresh the cutting height when settings event is received', () => {    
-    //     batteryService.setup(o => o.init()).returns(undefined);
-    //     informationService.setup(o => o.init()).returns(undefined);
-    //     scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
-    //     scheduleSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
-    //     pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
-    //     arrivingSensor.setup(o => o.init()).returns(undefined);
-    //     leavingSensor.setup(o => o.init()).returns(undefined);
-    //     motionSensorService.setup(o => o.init()).returns(undefined);        
+        target.onStatusEventReceived(event);
 
-    //     target.init();
-    //     target.onSettingsEventReceived({
-    //         id: '1234',
-    //         type: AutomowerEventTypes.SETTINGS,
-    //         attributes: {
-    //             cuttingHeight: 1
-    //         }
-    //     });
-        
-    //     scheduleSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
-    // });
+        batteryService.verify(o => o.setBatteryLevel(It.IsAny()), Times.Never());
+        batteryService.verify(o => o.setChargingState(It.IsAny()), Times.Never());
+        mainSwitch.verify(o => o.setMowerState(It.IsAny()), Times.Never());
+        mainSwitch.verify(o => o.setMowerConnection(It.IsAny()), Times.Never());
+        pauseSwitch.verify(o => o.setMowerState(It.IsAny()), Times.Never());
+        pauseSwitch.verify(o => o.setMowerConnection(It.IsAny()), Times.Never());
+        arrivingSensor.verify(o => o.setMowerState(It.IsAny()), Times.Never());
+        arrivingSensor.verify(o => o.setMowerConnection(It.IsAny()), Times.Never());
+        leavingSensor.verify(o => o.setMowerState(It.IsAny()), Times.Never());
+        leavingSensor.verify(o => o.setMowerConnection(It.IsAny()), Times.Never());
+        motionSensorService.verify(o => o.setMowerState(It.IsAny()), Times.Never());
+        motionSensorService.verify(o => o.setMowerConnection(It.IsAny()), Times.Never());
+    });
 
-    // TODO: Clean this up.
-    // it('should refresh the calendar when settings event is received', () => {
-    //     const calendar: Calendar = {
-    //         tasks: [
-    //             {
-    //                 start: 1,
-    //                 duration: 1,
-    //                 sunday: true,
-    //                 monday: true,
-    //                 tuesday: true,
-    //                 wednesday: true,
-    //                 thursday: true,
-    //                 friday: true,
-    //                 saturday: true                    
-    //             }
-    //         ]            
-    //     };
+    it('should refresh all services when status event data is received', () => {
+        const battery: Battery = {
+            level: 100
+        };
 
-    //     batteryService.setup(o => o.init()).returns(undefined);
-    //     informationService.setup(o => o.init()).returns(undefined);
-    //     scheduleSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
-    //     scheduleSwitch.setup(o => o.setCalendar(calendar)).returns(undefined);
-    //     pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
-    //     arrivingSensor.setup(o => o.init()).returns(undefined);
-    //     leavingSensor.setup(o => o.init()).returns(undefined);
-    //     motionSensorService.setup(o => o.init()).returns(undefined);
+        const state: MowerState = {
+            activity: Activity.MOWING,            
+            state: State.IN_OPERATION
+        };
 
-    //     target.init();
-    //     target.onSettingsEventReceived({
-    //         id: '1234',
-    //         type: AutomowerEventTypes.SETTINGS,
-    //         attributes: {
-    //             calendar: calendar
-    //         }
-    //     });
-        
-    //     scheduleSwitch.verify(o => o.setCalendar(calendar), Times.Once());
-    // });
+        const connection: MowerConnection = {
+            connected: true
+        };        
 
-    // TODO: Clean this up.
-    // it('should refresh all services when status event is received', () => {
-    //     const battery: Battery = {
-    //         batteryPercent: 100
-    //     };
+        const event: MowerStatusChangedEvent = {
+            mowerId: '12345',
+            attributes: {
+                battery: battery,
+                connection: connection,
+                mower: state
+            }
+        };
 
-    //     const state: MowerState = {
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.HOME,
-    //         state: State.NOT_APPLICABLE
-    //     };
+        batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
+        batteryService.setup(o => o.setChargingState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerConnection(connection)).returns(undefined);
 
-    //     const metadata: MowerMetadata = {
-    //         connected: true,
-    //         statusTimestamp: 1
-    //     };
+        target.onStatusEventReceived(event);
 
-    //     const planner: Planner = {
-    //         nextStartTimestamp: 0,
-    //         override: { },
-    //         restrictedReason: RestrictedReason.NONE
-    //     };
-
-    //     const event: StatusEvent = {
-    //         id: '12345',
-    //         type: AutomowerEventTypes.STATUS,
-    //         attributes: {
-    //             battery: battery,
-    //             metadata: metadata,
-    //             mower: state,
-    //             planner: planner,
-    //         }
-    //     };
-
-    //     batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
-    //     batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-    //     scheduleSwitch.setup(o => o.setPlanner(planner)).returns(undefined);
-    //     scheduleSwitch.setup(o => o.setMowerState(state)).returns(undefined);
-    //     scheduleSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
-    //     pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
-    //     pauseSwitch.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
-    //     arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
-    //     arrivingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
-    //     leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
-    //     leavingSensor.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
-    //     motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
-    //     motionSensorService.setup(o => o.setMowerMetadata(metadata)).returns(undefined);
-
-    //     target.onStatusEventReceived(event);
-
-    //     batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
-    //     batteryService.verify(o => o.setChargingState(state), Times.Once());
-    //     scheduleSwitch.verify(o => o.setPlanner(planner), Times.Once());
-    //     scheduleSwitch.verify(o => o.setMowerState(state), Times.Once());
-    //     scheduleSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
-    //     pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
-    //     pauseSwitch.verify(o => o.setMowerMetadata(metadata), Times.Once());
-    //     arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
-    //     arrivingSensor.verify(o => o.setMowerMetadata(metadata), Times.Once());
-    //     leavingSensor.verify(o => o.setMowerState(state), Times.Once());
-    //     leavingSensor.verify(o => o.setMowerMetadata(metadata), Times.Once());
-    //     motionSensorService.verify(o => o.setMowerState(state), Times.Once());
-    //     motionSensorService.verify(o => o.setMowerMetadata(metadata), Times.Once());
-    // });
+        batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
+        batteryService.verify(o => o.setChargingState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
+        arrivingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
+        leavingSensor.verify(o => o.setMowerState(state), Times.Once());
+        leavingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
+        motionSensorService.verify(o => o.setMowerState(state), Times.Once());
+        motionSensorService.verify(o => o.setMowerConnection(connection), Times.Once());
+    });
 });
 
 describe('AutomowerAccessory', () => {
@@ -312,6 +253,29 @@ describe('AutomowerAccessory', () => {
         target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
             informationService.object(), motionSensorService.object(), arrivingSensor.object(),
             leavingSensor.object(), pauseSwitch.object(), mainSwitch.object());
+    });
+
+    it('should refresh the cutting height when settings event is received', () => {    
+        batteryService.setup(o => o.init()).returns(undefined);
+        informationService.setup(o => o.init()).returns(undefined);
+        mainSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        mainSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
+        pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+        arrivingSensor.setup(o => o.init()).returns(undefined);
+        leavingSensor.setup(o => o.init()).returns(undefined);
+        motionSensorService.setup(o => o.init()).returns(undefined);        
+
+        target.init();
+        target.onSettingsEventReceived({
+            mowerId: '1234',
+            attributes: {
+                settings: {
+                    cuttingHeight: 1
+                }
+            }
+        });
+        
+        mainSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
     });
 
     it('should refresh the services including cutting height', () => {
