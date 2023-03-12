@@ -3,6 +3,7 @@ import {
 } from 'homebridge';
 
 import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
+import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from './events';
 import { Mower } from './model';
 import { AccessoryInformation } from './services/accessoryInformation';
 import { ArrivingSensor } from './services/arrivingSensor';
@@ -93,44 +94,40 @@ export class MowerAccessory {
     }
 
     /**
-     * Occurs when a {@link StatusEvent} has been received from the event stream.
+     * Occurs when a {@link MowerStatusChangedEvent} has been received from the event stream.
      * @param event The event data.
      */
-    public onStatusEventReceived(event: StatusEvent): void {
-        // TODO: Clean this up.
-        // this.batteryInformation.setBatteryLevel(event.attributes.battery);
-        // this.batteryInformation.setChargingState(event.attributes.mower);
-        
-        // this.arrivingSensor.setMowerState(event.attributes.mower);
-        // this.arrivingSensor.setMowerMetadata(event.attributes.metadata);
+    public onStatusEventReceived(event: MowerStatusChangedEvent): void {
+        if (event.attributes.battery !== undefined) {
+            this.batteryInformation.setBatteryLevel(event.attributes.battery);
+        }        
 
-        // this.leavingSensor.setMowerState(event.attributes.mower);
-        // this.leavingSensor.setMowerMetadata(event.attributes.metadata);
+        if (event.attributes.mower !== undefined) {
+            this.batteryInformation.setChargingState(event.attributes.mower);
+            this.arrivingSensor.setMowerState(event.attributes.mower);
+            this.leavingSensor.setMowerState(event.attributes.mower);
+            this.motionSensor.setMowerState(event.attributes.mower);
+            this.mainSwitch.setMowerState(event.attributes.mower);
+            this.pauseSwitch.setMowerState(event.attributes.mower);
+        }
 
-        // this.motionSensor.setMowerState(event.attributes.mower);
-        // this.motionSensor.setMowerMetadata(event.attributes.metadata);
-        
-        // this.scheduleSwitch.setMowerState(event.attributes.mower);
+        if (event.attributes.connection !== undefined) {
+            this.arrivingSensor.setMowerConnection(event.attributes.connection);
+            this.leavingSensor.setMowerConnection(event.attributes.connection);
+            this.motionSensor.setMowerConnection(event.attributes.connection);
+            this.mainSwitch.setMowerConnection(event.attributes.connection);
+            this.pauseSwitch.setMowerConnection(event.attributes.connection);
+        }
+                
         // this.scheduleSwitch.setPlanner(event.attributes.planner);
-        // this.scheduleSwitch.setMowerMetadata(event.attributes.metadata);
-
-        // this.pauseSwitch.setMowerState(event.attributes.mower);
-        // this.pauseSwitch.setMowerMetadata(event.attributes.metadata);
     }
 
     /**
-     * Occurs when a {@link SettingsEvent} has been received from the event stream.
+     * Occurs when a {@link MowerSettingsChangedEvent} has been received from the event stream.
      * @param event The event data.
      */
-    public onSettingsEventReceived(event: SettingsEvent): void {
-        // TODO: Clean this up.
-        // if (event.attributes.calendar !== undefined) {
-        //     this.scheduleSwitch.setCalendar(event.attributes.calendar);
-        // }
-
-        // if (event.attributes.cuttingHeight !== undefined) {
-        //     this.scheduleSwitch.setCuttingHeight(event.attributes.cuttingHeight);
-        // }
+    public onSettingsEventReceived(event: MowerSettingsChangedEvent): void {
+        // This method intentionally left blank.
     }
 }
 
@@ -156,6 +153,14 @@ export class AutomowerAccessory extends MowerAccessory {
 
         if (data.attributes.settings !== undefined) {
             this.automowerMainSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
+        }
+    }
+
+    public override onSettingsEventReceived(event: MowerSettingsChangedEvent): void {
+        super.onSettingsEventReceived(event);
+        
+        if (event.attributes.settings !== undefined) {
+            this.automowerMainSwitch.setCuttingHeight(event.attributes.settings.cuttingHeight);
         }
     }
 }

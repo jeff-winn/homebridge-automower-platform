@@ -3,9 +3,9 @@ import {
     PlatformConfig, PlatformIdentifier, PlatformName
 } from 'homebridge';
 
-import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
 import { LoggerType } from './diagnostics/platformLogger';
 import { BadConfigurationError } from './errors/badConfigurationError';
+import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from './events';
 import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
 import { AuthenticationMode, DeviceType } from './model';
@@ -138,8 +138,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.eventService;
     }
 
-    private onStatusEventReceived(event: StatusEvent): Promise<void> {
-        const mower = this.getMower(event.id);
+    private onStatusEventReceived(event: MowerStatusChangedEvent): Promise<void> {
+        const mower = this.getMower(event.mowerId);
         if (mower !== undefined) {
             mower.onStatusEventReceived(event);
         }
@@ -147,8 +147,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
-    private onSettingsEventReceived(event: SettingsEvent): Promise<void> {
-        const mower = this.getMower(event.id);
+    private onSettingsEventReceived(event: MowerSettingsChangedEvent): Promise<void> {
+        const mower = this.getMower(event.mowerId);
         if (mower !== undefined) {
             mower.onSettingsEventReceived(event);
         }

@@ -1,9 +1,9 @@
 import {
-    AutomowerEvent, AutomowerEventStreamClient, AutomowerEventTypes, ErrorEvent,
-    PositionsEvent, SettingsEvent, StatusEvent
+    AutomowerEvent, AutomowerEventStreamClient, AutomowerEventTypes, ErrorEvent, SettingsEvent, StatusEvent
 } from '../../clients/automower/automowerEventStreamClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
+import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 import { AccessTokenManager } from './accessTokenManager';
 
@@ -12,22 +12,16 @@ import { AccessTokenManager } from './accessTokenManager';
  */
 export interface EventStreamService {
     /**
-     * Occurs when a {@link PositionsEvent} has been received.
-     * @param callback The callback to execute.
-     */
-    onPositionsEventReceived(callback: (event: PositionsEvent) => Promise<void>): void;
-
-    /**
      * Occurs when a {@link StatusEvent} has been received.
      * @param callback The callback to execute.
      */
-    onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void;
+    onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void;
     
     /**
      * Occurs when a {@link SettingsEvent} has been received.
      * @param callback The callback to execute.
      */
-    onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void;
+    onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void;
 
     /**
      * Starts streaming events.
@@ -44,9 +38,8 @@ export class EventStreamServiceImpl implements EventStreamService {
     private readonly KEEP_ALIVE_INTERVAL = 60000; // One minute
     private readonly RECONNECT_INTERVAL = 3600000; // One hour
 
-    private onStatusEventCallback?: (event: StatusEvent) => Promise<void>;
-    private onSettingsEventCallback?: (event: SettingsEvent) => Promise<void>;
-    private onPositionsEventCallback?: (event: PositionsEvent) => Promise<void>;
+    private onStatusEventCallback?: (event: MowerStatusChangedEvent) => Promise<void>;
+    private onSettingsEventCallback?: (event: MowerSettingsChangedEvent) => Promise<void>;
 
     private keepAliveActive = false;
     private started?: Date;
@@ -60,15 +53,11 @@ export class EventStreamServiceImpl implements EventStreamService {
         private log: PlatformLogger, private timer: Timer) { }
 
 
-    public onPositionsEventReceived(callback: (event: PositionsEvent) => Promise<void>): void {
-        this.onPositionsEventCallback = callback;        
-    }
-
-    public onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void {
+    public onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
         this.onSettingsEventCallback = callback;        
     }
 
-    public onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
+    public onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
     }
 
@@ -301,42 +290,38 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.setLastEventReceived(new Date());
 
         switch (event.type) {
-        case AutomowerEventTypes.POSITIONS:
-            return this.onPositionsEvent(event as PositionsEvent);
+            case AutomowerEventTypes.POSITIONS:
+                return Promise.resolve(undefined); // Ignore the event.
 
-        case AutomowerEventTypes.SETTINGS:
-            return this.onSettingsEvent(event as SettingsEvent);
+            case AutomowerEventTypes.SETTINGS:
+                return this.onSettingsEvent(event as SettingsEvent);
 
-        case AutomowerEventTypes.STATUS:
-            return this.onStatusEvent(event as StatusEvent);        
+            case AutomowerEventTypes.STATUS:
+                return this.onStatusEvent(event as StatusEvent);        
 
-        default:
-            this.log.warn('RECEIVED_UNKNOWN_EVENT', event.type);
-            return Promise.resolve(undefined);
+            default:
+                this.log.warn('RECEIVED_UNKNOWN_EVENT', event.type);
+                return Promise.resolve(undefined);
         }
-    }
-
-    protected onPositionsEvent(event: PositionsEvent): Promise<void> {
-        if (this.onPositionsEventCallback === undefined) {
-            return Promise.resolve(undefined);
-        }
-
-        return this.onPositionsEventCallback(event);
-    }
+    }    
 
     protected onSettingsEvent(event: SettingsEvent): Promise<void> {
         if (this.onSettingsEventCallback === undefined) {
             return Promise.resolve(undefined);
         }
 
-        return this.onSettingsEventCallback(event);
+        // TODO: Fix this.
+        // return this.onSettingsEventCallback(event);
+        return Promise.resolve(undefined);
     }
 
     protected onStatusEvent(event: StatusEvent): Promise<void> {
         if (this.onStatusEventCallback === undefined) {
             return Promise.resolve(undefined);
         }
-
-        return this.onStatusEventCallback(event);
+                
+        // TODO: Fix this.
+        // return this.onStatusEventCallback(event);
+        return Promise.resolve(undefined);
     }
 }
