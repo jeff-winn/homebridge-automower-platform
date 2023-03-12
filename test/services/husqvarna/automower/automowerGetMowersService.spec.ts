@@ -9,12 +9,10 @@ import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
 import { AutomowerGetMowersService } from '../../../../src/services/husqvarna/automower/automowerGetMowersService';
 import { AutomowerActivityConverter } from '../../../../src/services/husqvarna/automower/converters/automowerActivityConverter';
-import { AutomowerEnabledConverter } from '../../../../src/services/husqvarna/automower/converters/automowerEnabledConverter';
 import { AutomowerStateConverter } from '../../../../src/services/husqvarna/automower/converters/automowerStateConverter';
 
 describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
-    let enabledConverter: Mock<AutomowerEnabledConverter>;
     let activityConverter: Mock<AutomowerActivityConverter>;
     let stateConverter: Mock<AutomowerStateConverter>;
     let client: Mock<AutomowerClient>;
@@ -23,13 +21,12 @@ describe('GetMowersServiceImpl', () => {
 
     beforeEach(() => {        
         tokenManager = new Mock<AccessTokenManager>();
-        enabledConverter = new Mock<AutomowerEnabledConverter>();
         activityConverter = new Mock<AutomowerActivityConverter>();
         stateConverter = new Mock<AutomowerStateConverter>();
         client = new Mock<AutomowerClient>();
         log = new Mock<PlatformLogger>();
 
-        target = new AutomowerGetMowersService(tokenManager.object(), enabledConverter.object(), activityConverter.object(), 
+        target = new AutomowerGetMowersService(tokenManager.object(), activityConverter.object(), 
             stateConverter.object(), client.object(), log.object());
     });
 
@@ -106,7 +103,6 @@ describe('GetMowersServiceImpl', () => {
         };
     
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
-        enabledConverter.setup(o => o.convert(mower)).returns(true);
         activityConverter.setup(o => o.convert(mower)).returns(model.Activity.MOWING);
         stateConverter.setup(o => o.convert(mower)).returns(model.State.IN_OPERATION);
         client.setup(x => x.getMowers(token)).returns(Promise.resolve([ mower ]));

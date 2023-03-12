@@ -6,7 +6,6 @@ import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
 import { AutomowerActivityConverter } from './converters/automowerActivityConverter';
-import { AutomowerEnabledConverter } from './converters/automowerEnabledConverter';
 import { AutomowerStateConverter } from './converters/automowerStateConverter';
 
 /**
@@ -18,9 +17,8 @@ interface ModelInformation {
 }
 
 export class AutomowerGetMowersService implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private enabledConverter: AutomowerEnabledConverter, 
-        private activityConverter: AutomowerActivityConverter, private stateConverter: AutomowerStateConverter,
-        private client: AutomowerClient, private log: PlatformLogger) { }    
+    public constructor(private tokenManager: AccessTokenManager, private activityConverter: AutomowerActivityConverter, 
+        private stateConverter: AutomowerStateConverter, private client: AutomowerClient, private log: PlatformLogger) { }    
 
     public async getMowers(): Promise<model.Mower[]> {
         try {
@@ -104,10 +102,6 @@ export class AutomowerGetMowersService implements GetMowersService {
         
         return mower.attributes.planner.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
             task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
-    }  
-
-    protected isMowerEnabled(mower: Mower): boolean {
-        return this.enabledConverter.convert(mower);
     }
 
     protected convertMowerActivity(mower: Mower): model.Activity {
