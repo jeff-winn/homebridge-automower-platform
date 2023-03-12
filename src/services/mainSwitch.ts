@@ -20,8 +20,13 @@ export interface MainSwitch extends Switch {
      * Sets the state of the mower.
      * @param state The mower state.
      */
-    setMowerState(state: MowerState): void;
+    setMowerState(state: MowerState): void;    
+}
 
+/**
+ * Identifies a switch which supports the cutting height characteristic.
+ */
+export interface SupportsCuttingHeightCharacteristic {
     /**
      * Sets the mower cutting height.
      * @param value The cutting height.
@@ -29,36 +34,13 @@ export interface MainSwitch extends Switch {
     setCuttingHeight(value: number): void;
 }
 
+/**
+ * Represents the main switch of a mower device.
+ */
 export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
-    private cuttingHeight?: Characteristic;
-
-    public constructor(name: string, private controlService: MowerControlService, private settingsService: ChangeSettingsService, private policy: MowerIsEnabledPolicy, 
+    public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsEnabledPolicy, 
         accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
-    }
-
-    protected override onInit(service: Service): void {
-        super.onInit(service);
-
-        this.cuttingHeight = attachCuttingHeightCharacteristic(service, this.api);
-        this.cuttingHeight.on(CharacteristicEventTypes.SET, this.onSetCuttingHeightCallback.bind(this));
-    }
-
-    protected onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
-        const actualValue = value as number;
-        return this.onSetCuttingHeight(actualValue, callback);
-    }
-
-    protected async onSetCuttingHeight(value: number, callback: CharacteristicSetCallback): Promise<void> {
-        try {
-            await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value);
-
-            callback(HAPStatus.SUCCESS);
-        } catch (e) {
-            this.log.error('ERROR_HANDLING_SET', this.cuttingHeight!.displayName, this.accessory.displayName, e);
-
-            callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
-        }
     }
 
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
@@ -82,6 +64,35 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
         this.refreshCharacteristic();
     }
 
+    /**
+     * Refreshes the characteristic value based on the deterministic calculation of whether the schedule is currently enabled.
+     */
+    protected refreshCharacteristic() {
+        if (this.policy.shouldApply()) {
+            const newValue = this.policy.check();
+            this.updateValue(newValue);        
+        }
+    }
+}
+
+/**
+ * Represents the main switch of an Automower device.
+ */
+export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsCuttingHeightCharacteristic {
+    private cuttingHeight?: Characteristic;
+
+    public constructor(name: string, controlService: MowerControlService, private settingsService: ChangeSettingsService, policy: MowerIsEnabledPolicy, 
+        accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
+        super(name, controlService, policy, accessory, api, log);
+    }
+
+    protected override onInit(service: Service): void {
+        super.onInit(service);
+
+        this.cuttingHeight = attachCuttingHeightCharacteristic(service, this.api);
+        this.cuttingHeight.on(CharacteristicEventTypes.SET, this.onSetCuttingHeightCallback.bind(this));
+    }
+
     public setCuttingHeight(value: number): void {
         if (this.cuttingHeight === undefined) {
             throw new Error('The service has not been initialized.');
@@ -91,13 +102,20 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
         this.log.info('CHANGED_VALUE', this.cuttingHeight.displayName, this.accessory.displayName, value);
     }
 
-    /**
-     * Refreshes the characteristic value based on the deterministic calculation of whether the schedule is currently enabled.
-     */
-    protected refreshCharacteristic() {
-        if (this.policy.shouldApply()) {
-            const newValue = this.policy.check();
-            this.updateValue(newValue);        
+    protected onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
+        const actualValue = value as number;
+        return this.onSetCuttingHeight(actualValue, callback);
+    }
+
+    protected async onSetCuttingHeight(value: number, callback: CharacteristicSetCallback): Promise<void> {
+        try {
+            await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value);
+
+            callback(HAPStatus.SUCCESS);
+        } catch (e) {
+            this.log.error('ERROR_HANDLING_SET', this.cuttingHeight!.displayName, this.accessory.displayName, e);
+
+            callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }
     }
 }

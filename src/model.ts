@@ -58,7 +58,8 @@ export interface Mower {
         connection: MowerConnection;
         mower: MowerState;
         battery: Battery;
-        schedule?: MowerSchedule;
+        schedule: MowerSchedule | undefined;
+        settings: MowerSettings | undefined;
     };
 }
 
@@ -108,4 +109,11 @@ export interface MowerSchedule {
     runContinuously: boolean;
     runInFuture: boolean;
     runOnSchedule: boolean;
+}
+
+/**
+ * Describes mower settings.
+ */
+export interface MowerSettings {
+    cuttingHeight: number;
 }

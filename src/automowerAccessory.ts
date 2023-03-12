@@ -9,7 +9,7 @@ import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
 import { NameMode } from './services/homebridge/abstractSwitch';
 import { LeavingSensor } from './services/leavingSensor';
-import { MainSwitch } from './services/mainSwitch';
+import { MainSwitch, SupportsCuttingHeightCharacteristic } from './services/mainSwitch';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 
@@ -80,8 +80,12 @@ export class MowerAccessory {
         this.mainSwitch.setMowerState(data.attributes.mower);
         this.mainSwitch.setMowerConnection(data.attributes.connection);
 
-        // TODO: Clean this up.
-        // this.scheduleSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
+        if (data.attributes.settings !== undefined) {
+            const s = (this.mainSwitch as unknown) as SupportsCuttingHeightCharacteristic;
+            if (s.setCuttingHeight !== undefined) {
+                s.setCuttingHeight(data.attributes.settings.cuttingHeight);
+            }    
+        }
 
         this.pauseSwitch.setMowerState(data.attributes.mower);
         this.pauseSwitch.setMowerConnection(data.attributes.connection);

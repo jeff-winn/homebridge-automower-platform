@@ -16,7 +16,7 @@ import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/change
 import { GardenaMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
 import { MowerControlService } from './services/husqvarna/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
-import { MainSwitch, MainSwitchImpl } from './services/mainSwitch';
+import { AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from './services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from './services/policies/mowerFaultedPolicy';
@@ -126,10 +126,18 @@ export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory 
     }
 
     protected createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
+            return new AutomowerMainSwitchImpl(
+                this.locale.format('MAIN'),
+                this.container.resolve(this.getContolServiceClass()),
+                this.container.resolve(ChangeSettingsServiceImpl),
+                this.container.resolve(DeterministicMowerIsActivePolicy),
+                accessory, this.api, this.log);
+        }
+        
         return new MainSwitchImpl(
             this.locale.format('MAIN'),
             this.container.resolve(this.getContolServiceClass()),
-            this.container.resolve(ChangeSettingsServiceImpl),
             this.container.resolve(DeterministicMowerIsActivePolicy),
             accessory, this.api, this.log);
     }
