@@ -4,7 +4,7 @@ import { InjectionToken } from 'tsyringe';
 import { AutomowerPlatformConfig } from './automowerPlatform';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { DeviceType, Mower } from './model';
-import { MowerAccessory, MowerContext } from './mowerAccessory';
+import { AutomowerAccessory, MowerAccessory, MowerContext } from './mowerAccessory';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -16,7 +16,7 @@ import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/change
 import { GardenaMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
 import { MowerControlService } from './services/husqvarna/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
-import { AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from './services/mainSwitch';
+import { AutomowerMainSwitch, AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from './services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from './services/policies/mowerFaultedPolicy';
@@ -85,6 +85,17 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
     
     protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
+        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
+            return new AutomowerAccessory(accessory,
+                this.createBatteryInformation(accessory),
+                this.createAccessoryInformation(accessory),
+                this.createMotionSensor(accessory),
+                this.createArrivingSensor(accessory),
+                this.createLeavingSensor(accessory),
+                this.createPauseSwitch(accessory),            
+                this.createAutomowerMainSwitch(accessory));
+        }
+
         return new MowerAccessory(accessory,
             this.createBatteryInformation(accessory),
             this.createAccessoryInformation(accessory),
@@ -125,21 +136,19 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
         return new AccessoryInformationImpl(accessory, this.api);
     }
 
-    protected createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
-        const name = 'SCHEDULE'; // WARNING: Changing the name will cause a breaking change!
-
-        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
-            return new AutomowerMainSwitchImpl(
-                this.locale.format(name),
-                this.container.resolve(this.getContolServiceClass()),
-                this.container.resolve(ChangeSettingsServiceImpl),
-                this.container.resolve(DeterministicMowerIsActivePolicy),
-                accessory, this.api, this.log);
-        }
-        
+    protected createMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {        
         return new MainSwitchImpl(
-            this.locale.format(name),
+            this.locale.format('SCHEDULE'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(this.getContolServiceClass()),
+            this.container.resolve(DeterministicMowerIsActivePolicy),
+            accessory, this.api, this.log);
+    }
+
+    protected createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): AutomowerMainSwitch {
+        return new AutomowerMainSwitchImpl(
+            this.locale.format('SCHEDULE'), // WARNING: Changing the name will cause a breaking change!
+            this.container.resolve(this.getContolServiceClass()),
+            this.container.resolve(ChangeSettingsServiceImpl),
             this.container.resolve(DeterministicMowerIsActivePolicy),
             accessory, this.api, this.log);
     }

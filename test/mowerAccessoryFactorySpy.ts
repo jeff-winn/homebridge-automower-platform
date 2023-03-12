@@ -6,7 +6,7 @@ import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
 import { LeavingSensor } from '../src/services/leavingSensor';
-import { MainSwitch } from '../src/services/mainSwitch';
+import { AutomowerMainSwitch, MainSwitch } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
 
@@ -14,6 +14,7 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
     private accessory?: MowerAccessory;
 
     private mainSwitch?: MainSwitch;
+    private automowerMainSwitch?: AutomowerMainSwitch;
     private pauseSwitch?: PauseSwitch;
     private accessoryInformation?: AccessoryInformation;
     private batteryInformation?: BatteryInformation;
@@ -23,6 +24,10 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
 
     public setAccessory(accessory: MowerAccessory): void {
         this.accessory = accessory;
+    }
+
+    public setAutomowerMainSwitch(mainSwitch: AutomowerMainSwitch): void {
+        this.automowerMainSwitch = mainSwitch;
     }
 
     public setMainSwitch(mainSwitch: MainSwitch): void {
@@ -143,5 +148,17 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
         }
 
         return super.createMainSwitch(accessory);
+    }
+
+    public unsafeCreateAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): AutomowerMainSwitch {
+        return this.createAutomowerMainSwitch(accessory);
+    }
+
+    protected override createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): AutomowerMainSwitch {
+        if (this.automowerMainSwitch !== undefined) {
+            return this.automowerMainSwitch;
+        }
+
+        return super.createAutomowerMainSwitch(accessory);
     }
 }

@@ -9,7 +9,7 @@ import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
 import { NameMode } from './services/homebridge/abstractSwitch';
 import { LeavingSensor } from './services/leavingSensor';
-import { MainSwitch, SupportsCuttingHeightCharacteristic } from './services/mainSwitch';
+import { AutomowerMainSwitch, MainSwitch } from './services/mainSwitch';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 
@@ -80,13 +80,6 @@ export class MowerAccessory {
         this.mainSwitch.setMowerState(data.attributes.mower);
         this.mainSwitch.setMowerConnection(data.attributes.connection);
 
-        if (data.attributes.settings !== undefined) {
-            const s = (this.mainSwitch as unknown) as SupportsCuttingHeightCharacteristic;
-            if (s.setCuttingHeight !== undefined) {
-                s.setCuttingHeight(data.attributes.settings.cuttingHeight);
-            }    
-        }
-
         this.pauseSwitch.setMowerState(data.attributes.mower);
         this.pauseSwitch.setMowerConnection(data.attributes.connection);
     }
@@ -138,5 +131,31 @@ export class MowerAccessory {
         // if (event.attributes.cuttingHeight !== undefined) {
         //     this.scheduleSwitch.setCuttingHeight(event.attributes.cuttingHeight);
         // }
+    }
+}
+
+/**
+ * Represents an Automower specific robotic mower.
+ */
+export class AutomowerAccessory extends MowerAccessory {
+    public constructor(
+        accessory: PlatformAccessory<MowerContext>,
+        batteryInformation: BatteryInformation,
+        accessoryInformation: AccessoryInformation,
+        motionSensor: MotionSensor,
+        arrivingSensor: ArrivingSensor,
+        leavingSensor: LeavingSensor,
+        pauseSwitch: PauseSwitch,
+        private automowerMainSwitch: AutomowerMainSwitch) {
+        super(accessory, batteryInformation, accessoryInformation, motionSensor, arrivingSensor, 
+            leavingSensor, pauseSwitch, automowerMainSwitch);
+    }
+
+    public override refresh(data: Mower): void {
+        super.refresh(data);
+
+        if (data.attributes.settings !== undefined) {
+            this.automowerMainSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
+        }
     }
 }

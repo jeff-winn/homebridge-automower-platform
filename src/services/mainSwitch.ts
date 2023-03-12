@@ -13,7 +13,7 @@ import { MowerControlService } from './husqvarna/mowerControlService';
 import { MowerIsEnabledPolicy } from './policies/mowerIsEnabledPolicy';
 
 /**
- * A service which encapsulates the primary switch for a mower.
+ * A service which encapsulates the main switch for a mower device.
  */
 export interface MainSwitch extends Switch {
     /**
@@ -24,9 +24,9 @@ export interface MainSwitch extends Switch {
 }
 
 /**
- * Identifies a switch which supports the cutting height characteristic.
+ * A service which encapsulates the main switch for an automower device.
  */
-export interface SupportsCuttingHeightCharacteristic {
+export interface AutomowerMainSwitch extends MainSwitch {
     /**
      * Sets the mower cutting height.
      * @param value The cutting height.
@@ -78,7 +78,7 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
 /**
  * Represents the main switch of an Automower device.
  */
-export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsCuttingHeightCharacteristic {
+export class AutomowerMainSwitchImpl extends MainSwitchImpl implements AutomowerMainSwitch {
     private cuttingHeight?: Characteristic;
 
     public constructor(name: string, controlService: MowerControlService, private settingsService: ChangeSettingsService, policy: MowerIsEnabledPolicy, 

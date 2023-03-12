@@ -65,7 +65,7 @@ describe('MowerAccessory', () => {
         mainSwitch.verify(o => o.init(NameMode.DISPLAY_NAME), Times.Once());
     });
 
-    it('should refresh the services', () => {
+    it('should refresh the services without settings', () => {
         const battery: Battery = {
             level: 100
         };
@@ -94,6 +94,132 @@ describe('MowerAccessory', () => {
                 },
                 schedule: undefined,
                 settings: undefined
+            }
+        };
+
+        batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
+        batteryService.setup(o => o.setChargingState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerConnection(connection)).returns(undefined);        
+        
+        target.refresh(mower);
+
+        batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
+        batteryService.verify(o => o.setChargingState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
+        arrivingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
+        leavingSensor.verify(o => o.setMowerState(state), Times.Once());
+        leavingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
+        motionSensorService.verify(o => o.setMowerState(state), Times.Once());
+        motionSensorService.verify(o => o.setMowerConnection(connection), Times.Once());
+    });
+    
+    it('should refresh the services with settings and incompatible switch', () => {
+        const battery: Battery = {
+            level: 100
+        };
+
+        const state: MowerState = {
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        };        
+        
+        const connection: MowerConnection = {
+            connected: true
+        };
+
+        const mower: Mower = {
+            id: '12345',
+            attributes: {
+                battery: battery,
+                connection: connection,
+                mower: state,
+                location: undefined,
+                metadata: {
+                    manufacturer: 'Husqvarna',
+                    model: 'model',
+                    name: 'name',
+                    serialNumber: '1234'
+                },
+                schedule: undefined,
+                settings: {
+                    cuttingHeight: 1
+                }
+            }
+        };
+
+        batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
+        batteryService.setup(o => o.setChargingState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        mainSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerState(state)).returns(undefined);
+        pauseSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        arrivingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
+        leavingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
+        motionSensorService.setup(o => o.setMowerConnection(connection)).returns(undefined);        
+        
+        target.refresh(mower);
+
+        batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
+        batteryService.verify(o => o.setChargingState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerState(state), Times.Once());
+        mainSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        pauseSwitch.verify(o => o.setMowerState(state), Times.Once());
+        pauseSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
+        arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
+        arrivingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
+        leavingSensor.verify(o => o.setMowerState(state), Times.Once());
+        leavingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
+        motionSensorService.verify(o => o.setMowerState(state), Times.Once());
+        motionSensorService.verify(o => o.setMowerConnection(connection), Times.Once());
+    });
+    
+    it('should refresh the services with settings and compatible switch', () => {
+        const battery: Battery = {
+            level: 100
+        };
+
+        const state: MowerState = {
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        };        
+        
+        const connection: MowerConnection = {
+            connected: true
+        };
+
+        const mower: Mower = {
+            id: '12345',
+            attributes: {
+                battery: battery,
+                connection: connection,
+                mower: state,
+                location: undefined,
+                metadata: {
+                    manufacturer: 'Husqvarna',
+                    model: 'model',
+                    name: 'name',
+                    serialNumber: '1234'
+                },
+                schedule: undefined,
+                settings: {
+                    cuttingHeight: 1
+                }
             }
         };
 
