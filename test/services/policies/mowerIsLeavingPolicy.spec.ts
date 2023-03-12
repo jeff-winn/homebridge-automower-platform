@@ -57,47 +57,4 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
 
         expect(result).toBeFalsy();
     });
-
-    // TODO: Clean this up.
-    // it('should return false when the mower state is in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower state is leaving but not in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.LEAVING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.STOPPED
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower state is leaving', () => {
-    //     target.setMowerState({
-    //         activity: Activity.LEAVING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
 });
