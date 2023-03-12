@@ -8,14 +8,12 @@ import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken, Activity, State } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
-import { GardenaActivityConverter } from '../../../../src/services/husqvarna/gardena/converters/gardenaActivityConverter';
-import { GardenaStateConverter } from '../../../../src/services/husqvarna/gardena/converters/gardenaStateConverter';
+import { GardenaMowerStateConverter } from '../../../../src/services/husqvarna/gardena/converters/gardenaMowerStateConverter';
 import { GardenaGetMowersService } from '../../../../src/services/husqvarna/gardena/gardenaGetMowersService';
 
 describe('GardenaGetMowersService', () => {
     let tokenManager: Mock<AccessTokenManager>;
-    let activityConverter: Mock<GardenaActivityConverter>;
-    let stateConverter: Mock<GardenaStateConverter>;
+    let mowerStateConverter: Mock<GardenaMowerStateConverter>;    
     let client: Mock<GardenaClient>;
     let log: Mock<PlatformLogger>;
     let target: GardenaGetMowersService;
@@ -23,14 +21,12 @@ describe('GardenaGetMowersService', () => {
     beforeEach(() => {
         tokenManager = new Mock<AccessTokenManager>();
         client = new Mock<GardenaClient>();
-        activityConverter = new Mock<GardenaActivityConverter>();
-        stateConverter = new Mock<GardenaStateConverter>();
+        mowerStateConverter = new Mock<GardenaMowerStateConverter>();
 
         log = new Mock<PlatformLogger>();
         log.setup(o => o.warn('GARDENA_PREVIEW_IN_USE')).returns(undefined);
 
-        target = new GardenaGetMowersService(tokenManager.object(), activityConverter.object(), stateConverter.object(), 
-            client.object(), log.object());
+        target = new GardenaGetMowersService(tokenManager.object(), mowerStateConverter.object(), client.object(), log.object());
     });
 
     it('should flag the token as invalid if not authorized', async () => {
@@ -305,8 +301,10 @@ describe('GardenaGetMowersService', () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
         log.setup(o => o.warn(It.IsAny(), It.IsAny())).returns(undefined);
 
-        activityConverter.setup(o => o.convert(mowerService)).returns(Activity.CHARGING);
-        stateConverter.setup(o => o.convert(mowerService)).returns(State.OFF);
+        mowerStateConverter.setup(o => o.convert(mowerService)).returns({
+            activity: Activity.CHARGING,
+            state: State.OFF
+        });
 
         const mowers = await target.getMowers();
         expect(mowers).toBeDefined();

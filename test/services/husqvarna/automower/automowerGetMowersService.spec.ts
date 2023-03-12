@@ -3,31 +3,27 @@ import { Mock, Times } from 'moq.ts';
 import * as model from '../../../../src/model';
 
 import { Activity, AutomowerClient, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
-import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
 import { AutomowerGetMowersService } from '../../../../src/services/husqvarna/automower/automowerGetMowersService';
-import { AutomowerActivityConverter } from '../../../../src/services/husqvarna/automower/converters/automowerActivityConverter';
-import { AutomowerStateConverter } from '../../../../src/services/husqvarna/automower/converters/automowerStateConverter';
+import { AutomowerMowerScheduleConverter } from '../../../../src/services/husqvarna/automower/converters/automowerMowerScheduleConverter';
+import { AutomowerMowerStateConverter } from '../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
 
 describe('GetMowersServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
-    let activityConverter: Mock<AutomowerActivityConverter>;
-    let stateConverter: Mock<AutomowerStateConverter>;
+    let mowerStateConverter: Mock<AutomowerMowerStateConverter>;
+    let mowerScheduleConverter: Mock<AutomowerMowerScheduleConverter>;
     let client: Mock<AutomowerClient>;
-    let log: Mock<PlatformLogger>;
     let target: AutomowerGetMowersService;
 
     beforeEach(() => {        
         tokenManager = new Mock<AccessTokenManager>();
-        activityConverter = new Mock<AutomowerActivityConverter>();
-        stateConverter = new Mock<AutomowerStateConverter>();
+        mowerStateConverter = new Mock<AutomowerMowerStateConverter>();
+        mowerScheduleConverter = new Mock<AutomowerMowerScheduleConverter>();
         client = new Mock<AutomowerClient>();
-        log = new Mock<PlatformLogger>();
 
-        target = new AutomowerGetMowersService(tokenManager.object(), activityConverter.object(), 
-            stateConverter.object(), client.object(), log.object());
+        target = new AutomowerGetMowersService(tokenManager.object(), mowerStateConverter.object(), mowerScheduleConverter.object(), client.object());
     });
 
     it('should flag the token as invalid on getMowers', async () => {
@@ -103,8 +99,15 @@ describe('GetMowersServiceImpl', () => {
         };
     
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
-        activityConverter.setup(o => o.convert(mower)).returns(model.Activity.MOWING);
-        stateConverter.setup(o => o.convert(mower)).returns(model.State.IN_OPERATION);
+        mowerStateConverter.setup(o => o.convert(mower)).returns({
+            activity: model.Activity.MOWING,
+            state: model.State.IN_OPERATION
+        });
+        mowerScheduleConverter.setup(o => o.convert(mower)).returns({
+            runContinuously: false,
+            runInFuture: false,
+            runOnSchedule: false
+        });
         client.setup(x => x.getMowers(token)).returns(Promise.resolve([ mower ]));
 
         const result = await target.getMowers();
