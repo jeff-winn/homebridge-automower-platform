@@ -1,4 +1,4 @@
-import { Battery, MowerConnection, MowerSettings, MowerState } from './model';
+import { Battery, MowerConnection, MowerSchedule, MowerSettings, MowerState } from './model';
 
 /**
  * Describes a mower status changed event.
@@ -18,6 +18,7 @@ export interface MowerStatusChangedEvent {
 export interface MowerSettingsChangedEvent {
     mowerId: string;
     attributes: {
+        schedule: MowerSchedule | undefined;
         settings: MowerSettings | undefined;
     };
 }

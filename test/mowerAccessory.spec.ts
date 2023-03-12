@@ -269,6 +269,7 @@ describe('AutomowerAccessory', () => {
         target.onSettingsEventReceived({
             mowerId: '1234',
             attributes: {
+                schedule: undefined,
                 settings: {
                     cuttingHeight: 1
                 }
