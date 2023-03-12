@@ -7,13 +7,13 @@ import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, MowerState, State } from '../../src/model';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
+import { ChangeSettingsService } from '../../src/services/husqvarna/automower/changeSettingsService';
 import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
 import { MowerIsEnabledPolicy } from '../../src/services/policies/mowerIsEnabledPolicy';
-import { MainSwitchImplSpy } from './mainSwitchImplSpy';
+import { AutomowerMainSwitchImplSpy, MainSwitchImplSpy } from './mainSwitchImplSpy';
 
 describe('MainSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
-    // let changeSettingsService: Mock<ChangeSettingsService>;
     let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
@@ -24,7 +24,6 @@ describe('MainSwitchImpl', () => {
 
     beforeEach(() => {
         mowerControlService = new Mock<MowerControlService>();
-        // changeSettingsService = new Mock<ChangeSettingsService>();
 
         platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         policy = new Mock<MowerIsEnabledPolicy>();
@@ -102,11 +101,6 @@ describe('MainSwitchImpl', () => {
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
 
-        // TODO: Clean this up.
-        // const cuttingHeight = new Mock<Characteristic>();
-        // cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-        //     It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
-
         const statusActive = new Mock<Characteristic>();
 
         const service = new Mock<Service>();
@@ -114,7 +108,6 @@ describe('MainSwitchImpl', () => {
         service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
         service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-        // service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
 
@@ -122,8 +115,6 @@ describe('MainSwitchImpl', () => {
 
         c.verify(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
-        // cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
-        //     It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
     });
 
     it('should resume the schedule', async () => {
@@ -342,121 +333,176 @@ describe('MainSwitchImpl', () => {
 
     //     expect(() => target.setMowerMetadata(metadata)).toThrowError();
     // });
+});
 
-    // it('should set the cutting height', async () => {
-    //     const mowerId = '12345';
-    //     const cuttingHeight = 1;
+describe('AutomowerMainSwitchImpl', () => {
+    let mowerControlService: Mock<MowerControlService>;
+    let changeSettingsService: Mock<ChangeSettingsService>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
+    let api: Mock<API>;
+    let hap: Mock<HAP>;
+    let log: Mock<PlatformLogger>;
+    let policy: Mock<MowerIsEnabledPolicy>;
 
-    //     platformAccessory.setup(o => o.context).returns({
-    //         manufacturer: 'HUSQVARNA',
-    //         model: 'AUTOMOWER 430XH',
-    //         serialNumber: '12345',
-    //         mowerId: mowerId
-    //     });
+    let target: AutomowerMainSwitchImplSpy;
 
-    //     changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
+    beforeEach(() => {
+        mowerControlService = new Mock<MowerControlService>();
+        changeSettingsService = new Mock<ChangeSettingsService>();
 
-    //     let status: Error | HAPStatus | null | undefined = undefined;
-    //     await target.unsafeSetCuttingHeight(cuttingHeight, (e) => {
-    //         status = e;
-    //     });
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+        policy = new Mock<MowerIsEnabledPolicy>();
 
-    //     changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeight), Times.Once());
-    //     expect(status).toBe(HAPStatus.SUCCESS);
-    // });
-
-    // it('should handle errors while changing the cutting height', async () => {
-    //     const c = new Mock<Characteristic>();
-    //     c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-    //     c.setup(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        hap = new Mock<HAP>();
+        hap.setup(o => o.Service).returns(Service);
+        hap.setup(o => o.Characteristic).returns(Characteristic);
         
-    //     const cuttingHeight = new Mock<Characteristic>();
-    //     cuttingHeight.setup(o => o.displayName).returns(DISPLAY_NAME);
-    //     cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+        api = new Mock<API>();
+        api.setup(o => o.hap).returns(hap.object());
+        log = new Mock<PlatformLogger>();        
+
+        target = new AutomowerMainSwitchImplSpy('Schedule', mowerControlService.object(), changeSettingsService.object(), policy.object(),
+            platformAccessory.object(), api.object(), log.object());
+    });
+
+    it('should be initialized with existing service', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+
+        const statusActive = new Mock<Characteristic>();
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
+        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
+
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+
+        target.init(NameMode.DEFAULT);
+
+        c.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+        cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+    });
+
+    it('should set the cutting height', async () => {
+        const mowerId = '12345';
+        const cuttingHeight = 1;
+
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
+
+        changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
+
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeSetCuttingHeight(cuttingHeight, (e) => {
+            status = e;
+        });
+
+        changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeight), Times.Once());
+        expect(status).toBe(HAPStatus.SUCCESS);
+    });
+
+    it('should handle errors while changing the cutting height', async () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+        
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.displayName).returns(DISPLAY_NAME);
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
     
-    //     const statusActive = new Mock<Characteristic>();
+        const statusActive = new Mock<Characteristic>();
         
-    //     policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.shouldApply()).returns(true);
-    //     policy.setup(o => o.check()).returns(false);
+        policy.setup(o => o.shouldApply()).returns(true);
+        policy.setup(o => o.check()).returns(false);
 
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-    //     service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-    //     service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-    //     service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
+        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
-    //     platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-    //     log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
-    //     target.init(NameMode.DEFAULT);
+        target.init(NameMode.DEFAULT);
 
-    //     const mowerId = '12345';
-    //     const cuttingHeightValue = 1;
-    //     const displayName = 'Dobby';
+        const mowerId = '12345';
+        const cuttingHeightValue = 1;
+        const displayName = 'Dobby';
 
-    //     platformAccessory.setup(o => o.displayName).returns(displayName);
-    //     platformAccessory.setup(o => o.context).returns({
-    //         manufacturer: 'HUSQVARNA',
-    //         model: 'AUTOMOWER 430XH',
-    //         serialNumber: '12345',
-    //         mowerId: mowerId
-    //     });
+        platformAccessory.setup(o => o.displayName).returns(displayName);
+        platformAccessory.setup(o => o.context).returns({
+            manufacturer: 'HUSQVARNA',
+            model: 'AUTOMOWER 430XH',
+            serialNumber: '12345',
+            mowerId: mowerId
+        });
 
-    //     changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeightValue)).throws(new Error('hello'));
-    //     log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
+        changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeightValue)).throws(new Error('hello'));
+        log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
-    //     let status: Error | HAPStatus | null | undefined = undefined;
-    //     await target.unsafeSetCuttingHeight(cuttingHeightValue, (e) => {
-    //         status = e;
-    //     });
+        let status: Error | HAPStatus | null | undefined = undefined;
+        await target.unsafeSetCuttingHeight(cuttingHeightValue, (e) => {
+            status = e;
+        });
 
-    //     changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeightValue), Times.Once());
-    //     log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
-    //     expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
-    // });
+        changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeightValue), Times.Once());
+        log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
+        expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+    });
 
-    // it('should throw an error when setting the cutting height and not initialized', () => {
-    //     expect(() => target.setCuttingHeight(1)).toThrowError();
-    // });
+    it('should throw an error when setting the cutting height and not initialized', () => {
+        expect(() => target.setCuttingHeight(1)).toThrowError();
+    });
     
-    // it('should update the cutting height', () => {
-    //     const c = new Mock<Characteristic>();
-    //     c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-    //     c.setup(o => o.on(CharacteristicEventTypes.SET, 
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
+    it('should update the cutting height', () => {
+        const c = new Mock<Characteristic>();
+        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
+        c.setup(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
         
-    //     const cuttingHeight = new Mock<Characteristic>();
-    //     cuttingHeight.setup(o => o.displayName).returns(DISPLAY_NAME);
-    //     cuttingHeight.setup(o => o.updateValue(It.IsAny())).returns(cuttingHeight.object());
-    //     cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-    //         It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
+        const cuttingHeight = new Mock<Characteristic>();
+        cuttingHeight.setup(o => o.displayName).returns(DISPLAY_NAME);
+        cuttingHeight.setup(o => o.updateValue(It.IsAny())).returns(cuttingHeight.object());
+        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
     
-    //     const statusActive = new Mock<Characteristic>();
+        const statusActive = new Mock<Characteristic>();
         
-    //     policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-    //     policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined); 
-    //     policy.setup(o => o.shouldApply()).returns(true);
-    //     policy.setup(o => o.check()).returns(false);
+        policy.setup(o => o.shouldApply()).returns(true);
+        policy.setup(o => o.check()).returns(false);
 
-    //     const service = new Mock<Service>();
-    //     service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-    //     service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-    //     service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-    //     service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-    //     service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
+        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
+        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
+        service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
+        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
-    //     platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-    //     log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
+        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
-    //     target.init(NameMode.DEFAULT);
-    //     target.setCuttingHeight(1);
+        target.init(NameMode.DEFAULT);
+        target.setCuttingHeight(1);
 
-    //     cuttingHeight.verify(o => o.updateValue(1), Times.Once());
-    //     log.verify(o => o.info(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
-    // });
+        cuttingHeight.verify(o => o.updateValue(1), Times.Once());
+        log.verify(o => o.info(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
+    });
 });

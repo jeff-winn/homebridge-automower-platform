@@ -11,7 +11,7 @@ export class MainSwitchImplSpy extends MainSwitchImpl {
     }
 }
 
-export class AutomowerSwitchImplSpy extends AutomowerMainSwitchImpl {
+export class AutomowerMainSwitchImplSpy extends AutomowerMainSwitchImpl {
     public unsafeOnSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         return this.onSetCallback(on, callback);
     }
