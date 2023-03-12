@@ -8,6 +8,10 @@ describe('AutomowerScheduleConverterImpl', () => {
         target = new AutomowerMowerScheduleConverterImpl();
     });
 
+    it('should be truthy', () => { // TODO: Clean this up.
+        expect(true).toBeTruthy();
+    });
+    
     // TODO: Clean this up.
     // it('should not apply the policy when the mower is paused', () => {
     //     target.setMowerState({

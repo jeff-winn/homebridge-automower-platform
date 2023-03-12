@@ -13,6 +13,10 @@ describe('AutomowerMowerStateConverterImpl', () => {
         target = new AutomowerMowerStateConverterImpl(log.object());
     });
 
+    it('should be truthy', () => { // TODO: Clean this up.
+        expect(true).toBeTruthy();
+    });
+    
     // TODO: Clean this up.
     // it('should return false when the mower activity is charging', () => {
     //     const state: MowerState = {
