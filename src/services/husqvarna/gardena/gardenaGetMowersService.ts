@@ -7,8 +7,7 @@ import { PlatformLogger } from '../../../diagnostics/platformLogger';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
-import { GardenaActivityConverter } from './converters/gardenaActivityConverter';
-import { GardenaStateConverter } from './converters/gardenaStateConverter';
+import { GardenaMowerStateConverter } from './converters/gardenaMowerStateConverter';
 
 /**
  * Describes the model information parsed from the model data.
@@ -19,7 +18,7 @@ interface ModelInformation {
 }
 
 export class GardenaGetMowersService implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private activityConverter: GardenaActivityConverter, private stateConverter: GardenaStateConverter, 
+    public constructor(private tokenManager: AccessTokenManager, private mowerStateConverter: GardenaMowerStateConverter, 
         private client: GardenaClient, private log: PlatformLogger) { }
     
     public async getMowers(): Promise<model.Mower[]> {
@@ -135,23 +134,12 @@ export class GardenaGetMowersService implements GetMowersService {
                     name: common.attributes.name.value,
                     serialNumber: common.attributes.serial.value
                 },
-                mower: {
-                    activity: this.convertMowerActivity(mower),
-                    state: this.convertMowerState(mower)
-                },
+                mower: this.mowerStateConverter.convert(mower),
                 schedule: undefined,
                 settings: undefined
             }
         };
-    }
-
-    protected convertMowerActivity(mower: MowerServiceDataItem): model.Activity {
-        return this.activityConverter.convert(mower);
-    }
-
-    protected convertMowerState(mower: MowerServiceDataItem): model.State {
-        return this.stateConverter.convert(mower);
-    }
+    }    
     
     private parseModelInformation(value: string): ModelInformation {
         const firstIndex = value.indexOf(' ');

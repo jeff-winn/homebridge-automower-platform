@@ -1,12 +1,11 @@
 import * as model from '../../../model';
 
-import { AutomowerClient, Mower, RestrictedReason } from '../../../clients/automower/automowerClient';
-import { PlatformLogger } from '../../../diagnostics/platformLogger';
+import { AutomowerClient, Mower } from '../../../clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
 import { GetMowersService } from '../discoveryService';
-import { AutomowerActivityConverter } from './converters/automowerActivityConverter';
-import { AutomowerStateConverter } from './converters/automowerStateConverter';
+import { AutomowerMowerScheduleConverter } from './converters/automowerMowerScheduleConverter';
+import { AutomowerMowerStateConverter } from './converters/automowerMowerStateConverter';
 
 /**
  * Describes the model information parsed from the model data.
@@ -17,8 +16,8 @@ interface ModelInformation {
 }
 
 export class AutomowerGetMowersService implements GetMowersService {
-    public constructor(private tokenManager: AccessTokenManager, private activityConverter: AutomowerActivityConverter, 
-        private stateConverter: AutomowerStateConverter, private client: AutomowerClient, private log: PlatformLogger) { }    
+    public constructor(private tokenManager: AccessTokenManager, private mowerStateConverter: AutomowerMowerStateConverter, 
+        private mowerScheduleConverter: AutomowerMowerScheduleConverter, private client: AutomowerClient) { }    
 
     public async getMowers(): Promise<model.Mower[]> {
         try {
@@ -61,55 +60,13 @@ export class AutomowerGetMowersService implements GetMowersService {
                     name: mower.attributes.system.name,
                     serialNumber: mower.attributes.system.serialNumber.toString()
                 },
-                mower: {
-                    activity: this.convertMowerActivity(mower),
-                    state: this.convertMowerState(mower),
-                },
-                schedule: {
-                    runContinuously: this.isSetToRunContinuously(mower),
-                    runInFuture: this.isSetToRunInFuture(mower),
-                    runOnSchedule: this.isSetToRunOnASchedule(mower)
-                },
+                mower: this.mowerStateConverter.convert(mower),
+                schedule: this.mowerScheduleConverter.convert(mower),
                 settings: {
                     cuttingHeight: mower.attributes.settings.cuttingHeight
                 }
             }
         };
-    }
-
-    protected isSetToRunInFuture(mower: Mower): boolean {      
-        return mower.attributes.planner.nextStartTimestamp > 0 && mower.attributes.planner.restrictedReason === RestrictedReason.WEEK_SCHEDULE;
-    }
-
-    protected isSetToRunOnASchedule(mower: Mower): boolean {
-        let result = false;
-
-        for (const task of mower.attributes.calendar.tasks) {
-            if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || 
-                task.thursday || task.friday || task.saturday)) {
-                result = true;
-            }
-        }
-
-        return result;
-    }
-
-    protected isSetToRunContinuously(mower: Mower): boolean {
-        const task = mower.attributes.calendar.tasks[0];
-        if (task === undefined) {
-            return false;
-        }
-        
-        return mower.attributes.planner.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
-            task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
-    }
-
-    protected convertMowerActivity(mower: Mower): model.Activity {
-        return this.activityConverter.convert(mower);
-    }
-
-    protected convertMowerState(mower: Mower): model.State {
-        return this.stateConverter.convert(mower);
     }
 
     private parseModelInformation(value: string): ModelInformation {
