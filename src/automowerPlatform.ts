@@ -3,14 +3,14 @@ import {
     PlatformConfig, PlatformIdentifier, PlatformName
 } from 'homebridge';
 
-import { MowerAccessory, MowerContext } from './automowerAccessory';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
 import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
 import { LoggerType } from './diagnostics/platformLogger';
 import { BadConfigurationError } from './errors/badConfigurationError';
 import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
 import { AuthenticationMode, DeviceType } from './model';
+import { MowerAccessory, MowerContext } from './mowerAccessory';
+import { MowerAccessoryFactory, MowerAccessoryFactoryImpl } from './mowerAccessoryFactory';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
@@ -228,8 +228,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }
     }
 
-    private getAccessoryFactory(): AutomowerAccessoryFactory {
-        return this.container!.resolve(AutomowerAccessoryFactoryImpl);
+    private getAccessoryFactory(): MowerAccessoryFactory {
+        return this.container!.resolve(MowerAccessoryFactoryImpl);
     }
 
     private getLocalization(): Localization | undefined {

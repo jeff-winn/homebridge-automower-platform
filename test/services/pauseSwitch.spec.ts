@@ -2,9 +2,9 @@ import { Characteristic, HAPStatus, Service } from 'hap-nodejs';
 import { API, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, MowerConnection, MowerState, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
 import { MowerIsPausedPolicy } from '../../src/services/policies/mowerIsPausedPolicy';

@@ -5,7 +5,6 @@ import { container, InjectionToken } from 'tsyringe';
 
 import * as settings from '../settings';
 
-import { AutomowerAccessoryFactoryImpl } from '../automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { AuthenticationClientImpl } from '../clients/authenticationClient';
 import { AutomowerClientImpl } from '../clients/automower/automowerClient';
@@ -22,6 +21,7 @@ import { DefaultErrorFactory } from '../errors/errorFactory';
 import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
 import { AuthenticationMode } from '../model';
+import { MowerAccessoryFactoryImpl } from '../mowerAccessoryFactory';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
@@ -222,8 +222,8 @@ export class PlatformContainerImpl implements PlatformContainer {
             useFactory: () => new PlatformAccessoryFactoryImpl(this.api)
         });
 
-        container.register(AutomowerAccessoryFactoryImpl, {
-            useFactory: (context) => new AutomowerAccessoryFactoryImpl(
+        container.register(MowerAccessoryFactoryImpl, {
+            useFactory: (context) => new MowerAccessoryFactoryImpl(
                 context.resolve(PlatformAccessoryFactoryImpl),
                 this.api,
                 context.resolve(this.getLoggerClass()),

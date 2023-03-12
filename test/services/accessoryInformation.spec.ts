@@ -2,7 +2,7 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 
-import { MowerContext } from '../../src/automowerAccessory';
+import { MowerContext } from '../../src/mowerAccessory';
 import { AccessoryInformationImpl } from '../../src/services/accessoryInformation';
 
 describe('AccessoryInformationService', () => {

@@ -2,8 +2,8 @@ import { Characteristic, CharacteristicValue, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerContext } from '../../src/automowerAccessory';
 import { Activity, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { BatteryInformationImpl } from '../../src/services/batteryInformation';
 
 describe('BatteryServiceImpl', () => {

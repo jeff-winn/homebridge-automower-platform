@@ -2,9 +2,9 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, MowerConnection, MowerState, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';

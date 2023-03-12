@@ -2,9 +2,9 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 
 import { It, Mock, Times } from 'moq.ts';
-import { MowerContext } from '../../../src/automowerAccessory';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { MowerConnection } from '../../../src/model';
+import { MowerContext } from '../../../src/mowerAccessory';
 import { Policy } from '../../../src/services/policies/policy';
 import { ContactSensorSpy } from './contactSensorSpy';
 

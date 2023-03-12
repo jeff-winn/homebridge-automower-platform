@@ -2,9 +2,9 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerContext } from '../../src/automowerAccessory';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, MowerState, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsLeavingPolicy } from '../../src/services/policies/mowerIsLeavingPolicy';
 import { LeavingContactSensorImplSpy } from './leavingContactSensorImplSpy';

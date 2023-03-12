@@ -1,5 +1,5 @@
 import { API, PlatformAccessory } from 'homebridge';
-import { MowerContext } from '../automowerAccessory';
+import { MowerContext } from '../mowerAccessory';
 
 /**
  * A mechanism capable of creating platform accessories.

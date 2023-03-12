@@ -3,9 +3,9 @@ import {
     CharacteristicValue, HAPStatus, PlatformAccessory, Service
 } from 'homebridge';
 
-import { MowerContext } from '../automowerAccessory';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { MowerState } from '../model';
+import { MowerContext } from '../mowerAccessory';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from './husqvarna/automower/changeSettingsService';

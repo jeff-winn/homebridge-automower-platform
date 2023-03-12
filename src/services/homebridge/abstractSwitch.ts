@@ -3,9 +3,9 @@ import {
     CharacteristicSetCallback, CharacteristicValue, PlatformAccessory, Service
 } from 'homebridge';
 
-import { MowerContext } from '../../automowerAccessory';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { MowerConnection } from '../../model';
+import { MowerContext } from '../../mowerAccessory';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
 /**

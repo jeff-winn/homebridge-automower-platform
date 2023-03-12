@@ -2,10 +2,10 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
 import { Activity, DeviceType, Mower, State } from '../src/model';
+import { MowerAccessory, MowerContext } from '../src/mowerAccessory';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
 import { PlatformContainer } from '../src/primitives/platformContainer';
@@ -26,7 +26,7 @@ import { DeterministicMowerIsActivePolicy } from '../src/services/policies/mower
 import { DeterministicMowerIsLeavingPolicy } from '../src/services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../src/services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../src/services/policies/mowerTamperedPolicy';
-import { AutomowerAccessoryFactorySpy } from './automowerAccessoryFactorySpy';
+import { MowerAccessoryFactorySpy } from './mowerAccessoryFactorySpy';
 
 describe('AutomowerAccessoryFactoryImpl', () => {
     let factory: Mock<PlatformAccessoryFactory>;
@@ -37,7 +37,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     let locale: Mock<Localization>;
     let config: AutomowerPlatformConfig;
 
-    let target: AutomowerAccessoryFactorySpy;
+    let target: MowerAccessoryFactorySpy;
 
     beforeEach(() => {
         factory = new Mock<PlatformAccessoryFactory>();
@@ -57,7 +57,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
             platform: 'Homebridge Automower Platform'
         });
 
-        target = new AutomowerAccessoryFactorySpy(
+        target = new MowerAccessoryFactorySpy(
             factory.object(), 
             api.object(), 
             log.object(), 

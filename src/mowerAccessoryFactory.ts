@@ -1,10 +1,10 @@
 import { API, PlatformAccessory } from 'homebridge';
 import { InjectionToken } from 'tsyringe';
 
-import { MowerAccessory, MowerContext } from './automowerAccessory';
 import { AutomowerPlatformConfig } from './automowerPlatform';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { DeviceType, Mower } from './model';
+import { MowerAccessory, MowerContext } from './mowerAccessory';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -28,9 +28,9 @@ import { DeterministicMowerIsPausedPolicy } from './services/policies/mowerIsPau
 import { DeterministicMowerTamperedPolicy } from './services/policies/mowerTamperedPolicy';
 
 /**
- * A mechanism to create {@link AutomowerAccessory} instances.
+ * A mechanism to create {@link MowerAccessory} instances.
  */
-export interface AutomowerAccessoryFactory {
+export interface MowerAccessoryFactory {
     /**
      * Creates an accessory instance.
      * @param data The mower data.
@@ -44,7 +44,7 @@ export interface AutomowerAccessoryFactory {
     createAccessoryFromCache(accessory: PlatformAccessory<MowerContext>): MowerAccessory;
 }
 
-export class AutomowerAccessoryFactoryImpl implements AutomowerAccessoryFactory {
+export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     public constructor(
         private factory: PlatformAccessoryFactory, 
         private api: API, 

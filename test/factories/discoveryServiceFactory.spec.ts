@@ -1,10 +1,10 @@
 import { Mock, Times } from 'moq.ts';
 
-import { AutomowerAccessoryFactoryImpl } from '../../src/automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../../src/automowerPlatform';
 import { DefaultLogger } from '../../src/diagnostics/loggers/defaultLogger';
 import { DiscoveryServiceFactoryImpl } from '../../src/factories/discoveryServiceFactory';
 import { DeviceType } from '../../src/model';
+import { MowerAccessoryFactoryImpl } from '../../src/mowerAccessoryFactory';
 import { PlatformContainer } from '../../src/primitives/platformContainer';
 import { AutomowerGetMowersService } from '../../src/services/husqvarna/automower/automowerGetMowersService';
 import { DiscoveryServiceImpl } from '../../src/services/husqvarna/discoveryService';
@@ -30,11 +30,11 @@ describe('DiscoveryServiceFactoryImpl', () => {
         config.device_type = undefined;
 
         const getMowersService = new Mock<AutomowerGetMowersService>();
-        const automowerAccessoryFactory = new Mock<AutomowerAccessoryFactoryImpl>();
+        const automowerAccessoryFactory = new Mock<MowerAccessoryFactoryImpl>();
         const logger = new Mock<DefaultLogger>();
 
         container.setup(o => o.resolve(AutomowerGetMowersService)).returns(getMowersService.object());
-        container.setup(o => o.resolve(AutomowerAccessoryFactoryImpl)).returns(automowerAccessoryFactory.object());
+        container.setup(o => o.resolve(MowerAccessoryFactoryImpl)).returns(automowerAccessoryFactory.object());
 
         container.setup(o => o.getLoggerClass()).returns(DefaultLogger);
         container.setup(o => o.resolve(DefaultLogger)).returns(logger.object());
@@ -51,11 +51,11 @@ describe('DiscoveryServiceFactoryImpl', () => {
         config.device_type = DeviceType.AUTOMOWER;
 
         const getMowersService = new Mock<AutomowerGetMowersService>();
-        const automowerAccessoryFactory = new Mock<AutomowerAccessoryFactoryImpl>();
+        const automowerAccessoryFactory = new Mock<MowerAccessoryFactoryImpl>();
         const logger = new Mock<DefaultLogger>();
 
         container.setup(o => o.resolve(AutomowerGetMowersService)).returns(getMowersService.object());
-        container.setup(o => o.resolve(AutomowerAccessoryFactoryImpl)).returns(automowerAccessoryFactory.object());
+        container.setup(o => o.resolve(MowerAccessoryFactoryImpl)).returns(automowerAccessoryFactory.object());
         container.setup(o => o.getLoggerClass()).returns(DefaultLogger);
         container.setup(o => o.resolve(DefaultLogger)).returns(logger.object());
         
@@ -71,11 +71,11 @@ describe('DiscoveryServiceFactoryImpl', () => {
         config.device_type = DeviceType.GARDENA;
 
         const getMowersService = new Mock<GardenaGetMowersService>();
-        const automowerAccessoryFactory = new Mock<AutomowerAccessoryFactoryImpl>();
+        const automowerAccessoryFactory = new Mock<MowerAccessoryFactoryImpl>();
         const logger = new Mock<DefaultLogger>();
 
         container.setup(o => o.resolve(GardenaGetMowersService)).returns(getMowersService.object());
-        container.setup(o => o.resolve(AutomowerAccessoryFactoryImpl)).returns(automowerAccessoryFactory.object());
+        container.setup(o => o.resolve(MowerAccessoryFactoryImpl)).returns(automowerAccessoryFactory.object());
         container.setup(o => o.getLoggerClass()).returns(DefaultLogger);
         container.setup(o => o.resolve(DefaultLogger)).returns(logger.object());
         

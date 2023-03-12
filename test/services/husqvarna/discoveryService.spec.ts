@@ -1,22 +1,22 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerAccessory } from '../../../src/automowerAccessory';
-import { AutomowerAccessoryFactory } from '../../../src/automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../../src/automowerPlatform';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { MowerAccessory } from '../../../src/mowerAccessory';
+import { MowerAccessoryFactory } from '../../../src/mowerAccessoryFactory';
 import { DiscoveryServiceImpl, GetMowersService } from '../../../src/services/husqvarna/discoveryService';
 
 import * as model from '../../../src/model';
 
 describe('DiscoveryServiceImpl', () => {
     let getMowersService: Mock<GetMowersService>;
-    let factory: Mock<AutomowerAccessoryFactory>;
+    let factory: Mock<MowerAccessoryFactory>;
     let log: Mock<PlatformLogger>;    
     let target: DiscoveryServiceImpl;
 
     beforeEach(() => {
         getMowersService = new Mock<GetMowersService>();
-        factory = new Mock<AutomowerAccessoryFactory>();
+        factory = new Mock<MowerAccessoryFactory>();
         log = new Mock<PlatformLogger>();
 
         target = new DiscoveryServiceImpl(getMowersService.object(), factory.object(), log.object());

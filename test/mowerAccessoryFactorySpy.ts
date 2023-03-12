@@ -1,7 +1,7 @@
 import { PlatformAccessory } from 'homebridge';
 
-import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
-import { AutomowerAccessoryFactoryImpl } from '../src/automowerAccessoryFactory';
+import { MowerAccessory, MowerContext } from '../src/mowerAccessory';
+import { MowerAccessoryFactoryImpl } from '../src/mowerAccessoryFactory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
@@ -10,7 +10,7 @@ import { MainSwitch } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
 
-export class AutomowerAccessoryFactorySpy extends AutomowerAccessoryFactoryImpl {
+export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
     private accessory?: MowerAccessory;
 
     private mainSwitch?: MainSwitch;

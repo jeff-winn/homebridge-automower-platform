@@ -1,8 +1,8 @@
-import { MowerAccessory } from '../../automowerAccessory';
-import { AutomowerAccessoryFactory } from '../../automowerAccessoryFactory';
 import { AutomowerPlatform } from '../../automowerPlatform';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { Mower } from '../../model';
+import { MowerAccessory } from '../../mowerAccessory';
+import { MowerAccessoryFactory } from '../../mowerAccessoryFactory';
 
 /**
  * A service used to retrieve the mowers associated with a Husqvarna account.
@@ -29,7 +29,7 @@ export interface DiscoveryService {
  * A {@link DiscoveryService} which uses the Automower Connect cloud service to discover mowers associated with the account.
  */
 export class DiscoveryServiceImpl implements DiscoveryService {
-    public constructor(private mowerService: GetMowersService, private factory: AutomowerAccessoryFactory, private log: PlatformLogger) { }
+    public constructor(private mowerService: GetMowersService, private factory: MowerAccessoryFactory, private log: PlatformLogger) { }
 
     public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
         this.log.info('DISCOVERING_NEW_MOWERS');

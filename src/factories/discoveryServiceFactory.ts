@@ -1,7 +1,7 @@
 import { InjectionToken } from 'tsyringe';
-import { AutomowerAccessoryFactoryImpl } from '../automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { DeviceType } from '../model';
+import { MowerAccessoryFactoryImpl } from '../mowerAccessoryFactory';
 import { PlatformContainer } from '../primitives/platformContainer';
 import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
 import { DiscoveryService, DiscoveryServiceImpl, GetMowersService } from '../services/husqvarna/discoveryService';
@@ -26,7 +26,7 @@ export class DiscoveryServiceFactoryImpl implements DiscoveryServiceFactory {
 
         return new DiscoveryServiceImpl(
             container.resolve(mowerServiceClass), 
-            container.resolve(AutomowerAccessoryFactoryImpl),               
+            container.resolve(MowerAccessoryFactoryImpl),               
             container.resolve(container.getLoggerClass()));
     }
 

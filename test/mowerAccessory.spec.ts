@@ -1,8 +1,8 @@
 import { PlatformAccessory } from 'homebridge';
 import { Mock, Times } from 'moq.ts';
 
-import { MowerAccessory, MowerContext } from '../src/automowerAccessory';
 import { Activity, Battery, Mower, MowerConnection, MowerState, State } from '../src/model';
+import { MowerAccessory, MowerContext } from '../src/mowerAccessory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';

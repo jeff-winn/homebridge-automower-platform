@@ -2,9 +2,9 @@ import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, Ch
 import { API, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { MowerContext } from '../../../src/automowerAccessory';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { MowerConnection } from '../../../src/model';
+import { MowerContext } from '../../../src/mowerAccessory';
 import { NameMode } from '../../../src/services/homebridge/abstractSwitch';
 import { SwitchSpy } from './switchSpy';
 

@@ -1,8 +1,8 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
-import { MowerContext } from '../../automowerAccessory';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { MowerConnection } from '../../model';
+import { MowerContext } from '../../mowerAccessory';
 import { Policy } from '../policies/policy';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
