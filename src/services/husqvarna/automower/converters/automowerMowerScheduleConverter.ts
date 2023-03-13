@@ -30,11 +30,7 @@ export class AutomowerMowerScheduleConverterImpl implements AutomowerMowerSchedu
         let result = false;
 
         for (const task of mower.attributes.calendar.tasks) {
-            if (task === undefined) {
-                continue;
-            }
-
-            if (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday) {
+            if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday)) {
                 result = true;
             }
         }
