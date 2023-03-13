@@ -1,5 +1,5 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
-import { Activity, Battery, MowerState } from '../model';
+import { Battery, MowerState, State } from '../model';
 import { MowerContext } from '../mowerAccessory';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
@@ -55,7 +55,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
             throw new Error('The service has not been initialized.');
         }
 
-        if (state.activity === Activity.CHARGING) {
+        if (state.state === State.CHARGING) {
             this.chargingState.updateValue(this.Characteristic.ChargingState.CHARGING);
         } else {
             this.chargingState.updateValue(this.Characteristic.ChargingState.NOT_CHARGING);

@@ -26,9 +26,7 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
 
     protected convertActivity(mower: Mower): model.Activity {
         switch (mower.attributes.mower.activity) {
-            case Activity.CHARGING:
-                return model.Activity.CHARGING;
-                
+            case Activity.CHARGING:                
             case Activity.PARKED_IN_CS:
             case Activity.NOT_APPLICABLE:
                 return model.Activity.PARKED;
@@ -55,6 +53,10 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
     protected convertState(mower: Mower): model.State {
         if (mower.attributes.mower.state === State.STOPPED && mower.attributes.mower.errorCode !== 0) {
             return model.State.TAMPERED;
+        }
+
+        if (mower.attributes.mower.activity === Activity.CHARGING) {
+            return model.State.CHARGING;
         }
         
         switch (mower.attributes.mower.state) {

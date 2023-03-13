@@ -146,8 +146,8 @@ describe('BatteryServiceImpl', () => {
         target.init();
 
         target.setChargingState({
-            activity: Activity.CHARGING,
-            state: State.READY
+            activity: Activity.PARKED,
+            state: State.CHARGING
         });
 
         chargingState.verify(o => o.updateValue(Characteristic.ChargingState.CHARGING), Times.Once());

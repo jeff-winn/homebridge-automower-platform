@@ -30,7 +30,6 @@ export enum Activity {
     PARKED = 'parked',
     GOING_HOME = 'going_home',
     LEAVING_HOME = 'leaving_home',
-    CHARGING = 'charging',
     UNKNOWN = 'unknown'
 }
 
@@ -38,7 +37,7 @@ export enum Activity {
  * Describes the states of a mower.
  */
 export enum State {
-    READY = 'ready',
+    CHARGING = 'charging',
     IN_OPERATION = 'in_operation',
     PAUSED = 'paused',
     FAULTED = 'faulted',

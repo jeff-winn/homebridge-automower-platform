@@ -26,9 +26,6 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
 
     protected convertActivity(mower: MowerServiceDataItem): model.Activity {
         switch (mower.attributes.activity.value) {
-            case MowerActivity.OK_CHARGING:
-                return model.Activity.CHARGING;
-
             case MowerActivity.OK_CUTTING:
             case MowerActivity.OK_CUTTING_TIMER_OVERRIDDEN:
             case MowerActivity.PAUSED:
@@ -40,6 +37,7 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
             case MowerActivity.OK_SEARCHING:
                 return model.Activity.GOING_HOME;
 
+            case MowerActivity.OK_CHARGING:
             case MowerActivity.PARKED_AUTOTIMER:
             case MowerActivity.PARKED_PARK_SELECTED:
             case MowerActivity.PARKED_TIMER:
@@ -59,6 +57,14 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
             return model.State.PAUSED;
         }
 
+        if (mower.attributes.activity.value === MowerActivity.OK_CHARGING) {
+            return model.State.CHARGING;
+        }
+
+        if (mower.attributes.state.value === ServiceState.WARNING || mower.attributes.state.value === ServiceState.ERROR) {
+            return model.State.FAULTED;
+        }
+
         switch (mower.attributes.lastErrorCode.value) {
             case MowerError.OFF_DISABLED:
             case MowerError.OFF_HATCH_CLOSED:
@@ -74,21 +80,9 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
             case MowerError.UPSIDE_DOWN:
                 return model.State.FAULTED;
 
-            default:                
-                switch (mower.attributes.state.value) {
-                    case ServiceState.OK:
-                        return model.State.READY;
-        
-                    case ServiceState.WARNING:
-                    case ServiceState.ERROR:
-                        return model.State.FAULTED;
-        
-                    case ServiceState.UNAVAILABLE:
-                        return model.State.UNKNOWN;
-
-                    default:
-                        return model.State.UNKNOWN;
-                }
+            default:
+                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.activity.value);
+                return model.State.UNKNOWN;
         }
     }
 }

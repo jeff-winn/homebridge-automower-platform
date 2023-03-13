@@ -1,7 +1,9 @@
 import { Mock } from 'moq.ts';
 
+import * as model from '../../../../../src/model';
 import { PlatformLogger } from '../../../../../src/diagnostics/platformLogger';
 import { AutomowerMowerStateConverterImpl } from '../../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
+import { Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
 
 describe('AutomowerMowerStateConverterImpl', () => {
     let log: Mock<PlatformLogger>;
@@ -13,10 +15,75 @@ describe('AutomowerMowerStateConverterImpl', () => {
         target = new AutomowerMowerStateConverterImpl(log.object());
     });
 
-    it('should be truthy', () => { // TODO: Clean this up.
-        expect(true).toBeTruthy();
+    it('should return charging and parked', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.CHARGING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.NOT_APPLICABLE
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toStrictEqual({
+            activity: model.Activity.PARKED,
+            state: model.State.CHARGING
+        });
     });
-    
     // TODO: Clean this up.
     // it('should return false when the mower activity is charging', () => {
     //     const state: MowerState = {

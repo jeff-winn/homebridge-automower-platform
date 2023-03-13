@@ -204,7 +204,7 @@ describe('DeterministicMowerIsActivePolicy', () => {
     it('should return false when mower is parked', () => {
         target.setMowerState({
             activity: Activity.PARKED,
-            state: State.READY
+            state: State.OFF
         });
 
         const result = target.check();

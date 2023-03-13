@@ -61,8 +61,8 @@ describe('DiscoveryServiceImpl', () => {
                     serialNumber: '0'
                 },
                 mower: {
-                    activity: model.Activity.CHARGING,
-                    state: model.State.READY
+                    activity: model.Activity.PARKED,
+                    state: model.State.CHARGING
                 },
                 schedule: undefined,
                 settings: undefined
@@ -144,8 +144,8 @@ describe('DiscoveryServiceImpl', () => {
                     serialNumber: '0'
                 },
                 mower: {
-                    activity: model.Activity.CHARGING,
-                    state: model.State.READY
+                    activity: model.Activity.PARKED,
+                    state: model.State.CHARGING
                 },
                 schedule: undefined,
                 settings: undefined
@@ -169,8 +169,8 @@ describe('DiscoveryServiceImpl', () => {
                     serialNumber: '0'
                 },
                 mower: {
-                    activity: model.Activity.CHARGING,
-                    state: model.State.IN_OPERATION
+                    activity: model.Activity.PARKED,
+                    state: model.State.CHARGING
                 },
                 schedule: undefined,
                 settings: undefined

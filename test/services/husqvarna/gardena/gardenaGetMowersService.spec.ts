@@ -302,8 +302,8 @@ describe('GardenaGetMowersService', () => {
         log.setup(o => o.warn(It.IsAny(), It.IsAny())).returns(undefined);
 
         mowerStateConverter.setup(o => o.convert(mowerService)).returns({
-            activity: Activity.CHARGING,
-            state: State.OFF
+            activity: Activity.PARKED,
+            state: State.CHARGING
         });
 
         const mowers = await target.getMowers();
@@ -318,8 +318,8 @@ describe('GardenaGetMowersService', () => {
         expect(result.attributes.metadata.model).toBe('smart Mower');
         expect(result.attributes.metadata.name).toBe('SILENO');
         expect(result.attributes.metadata.serialNumber).toBe('1234567890');
-        expect(result.attributes.mower.activity).toBe(Activity.CHARGING);
-        expect(result.attributes.mower.state).toBe(State.OFF);
+        expect(result.attributes.mower.activity).toBe(Activity.PARKED);
+        expect(result.attributes.mower.state).toBe(State.CHARGING);
 
         log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });

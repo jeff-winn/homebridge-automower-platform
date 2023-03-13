@@ -73,8 +73,8 @@ describe('ArrivingContactSensorImpl', () => {
         policy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 

@@ -89,8 +89,8 @@ describe('MotionSensorImpl', () => {
         target.init();
         
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
@@ -111,8 +111,8 @@ describe('MotionSensorImpl', () => {
         target.init();
 
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
@@ -140,8 +140,8 @@ describe('MotionSensorImpl', () => {
         target.init();
 
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
