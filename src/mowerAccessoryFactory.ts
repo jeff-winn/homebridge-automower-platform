@@ -4,7 +4,7 @@ import { InjectionToken } from 'tsyringe';
 import { AutomowerPlatformConfig } from './automowerPlatform';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { DeviceType, Mower } from './model';
-import { AutomowerAccessory, MowerAccessory, MowerContext } from './mowerAccessory';
+import { MowerAccessory, MowerContext } from './mowerAccessory';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -16,7 +16,7 @@ import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/change
 import { GardenaMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
 import { MowerControlService } from './services/husqvarna/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
-import { AutomowerMainSwitch, AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from './services/mainSwitch';
+import { AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from './services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from './services/policies/mowerFaultedPolicy';
@@ -86,7 +86,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     
     protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
         if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
-            return new AutomowerAccessory(accessory,
+            return new MowerAccessory(accessory,
                 this.createBatteryInformation(accessory),
                 this.createAccessoryInformation(accessory),
                 this.createMotionSensor(accessory),
@@ -144,7 +144,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
             accessory, this.api, this.log);
     }
 
-    protected createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): AutomowerMainSwitch {
+    protected createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
         return new AutomowerMainSwitchImpl(
             this.locale.format('SCHEDULE'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(this.getContolServiceClass()),

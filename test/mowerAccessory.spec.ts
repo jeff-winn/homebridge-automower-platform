@@ -1,17 +1,19 @@
 import { PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
-import { MowerStatusChangedEvent } from '../src/events';
 
+import { MowerStatusChangedEvent } from '../src/events';
 import { Activity, Battery, Mower, MowerConnection, MowerState, State } from '../src/model';
-import { AutomowerAccessory, MowerAccessory, MowerContext } from '../src/mowerAccessory';
+import { MowerAccessory, MowerContext } from '../src/mowerAccessory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
 import { NameMode } from '../src/services/homebridge/abstractSwitch';
 import { LeavingSensor } from '../src/services/leavingSensor';
-import { AutomowerMainSwitch, MainSwitch } from '../src/services/mainSwitch';
+import { MainSwitch, SupportsCuttingHeightCharacteristic } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
+
+type MainSwitchWithCuttingHeight = MainSwitch & SupportsCuttingHeightCharacteristic;
 
 describe('MowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<MowerContext>>;
@@ -236,9 +238,9 @@ describe('AutomowerAccessory', () => {
     let arrivingSensor: Mock<ArrivingSensor>;
     let leavingSensor: Mock<LeavingSensor>;
     let pauseSwitch: Mock<PauseSwitch>;
-    let mainSwitch: Mock<AutomowerMainSwitch>;
+    let mainSwitch: Mock<MainSwitchWithCuttingHeight>;
 
-    let target: AutomowerAccessory;
+    let target: MowerAccessory;
 
     beforeEach(() => {
         accessory = new Mock<PlatformAccessory<MowerContext>>();
@@ -248,9 +250,9 @@ describe('AutomowerAccessory', () => {
         pauseSwitch = new Mock<PauseSwitch>();
         arrivingSensor = new Mock<ArrivingSensor>();
         leavingSensor = new Mock<LeavingSensor>();
-        mainSwitch = new Mock<AutomowerMainSwitch>();
+        mainSwitch = new Mock<MainSwitchWithCuttingHeight>();
     
-        target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
+        target = new MowerAccessory(accessory.object(), batteryService.object(), 
             informationService.object(), motionSensorService.object(), arrivingSensor.object(),
             leavingSensor.object(), pauseSwitch.object(), mainSwitch.object());
     });

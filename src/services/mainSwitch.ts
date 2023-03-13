@@ -24,14 +24,23 @@ export interface MainSwitch extends Switch {
 }
 
 /**
- * A service which encapsulates the main switch for an automower device.
+ * A service which supports the cutting height characteristic.
  */
-export interface AutomowerMainSwitch extends MainSwitch {
+export interface SupportsCuttingHeightCharacteristic {
     /**
      * Sets the mower cutting height.
      * @param value The cutting height.
      */
     setCuttingHeight(value: number): void;
+}
+
+/**
+ * Identifies if the object implements {@link SupportsCuttingHeightCharacteristic}.
+ * @param object The object to test.
+ * @returns true if the object is {@link SupportsCuttingHeightCharacteristic}.
+ */
+export function supportsCuttingHeight(object: unknown): object is SupportsCuttingHeightCharacteristic {
+    return (<SupportsCuttingHeightCharacteristic>object).setCuttingHeight !== undefined;
 }
 
 /**
@@ -78,7 +87,7 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
 /**
  * Represents the main switch of an Automower device.
  */
-export class AutomowerMainSwitchImpl extends MainSwitchImpl implements AutomowerMainSwitch {
+export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsCuttingHeightCharacteristic {
     private cuttingHeight?: Characteristic;
 
     public constructor(name: string, controlService: MowerControlService, private settingsService: ChangeSettingsService, policy: MowerIsEnabledPolicy, 

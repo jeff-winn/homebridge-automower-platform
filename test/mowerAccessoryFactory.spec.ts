@@ -16,7 +16,7 @@ import { NameMode } from '../src/services/homebridge/abstractSwitch';
 import { AutomowerMowerControlService } from '../src/services/husqvarna/automower/automowerMowerControlService';
 import { GardenaMowerControlService } from '../src/services/husqvarna/gardena/gardenaMowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from '../src/services/leavingSensor';
-import { AutomowerMainSwitch, AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from '../src/services/mainSwitch';
+import { AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from '../src/services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from '../src/services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from '../src/services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from '../src/services/policies/mowerFaultedPolicy';
@@ -191,7 +191,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
 
     it('should create the automower device accessory by default', () => {
-        const mainSwitch = new Mock<AutomowerMainSwitch>();
+        const mainSwitch = new Mock<MainSwitch>();
         mainSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
 
         const pauseSwitch = new Mock<PauseSwitch>();
@@ -237,7 +237,7 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     it('should create the automower device accessory when specified', () => {
         config.device_type = DeviceType.AUTOMOWER;
 
-        const mainSwitch = new Mock<AutomowerMainSwitch>();
+        const mainSwitch = new Mock<MainSwitch>();
         mainSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
 
         const pauseSwitch = new Mock<PauseSwitch>();
