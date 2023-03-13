@@ -1,5 +1,142 @@
 import { Activity, State } from '../../../src/model';
-import { DeterministicMowerIsActivePolicy } from '../../../src/services/policies/mowerIsEnabledPolicy';
+import { DeterministicMowerIsActivePolicy, DeterministicMowerIsScheduledPolicy } from '../../../src/services/policies/mowerIsEnabledPolicy';
+
+describe('DeterministicMowerIsScheduledPolicy', () => {
+    let target: DeterministicMowerIsScheduledPolicy;
+
+    beforeEach(() => {
+        target = new DeterministicMowerIsScheduledPolicy();
+    });
+
+    it('should not apply when the mower schedule is not set', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        const result = target.shouldApply();
+
+        expect(result).toBeFalsy();
+    });
+
+    it('should not apply when the mower is not set to run continuously and in operation', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: false,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+
+        const result = target.shouldApply();
+
+        expect(result).toBeFalsy();
+    });
+
+    it('should apply when the mower is in operation', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+
+        const result = target.shouldApply();
+
+        expect(result).toBeTruthy();
+    });
+
+    it('should return false when checked without a schedule', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        expect(target.check()).toBeFalsy();
+    });
+
+    it('should return true when run continuously and in operation', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+        
+        expect(target.check()).toBeTruthy();
+    });
+
+    it('should return true when run on schedule and run in future', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: false,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+        
+        expect(target.check()).toBeTruthy();
+    });
+
+    it('should return false when run on schedule and not run in future', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: false,
+            runInFuture: false,
+            runOnSchedule: true
+        });
+        
+        expect(target.check()).toBeFalsy();
+    });
+
+    it('should return false when not run on schedule and run in future', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: false,
+            runInFuture: true,
+            runOnSchedule: false
+        });
+        
+        expect(target.check()).toBeFalsy();
+    });
+
+    it('should return false when not run on schedule and not run in future', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: false,
+            runInFuture: false,
+            runOnSchedule: false
+        });
+        
+        expect(target.check()).toBeFalsy();
+    });
+});
 
 describe('DeterministicMowerIsActivePolicy', () => {
     let target: DeterministicMowerIsActivePolicy;
