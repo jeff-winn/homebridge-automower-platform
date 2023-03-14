@@ -558,75 +558,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.UNKNOWN);
-    });
-
-    it('should return tampered when stopped with error', () => {
-        const mower: Mower = {
-            id: '12345',
-            type: 'mower',
-            attributes: {
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
-                },
-                mower: {
-                    activity: Activity.CHARGING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.UNKNOWN
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: { },
-                    restrictedReason: RestrictedReason.PARK_OVERRIDE
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: HeadlightMode.ALWAYS_ON
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 1,
-                    numberOfCollisions: 1,
-                    totalChargingTime: 1,
-                    totalCuttingTime: 1,
-                    totalRunningTime: 1,
-                    totalSearchingTime: 1
-                },
-                system: {
-                    model: 'Hello World',
-                    name: 'Groovy',
-                    serialNumber: 1
-                },
-                battery: {
-                    batteryPercent: 100
-                },
-                calendar: {
-                    tasks: [ 
-                        {
-                            start: 1,
-                            duration: 1,
-                            sunday: true,
-                            monday: false,
-                            tuesday: false,
-                            wednesday: false,
-                            thursday: false,
-                            friday: false,
-                            saturday: false
-                        }
-                    ]
-                }
-            }
-        };
-
-        const result = target.convert(mower);
-
-        expect(result).toBeDefined();
-        expect(result.state).toEqual(model.State.TAMPERED);
-    });
+    });   
 
     it('should return tampered when stopped with error', () => {
         const mower: Mower = {
