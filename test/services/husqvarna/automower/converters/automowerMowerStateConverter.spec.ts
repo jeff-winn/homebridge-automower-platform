@@ -1,9 +1,10 @@
 import { Mock } from 'moq.ts';
 
 import * as model from '../../../../../src/model';
+
+import { Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../../src/diagnostics/platformLogger';
 import { AutomowerMowerStateConverterImpl } from '../../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
-import { Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
 
 describe('AutomowerMowerStateConverterImpl', () => {
     let log: Mock<PlatformLogger>;
@@ -15,7 +16,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         target = new AutomowerMowerStateConverterImpl(log.object());
     });
 
-    it('should return charging and parked', () => {
+    it('should return parked when charging', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -26,6 +27,1230 @@ describe('AutomowerMowerStateConverterImpl', () => {
                 },
                 mower: {
                     activity: Activity.CHARGING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.PARKED);
+    });
+
+    it('should return parked when parked in charge station', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.PARKED_IN_CS,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.PARKED);
+    });
+
+    it('should return parked when not applicable', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.NOT_APPLICABLE,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.PARKED);
+    });
+
+    it('should return going home when going home', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.GOING_HOME,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.GOING_HOME);
+    });
+    
+    it('should return leaving when leaving', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.LEAVING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.LEAVING_HOME);
+    });
+
+    it('should return mowing when stopped in garden', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.STOPPED_IN_GARDEN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+    });
+
+    it('should return mowing when mowing', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+    });
+
+    it('should return unknown when unknown', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.UNKNOWN);
+    });
+
+    it('should return tampered when stopped with error', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.CHARGING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.TAMPERED);
+    });
+
+    it('should return tampered when stopped with error', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 1,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.STOPPED
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.TAMPERED);
+    });
+
+    it('should return charging when activity is charging', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.CHARGING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.CHARGING);
+    });
+
+    it('should return in operation when in operation', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.IN_OPERATION);
+    });
+
+    it('should return faulted when error', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.ERROR
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
+    it('should return faulted when error at power up', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.ERROR_AT_POWER_UP
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
+    it('should return faulted when fatal error', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.FATAL_ERROR
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
+    it('should return faulted when restricted', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.RESTRICTED
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
+    it('should return faulted when stopped', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.STOPPED
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
+    it('should return paused when paused', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.PAUSED
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.PAUSED);
+    });
+
+    it('should return off when not applicable', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
                     mode: Mode.MAIN_AREA,
@@ -79,643 +1304,211 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         const result = target.convert(mower);
 
-        expect(result).toStrictEqual({
-            activity: model.Activity.PARKED,
-            state: model.State.CHARGING
-        });
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.OFF);
     });
-    // TODO: Clean this up.
-    // it('should return false when the mower activity is charging', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.CHARGING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
 
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower activity is going home', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return true when the mower activity is leaving', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.LEAVING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return true when the mower activity is going home', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return false when the mower activity is not applicable', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.NOT_APPLICABLE,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when the mower activity is parked in charge station', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.PARKED_IN_CS,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when the mower activity is stopped in garden', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.STOPPED_IN_GARDEN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when the mower activity is unknown', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // TODO: Clean this up.
-    // it('should return false when the mower state is in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower state is going home but not in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.STOPPED
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower state is going home', () => {
-    //     target.setMowerState({
-    //         activity: Activity.GOING_HOME,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // TODO: Clean this up.
-    // it('should return false when the mower state is in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.MOWING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower state is leaving but not in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.LEAVING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.STOPPED
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when the mower state is leaving', () => {
-    //     target.setMowerState({
-    //         activity: Activity.LEAVING,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // TODO: Clean this up.
-    // it('should return false when mower state is unknown', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.UNKNOWN
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is not applicable', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.NOT_APPLICABLE
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is paused', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.PAUSED
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is in operation', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.IN_OPERATION
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is wait updating', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.WAIT_UPDATING
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is wait power up', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.WAIT_POWER_UP
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is restricted', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.RESTRICTED
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is off', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.OFF
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is stopped', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.STOPPED
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is error and error code is zero', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.ERROR
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when mower state is error and error code is non-zero', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 1,
-    //         errorCodeTimestamp: 1,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.ERROR
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return false when mower state is fatal error and error code is zero', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.FATAL_ERROR
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when mower state is fatal error and error code is non-zero', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 1,
-    //         errorCodeTimestamp: 1,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.FATAL_ERROR
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return false when mower state is error at power up and error code is zero', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.ERROR_AT_POWER_UP
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when mower state is error at power up and error code is non-zero', () => {
-    //     target.setMowerState({
-    //         activity: Activity.UNKNOWN,
-    //         errorCode: 1,
-    //         errorCodeTimestamp: 1,
-    //         mode: Mode.UNKNOWN,
-    //         state: State.ERROR_AT_POWER_UP
-    //     });
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // TODO: Clean this up.
-    // it('should return false when mower state is unknown', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.UNKNOWN, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is not applicable', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.NOT_APPLICABLE, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is paused', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.PAUSED, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is unknown', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.IN_OPERATION, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is wait updating', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.WAIT_UPDATING, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is wait power up', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.WAIT_POWER_UP, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is restricted', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.RESTRICTED, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is off', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.OFF, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is error', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.ERROR, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is fatal error', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.FATAL_ERROR, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return false when mower state is error at power up', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.ERROR_AT_POWER_UP, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
-
-    // it('should return true when stopped and error code is non-zero', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.STOPPED, 
-    //         errorCode: 18,
-    //         errorCodeTimestamp: 1655819118000            
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeTruthy();
-    // });
-
-    // it('should return false when stopped and error code is zero', () => {
-    //     const state: MowerState = {
-    //         activity: Activity.UNKNOWN,
-    //         mode: Mode.MAIN_AREA,
-    //         state: State.STOPPED, 
-    //         errorCode: 0,
-    //         errorCodeTimestamp: 0
-    //     };
-
-    //     target.setMowerState(state);
-
-    //     const result = target.check();
-
-    //     expect(result).toBeFalsy();
-    // });
+    it('should return off when off', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.OFF
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.OFF);
+    });
+
+    it('should return unknown when waiting for power up', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.WAIT_POWER_UP
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.UNKNOWN);
+    });
+
+    it('should return unknown when waiting updating', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.UNKNOWN,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.WAIT_UPDATING
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result).toBeDefined();
+        expect(result.state).toEqual(model.State.UNKNOWN);
+    });
 });
