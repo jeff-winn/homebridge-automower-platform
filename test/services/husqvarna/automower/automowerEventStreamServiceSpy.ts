@@ -1,4 +1,4 @@
-import { AutomowerEvent, ErrorEvent } from '../../../../src/clients/automower/automowerEventStreamClient';
+import { AutomowerEvent } from '../../../../src/clients/automower/automowerEventStreamClient';
 import { AutomowerEventStreamService } from '../../../../src/services/husqvarna/automower/automowerEventStreamService';
 
 export class AutomowerEventStreamServiceSpy extends AutomowerEventStreamService {
@@ -47,8 +47,8 @@ export class AutomowerEventStreamServiceSpy extends AutomowerEventStreamService 
         return this.onDisconnectedEventReceived();
     }
 
-    public unsafeOnErrorEventReceived(event: ErrorEvent): Promise<void> {
-        return this.onErrorEventReceived(event);
+    public unsafeOnErrorEventReceived(): Promise<void> {
+        return this.onErrorEventReceived();
     }
 
     public unsafeFlagAsKeepAliveActive() {
