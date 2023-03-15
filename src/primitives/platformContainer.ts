@@ -30,7 +30,7 @@ import { AutomowerMowerControlService } from '../services/husqvarna/automower/au
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { AutomowerMowerScheduleConverterImpl } from '../services/husqvarna/automower/converters/automowerMowerScheduleConverter';
 import { AutomowerMowerStateConverterImpl } from '../services/husqvarna/automower/converters/automowerMowerStateConverter';
-import { EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
+import { AutomowerEventStreamService } from '../services/husqvarna/automower/automowerEventStreamService';
 import { GardenaMowerStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaMowerStateConverter';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
@@ -237,8 +237,8 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(this.getLoggerClass()))
         });
 
-        container.register(EventStreamServiceImpl, {
-            useFactory: (context) => new EventStreamServiceImpl(
+        container.register(AutomowerEventStreamService, {
+            useFactory: (context) => new AutomowerEventStreamService(
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerEventStreamClientImpl),
                 context.resolve(this.getLoggerClass()),

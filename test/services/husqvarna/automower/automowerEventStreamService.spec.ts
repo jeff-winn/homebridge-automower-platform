@@ -1,14 +1,14 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../src/clients/automower/automowerClient';
-import { AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../../src/clients/automower/automowerEventStreamClient';
-import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
-import { AccessToken } from '../../../src/model';
-import { Timer } from '../../../src/primitives/timer';
-import { AccessTokenManager } from '../../../src/services/husqvarna/accessTokenManager';
-import { AutomowerEventStreamClientStub } from '../../clients/automower/automowerEventStreamClientStub';
-import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
+import { Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
+import { AutomowerEventTypes, SettingsEvent, StatusEvent } from '../../../../src/clients/automower/automowerEventStreamClient';
+import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
+import { BadCredentialsError } from '../../../../src/errors/badCredentialsError';
+import { AccessToken } from '../../../../src/model';
+import { Timer } from '../../../../src/primitives/timer';
+import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
+import { AutomowerEventStreamClientStub } from '../../../clients/automower/automowerEventStreamClientStub';
+import { AutomowerEventStreamServiceSpy } from './automowerEventStreamServiceSpy';
 
 describe('EventStreamServiceImpl', () => {
     let tokenManager: Mock<AccessTokenManager>;
@@ -16,7 +16,7 @@ describe('EventStreamServiceImpl', () => {
     let log: Mock<PlatformLogger>;
     let timer: Mock<Timer>;
 
-    let target: EventStreamServiceImplSpy;
+    let target: AutomowerEventStreamServiceSpy;
 
     beforeEach(() => {
         tokenManager = new Mock<AccessTokenManager>();
@@ -26,7 +26,7 @@ describe('EventStreamServiceImpl', () => {
         log = new Mock<PlatformLogger>();
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
-        target = new EventStreamServiceImplSpy(tokenManager.object(), stream, log.object(), timer.object());
+        target = new AutomowerEventStreamServiceSpy(tokenManager.object(), stream, log.object(), timer.object());
     });
 
     it('should get the token and login to the stream', async () => {
