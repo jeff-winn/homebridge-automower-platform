@@ -122,6 +122,7 @@ export class MowerAccessory {
             this.pauseSwitch.setMowerConnection(event.attributes.connection);
         }
                 
+        // TODO: Fix this.
         // this.scheduleSwitch.setPlanner(event.attributes.planner);
     }
 
