@@ -60,8 +60,8 @@ export class AutomowerGetMowersService implements GetMowersService {
                     name: mower.attributes.system.name,
                     serialNumber: mower.attributes.system.serialNumber.toString()
                 },
-                mower: this.mowerStateConverter.convert(mower),
-                schedule: this.mowerScheduleConverter.convert(mower),
+                mower: this.mowerStateConverter.convertMower(mower),
+                schedule: this.mowerScheduleConverter.convertMower(mower),
                 settings: {
                     cuttingHeight: mower.attributes.settings.cuttingHeight
                 }

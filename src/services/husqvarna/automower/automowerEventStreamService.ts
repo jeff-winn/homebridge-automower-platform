@@ -1,9 +1,22 @@
 import {
     AutomowerEvent, AutomowerEventStreamClient, AutomowerEventTypes, SettingsEvent, StatusEvent
 } from '../../../clients/automower/automowerEventStreamClient';
+import { PlatformLogger } from '../../../diagnostics/platformLogger';
+import { Timer } from '../../../primitives/timer';
+import { AccessTokenManager } from '../accessTokenManager';
 import { AbstractEventStreamService } from '../eventStreamService';
+import { AutomowerMowerScheduleConverter } from './converters/automowerMowerScheduleConverter';
+import { AutomowerMowerStateConverter } from './converters/automowerMowerStateConverter';
 
 export class AutomowerEventStreamService extends AbstractEventStreamService<AutomowerEventStreamClient> {
+    private readonly lastStatusEvents = new Map<string, StatusEvent>();
+    private readonly lastSettingsEvents = new Map<string, SettingsEvent>();
+
+    public constructor(private readonly stateConverter: AutomowerMowerStateConverter, private readonly scheduleConverter: AutomowerMowerScheduleConverter,
+        tokenManager: AccessTokenManager, stream: AutomowerEventStreamClient, log: PlatformLogger, timer: Timer) { 
+        super(tokenManager, stream, log, timer);
+    }
+
     protected attachTo(stream: AutomowerEventStreamClient): void {
         stream.on(this.onEventReceived.bind(this));
     }
@@ -27,13 +40,61 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         }
     }    
 
-    protected onSettingsEvent(event: SettingsEvent): Promise<void> {
-        // TODO: Fix this.        
-        return Promise.resolve(undefined);
+    protected async onSettingsEvent(event: SettingsEvent): Promise<void> {
+        this.lastSettingsEvents[event.id] = event;
+
+        if (this.shouldRaiseMowerSettingsChangedEvent() && event.attributes.cuttingHeight !== undefined) {
+            await this.raiseMowerSettingsChangedEvent({
+                mowerId: event.id,
+                attributes: {
+                    schedule: undefined,
+                    settings: {
+                        cuttingHeight: event.attributes.cuttingHeight
+                    }
+                }
+            });
+        }
+
+        await this.raiseMowerScheduleChangedEventIfNeeded(event.id);
     }
 
-    protected onStatusEvent(event: StatusEvent): Promise<void> {
-        // TODO: Fix this.
-        return Promise.resolve(undefined);
+    protected async raiseMowerScheduleChangedEventIfNeeded(mowerId: string): Promise<void> {
+        const lastSettingsEvent = this.lastSettingsEvents.get(mowerId);
+        const lastStatusEvent = this.lastStatusEvents.get(mowerId);
+
+        if (!this.shouldRaiseMowerStatusChangedEvent() || lastSettingsEvent === undefined || 
+            lastSettingsEvent.attributes.calendar === undefined || lastStatusEvent === undefined) {
+            // Both pieces of data are required for the conversion.
+            return;
+        }
+
+        await this.raiseMowerSettingsChangedEvent({
+            mowerId: mowerId,
+            attributes: {
+                schedule: this.scheduleConverter.convertPlannerAndCalendar(lastStatusEvent.attributes.planner, lastSettingsEvent.attributes.calendar),
+                settings: undefined
+            }
+        });
+    }
+
+    protected async onStatusEvent(event: StatusEvent): Promise<void> {    
+        this.lastStatusEvents[event.id] = event;
+
+        if (this.shouldRaiseMowerStatusChangedEvent()) {
+            await this.raiseMowerStatusChangedEvent({
+                mowerId: event.id,
+                attributes: {
+                    battery: {
+                        level: event.attributes.battery.batteryPercent
+                    },
+                    connection: {
+                        connected: event.attributes.metadata.connected
+                    },
+                    mower: this.stateConverter.convertMowerState(event.attributes.mower)
+                }
+            });
+        }
+        
+        await this.raiseMowerScheduleChangedEventIfNeeded(event.id);
     }
 }

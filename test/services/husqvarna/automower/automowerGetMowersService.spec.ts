@@ -99,11 +99,11 @@ describe('GetMowersServiceImpl', () => {
         };
     
         tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
-        mowerStateConverter.setup(o => o.convert(mower)).returns({
+        mowerStateConverter.setup(o => o.convertMower(mower)).returns({
             activity: model.Activity.MOWING,
             state: model.State.IN_OPERATION
         });
-        mowerScheduleConverter.setup(o => o.convert(mower)).returns({
+        mowerScheduleConverter.setup(o => o.convertMower(mower)).returns({
             runContinuously: false,
             runInFuture: false,
             runOnSchedule: false

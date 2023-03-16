@@ -84,6 +84,10 @@ export class MowerAccessory {
             this.mainSwitch.setCuttingHeight(data.attributes.settings.cuttingHeight);
         }
 
+        if (data.attributes.schedule !== undefined && supportsMowerSchedule(this.mainSwitch)) {
+            this.mainSwitch.setMowerSchedule(data.attributes.schedule);
+        }
+
         this.pauseSwitch.setMowerState(data.attributes.mower);
         this.pauseSwitch.setMowerConnection(data.attributes.connection);
     }

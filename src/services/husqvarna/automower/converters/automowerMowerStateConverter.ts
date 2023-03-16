@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Activity, Mower, State } from '../../../../clients/automower/automowerClient';
+import { Activity, Mower, MowerState, State } from '../../../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../diagnostics/platformLogger';
 
 /**
@@ -8,24 +8,34 @@ import { PlatformLogger } from '../../../../diagnostics/platformLogger';
  */
 export interface AutomowerMowerStateConverter {
     /**
-     * Converts the item.
-     * @param mower The mower service item.
+     * Converts the mower.
+     * @param mower The mower to convert.
      */
-    convert(mower: Mower): model.MowerState;
+    convertMower(mower: Mower): model.MowerState;
+
+    /**
+     * Converts the mower state.
+     * @param mower The mower state to convert.
+     */
+    convertMowerState(mower: MowerState): model.MowerState;
 }
 
 export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConverter {
     public constructor(private log: PlatformLogger) { }
     
-    public convert(mower: Mower): model.MowerState {
+    public convertMower(mower: Mower): model.MowerState {
+        return this.convertMowerState(mower.attributes.mower);
+    }
+
+    public convertMowerState(mower: MowerState): model.MowerState {
         return {
             activity: this.convertActivity(mower),
             state: this.convertState(mower)
         };
     }
 
-    protected convertActivity(mower: Mower): model.Activity {
-        switch (mower.attributes.mower.activity) {
+    protected convertActivity(mower: MowerState): model.Activity {
+        switch (mower.activity) {
             case Activity.CHARGING:                
             case Activity.PARKED_IN_CS:
             case Activity.NOT_APPLICABLE:
@@ -45,21 +55,21 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
                 return model.Activity.UNKNOWN;
 
             default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.mower.activity);
+                this.log.debug('VALUE_NOT_SUPPORTED', mower.activity);
                 return model.Activity.UNKNOWN;
         }
     }
 
-    protected convertState(mower: Mower): model.State {
-        if (mower.attributes.mower.state === State.STOPPED && mower.attributes.mower.errorCode !== 0) {
+    protected convertState(mower: MowerState): model.State {
+        if (mower.state === State.STOPPED && mower.errorCode !== 0) {
             return model.State.TAMPERED;
         }
 
-        if (mower.attributes.mower.activity === Activity.CHARGING) {
+        if (mower.activity === Activity.CHARGING) {
             return model.State.CHARGING;
         }
         
-        switch (mower.attributes.mower.state) {
+        switch (mower.state) {
             case State.IN_OPERATION:
                 return model.State.IN_OPERATION;
 
@@ -83,7 +93,7 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
                 return model.State.UNKNOWN;
 
             default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.mower.state);
+                this.log.debug('VALUE_NOT_SUPPORTED', mower.state);
                 return model.State.UNKNOWN;
         }
     }

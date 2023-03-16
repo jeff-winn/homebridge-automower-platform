@@ -78,7 +78,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
@@ -146,7 +146,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
@@ -214,7 +214,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
@@ -282,7 +282,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.GOING_HOME);
@@ -350,7 +350,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.LEAVING_HOME);
@@ -418,7 +418,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.MOWING);
@@ -486,7 +486,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.MOWING);
@@ -554,7 +554,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.UNKNOWN);
@@ -622,7 +622,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.TAMPERED);
@@ -690,7 +690,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.CHARGING);
@@ -758,7 +758,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.IN_OPERATION);
@@ -826,7 +826,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.FAULTED);
@@ -894,7 +894,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.FAULTED);
@@ -962,7 +962,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.FAULTED);
@@ -1030,7 +1030,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.FAULTED);
@@ -1098,7 +1098,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.FAULTED);
@@ -1166,7 +1166,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.PAUSED);
@@ -1234,7 +1234,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.OFF);
@@ -1302,7 +1302,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.OFF);
@@ -1370,7 +1370,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.UNKNOWN);
@@ -1438,7 +1438,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
         expect(result.state).toEqual(model.State.UNKNOWN);

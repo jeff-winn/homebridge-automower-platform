@@ -70,7 +70,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runContinuously).toBeTruthy();
     });
@@ -136,7 +136,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runContinuously).toBeFalsy();
     });
@@ -190,7 +190,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runContinuously).toBeFalsy();
     });
@@ -245,7 +245,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runInFuture).toBeTruthy();
     });
@@ -300,7 +300,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runInFuture).toBeFalsy();
     });
@@ -367,7 +367,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runInFuture).toBeFalsy();
     });
@@ -434,7 +434,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -501,7 +501,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -568,7 +568,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -635,7 +635,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -702,7 +702,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -769,7 +769,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -836,7 +836,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });
@@ -914,7 +914,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
     });   
@@ -981,7 +981,7 @@ describe('AutomowerScheduleConverterImpl', () => {
             }
         };
 
-        const result = target.convert(mower);
+        const result = target.convertMower(mower);
 
         expect(result.runInFuture).toBeFalsy();
     });

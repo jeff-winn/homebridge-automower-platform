@@ -25,12 +25,12 @@ import { MowerAccessoryFactoryImpl } from '../mowerAccessoryFactory';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
 import { ClientCredentialsAuthorizationStrategy } from '../services/husqvarna/authorization/ClientCredentialsAuthorizationStrategy';
 import { LegacyPasswordAuthorizationStrategy } from '../services/husqvarna/authorization/LegacyPasswordAuthorizationStrategy';
+import { AutomowerEventStreamService } from '../services/husqvarna/automower/automowerEventStreamService';
 import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
 import { AutomowerMowerControlService } from '../services/husqvarna/automower/automowerMowerControlService';
 import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/changeSettingsService';
 import { AutomowerMowerScheduleConverterImpl } from '../services/husqvarna/automower/converters/automowerMowerScheduleConverter';
 import { AutomowerMowerStateConverterImpl } from '../services/husqvarna/automower/converters/automowerMowerStateConverter';
-import { AutomowerEventStreamService } from '../services/husqvarna/automower/automowerEventStreamService';
 import { GardenaMowerStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaMowerStateConverter';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
@@ -239,6 +239,8 @@ export class PlatformContainerImpl implements PlatformContainer {
 
         container.register(AutomowerEventStreamService, {
             useFactory: (context) => new AutomowerEventStreamService(
+                context.resolve(AutomowerMowerStateConverterImpl),
+                context.resolve(AutomowerMowerScheduleConverterImpl),
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(AutomowerEventStreamClientImpl),
                 context.resolve(this.getLoggerClass()),
