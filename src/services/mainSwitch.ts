@@ -4,7 +4,7 @@ import {
 } from 'homebridge';
 
 import { PlatformLogger } from '../diagnostics/platformLogger';
-import { MowerState } from '../model';
+import { MowerSchedule, MowerState } from '../model';
 import { MowerContext } from '../mowerAccessory';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
 import { attachCuttingHeightCharacteristic } from './homebridge/characteristics/cuttingHeight';
@@ -44,9 +44,29 @@ export function supportsCuttingHeight(object: unknown): object is SupportsCuttin
 }
 
 /**
+ * Identifies a policy as supporting mower schedule information.
+ */
+export interface SupportsMowerScheduleInformation {
+    /**
+     * Sets the schedule.
+     * @param schedule The mower schedule.
+     */
+    setMowerSchedule(schedule: MowerSchedule): void;
+}
+
+/**
+ * Identifies if the object implements {@link SupportsMowerScheduleInformation}.
+ * @param object The object to test.
+ * @returns true if the object is {@link SupportsMowerScheduleInformation}.
+ */
+export function supportsMowerSchedule(object: unknown): object is SupportsMowerScheduleInformation {
+    return (<SupportsMowerScheduleInformation>object).setMowerSchedule !== undefined;
+}
+
+/**
  * Represents the main switch of a mower device.
  */
-export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
+export class MainSwitchImpl extends AbstractSwitch implements MainSwitch, SupportsMowerScheduleInformation {
     public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsEnabledPolicy, 
         accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
@@ -66,6 +86,15 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch {
 
             callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }        
+    }
+
+    public setMowerSchedule(schedule: MowerSchedule): void {
+        if (!supportsMowerSchedule(this.policy)) {
+            return;
+        }
+
+        this.policy.setMowerSchedule(schedule);
+        this.refreshCharacteristic();
     }
 
     public setMowerState(state: MowerState): void {
@@ -100,7 +129,7 @@ export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsC
 
         this.cuttingHeight = attachCuttingHeightCharacteristic(service, this.api);
         this.cuttingHeight.on(CharacteristicEventTypes.SET, this.onSetCuttingHeightCallback.bind(this));
-    }
+    }    
 
     public setCuttingHeight(value: number): void {
         if (this.cuttingHeight === undefined) {

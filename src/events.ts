@@ -1,10 +1,19 @@
 import { Battery, MowerConnection, MowerSchedule, MowerSettings, MowerState } from './model';
 
 /**
+ * Describes a mower event.
+ */
+export interface MowerEvent {
+    /**
+     * The mower id.
+     */
+    mowerId: string;
+}
+
+/**
  * Describes a mower status changed event.
  */
-export interface MowerStatusChangedEvent {
-    mowerId: string;
+export interface MowerStatusChangedEvent extends MowerEvent {
     attributes: {
         battery: Battery | undefined;
         mower: MowerState | undefined;
@@ -15,8 +24,7 @@ export interface MowerStatusChangedEvent {
 /**
  * Describes a mower settings changed event.
  */
-export interface MowerSettingsChangedEvent {
-    mowerId: string;
+export interface MowerSettingsChangedEvent extends MowerEvent {
     attributes: {
         schedule: MowerSchedule | undefined;
         settings: MowerSettings | undefined;

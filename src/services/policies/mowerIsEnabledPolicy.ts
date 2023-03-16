@@ -1,4 +1,5 @@
 import { Activity, MowerSchedule, MowerState, State } from '../../model';
+import { SupportsMowerScheduleInformation } from '../mainSwitch';
 import { OptionalPolicy } from './policy';
 
 /**
@@ -10,17 +11,6 @@ export interface MowerIsEnabledPolicy extends OptionalPolicy {
       * @param state The mower state.
       */
      setMowerState(state: MowerState): void;
-}
-
-/**
- * Identifies a policy as supporting mower schedule information.
- */
-export interface SupportMowerScheduleInformation {
-    /**
-     * Sets the schedule.
-     * @param schedule The mower schedule.
-     */
-    setMowerSchedule(schedule: MowerSchedule): void;
 }
 
 /**
@@ -64,7 +54,7 @@ export abstract class AbstractMowerIsEnabledPolicy implements MowerIsEnabledPoli
 /**
  * A policy which determines whether the mower is scheduled based on mower information.
  */
-export class DeterministicMowerIsScheduledPolicy extends AbstractMowerIsEnabledPolicy implements SupportMowerScheduleInformation {
+export class DeterministicMowerIsScheduledPolicy extends AbstractMowerIsEnabledPolicy implements SupportsMowerScheduleInformation {
     private mowerSchedule?: MowerSchedule;
 
     public setMowerSchedule(schedule: MowerSchedule): void {

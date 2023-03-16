@@ -9,7 +9,7 @@ import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
 import { NameMode } from './services/homebridge/abstractSwitch';
 import { LeavingSensor } from './services/leavingSensor';
-import { MainSwitch, supportsCuttingHeight } from './services/mainSwitch';
+import { MainSwitch, supportsCuttingHeight, supportsMowerSchedule } from './services/mainSwitch';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 
@@ -121,9 +121,6 @@ export class MowerAccessory {
             this.mainSwitch.setMowerConnection(event.attributes.connection);
             this.pauseSwitch.setMowerConnection(event.attributes.connection);
         }
-                
-        // TODO: Fix this.
-        // this.scheduleSwitch.setPlanner(event.attributes.planner);
     }
 
     /**
@@ -133,6 +130,10 @@ export class MowerAccessory {
     public onSettingsEventReceived(event: MowerSettingsChangedEvent): void {
         if (event.attributes.settings !== undefined && supportsCuttingHeight(this.mainSwitch)) {
             this.mainSwitch.setCuttingHeight(event.attributes.settings.cuttingHeight);
+        }
+
+        if (event.attributes.schedule !== undefined && supportsMowerSchedule(this.mainSwitch)) {
+            this.mainSwitch.setMowerSchedule(event.attributes.schedule);
         }
     }
 }

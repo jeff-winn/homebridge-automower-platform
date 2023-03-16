@@ -2,18 +2,16 @@ import { PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { MowerStatusChangedEvent } from '../src/events';
-import { Activity, Battery, Mower, MowerConnection, MowerState, State } from '../src/model';
+import { Activity, Battery, Mower, MowerConnection, MowerSchedule, MowerState, State } from '../src/model';
 import { MowerAccessory, MowerContext } from '../src/mowerAccessory';
 import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
 import { NameMode } from '../src/services/homebridge/abstractSwitch';
 import { LeavingSensor } from '../src/services/leavingSensor';
-import { MainSwitch, SupportsCuttingHeightCharacteristic } from '../src/services/mainSwitch';
+import { MainSwitch, SupportsCuttingHeightCharacteristic, SupportsMowerScheduleInformation } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
-
-type MainSwitchWithCuttingHeight = MainSwitch & SupportsCuttingHeightCharacteristic;
 
 describe('MowerAccessory', () => {
     let accessory: Mock<PlatformAccessory<MowerContext>>;
@@ -23,7 +21,7 @@ describe('MowerAccessory', () => {
     let arrivingSensor: Mock<ArrivingSensor>;
     let leavingSensor: Mock<LeavingSensor>;
     let pauseSwitch: Mock<PauseSwitch>;
-    let mainSwitch: Mock<MainSwitch>;
+    let mainSwitch: Mock<MainSwitch & SupportsMowerScheduleInformation & SupportsCuttingHeightCharacteristic>;
 
     let target: MowerAccessory;
 
@@ -35,7 +33,7 @@ describe('MowerAccessory', () => {
         pauseSwitch = new Mock<PauseSwitch>();
         arrivingSensor = new Mock<ArrivingSensor>();
         leavingSensor = new Mock<LeavingSensor>();
-        mainSwitch = new Mock<MainSwitch>();
+        mainSwitch = new Mock<MainSwitch & SupportsMowerScheduleInformation & SupportsCuttingHeightCharacteristic>();
     
         target = new MowerAccessory(accessory.object(), batteryService.object(), 
             informationService.object(), motionSensorService.object(), arrivingSensor.object(),
@@ -228,46 +226,10 @@ describe('MowerAccessory', () => {
         motionSensorService.verify(o => o.setMowerState(state), Times.Once());
         motionSensorService.verify(o => o.setMowerConnection(connection), Times.Once());
     });
-});
 
-describe('AutomowerAccessory', () => {
-    let accessory: Mock<PlatformAccessory<MowerContext>>;
-    let batteryService: Mock<BatteryInformation>;
-    let informationService: Mock<AccessoryInformation>;
-    let motionSensorService: Mock<MotionSensor>;
-    let arrivingSensor: Mock<ArrivingSensor>;
-    let leavingSensor: Mock<LeavingSensor>;
-    let pauseSwitch: Mock<PauseSwitch>;
-    let mainSwitch: Mock<MainSwitchWithCuttingHeight>;
-
-    let target: MowerAccessory;
-
-    beforeEach(() => {
-        accessory = new Mock<PlatformAccessory<MowerContext>>();
-        batteryService = new Mock<BatteryInformation>();
-        informationService = new Mock<AccessoryInformation>();    
-        motionSensorService = new Mock<MotionSensor>();
-        pauseSwitch = new Mock<PauseSwitch>();
-        arrivingSensor = new Mock<ArrivingSensor>();
-        leavingSensor = new Mock<LeavingSensor>();
-        mainSwitch = new Mock<MainSwitchWithCuttingHeight>();
-    
-        target = new MowerAccessory(accessory.object(), batteryService.object(), 
-            informationService.object(), motionSensorService.object(), arrivingSensor.object(),
-            leavingSensor.object(), pauseSwitch.object(), mainSwitch.object());
-    });
-
-    it('should refresh the cutting height when settings event is received', () => {    
-        batteryService.setup(o => o.init()).returns(undefined);
-        informationService.setup(o => o.init()).returns(undefined);
-        mainSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
+    it('should refresh the cutting height when settings event is received', () => {  
         mainSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
-        pauseSwitch.setup(o => o.init(It.IsAny())).returns(undefined);
-        arrivingSensor.setup(o => o.init()).returns(undefined);
-        leavingSensor.setup(o => o.init()).returns(undefined);
-        motionSensorService.setup(o => o.init()).returns(undefined);        
 
-        target.init();
         target.onSettingsEventReceived({
             mowerId: '1234',
             attributes: {
@@ -279,6 +241,44 @@ describe('AutomowerAccessory', () => {
         });
         
         mainSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
+    });
+
+    it('should refresh the switch schedule when schedule information is supported', () => {
+        const schedule: MowerSchedule = {
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        };
+
+        mainSwitch.setup(o => o.setMowerSchedule(schedule)).returns(undefined);
+        
+        target.onSettingsEventReceived({
+            mowerId: '1234',
+            attributes: {
+                schedule: schedule,
+                settings: undefined
+            }
+        });
+        
+        mainSwitch.verify(o => o.setMowerSchedule(schedule), Times.Once());
+    });
+
+    it('should not refresh the switch schedule when schedule information is not supported', () => {    
+        const schedule: MowerSchedule = {
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        };
+
+        target.onSettingsEventReceived({
+            mowerId: '1234',
+            attributes: {
+                schedule: schedule,
+                settings: undefined
+            }
+        });
+        
+        mainSwitch.verify(o => o.setMowerSchedule(schedule), Times.Never());
     });
 
     it('should refresh the services including cutting height', () => {
