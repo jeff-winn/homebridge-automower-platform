@@ -1,8 +1,8 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
+import { MowerContext } from '../mowerAccessory';
 
-import { AutomowerContext } from '../automowerAccessory';
-import { MowerMetadata, MowerState } from '../clients/automower/automowerClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
+import { MowerConnection, MowerState } from '../model';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
@@ -24,10 +24,10 @@ export interface MotionSensor {
     setMowerState(mower: MowerState): void;
 
     /**
-     * Sets the mower metadata.
-     * @param metadata The metadata.
+     * Sets the mower connection.
+     * @param connection The mower connection.
      */
-    setMowerMetadata(metadata: MowerMetadata): void;
+    setMowerConnection(connection: MowerConnection): void;
 }
 
 /**
@@ -45,7 +45,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
     private lastMotionValue?: boolean;
 
     public constructor(private name: string, private motionPolicy: MowerInMotionPolicy, private faultedPolicy: MowerFaultedPolicy, 
-        private tamperedPolicy: MowerTamperedPolicy, accessory: PlatformAccessory<AutomowerContext>, 
+        private tamperedPolicy: MowerTamperedPolicy, accessory: PlatformAccessory<MowerContext>, 
         api: API, private log: PlatformLogger) { 
             
         super(accessory, api);
@@ -70,12 +70,12 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
         return new this.Service.MotionSensor(displayName, this.name);
     }
 
-    public setMowerMetadata(metadata: MowerMetadata): void {
+    public setMowerConnection(connection: MowerConnection): void {
         if (this.statusActive === undefined) {
             throw new Error('The service has not been initialized.');
         }
 
-        this.statusActive.updateValue(metadata.connected);
+        this.statusActive.updateValue(connection.connected);
     }
 
     public setMowerState(mower: MowerState): void {        

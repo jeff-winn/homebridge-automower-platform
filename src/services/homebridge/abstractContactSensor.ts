@@ -1,8 +1,8 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 
-import { AutomowerContext } from '../../automowerAccessory';
-import { MowerMetadata } from '../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
+import { MowerConnection } from '../../model';
+import { MowerContext } from '../../mowerAccessory';
 import { Policy } from '../policies/policy';
 import { AbstractAccessoryService } from './abstractAccessoryService';
 
@@ -26,10 +26,10 @@ export interface ContactSensor {
      init(): void;
 
     /**
-     * Sets the mower metadata.
-     * @param metadata The metadata.
+     * Sets the mower connection.
+     * @param connection The mower connection.
      */
-    setMowerMetadata(metadata: MowerMetadata): void;
+    setMowerConnection(connection: MowerConnection): void;
 }
 
 /**
@@ -42,7 +42,7 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
 
     private lastValue?: number;
 
-    public constructor(protected name: string, protected policy: Policy, protected accessory: PlatformAccessory<AutomowerContext>, 
+    public constructor(protected name: string, protected policy: Policy, protected accessory: PlatformAccessory<MowerContext>, 
         protected api: API, protected log: PlatformLogger) {
         super(accessory, api);
     }
@@ -109,11 +109,11 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
         return newValue ? CONTACT_SENSOR_OPEN : CONTACT_SENSOR_CLOSED;
     }
 
-    public setMowerMetadata(metadata: MowerMetadata): void {
+    public setMowerConnection(connection: MowerConnection): void {
         if (this.statusActive === undefined) {
             throw new Error('The service has not been initialized.');
         }
 
-        this.statusActive.updateValue(metadata.connected);
+        this.statusActive.updateValue(connection.connected);
     }
 }

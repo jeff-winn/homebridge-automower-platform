@@ -1,0 +1,417 @@
+{
+    "data": {
+        "id": "40e23bb2-3334-495b-aa4f-20dea16079e5",
+        "type": "LOCATION",
+        "relationships": {
+            "devices": {
+                "data": [
+                    {
+                        "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+                        "type": "DEVICE"
+                    },
+                    {
+                        "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+                        "type": "DEVICE"
+                    },
+                    {
+                        "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+                        "type": "DEVICE"
+                    },
+                    {
+                        "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+                        "type": "DEVICE"
+                    }
+                ]
+            }
+        },
+        "attributes": {
+            "name": "GARDENA smart Garden"
+        }
+    },
+    "included": [
+        {
+            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+            "type": "DEVICE",
+            "relationships": {
+                "location": {
+                    "data": {
+                        "id": "40e23bb2-3334-495b-aa4f-20dea16079e5",
+                        "type": "LOCATION"
+                    }
+                },
+                "services": {
+                    "data": [
+                        {
+                            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96:wc",
+                            "type": "VALVE_SET"
+                        },
+                        {
+                            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+                            "type": "VALVE"
+                        },
+                        {
+                            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+                            "type": "COMMON"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+            "type": "DEVICE",
+            "relationships": {
+                "location": {
+                    "data": {
+                        "id": "40e23bb2-3334-495b-aa4f-20dea16079e5",
+                        "type": "LOCATION"
+                    }
+                },
+                "services": {
+                    "data": [
+                        {
+                            "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+                            "type": "SENSOR"
+                        },
+                        {
+                            "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+                            "type": "COMMON"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+            "type": "DEVICE",
+            "relationships": {
+                "location": {
+                    "data": {
+                        "id": "40e23bb2-3334-495b-aa4f-20dea16079e5",
+                        "type": "LOCATION"
+                    }
+                },
+                "services": {
+                    "data": [
+                        {
+                            "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+                            "type": "MOWER"
+                        },
+                        {
+                            "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+                            "type": "COMMON"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+            "type": "DEVICE",
+            "relationships": {
+                "location": {
+                    "data": {
+                        "id": "40e23bb2-3334-495b-aa4f-20dea16079e5",
+                        "type": "LOCATION"
+                    }
+                },
+                "services": {
+                    "data": [
+                        {
+                            "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+                            "type": "SENSOR"
+                        },
+                        {
+                            "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+                            "type": "COMMON"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96:wc",
+            "type": "VALVE_SET",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "state": {
+                    "value": "OK",
+                    "timestamp": "2022-12-06T11:14:33.715+00:00"
+                },
+                "lastErrorCode": {
+                    "value": "NO_MESSAGE",
+                    "timestamp": "2022-12-06T11:14:33.715+00:00"
+                }
+            }
+        },
+        {
+            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+            "type": "VALVE",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "name": {
+                    "value": "Water Control"
+                },
+                "activity": {
+                    "value": "CLOSED",
+                    "timestamp": "2022-12-06T11:14:33.681+00:00"
+                },
+                "state": {
+                    "value": "OK",
+                    "timestamp": "2022-09-12T17:42:13.332+00:00"
+                },
+                "lastErrorCode": {
+                    "value": "NO_MESSAGE",
+                    "timestamp": "2022-09-12T17:42:13.332+00:00"
+                }
+            }
+        },
+        {
+            "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+            "type": "COMMON",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "7bdab5cd-4ee8-47b7-9807-9d196aeeee96",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "name": {
+                    "value": "Water Control"
+                },
+                "batteryLevel": {
+                    "value": 77,
+                    "timestamp": "2023-02-18T23:37:39.276+00:00"
+                },
+                "batteryState": {
+                    "value": "OK",
+                    "timestamp": "2023-02-18T23:37:39.276+00:00"
+                },
+                "rfLinkLevel": {
+                    "value": 100,
+                    "timestamp": "2023-02-20T23:37:38.880+00:00"
+                },
+                "serial": {
+                    "value": "00012345"
+                },
+                "modelType": {
+                    "value": "GARDENA smart Water Control"
+                },
+                "rfLinkState": {
+                    "value": "ONLINE"
+                }
+            }
+        },
+        {
+            "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+            "type": "SENSOR",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "soilHumidity": {
+                    "value": 0,
+                    "timestamp": "2023-02-21T09:02:31.038+00:00"
+                },
+                "soilTemperature": {
+                    "value": 15,
+                    "timestamp": "2023-02-21T09:02:31.271+00:00"
+                }
+            }
+        },
+        {
+            "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+            "type": "COMMON",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "628fcaa0-a6cc-4bee-8183-7e3b6865b69c",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "name": {
+                    "value": "Gardena Sensor II"
+                },
+                "batteryLevel": {
+                    "value": 43,
+                    "timestamp": "2022-12-24T12:02:21.302+00:00"
+                },
+                "batteryState": {
+                    "value": "OK",
+                    "timestamp": "2022-12-24T12:02:21.302+00:00"
+                },
+                "rfLinkLevel": {
+                    "value": 100,
+                    "timestamp": "2023-02-21T09:02:31.219+00:00"
+                },
+                "serial": {
+                    "value": "00001234"
+                },
+                "modelType": {
+                    "value": "GARDENA smart Sensor"
+                },
+                "rfLinkState": {
+                    "value": "ONLINE"
+                }
+            }
+        },
+        {
+            "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+            "type": "MOWER",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "state": {
+                    "value": "WARNING",
+                    "timestamp": "2022-12-09T09:59:16.505+00:00"
+                },
+                "activity": {
+                    "value": "OK_CHARGING",
+                    "timestamp": "2022-12-09T09:59:16.505+00:00"
+                },
+                "lastErrorCode": {
+                    "value": "OFF_DISABLED",
+                    "timestamp": "2022-12-09T09:59:16.505+00:00"
+                },
+                "operatingHours": {
+                    "value": 1053
+                }
+            }
+        },
+        {
+            "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+            "type": "COMMON",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "name": {
+                    "value": "SILENO"
+                },
+                "batteryLevel": {
+                    "value": 100,
+                    "timestamp": "2022-12-09T09:58:16.714+00:00"
+                },
+                "batteryState": {
+                    "value": "OK",
+                    "timestamp": "2022-12-09T09:58:16.714+00:00"
+                },
+                "rfLinkLevel": {
+                    "value": 80,
+                    "timestamp": "2022-12-09T09:58:13.713+00:00"
+                },
+                "serial": {
+                    "value": "123456000"
+                },
+                "modelType": {
+                    "value": "GARDENA smart Mower"
+                },
+                "rfLinkState": {
+                    "value": "ONLINE"
+                }
+            }
+        },
+        {
+            "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+            "type": "SENSOR",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "soilHumidity": {
+                    "value": 0,
+                    "timestamp": "2022-11-15T01:08:12.282+00:00"
+                },
+                "soilTemperature": {
+                    "value": 18,
+                    "timestamp": "2022-11-15T01:08:12.231+00:00"
+                },
+                "ambientTemperature": {
+                    "value": 18,
+                    "timestamp": "2022-11-15T00:53:58.163+00:00"
+                },
+                "lightIntensity": {
+                    "value": 0,
+                    "timestamp": "2022-11-15T00:53:58.210+00:00"
+                }
+            }
+        },
+        {
+            "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+            "type": "COMMON",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "0ca86439-f70e-4ef3-beeb-2a64f7dcea7b",
+                        "type": "DEVICE"
+                    }
+                }
+            },
+            "attributes": {
+                "name": {
+                    "value": "Gardena Sensor I"
+                },
+                "batteryLevel": {
+                    "value": 0,
+                    "timestamp": "2022-11-15T01:07:26.892+00:00"
+                },
+                "batteryState": {
+                    "value": "OUT_OF_OPERATION",
+                    "timestamp": "2022-11-15T01:07:26.892+00:00"
+                },
+                "rfLinkLevel": {
+                    "value": 70,
+                    "timestamp": "2022-10-22T17:29:22.481+00:00"
+                },
+                "serial": {
+                    "value": "00034567"
+                },
+                "modelType": {
+                    "value": "GARDENA smart Sensor"
+                },
+                "rfLinkState": {
+                    "value": "ONLINE"
+                }
+            }
+        }
+    ]
+}

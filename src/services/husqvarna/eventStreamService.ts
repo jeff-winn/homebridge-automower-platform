@@ -1,9 +1,7 @@
-import {
-    AutomowerEvent, AutomowerEventStreamClient, AutomowerEventTypes, ErrorEvent,
-    PositionsEvent, SettingsEvent, StatusEvent
-} from '../../clients/automower/automowerEventStreamClient';
+import { EventStreamClient } from '../../clients/eventStreamClient';
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { BadCredentialsError } from '../../errors/badCredentialsError';
+import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from '../../events';
 import { Timer } from '../../primitives/timer';
 import { AccessTokenManager } from './accessTokenManager';
 
@@ -12,22 +10,16 @@ import { AccessTokenManager } from './accessTokenManager';
  */
 export interface EventStreamService {
     /**
-     * Occurs when a {@link PositionsEvent} has been received.
-     * @param callback The callback to execute.
-     */
-    onPositionsEventReceived(callback: (event: PositionsEvent) => Promise<void>): void;
-
-    /**
      * Occurs when a {@link StatusEvent} has been received.
      * @param callback The callback to execute.
      */
-    onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void;
+    onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void;
     
     /**
      * Occurs when a {@link SettingsEvent} has been received.
      * @param callback The callback to execute.
      */
-    onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void;
+    onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void;
 
     /**
      * Starts streaming events.
@@ -40,13 +32,15 @@ export interface EventStreamService {
     stop(): Promise<void>;
 }
 
-export class EventStreamServiceImpl implements EventStreamService {
+/**
+ * An abstract {@link EventStreamService} which supports management of an {@link EventStreamClient} instance.
+ */
+export abstract class AbstractEventStreamService<TStream extends EventStreamClient> implements EventStreamService {
     private readonly KEEP_ALIVE_INTERVAL = 60000; // One minute
     private readonly RECONNECT_INTERVAL = 3600000; // One hour
 
-    private onStatusEventCallback?: (event: StatusEvent) => Promise<void>;
-    private onSettingsEventCallback?: (event: SettingsEvent) => Promise<void>;
-    private onPositionsEventCallback?: (event: PositionsEvent) => Promise<void>;
+    private onStatusEventCallback?: (event: MowerStatusChangedEvent) => Promise<void>;
+    private onSettingsEventCallback?: (event: MowerSettingsChangedEvent) => Promise<void>;
 
     private keepAliveActive = false;
     private started?: Date;
@@ -56,28 +50,23 @@ export class EventStreamServiceImpl implements EventStreamService {
     private stopping = false;
     private stopped = true;
 
-    public constructor(private tokenManager: AccessTokenManager, private stream: AutomowerEventStreamClient, 
-        private log: PlatformLogger, private timer: Timer) { }
+    public constructor(private tokenManager: AccessTokenManager, private stream: TStream, 
+        protected readonly log: PlatformLogger, private timer: Timer) { }
 
-
-    public onPositionsEventReceived(callback: (event: PositionsEvent) => Promise<void>): void {
-        this.onPositionsEventCallback = callback;        
-    }
-
-    public onSettingsEventReceived(callback: (event: SettingsEvent) => Promise<void>): void {
+    public onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
         this.onSettingsEventCallback = callback;        
     }
 
-    public onStatusEventReceived(callback: (event: StatusEvent) => Promise<void>): void {
+    public onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
     }
 
     public async start(): Promise<void> {
-        if (!this.attached) {            
+        if (!this.attached) { 
             this.stream.onConnected(this.onConnectedEventReceived.bind(this));
             this.stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
             this.stream.onError(this.onErrorEventReceived.bind(this));
-            this.stream.on(this.onEventReceived.bind(this));
+            this.attachTo(this.stream);
 
             this.attached = true;
         }
@@ -90,6 +79,8 @@ export class EventStreamServiceImpl implements EventStreamService {
 
         this.flagAsStarted();
     }
+
+    protected abstract attachTo(stream: TStream): void;
 
     protected flagAsStarted(): void {
         this.stopping = false;
@@ -104,6 +95,15 @@ export class EventStreamServiceImpl implements EventStreamService {
             this.clearKeepAliveFlag();
         }
 
+        return Promise.resolve(undefined);
+    }
+
+    protected onErrorEventReceived(): Promise<void> {        
+        if (this.isKeepAliveActive()) {
+            this.startKeepAlive();
+            this.clearKeepAliveFlag();
+        }
+        
         return Promise.resolve(undefined);
     }
 
@@ -134,21 +134,6 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.stopped = true;
     }
 
-    protected onErrorEventReceived(event: ErrorEvent): Promise<void> {        
-        this.log.error('UNEXPECTED_SOCKET_ERROR', {
-            error: event.error,
-            message: event.message,
-            type: event.type
-        });
-
-        if (this.isKeepAliveActive()) {
-            this.startKeepAlive();
-            this.clearKeepAliveFlag();
-        }
-        
-        return Promise.resolve(undefined);
-    }
-
     protected getStarted(): Date | undefined {
         return this.started;
     }
@@ -176,7 +161,7 @@ export class EventStreamServiceImpl implements EventStreamService {
         return this.RECONNECT_INTERVAL;
     }
 
-    private startKeepAlive() {
+    protected startKeepAlive(): void {
         this.timer.start(this.keepAlive.bind(this), this.KEEP_ALIVE_INTERVAL);
     }
     
@@ -297,34 +282,11 @@ export class EventStreamServiceImpl implements EventStreamService {
         this.lastEventReceived = value;
     }
 
-    protected onEventReceived(event: AutomowerEvent): Promise<void> {
-        this.setLastEventReceived(new Date());
-
-        switch (event.type) {
-        case AutomowerEventTypes.POSITIONS:
-            return this.onPositionsEvent(event as PositionsEvent);
-
-        case AutomowerEventTypes.SETTINGS:
-            return this.onSettingsEvent(event as SettingsEvent);
-
-        case AutomowerEventTypes.STATUS:
-            return this.onStatusEvent(event as StatusEvent);        
-
-        default:
-            this.log.warn('RECEIVED_UNKNOWN_EVENT', event.type);
-            return Promise.resolve(undefined);
-        }
+    protected shouldRaiseMowerSettingsChangedEvent(): boolean {
+        return this.onSettingsEventCallback !== undefined;
     }
 
-    protected onPositionsEvent(event: PositionsEvent): Promise<void> {
-        if (this.onPositionsEventCallback === undefined) {
-            return Promise.resolve(undefined);
-        }
-
-        return this.onPositionsEventCallback(event);
-    }
-
-    protected onSettingsEvent(event: SettingsEvent): Promise<void> {
+    protected raiseMowerSettingsChangedEvent(event: MowerSettingsChangedEvent): Promise<void> {
         if (this.onSettingsEventCallback === undefined) {
             return Promise.resolve(undefined);
         }
@@ -332,7 +294,11 @@ export class EventStreamServiceImpl implements EventStreamService {
         return this.onSettingsEventCallback(event);
     }
 
-    protected onStatusEvent(event: StatusEvent): Promise<void> {
+    protected shouldRaiseMowerStatusChangedEvent(): boolean {
+        return this.onStatusEventCallback !== undefined;
+    }
+
+    protected raiseMowerStatusChangedEvent(event: MowerStatusChangedEvent): Promise<void> {
         if (this.onStatusEventCallback === undefined) {
             return Promise.resolve(undefined);
         }

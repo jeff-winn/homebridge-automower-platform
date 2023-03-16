@@ -1,6 +1,6 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
-import { AutomowerContext } from '../automowerAccessory';
-import { Activity, Battery, MowerState } from '../clients/automower/automowerClient';
+import { Battery, MowerState, State } from '../model';
+import { MowerContext } from '../mowerAccessory';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
 /**
@@ -31,7 +31,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
     private batteryLevel?: Characteristic;
     private chargingState?: Characteristic;
 
-    public constructor(accessory: PlatformAccessory<AutomowerContext>, api: API) {
+    public constructor(accessory: PlatformAccessory<MowerContext>, api: API) {
         super(accessory, api);
     }
 
@@ -55,7 +55,7 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
             throw new Error('The service has not been initialized.');
         }
 
-        if (state.activity === Activity.CHARGING) {
+        if (state.state === State.CHARGING) {
             this.chargingState.updateValue(this.Characteristic.ChargingState.CHARGING);
         } else {
             this.chargingState.updateValue(this.Characteristic.ChargingState.NOT_CHARGING);
@@ -67,9 +67,9 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
             throw new Error('The service has not been initialized.');
         }
 
-        this.batteryLevel.updateValue(battery.batteryPercent);          
+        this.batteryLevel.updateValue(battery.level);          
 
-        if (battery.batteryPercent <= 20) {
+        if (battery.level <= 20) {
             this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
         } else {
             this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);

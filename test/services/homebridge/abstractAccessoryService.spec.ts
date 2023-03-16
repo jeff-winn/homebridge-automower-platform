@@ -2,12 +2,12 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { Mock } from 'moq.ts';
 
-import { AutomowerContext } from '../../../src/automowerAccessory';
+import { MowerContext } from '../../../src/mowerAccessory';
 import { AccessoryServiceSpy } from './accessoryServiceSpy';
 
 describe('AbstractAccessoryService', () => {    
     it('must be able to construct the object correctly', () => {
-        const accessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        const accessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);

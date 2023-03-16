@@ -73,7 +73,7 @@ describe('GardenaClientImpl', () => {
         await expect(target.getLocation(LOCATION_ID, token)).resolves.toBeUndefined();
     });
 
-    it('should return empty array when 404 response', async () => {
+    it('should return undefined value when 404 response', async () => {
         const token: AccessToken = {
             value: 'value',
             provider: 'provider'
@@ -91,7 +91,6 @@ describe('GardenaClientImpl', () => {
         
         const result = await target.getLocations(token);
 
-        expect(result).toBeDefined();
-        expect(result).toHaveLength(0);
+        expect(result).toBeUndefined();
     });
 });

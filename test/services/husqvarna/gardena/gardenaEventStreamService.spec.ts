@@ -15,12 +15,6 @@ describe('GardenaEventStreamService', () => {
         await target.stop();
     });
 
-    it('should do nothing on set positions callback', () => {
-        target.onPositionsEventReceived(() => {
-            return Promise.resolve(undefined);
-        });
-    });
-
     it('should do nothing on set settings callback', () => {
         target.onSettingsEventReceived(() => {
             return Promise.resolve(undefined);

@@ -2,9 +2,9 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, MowerState, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, MowerState, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { CONTACT_SENSOR_CLOSED, CONTACT_SENSOR_OPEN } from '../../src/services/homebridge/abstractContactSensor';
 import { MowerIsArrivingPolicy } from '../../src/services/policies/mowerIsArrivingPolicy';
 import { ArrivingContactSensorImplSpy } from './arrivingContactSensorImplSpy';
@@ -12,7 +12,7 @@ import { ArrivingContactSensorImplSpy } from './arrivingContactSensorImplSpy';
 describe('ArrivingContactSensorImpl', () => {
     let target: ArrivingContactSensorImplSpy;
     let policy: Mock<MowerIsArrivingPolicy>;
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
@@ -20,7 +20,7 @@ describe('ArrivingContactSensorImpl', () => {
     beforeEach(() => {
         policy = new Mock<MowerIsArrivingPolicy>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         log = new Mock<PlatformLogger>();
         
         hap = new Mock<HAP>();
@@ -73,11 +73,8 @@ describe('ArrivingContactSensorImpl', () => {
         policy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA, 
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
@@ -93,9 +90,6 @@ describe('ArrivingContactSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
             state: State.IN_OPERATION
         };
 
@@ -125,9 +119,6 @@ describe('ArrivingContactSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
             state: State.IN_OPERATION
         };
 

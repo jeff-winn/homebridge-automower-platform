@@ -1,24 +1,31 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { Activity, HeadlightMode, Mode, OverrideAction, RestrictedReason, State } from '../../../src/clients/automower/automowerClient';
-import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../src/clients/automower/automowerEventStreamClient';
-import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
-import { BadCredentialsError } from '../../../src/errors/badCredentialsError';
-import { AccessToken } from '../../../src/model';
-import { Timer } from '../../../src/primitives/timer';
-import { AccessTokenManager } from '../../../src/services/husqvarna/accessTokenManager';
-import { AutomowerEventStreamClientStub } from '../../clients/automower/automowerEventStreamClientStub';
-import { EventStreamServiceImplSpy } from './eventStreamServiceImplSpy';
+import * as model from '../../../../src/model';
 
-describe('EventStreamServiceImpl', () => {
+import { Activity, HeadlightMode, Mode, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
+import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../../src/clients/automower/automowerEventStreamClient';
+import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
+import { BadCredentialsError } from '../../../../src/errors/badCredentialsError';
+import { Timer } from '../../../../src/primitives/timer';
+import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
+import { AutomowerMowerScheduleConverter } from '../../../../src/services/husqvarna/automower/converters/automowerMowerScheduleConverter';
+import { AutomowerMowerStateConverter } from '../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
+import { AutomowerEventStreamClientStub } from '../../../clients/automower/automowerEventStreamClientStub';
+import { AutomowerEventStreamServiceSpy } from './automowerEventStreamServiceSpy';
+
+describe('AutomowerEventStreamService', () => {
+    let stateConverter: Mock<AutomowerMowerStateConverter>;
+    let scheduleConverter: Mock<AutomowerMowerScheduleConverter>;
     let tokenManager: Mock<AccessTokenManager>;
     let stream: AutomowerEventStreamClientStub;
     let log: Mock<PlatformLogger>;
     let timer: Mock<Timer>;
 
-    let target: EventStreamServiceImplSpy;
+    let target: AutomowerEventStreamServiceSpy;
 
     beforeEach(() => {
+        stateConverter = new Mock<AutomowerMowerStateConverter>();
+        scheduleConverter = new Mock<AutomowerMowerScheduleConverter>();
         tokenManager = new Mock<AccessTokenManager>();
         stream = new AutomowerEventStreamClientStub();
         timer = new Mock<Timer>();
@@ -26,11 +33,12 @@ describe('EventStreamServiceImpl', () => {
         log = new Mock<PlatformLogger>();
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
-        target = new EventStreamServiceImplSpy(tokenManager.object(), stream, log.object(), timer.object());
+        target = new AutomowerEventStreamServiceSpy(stateConverter.object(), scheduleConverter.object(),
+            tokenManager.object(), stream, log.object(), timer.object());
     });
 
     it('should get the token and login to the stream', async () => {
-        const token: AccessToken = {
+        const token: model.AccessToken = {
             value: 'abcd1234',
             provider: 'provider'
         };
@@ -67,34 +75,22 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should not restart the keep alive on error when keep alive is not already active', async () => {
-        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         target.unsafeClearKeepAliveFlag();
 
-        await target.unsafeOnErrorEventReceived({
-            error: 'hello',
-            message: 'world',
-            type: 'busted'        
-        });
+        await target.unsafeOnErrorEventReceived();
 
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Never());
     });
 
     it('should restart the keep alive on error when keep alive is already active', async () => {
-        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         target.unsafeFlagAsKeepAliveActive();
 
-        await target.unsafeOnErrorEventReceived({
-            error: 'hello',
-            message: 'world',
-            type: 'busted'        
-        });
+        await target.unsafeOnErrorEventReceived();
 
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
@@ -133,18 +129,6 @@ describe('EventStreamServiceImpl', () => {
 
         log.verify(o => o.debug(It.IsAny()), Times.Once());
         timer.verify(o => o.stop(), Times.Once());
-    });
-
-    it('should log when error event received', async () => {
-        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
-
-        await target.unsafeOnErrorEventReceived({
-            error: 'error',
-            message: 'message',
-            type: 'type'
-        });
-
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
 
     it('should close the stream when connected', async () => {
@@ -217,7 +201,7 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should reconnect the client when disconnected', async () => {       
-        const token: AccessToken = { 
+        const token: model.AccessToken = { 
             value: 'abcd1234',
             provider: 'bob'
         };
@@ -236,7 +220,7 @@ describe('EventStreamServiceImpl', () => {
         target.unsafeSetLastEventReceived(undefined);
         target.unsafeSetStarted(started);
         
-        const token: AccessToken = { 
+        const token: model.AccessToken = { 
             value: 'abcd1234',
             provider: 'bob'
         };
@@ -283,7 +267,7 @@ describe('EventStreamServiceImpl', () => {
         const lastReceivedDate = new Date(new Date().getTime() - target.getReconnectInterval() - 1);
         target.unsafeSetLastEventReceived(lastReceivedDate);
 
-        const token: AccessToken = { 
+        const token: model.AccessToken = { 
             value: 'abcd1234',
             provider: 'bob'
         };
@@ -301,53 +285,62 @@ describe('EventStreamServiceImpl', () => {
     });
 
     it('should do nothing when settings-event is received', async () => {
-        await target.unsafeEventReceived({
+        const e: SettingsEvent = {
             id: '12345',
-            type: AutomowerEventTypes.SETTINGS
-        });
+            type: AutomowerEventTypes.SETTINGS,
+            attributes: { }
+        };
+
+        await target.unsafeEventReceived(e);
     });
 
     it('should do nothing when positions-event is received', async () => {
-        await target.unsafeEventReceived({
-            id: '12345',
-            type: AutomowerEventTypes.POSITIONS
-        });
-    });
-
-    it('should do nothing when status-event is received with no callback', async () => {
-        await target.unsafeEventReceived({
-            id: '12345',
-            type: AutomowerEventTypes.STATUS
-        });
-    });
-
-    it('should run the callback when positions-event is received', async () => {
-        const event: PositionsEvent = {
+        const e: PositionsEvent = {
             id: '12345',
             type: AutomowerEventTypes.POSITIONS,
-            attributes: {
-                positions: [
-                    {
-                        latitude: 10,
-                        longitude: 10
-                    }
-                ]
+            attributes: { 
+                positions: []
             }
         };
 
-        let executed = false;
-        await target.onPositionsEventReceived(() => {
-            executed = true;
-            return Promise.resolve(undefined);
-        });
-
-        await target.unsafeEventReceived(event);
-
-        expect(executed).toBeTruthy();
+        await target.unsafeEventReceived(e);
     });
 
+    it('should do nothing when status-event is received with no callback', async () => {
+        const planner: Planner = {
+            nextStartTimestamp: 1,
+            override: {
+                action: undefined
+            },
+            restrictedReason: RestrictedReason.NOT_APPLICABLE
+        };
+
+        const e: StatusEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.STATUS,
+            attributes: {
+                battery: {
+                    batteryPercent: 100
+                },
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: planner
+            }
+        };
+
+        await target.unsafeEventReceived(e);
+    });    
+    
     it('should run the callback when settings-event is received', async () => {
-        let executed = false;
         const event: SettingsEvent = {
             id: '12345',
             type: AutomowerEventTypes.SETTINGS,
@@ -362,18 +355,26 @@ describe('EventStreamServiceImpl', () => {
             }
         };
 
+        let executed = false;
         target.onSettingsEventReceived(() => {
             executed = true;
             return Promise.resolve(undefined);
         });
 
-        target.unsafeEventReceived(event);
+        await expect(target.unsafeEventReceived(event)).resolves.toBeUndefined();
 
         expect(executed).toBeTruthy();
     });
 
     it('should run the callback when status-event is received', async () => {
-        let executed = false;
+        const mowerState: MowerState = {
+            activity: Activity.MOWING,
+            errorCode: 0,
+            errorCodeTimestamp: 0,
+            mode: Mode.MAIN_AREA,
+            state: State.IN_OPERATION
+        };
+
         const event: StatusEvent = {
             id: '12345',
             type: AutomowerEventTypes.STATUS,
@@ -385,13 +386,7 @@ describe('EventStreamServiceImpl', () => {
                     connected: true,
                     statusTimestamp: 0
                 },
-                mower: {
-                    activity: Activity.MOWING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.IN_OPERATION
-                },
+                mower: mowerState,
                 planner: {
                     nextStartTimestamp: 0,
                     override: {
@@ -402,12 +397,18 @@ describe('EventStreamServiceImpl', () => {
             }
         };
 
+        stateConverter.setup(o => o.convertMowerState(mowerState)).returns({
+            activity: model.Activity.MOWING,
+            state: model.State.IN_OPERATION
+        });
+        
+        let executed = false;
         target.onStatusEventReceived(() => {
             executed = true;
             return Promise.resolve(undefined);
         });
 
-        await target.unsafeEventReceived(event);
+        await expect(target.unsafeEventReceived(event)).resolves.toBeUndefined();
 
         expect(executed).toBeTruthy();
     });

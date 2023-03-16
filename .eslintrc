@@ -12,9 +12,12 @@
     "ignorePatterns": [
       "dist"
     ],
+    "env": {
+      "node": true
+    },
     "rules": {
       "quotes": ["warn", "single"],
-      "indent": ["warn", 4],
+      "indent": ["warn", 4, { "SwitchCase": 1 }],
       "semi": ["off"],
       "comma-dangle": ["off", "always-multiline"],
       "dot-notation": "off",

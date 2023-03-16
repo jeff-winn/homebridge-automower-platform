@@ -2,15 +2,15 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 
 import { It, Mock, Times } from 'moq.ts';
-import { AutomowerContext } from '../../../src/automowerAccessory';
-import { MowerMetadata } from '../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { MowerConnection } from '../../../src/model';
+import { MowerContext } from '../../../src/mowerAccessory';
 import { Policy } from '../../../src/services/policies/policy';
 import { ContactSensorSpy } from './contactSensorSpy';
 
 describe('AbstractContactSensor', () => {
     let policy: Mock<Policy>;
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
@@ -19,7 +19,7 @@ describe('AbstractContactSensor', () => {
     beforeEach(() => {
         policy = new Mock<Policy>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         log = new Mock<PlatformLogger>();
         
         hap = new Mock<HAP>();
@@ -42,13 +42,12 @@ describe('AbstractContactSensor', () => {
         expect(target.getUnderlyingService()).toBeUndefined();
     });
 
-    it('should throw an error when not initialized on set mower metadata', () => {
-        const metadata: MowerMetadata = {
-            connected: false,
-            statusTimestamp: 1
+    it('should throw an error when not initialized on set mower connection', () => {
+        const metadata: MowerConnection = {
+            connected: false
         };
 
-        expect(() => target.setMowerMetadata(metadata)).toThrowError();
+        expect(() => target.setMowerConnection(metadata)).toThrowError();
     });
     
     it('should set active status to true when connected', () => {
@@ -64,9 +63,8 @@ describe('AbstractContactSensor', () => {
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Test')).returns(service.object());
 
         target.init();
-        target.setMowerMetadata({
-            connected: true,
-            statusTimestamp: 1
+        target.setMowerConnection({
+            connected: true
         });
 
         statusActive.verify(o => o.updateValue(true), Times.Once());
@@ -85,9 +83,8 @@ describe('AbstractContactSensor', () => {
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Test')).returns(service.object());
 
         target.init();
-        target.setMowerMetadata({
-            connected: false,
-            statusTimestamp: 1
+        target.setMowerConnection({
+            connected: false
         });
 
         statusActive.verify(o => o.updateValue(false), Times.Once());

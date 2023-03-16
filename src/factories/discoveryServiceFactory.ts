@@ -1,10 +1,9 @@
 import { InjectionToken } from 'tsyringe';
-import { AutomowerAccessoryFactoryImpl } from '../automowerAccessoryFactory';
 import { AutomowerPlatformConfig } from '../automowerPlatform';
-import { ErrorFactory } from '../errors/errorFactory';
 import { DeviceType } from '../model';
+import { MowerAccessoryFactoryImpl } from '../mowerAccessoryFactory';
 import { PlatformContainer } from '../primitives/platformContainer';
-import { AutomowerGetMowersServiceImpl } from '../services/husqvarna/automower/automowerGetMowersServiceImpl';
+import { AutomowerGetMowersService } from '../services/husqvarna/automower/automowerGetMowersService';
 import { DiscoveryService, DiscoveryServiceImpl, GetMowersService } from '../services/husqvarna/discoveryService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 
@@ -20,22 +19,24 @@ export interface DiscoveryServiceFactory {
 }
 
 export class DiscoveryServiceFactoryImpl implements DiscoveryServiceFactory {
-    public constructor(private config: AutomowerPlatformConfig, private errorFactory: ErrorFactory) { }
+    public constructor(private config: AutomowerPlatformConfig) { }
 
     public create(container: PlatformContainer): DiscoveryService {
-        let getMowerServiceClass: InjectionToken<GetMowersService>;
-
-        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
-            getMowerServiceClass = AutomowerGetMowersServiceImpl;
-        } else if (this.config.device_type === DeviceType.GARDENA) {
-            getMowerServiceClass = GardenaGetMowersService;
-        } else {
-            throw this.errorFactory.badConfigurationError('ERROR_INVALID_DEVICE_TYPE', 'CFG0003', this.config.device_type);
-        }
+        const mowerServiceClass = this.getMowerServiceClass();
 
         return new DiscoveryServiceImpl(
-            container.resolve(getMowerServiceClass), 
-            container.resolve(AutomowerAccessoryFactoryImpl),               
+            container.resolve(mowerServiceClass), 
+            container.resolve(MowerAccessoryFactoryImpl),               
             container.resolve(container.getLoggerClass()));
+    }
+
+    protected getMowerServiceClass(): InjectionToken<GetMowersService> {
+        if (this.config.device_type === DeviceType.AUTOMOWER) {
+            return AutomowerGetMowersService;
+        } else if (this.config.device_type === DeviceType.GARDENA) {
+            return GardenaGetMowersService;
+        }
+
+        return AutomowerGetMowersService;
     }
 }

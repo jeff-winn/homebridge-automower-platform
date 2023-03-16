@@ -1,7 +1,8 @@
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
-import { PLUGIN_ID } from '../../settings';
 import { WebSocketWrapper, WebSocketWrapperImpl } from '../../primitives/webSocketWrapper';
+import { PLUGIN_ID } from '../../settings';
+import { EventStreamClient } from '../eventStreamClient';
 import { Battery, Calendar, Headlight, MowerMetadata, MowerState, Planner, Position } from './automowerClient';
 
 /**
@@ -76,59 +77,20 @@ export interface ErrorEvent {
 /**
  * A client which receives a stream of events for all mowers connected to the account.
  */
-export interface AutomowerEventStreamClient {
-    /**
-     * Identifies whether the stream is connected.
-     */
-    isConnected(): boolean;
-
-    /**
-     * Opens the stream.
-     * @param token The token which will be used to authenticate.
-     */
-    open(token: AccessToken): void;
-
-    /**
-     * Closes the stream.
-     */
-    close(): void;
-
+export interface AutomowerEventStreamClient extends EventStreamClient {
     /**
      * Executes the callback when an event is received.
      * @param callback The callback to execute.
      */
     on(callback: (event: AutomowerEvent) => Promise<void>): void;
-
-    /**
-     * Executes the callback when the client is disconnected.
-     * @param callback The callback to execute.
-     */
-    onDisconnected(callback: () => Promise<void>): void;
-
-    /**
-     * Executes the callback when the client has connected.
-     * @param callback The callback to execute.
-     */
-    onConnected(callback: (event: ConnectedEvent) => Promise<void>): void;
-
-    /**
-     * Executes the callback when the client has encountered an error.
-     * @param callback The callback to execute.
-     */
-    onError(callback: (event: ErrorEvent) => Promise<void>): void;
-
-    /**
-     * Pings the server.
-     */
-    ping(): void;
 }
 
 export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClient {
     private socket?: WebSocketWrapper;
     private onMessageReceivedCallback?: (payload: AutomowerEvent) => void;
 
-    private onErrorReceivedCallback?: (payload: ErrorEvent) => void;
-    private onConnectedCallback?: (payload: ConnectedEvent) => void;
+    private onErrorReceivedCallback?: () => void;
+    private onConnectedCallback?: () => void;
     private onDisconnectedCallback?: () => void;
 
     private connecting = false;
@@ -212,9 +174,15 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
     }
     
     protected onErrorReceived(err: ErrorEvent): void {
+        this.log.error('UNEXPECTED_SOCKET_ERROR', {
+            error: err.error,
+            message: err.message,
+            type: err.type
+        });
+
         if (this.onErrorReceivedCallback !== undefined) {
             try {
-                this.onErrorReceivedCallback(err);
+                this.onErrorReceivedCallback();
             } catch (e) {
                 this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
             }
@@ -251,7 +219,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         
         if (this.onConnectedCallback !== undefined) {
             try {
-                this.onConnectedCallback(event);
+                this.onConnectedCallback();
             } catch (e) {
                 this.log.error('ERROR_HANDLING_CONNECTED_EVENT', e);
             }
@@ -278,7 +246,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         this.onMessageReceivedCallback = callback;
     }
 
-    public onConnected(callback: (event: ConnectedEvent) => Promise<void>): void {
+    public onConnected(callback: () => Promise<void>): void {
         this.onConnectedCallback = callback;
     }
 
@@ -286,7 +254,7 @@ export class AutomowerEventStreamClientImpl implements AutomowerEventStreamClien
         this.onDisconnectedCallback = callback;
     }
 
-    public onError(callback: (event: ErrorEvent) => Promise<void>): void {
+    public onError(callback: () => Promise<void>): void {
         this.onErrorReceivedCallback = callback;
     }
 }

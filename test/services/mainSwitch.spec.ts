@@ -1,34 +1,33 @@
-import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, HAPStatus, Service } from 'hap-nodejs';
-import { API, HAP, PlatformAccessory } from 'homebridge';
+import { Characteristic, Service } from 'hap-nodejs';
+import { API, CharacteristicEventTypes, CharacteristicSetCallback, CharacteristicValue, HAP, HAPStatus, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Calendar, Mode, MowerMetadata, MowerState, Planner, RestrictedReason, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, MowerConnection, MowerSchedule, MowerState, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from '../../src/services/husqvarna/automower/changeSettingsService';
-import { MowerControlService } from '../../src/services/husqvarna/automower/mowerControlService';
-import { ScheduleEnabledPolicy } from '../../src/services/policies/scheduleEnabledPolicy';
-import { ScheduleSwitchImplSpy } from './scheduleSwitchImplSpy';
+import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
+import { supportsCuttingHeight, SupportsCuttingHeightCharacteristic, supportsMowerSchedule, SupportsMowerScheduleInformation } from '../../src/services/mainSwitch';
+import { MowerIsEnabledPolicy } from '../../src/services/policies/mowerIsEnabledPolicy';
+import { AutomowerMainSwitchImplSpy, MainSwitchImplSpy } from './mainSwitchImplSpy';
 
-describe('ScheduleSwitchImpl', () => {
+describe('MainSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
-    let changeSettingsService: Mock<ChangeSettingsService>;
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
-    let policy: Mock<ScheduleEnabledPolicy>;
+    let policy: Mock<MowerIsEnabledPolicy & SupportsMowerScheduleInformation>;
 
-    let target: ScheduleSwitchImplSpy;
+    let target: MainSwitchImplSpy;
 
     beforeEach(() => {
         mowerControlService = new Mock<MowerControlService>();
-        changeSettingsService = new Mock<ChangeSettingsService>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
-        policy = new Mock<ScheduleEnabledPolicy>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+        policy = new Mock<MowerIsEnabledPolicy & SupportsMowerScheduleInformation>();
 
         hap = new Mock<HAP>();
         hap.setup(o => o.Service).returns(Service);
@@ -38,42 +37,44 @@ describe('ScheduleSwitchImpl', () => {
         api.setup(o => o.hap).returns(hap.object());
         log = new Mock<PlatformLogger>();        
 
-        target = new ScheduleSwitchImplSpy('Schedule', mowerControlService.object(), changeSettingsService.object(), policy.object(), 
+        target = new MainSwitchImplSpy('Schedule', mowerControlService.object(), policy.object(),
             platformAccessory.object(), api.object(), log.object());
     });
 
-    it('should set the policy calendar', () => {
-        const calendar: Calendar = {
-            tasks: [
-                {
-                    start: 1,
-                    duration: 1,
-                    sunday: true,
-                    monday: true,
-                    tuesday: true,
-                    wednesday: true,
-                    thursday: true,
-                    friday: true,
-                    saturday: true
-                }
-            ]
+    it('should return true when supports cutting height characteristic', () => {
+        const t = new Mock<SupportsCuttingHeightCharacteristic>();
+        t.setup(o => o.setCuttingHeight(It.IsAny())).returns(undefined);
+
+        expect(supportsCuttingHeight(t.object())).toBeTruthy();
+    });
+
+    it('should return false when does not support cutting height characteristic', () => {
+        const t = {
+            hello: 'true'
         };
 
-        policy.setup(o => o.shouldApply()).returns(false);
-        policy.setup(o => o.setCalendar(calendar)).returns(undefined);
+        expect(supportsCuttingHeight(t)).toBeFalsy();
+    });
 
-        target.setCalendar(calendar);
+    it('should return true when supports mower schedule', () => {
+        const t = new Mock<SupportsMowerScheduleInformation>();
+        t.setup(o => o.setMowerSchedule(It.IsAny())).returns(undefined);
 
-        policy.verify(o => o.setCalendar(calendar), Times.Once());
+        expect(supportsMowerSchedule(t.object())).toBeTruthy();
+    });
+
+    it('should return false when does not support mower schedule', () => {
+        const t = {
+            hello: 'true'
+        };
+
+        expect(supportsMowerSchedule(t)).toBeFalsy();
     });
 
     it('should set the policy mower state', () => {
         const mowerState: MowerState = {
             activity: Activity.MOWING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.HOME,
-            state: State.NOT_APPLICABLE
+            state: State.IN_OPERATION
         };
 
         policy.setup(o => o.shouldApply()).returns(false);
@@ -83,30 +84,40 @@ describe('ScheduleSwitchImpl', () => {
 
         policy.verify(o => o.setMowerState(mowerState), Times.Once());
     });
-
-    it('should set the policy planner', () => {
-        const planner: Planner = {
-            nextStartTimestamp: 12345,
-            override: { },
-            restrictedReason: RestrictedReason.WEEK_SCHEDULE
+    
+    it('should not set the policy mower schedule when unsupported', () => {
+        const schedule: MowerSchedule = {
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
         };
 
         policy.setup(o => o.shouldApply()).returns(false);
-        policy.setup(o => o.setPlanner(planner)).returns(undefined);
 
-        target.setPlanner(planner);
+        target.setMowerSchedule(schedule);
 
-        policy.verify(o => o.setPlanner(planner), Times.Once());
+        policy.verify(o => o.setMowerSchedule(schedule), Times.Never());
     });
-    
+
+    it('should set the policy mower schedule', () => {
+        const schedule: MowerSchedule = {
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        };
+
+        policy.setup(o => o.shouldApply()).returns(false);
+        policy.setup(o => o.setMowerSchedule(schedule)).returns(undefined);
+
+        target.setMowerSchedule(schedule);
+
+        policy.verify(o => o.setMowerSchedule(schedule), Times.Once());
+    });
+
     it('should be initialized with existing service', () => {
         const c = new Mock<Characteristic>();
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-
-        const cuttingHeight = new Mock<Characteristic>();
-        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
 
         const statusActive = new Mock<Characteristic>();
 
@@ -115,15 +126,12 @@ describe('ScheduleSwitchImpl', () => {
         service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
         service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
 
         target.init(NameMode.DEFAULT);
 
         c.verify(o => o.on(CharacteristicEventTypes.SET, 
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
-        cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
     });
 
@@ -215,81 +223,55 @@ describe('ScheduleSwitchImpl', () => {
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
 
-    it('should update the characteristic as true when scheduled to start', () => {
-        const c = new Mock<Characteristic>();
-        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-        c.setup(o => o.on(CharacteristicEventTypes.SET, 
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());        
-
-        const cuttingHeight = new Mock<Characteristic>();
-        cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
-    
-        const statusActive = new Mock<Characteristic>();
-
-        policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-        policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-        policy.setup(o => o.shouldApply()).returns(true);
-        policy.setup(o => o.check()).returns(true);
-
-        const service = new Mock<Service>();
-        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-        service.setup(o => o.testCharacteristic(DISPLAY_NAME)).returns(true);
-        service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
-
-        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
-
-        target.init(NameMode.DEFAULT);
-
-        const calendar: Calendar = {
-            tasks: [
-                {
-                    start: 1,
-                    duration: 1,
-                    sunday: true,
-                    monday: true,
-                    tuesday: true,
-                    wednesday: true,
-                    thursday: true,
-                    friday: true,
-                    saturday: true
-                }
-            ]
+    it('should throw an error when not initialized on set mower connection', () => {
+        const connection: MowerConnection = {
+            connected: false
         };
 
-        const planner: Planner = {
-            nextStartTimestamp: 12345,
-            override: { },
-            restrictedReason: RestrictedReason.WEEK_SCHEDULE
-        };
+        expect(() => target.setMowerConnection(connection)).toThrowError();
+    });
+});
 
-        target.setCalendar(calendar);
-        target.setPlanner(planner);
+describe('AutomowerMainSwitchImpl', () => {
+    let mowerControlService: Mock<MowerControlService>;
+    let changeSettingsService: Mock<ChangeSettingsService>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
+    let api: Mock<API>;
+    let hap: Mock<HAP>;
+    let log: Mock<PlatformLogger>;
+    let policy: Mock<MowerIsEnabledPolicy>;
 
-        policy.verify(o => o.setCalendar(calendar), Times.Once());
-        policy.verify(o => o.setPlanner(planner), Times.Once());
-        c.verify(o => o.updateValue(true), Times.Once());
+    let target: AutomowerMainSwitchImplSpy;
+
+    beforeEach(() => {
+        mowerControlService = new Mock<MowerControlService>();
+        changeSettingsService = new Mock<ChangeSettingsService>();
+
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+        policy = new Mock<MowerIsEnabledPolicy>();
+
+        hap = new Mock<HAP>();
+        hap.setup(o => o.Service).returns(Service);
+        hap.setup(o => o.Characteristic).returns(Characteristic);
+        
+        api = new Mock<API>();
+        api.setup(o => o.hap).returns(hap.object());
+        log = new Mock<PlatformLogger>();        
+
+        target = new AutomowerMainSwitchImplSpy('Schedule', mowerControlService.object(), changeSettingsService.object(), policy.object(),
+            platformAccessory.object(), api.object(), log.object());
     });
 
-    it('should update the characteristic as false when planner is not scheduled to start', () => {
+    it('should be initialized with existing service', () => {
         const c = new Mock<Characteristic>();
-        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
         c.setup(o => o.on(CharacteristicEventTypes.SET, 
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-        
+
         const cuttingHeight = new Mock<Characteristic>();
         cuttingHeight.setup(o => o.on(CharacteristicEventTypes.SET,
             It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(cuttingHeight.object());
-    
+
         const statusActive = new Mock<Characteristic>();
-        
-        policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-        policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
-        policy.setup(o => o.shouldApply()).returns(true);
-        policy.setup(o => o.check()).returns(false);
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
@@ -299,48 +281,13 @@ describe('ScheduleSwitchImpl', () => {
         service.setup(o => o.getCharacteristic(DISPLAY_NAME)).returns(cuttingHeight.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Schedule')).returns(service.object());
-        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(NameMode.DEFAULT);
-        target.unsafeSetLastValue(true);
 
-        const calendar: Calendar = {
-            tasks: [
-                {
-                    start: 1,
-                    duration: 1,
-                    sunday: true,
-                    monday: true,
-                    tuesday: true,
-                    wednesday: true,
-                    thursday: true,
-                    friday: true,
-                    saturday: true
-                }
-            ]
-        };
-
-        const planner: Planner = {
-            nextStartTimestamp: 0,
-            override: { },
-            restrictedReason: RestrictedReason.NOT_APPLICABLE
-        };
-
-        target.setCalendar(calendar);
-        target.setPlanner(planner);
-
-        policy.verify(o => o.setCalendar(calendar), Times.Once());
-        policy.verify(o => o.setPlanner(planner), Times.Once());
-        c.verify(o => o.updateValue(false), Times.Once());
-    });
-
-    it('should throw an error when not initialized on set mower metadata', () => {
-        const metadata: MowerMetadata = {
-            connected: false,
-            statusTimestamp: 1
-        };
-
-        expect(() => target.setMowerMetadata(metadata)).toThrowError();
+        c.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
+        cuttingHeight.verify(o => o.on(CharacteristicEventTypes.SET, 
+            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>()), Times.Once());
     });
 
     it('should set the cutting height', async () => {
@@ -378,8 +325,6 @@ describe('ScheduleSwitchImpl', () => {
     
         const statusActive = new Mock<Characteristic>();
         
-        policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-        policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined);
         policy.setup(o => o.shouldApply()).returns(true);
         policy.setup(o => o.check()).returns(false);
 
@@ -438,8 +383,6 @@ describe('ScheduleSwitchImpl', () => {
     
         const statusActive = new Mock<Characteristic>();
         
-        policy.setup(o => o.setPlanner(It.IsAny())).returns(undefined);
-        policy.setup(o => o.setCalendar(It.IsAny())).returns(undefined); 
         policy.setup(o => o.shouldApply()).returns(true);
         policy.setup(o => o.check()).returns(false);
 

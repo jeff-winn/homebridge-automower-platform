@@ -37,11 +37,12 @@ export enum Activity {
  * Describes the states of a mower.
  */
 export enum State {
+    CHARGING = 'charging',
     IN_OPERATION = 'in_operation',
     PAUSED = 'paused',
-    STOPPED = 'stopped',
     FAULTED = 'faulted',
     TAMPERED = 'tampered',
+    OFF = 'off',
     UNKNOWN = 'unknown'
 }
 
@@ -49,14 +50,23 @@ export enum State {
  * Describes a mower.
  */
 export interface Mower {
-    id: string;
+    id: string;    
     attributes: {
+        location: Location | undefined;
         metadata: MowerMetadata;
         connection: MowerConnection;
         mower: MowerState;
         battery: Battery;
-        schedule: MowerSchedule;
+        schedule: MowerSchedule | undefined;
+        settings: MowerSettings | undefined;
     };
+}
+
+/**
+ * Describes the location associated with a mower.
+ */
+export interface Location {
+    id: string;
 }
 
 /**
@@ -72,8 +82,6 @@ export interface MowerState {
  */
 export interface Battery {
     level: number;
-    isLowBattery: boolean;
-    isCharging: boolean;
 }
 
 /**
@@ -94,10 +102,17 @@ export interface MowerConnection {
 }
 
 /**
- * Describes the mower schedule.
+ * Describes a mower schedule.
  */
 export interface MowerSchedule {
-    isRunContinuously: boolean;
-    isRunOnSchedule: boolean;
-    isRunInFuture: boolean;
+    runContinuously: boolean;
+    runInFuture: boolean;
+    runOnSchedule: boolean;
+}
+
+/**
+ * Describes mower settings.
+ */
+export interface MowerSettings {
+    cuttingHeight: number;
 }

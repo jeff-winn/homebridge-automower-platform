@@ -1,7 +1,17 @@
 import { CharacteristicSetCallback } from 'homebridge';
-import { ScheduleSwitchImpl } from '../../src/services/scheduleSwitch';
+import { AutomowerMainSwitchImpl, MainSwitchImpl } from '../../src/services/mainSwitch';
 
-export class ScheduleSwitchImplSpy extends ScheduleSwitchImpl {
+export class MainSwitchImplSpy extends MainSwitchImpl {
+    public unsafeOnSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+        return this.onSetCallback(on, callback);
+    }
+
+    public unsafeSetLastValue(on: boolean): void {
+        this.setLastValue(on);
+    }
+}
+
+export class AutomowerMainSwitchImplSpy extends AutomowerMainSwitchImpl {
     public unsafeOnSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         return this.onSetCallback(on, callback);
     }

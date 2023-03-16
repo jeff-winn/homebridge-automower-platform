@@ -1,13 +1,23 @@
 import { AutomowerPlatform } from '../src/automowerPlatform';
-import { AccessTokenManager } from '../src/services/husqvarna/accessTokenManager';
+import { PlatformContainer } from '../src/primitives/platformContainer';
 import { DiscoveryService } from '../src/services/husqvarna/discoveryService';
 import { EventStreamService } from '../src/services/husqvarna/eventStreamService';
 
 export class AutomowerPlatformSpy extends AutomowerPlatform {
-    public discoveryService?: DiscoveryService;
-    public eventStreamService?: EventStreamService;
-    public tokenManager?: AccessTokenManager;
     public containerConfigured = false;
+    public platformContainer?: PlatformContainer;
+
+    public unsafeEnsureContainerIsInitialized(): void {
+        this.ensureContainerIsInitialized();
+    }
+
+    public unsafeGetEventService(): EventStreamService {
+        return this.getEventService();
+    }
+
+    public unsafeGetDiscoveryService(): DiscoveryService {
+        return this.getDiscoveryService();
+    }
 
     public unsafeOnFinishedLaunching(): Promise<void> {
         return this.onFinishedLaunching();
@@ -19,17 +29,15 @@ export class AutomowerPlatformSpy extends AutomowerPlatform {
     
     protected override ensureContainerIsInitialized(): void {
         this.containerConfigured = true;
+
+        super.ensureContainerIsInitialized();
     }
 
-    protected override getDiscoveryService(): DiscoveryService {
-        return this.discoveryService!;
-    }
+    protected override createContainer(): PlatformContainer {
+        if (this.platformContainer !== undefined) {
+            return this.platformContainer;
+        }
 
-    protected override getEventService(): EventStreamService {
-        return this.eventStreamService!;
-    }
-
-    protected override getTokenManager(): AccessTokenManager {
-        return this.tokenManager!;
+        return super.createContainer();
     }
 }

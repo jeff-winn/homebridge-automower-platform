@@ -95,6 +95,8 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
     
     it('should do nothing when no callback is set on error received', () => {
+        log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
+
         target.unsafeOnErrorReceived({
             error: 'error',
             message: 'error message',
@@ -103,7 +105,8 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should log errors thrown when error callback is executed', () => {
-        log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
+        log.setup(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny())).returns(undefined);
 
         target.onError(() => {
             throw new Error('Ouch');
@@ -115,7 +118,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             type: 'error type'
         });
 
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        log.verify(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny()), Times.Once());
     });
 
     it('should log errors thrown when disconnect callback is executed', () => {

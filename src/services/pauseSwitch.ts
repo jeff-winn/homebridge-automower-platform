@@ -1,9 +1,10 @@
 import { API, CharacteristicSetCallback, HAPStatus, PlatformAccessory } from 'homebridge';
-import { AutomowerContext } from '../automowerAccessory';
-import { Activity, MowerState, State } from '../clients/automower/automowerClient';
+
 import { PlatformLogger } from '../diagnostics/platformLogger';
+import { Activity, MowerState, State } from '../model';
+import { MowerContext } from '../mowerAccessory';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
-import { MowerControlService } from './husqvarna/automower/mowerControlService';
+import { MowerControlService } from './husqvarna/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
 
 /**
@@ -21,7 +22,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
     private lastActivity?: Activity;
 
     public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsPausedPolicy, 
-        accessory: PlatformAccessory<AutomowerContext>, api: API, log: PlatformLogger) {
+        accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }
 

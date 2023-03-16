@@ -3,7 +3,8 @@ import { AutomowerPlatformConfig } from '../automowerPlatform';
 import { ErrorFactory } from '../errors/errorFactory';
 import { DeviceType } from '../model';
 import { PlatformContainer } from '../primitives/platformContainer';
-import { EventStreamService, EventStreamServiceImpl } from '../services/husqvarna/eventStreamService';
+import { AutomowerEventStreamService } from '../services/husqvarna/automower/automowerEventStreamService';
+import { EventStreamService } from '../services/husqvarna/eventStreamService';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 
 /**
@@ -24,7 +25,7 @@ export class EventStreamServiceFactoryImpl implements EventStreamServiceFactory 
         let eventStreamServiceClass: InjectionToken<EventStreamService>;
 
         if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
-            eventStreamServiceClass = EventStreamServiceImpl;        
+            eventStreamServiceClass = AutomowerEventStreamService;        
         } else if (this.config.device_type === DeviceType.GARDENA) {
             eventStreamServiceClass = GardenaEventStreamService;
         } else {

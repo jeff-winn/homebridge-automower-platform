@@ -3,14 +3,14 @@ import {
     PlatformConfig, PlatformIdentifier, PlatformName
 } from 'homebridge';
 
-import { AutomowerAccessory, AutomowerContext } from './automowerAccessory';
-import { AutomowerAccessoryFactory, AutomowerAccessoryFactoryImpl } from './automowerAccessoryFactory';
-import { SettingsEvent, StatusEvent } from './clients/automower/automowerEventStreamClient';
 import { LoggerType } from './diagnostics/platformLogger';
 import { BadConfigurationError } from './errors/badConfigurationError';
+import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from './events';
 import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
 import { AuthenticationMode, DeviceType } from './model';
+import { MowerAccessory, MowerContext } from './mowerAccessory';
+import { MowerAccessoryFactory, MowerAccessoryFactoryImpl } from './mowerAccessoryFactory';
 import { Localization, Y18nLocalization } from './primitives/localization';
 import { PlatformContainer, PlatformContainerImpl } from './primitives/platformContainer';
 import { AccessTokenManager, AccessTokenManagerImpl } from './services/husqvarna/accessTokenManager';
@@ -67,14 +67,15 @@ export class AutomowerPlatformConfig {
 }
 
 /**
- * A homebridge platform plugin which integrates with the Husqvarna Automower Connect cloud services.
+ * A homebridge platform plugin which integrates with the Husqvarna Connect cloud services.
  */
 export class AutomowerPlatform implements DynamicPlatformPlugin {
-    private readonly mowers: AutomowerAccessory[] = [];
+    private readonly mowers: MowerAccessory[] = [];
     private readonly config: AutomowerPlatformConfig;
 
     private container?: PlatformContainer;
     private eventService?: EventStreamService;
+    private discoveryService?: DiscoveryService;
 
     public constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = new AutomowerPlatformConfig(config);
@@ -104,8 +105,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             return;
         }        
 
-        this.container = new PlatformContainerImpl(this.config, this.api, this.log);
+        this.container = this.createContainer();
         this.container.registerEverything();
+    }
+
+    protected createContainer(): PlatformContainer {
+        return new PlatformContainerImpl(this.config, this.api, this.log);
     }
 
     protected async discoverMowers(): Promise<void> {
@@ -133,8 +138,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.eventService;
     }
 
-    private onStatusEventReceived(event: StatusEvent): Promise<void> {
-        const mower = this.getMower(event.id);
+    private onStatusEventReceived(event: MowerStatusChangedEvent): Promise<void> {
+        const mower = this.getMower(event.mowerId);
         if (mower !== undefined) {
             mower.onStatusEventReceived(event);
         }
@@ -142,8 +147,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
-    private onSettingsEventReceived(event: SettingsEvent): Promise<void> {
-        const mower = this.getMower(event.id);
+    private onSettingsEventReceived(event: MowerSettingsChangedEvent): Promise<void> {
+        const mower = this.getMower(event.mowerId);
         if (mower !== undefined) {
             mower.onSettingsEventReceived(event);
         }
@@ -151,13 +156,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
-    /**
-     * Gets {@link DiscoveryService}.
-     * @returns The service instance.
-     */
     protected getDiscoveryService(): DiscoveryService {
+        if (this.discoveryService !== undefined) {
+            return this.discoveryService;
+        }
+
         const factory = this.container!.resolve(DiscoveryServiceFactoryImpl);
-        return factory.create(this.container!);
+        this.discoveryService = factory.create(this.container!);
+
+        return this.discoveryService;
     }
 
     /**
@@ -165,7 +172,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * @param mowerId The mower id.
      * @returns The accessory instance.
      */
-    public getMower(mowerId: string): AutomowerAccessory | undefined {
+    public getMower(mowerId: string): MowerAccessory | undefined {
         return this.mowers.find(o => o.getId() === mowerId);
     }
 
@@ -194,13 +201,13 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * Registers the accessories with the platform.
      * @param accessories The accessories to register.
      */
-    public registerMowers(mowers: AutomowerAccessory[]): void {
-        const accessories: PlatformAccessory<AutomowerContext>[] = [];
+    public registerMowers(mowers: MowerAccessory[]): void {
+        const accessories: PlatformAccessory<MowerContext>[] = [];
 
-        mowers.forEach(mower => {
+        for (const mower of mowers) {
             this.mowers.push(mower);
             accessories.push(mower.getUnderlyingAccessory());
-        });
+        }
 
         this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }
@@ -209,23 +216,23 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
      * This function is invoked when homebridge restores cached accessories from disk at startup.
      * It should be used to setup event handlers for characteristics and update respective values.
      */
-    public configureAccessory(accessory: PlatformAccessory<AutomowerContext>): void {
+    public configureAccessory(accessory: PlatformAccessory<MowerContext>): void {
         try {
             this.ensureContainerIsInitialized();
             this.info('CONFIGURING_CACHED_ACCESSORY', accessory.displayName);
 
-            const automower = this.getAccessoryFactory().createAutomowerAccessory(accessory);
-            this.mowers.push(automower);
+            const mower = this.getAccessoryFactory().createAccessoryFromCache(accessory);
+            this.mowers.push(mower);
         } catch (e) {
             this.error('ERROR_CONFIGURING_ACCESSORY', e);
         }
     }
 
-    protected getAccessoryFactory(): AutomowerAccessoryFactory {
-        return this.container!.resolve(AutomowerAccessoryFactoryImpl);
+    private getAccessoryFactory(): MowerAccessoryFactory {
+        return this.container!.resolve(MowerAccessoryFactoryImpl);
     }
 
-    protected getLocalization(): Localization | undefined {
+    private getLocalization(): Localization | undefined {
         if (this.container === undefined) {
             return undefined;
         }
@@ -233,7 +240,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.container.resolve(Y18nLocalization);
     }
 
-    protected info(message: string, ...params: unknown[]): void {
+    private info(message: string, ...params: unknown[]): void {
         const locale = this.getLocalization();
         if (locale !== undefined) {
             this.log.info(locale.format(message, ...params));
@@ -242,7 +249,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }        
     }
 
-    protected error(message: string, ...params: unknown[]): void {
+    private error(message: string, ...params: unknown[]): void {
         const locale = this.getLocalization();
         if (locale !== undefined) {
             this.log.error(locale.format(message, ...params));

@@ -1,4 +1,4 @@
-import { MowerState, State } from '../../clients/automower/automowerClient';
+import { MowerState, State } from '../../model';
 import { Policy } from './policy';
 
 /**
@@ -23,7 +23,7 @@ export class DeterministicMowerTamperedPolicy implements MowerTamperedPolicy {
             return false;
         }
 
-        return this.mower.state === State.STOPPED && this.mower.errorCode !== 0;
+        return this.mower.state === State.TAMPERED;
     }
 
     public setMowerState(mower: MowerState): void {

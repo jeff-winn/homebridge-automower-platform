@@ -2,9 +2,9 @@ import { Characteristic, Service } from 'hap-nodejs';
 import { API, HAP, PlatformAccessory } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
-import { AutomowerContext } from '../../src/automowerAccessory';
-import { Activity, Mode, MowerMetadata, MowerState, State } from '../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../src/diagnostics/platformLogger';
+import { Activity, MowerConnection, MowerState, State } from '../../src/model';
+import { MowerContext } from '../../src/mowerAccessory';
 import { MowerFaultedPolicy } from '../../src/services/policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from '../../src/services/policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from '../../src/services/policies/mowerTamperedPolicy';
@@ -15,7 +15,7 @@ describe('MotionSensorImpl', () => {
     let motionPolicy: Mock<MowerInMotionPolicy>;
     let faultedPolicy: Mock<MowerFaultedPolicy>;
     let tamperedPolicy: Mock<MowerTamperedPolicy>;
-    let platformAccessory: Mock<PlatformAccessory<AutomowerContext>>;
+    let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
     let api: Mock<API>;
     let hap: Mock<HAP>;
     let log: Mock<PlatformLogger>;
@@ -25,7 +25,7 @@ describe('MotionSensorImpl', () => {
         faultedPolicy = new Mock<MowerFaultedPolicy>();
         tamperedPolicy = new Mock<MowerTamperedPolicy>();
 
-        platformAccessory = new Mock<PlatformAccessory<AutomowerContext>>();
+        platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
         log = new Mock<PlatformLogger>();
         
         hap = new Mock<HAP>();
@@ -89,11 +89,8 @@ describe('MotionSensorImpl', () => {
         target.init();
         
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA, 
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
@@ -114,11 +111,8 @@ describe('MotionSensorImpl', () => {
         target.init();
 
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA, 
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
@@ -146,11 +140,8 @@ describe('MotionSensorImpl', () => {
         target.init();
 
         expect(() => target.setMowerState({
-            activity: Activity.CHARGING,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA, 
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.CHARGING
         })).toThrowError();
     });
 
@@ -168,9 +159,6 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
             state: State.IN_OPERATION
         };
         
@@ -212,9 +200,6 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 0,
-            errorCodeTimestamp: 0,
-            mode: Mode.MAIN_AREA,
             state: State.IN_OPERATION
         };
         
@@ -256,10 +241,7 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 10,
-            errorCodeTimestamp: 10000,
-            mode: Mode.MAIN_AREA,
-            state: State.ERROR
+            state: State.FAULTED
         };
         
         const service = new Mock<Service>();
@@ -301,10 +283,7 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 10,
-            errorCodeTimestamp: 10000,
-            mode: Mode.MAIN_AREA,
-            state: State.ERROR
+            state: State.FAULTED
         };
         
         const service = new Mock<Service>();
@@ -346,10 +325,7 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 10,
-            errorCodeTimestamp: 10000,
-            mode: Mode.MAIN_AREA,
-            state: State.ERROR
+            state: State.TAMPERED
         };
         
         const service = new Mock<Service>();
@@ -392,10 +368,7 @@ describe('MotionSensorImpl', () => {
 
         const state: MowerState = {
             activity: Activity.GOING_HOME,
-            errorCode: 10,
-            errorCodeTimestamp: 10000,
-            mode: Mode.MAIN_AREA,
-            state: State.ERROR
+            state: State.TAMPERED
         };
         
         const service = new Mock<Service>();
@@ -425,12 +398,11 @@ describe('MotionSensorImpl', () => {
     });
 
     it('should throw an error when not initialized on set mower metadata', () => {
-        const metadata: MowerMetadata = {
-            connected: false,
-            statusTimestamp: 1
+        const metadata: MowerConnection = {
+            connected: false
         };
 
-        expect(() => target.setMowerMetadata(metadata)).toThrowError();
+        expect(() => target.setMowerConnection(metadata)).toThrowError();
     });
 
     it('should set active status to true when connected', () => {
@@ -442,9 +414,8 @@ describe('MotionSensorImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
         target.init();
-        target.setMowerMetadata({
-            connected: true,
-            statusTimestamp: 1
+        target.setMowerConnection({
+            connected: true
         });
 
         statusActive.verify(o => o.updateValue(true), Times.Once());
@@ -459,9 +430,8 @@ describe('MotionSensorImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
 
         target.init();
-        target.setMowerMetadata({
-            connected: false,
-            statusTimestamp: 1
+        target.setMowerConnection({
+            connected: false
         });
 
         statusActive.verify(o => o.updateValue(false), Times.Once());
