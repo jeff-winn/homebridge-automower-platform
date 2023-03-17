@@ -138,6 +138,11 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             scopes.push('amc:api');
         }
 
+        if (deviceType === DeviceType.GARDENA) {
+            scopes.push('sg-integration-api:read');
+            scopes.push('sg-integration-api:write');
+        }
+
         return scopes.join(' ');
     }
 
