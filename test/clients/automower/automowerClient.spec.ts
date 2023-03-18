@@ -15,8 +15,8 @@ import * as constants from '../../../src/settings';
 
 describe('AutomowerClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
-    const APPKEY: string = process.env.HUSQVARNA_APPKEY || 'APPKEY';
-    const MOWER_ID: string = process.env.MOWER_ID || '12345';
+    const APPKEY = 'APPKEY';
+    const MOWER_ID = '12345';
 
     let fetch: Mock<FetchClient>;
     let errorFactory: Mock<ErrorFactory>;

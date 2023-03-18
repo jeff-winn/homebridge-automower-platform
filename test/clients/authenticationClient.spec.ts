@@ -14,9 +14,9 @@ import { DeviceType } from '../../src/model';
 
 describe('AuthenticationClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
-    const APPKEY: string = process.env.HUSQVARNA_APPKEY || 'APPKEY';
-    const USERNAME: string = process.env.HUSQVARNA_USERNAME || 'USERNAME';
-    const PASSWORD: string = process.env.HUSQVARNA_PASSWORD || 'PASSWORD';
+    const APPKEY = 'APPKEY';
+    const USERNAME = 'USERNAME';
+    const PASSWORD = 'PASSWORD';
 
     let fetch: Mock<FetchClient>;
     let errorFactory: Mock<ErrorFactory>;

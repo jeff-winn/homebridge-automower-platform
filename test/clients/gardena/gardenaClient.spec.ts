@@ -10,8 +10,8 @@ import * as constants from '../../../src/settings';
 
 describe('GardenaClientImpl', () => {
     // These values should come from your Husqvarna account, and be placed in the .env file at the root of the workspace.
-    const APPKEY: string = process.env.HUSQVARNA_APPKEY || 'APPKEY';
-    const LOCATION_ID: string = process.env.LOCATION_ID || 'location1';
+    const APPKEY = 'APPKEY';
+    const LOCATION_ID = 'location1';
 
     let fetch: Mock<FetchClient>;
     let errorFactory: Mock<ErrorFactory>;
