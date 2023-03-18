@@ -9,12 +9,11 @@
 			],
 			"type": "node",
 			"preLaunchTask": "build",
-			"windows": {
-				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
+			"linux": {
+				"program": "/usr/local/share/npm-global/lib/node_modules/homebridge/bin/homebridge",
 				"args": [
 					"-D",
-					"-U",
-					"${workspaceFolder}/.homebridge"
+					"-U"
 				],
 				"env": {
 					"FORCE_COLOR": "1",
