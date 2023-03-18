@@ -135,16 +135,12 @@ export class PlatformContainerImpl implements PlatformContainer {
             container.resolve(this.getLoginStrategyClass()),
             container.resolve(this.getLoggerClass())));
 
+        container.registerInstance(SampleGardenaClientImpl, new SampleGardenaClientImpl());
         container.registerInstance(GardenaClientImpl, new GardenaClientImpl(
             this.config.appKey,
             settings.GARDENA_SMART_SYSTEM_API_BASE_URL,
             container.resolve(RetryerFetchClient),
             container.resolve(DefaultErrorFactory)));
-
-        container.register(SampleGardenaClientImpl, {
-            useFactory: (context) => new SampleGardenaClientImpl(
-                context.resolve(NodeJsEnvironment))
-        });
 
         container.registerInstance(AutomowerClientImpl, new RateLimitedAutomowerClient(
             this.config.appKey,
