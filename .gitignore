@@ -120,13 +120,6 @@ dist
 .yarn/build-state.yml
 .pnp.*
 
-### VisualStudioCode template
-.vscode/*
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/settings.json
-!.vscode/tasks.json
-
 # Local History for Visual Studio Code
 .history/
 

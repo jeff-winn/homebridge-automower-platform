@@ -1,7 +1,4 @@
 import { Config } from '@jest/types';
-import { config } from 'dotenv';
-
-config();
 
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:

@@ -4,7 +4,7 @@ import { InjectionToken } from 'tsyringe';
 import { AutomowerPlatformConfig } from './automowerPlatform';
 import { PlatformLogger } from './diagnostics/platformLogger';
 import { DeviceType, Mower } from './model';
-import { MowerAccessory, MowerContext } from './mowerAccessory';
+import { AutomowerAccessory, MowerAccessory, MowerContext } from './mowerAccessory';
 import { Localization } from './primitives/localization';
 import { PlatformAccessoryFactory } from './primitives/platformAccessoryFactory';
 import { PlatformContainer } from './primitives/platformContainer';
@@ -13,10 +13,10 @@ import { ArrivingContactSensorImpl, ArrivingSensor } from './services/arrivingSe
 import { BatteryInformation, BatteryInformationImpl } from './services/batteryInformation';
 import { AutomowerMowerControlService } from './services/husqvarna/automower/automowerMowerControlService';
 import { ChangeSettingsServiceImpl } from './services/husqvarna/automower/changeSettingsService';
-import { GardenaMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
-import { MowerControlService } from './services/husqvarna/mowerControlService';
+import { GardenaManualMowerControlService } from './services/husqvarna/gardena/gardenaMowerControlService';
+import { MowerControlService, SupportsPauseControl } from './services/husqvarna/mowerControlService';
 import { LeavingContactSensorImpl, LeavingSensor } from './services/leavingSensor';
-import { AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl } from './services/mainSwitch';
+import { AutomowerMainSwitchImpl, MainSwitch, MainSwitchImpl, SupportsCuttingHeightCharacteristic, SupportsMowerScheduleInformation } from './services/mainSwitch';
 import { MotionSensor, MotionSensorImpl } from './services/motionSensor';
 import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from './services/policies/mowerFaultedPolicy';
@@ -46,12 +46,12 @@ export interface MowerAccessoryFactory {
 
 export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     public constructor(
-        private factory: PlatformAccessoryFactory, 
-        private api: API, 
-        private log: PlatformLogger,
-        private container: PlatformContainer,
-        private locale: Localization,
-        private config: AutomowerPlatformConfig) { }
+        private readonly factory: PlatformAccessoryFactory, 
+        private readonly api: API, 
+        private readonly log: PlatformLogger,
+        private readonly container: PlatformContainer,
+        private readonly locale: Localization,
+        private readonly config: AutomowerPlatformConfig) { }
 
     public createAccessory(mower: Mower): MowerAccessory {        
         const displayName = mower.attributes.metadata.name;
@@ -85,31 +85,30 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
     
     protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
-        if (this.config.device_type === undefined || this.config.device_type === DeviceType.AUTOMOWER) {
+        if (this.config.device_type !== undefined && this.config.device_type === DeviceType.GARDENA) {
             return new MowerAccessory(accessory,
                 this.createBatteryInformation(accessory),
                 this.createAccessoryInformation(accessory),
                 this.createMotionSensor(accessory),
                 this.createArrivingSensor(accessory),
                 this.createLeavingSensor(accessory),
-                this.createPauseSwitch(accessory),            
-                this.createAutomowerMainSwitch(accessory));
+                this.createMainSwitch(accessory));
         }
 
-        return new MowerAccessory(accessory,
+        return new AutomowerAccessory(accessory,
             this.createBatteryInformation(accessory),
             this.createAccessoryInformation(accessory),
             this.createMotionSensor(accessory),
             this.createArrivingSensor(accessory),
             this.createLeavingSensor(accessory),
-            this.createPauseSwitch(accessory),            
-            this.createMainSwitch(accessory));
+            this.createAutomowerMainSwitch(accessory),
+            this.createPauseSwitch(accessory));
     }
 
     protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
         return new PauseSwitchImpl(
             this.locale.format('PAUSE'), // WARNING: Changing the name will cause a breaking change!
-            this.container.resolve(this.getContolServiceClass()),
+            this.container.resolve(this.getPauseControlServiceClass()),
             this.container.resolve(DeterministicMowerIsPausedPolicy),
             accessory, this.api, this.log);
     }
@@ -144,7 +143,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
             accessory, this.api, this.log);
     }
 
-    protected createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+    protected createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation {
         return new AutomowerMainSwitchImpl(
             this.locale.format('SCHEDULE'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(this.getContolServiceClass()),
@@ -163,10 +162,16 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
 
     protected getContolServiceClass(): InjectionToken<MowerControlService> {
+        if (this.config.device_type !== undefined && this.config.device_type === DeviceType.GARDENA) {
+            return GardenaManualMowerControlService;
+        }
+
+        return AutomowerMowerControlService;
+    }
+
+    protected getPauseControlServiceClass(): InjectionToken<MowerControlService & SupportsPauseControl> {
         if (this.config.device_type === DeviceType.AUTOMOWER) {
             return AutomowerMowerControlService;
-        } else if (this.config.device_type === DeviceType.GARDENA) {
-            return GardenaMowerControlService;
         }
 
         return AutomowerMowerControlService;

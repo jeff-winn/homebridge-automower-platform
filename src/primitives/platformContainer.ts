@@ -34,7 +34,7 @@ import { AutomowerMowerStateConverterImpl } from '../services/husqvarna/automowe
 import { GardenaMowerStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaMowerStateConverter';
 import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
-import { GardenaMowerControlService } from '../services/husqvarna/gardena/gardenaMowerControlService';
+import { GardenaManualMowerControlService } from '../services/husqvarna/gardena/gardenaMowerControlService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from '../services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIsArrivingPolicy';
@@ -135,16 +135,12 @@ export class PlatformContainerImpl implements PlatformContainer {
             container.resolve(this.getLoginStrategyClass()),
             container.resolve(this.getLoggerClass())));
 
+        container.registerInstance(SampleGardenaClientImpl, new SampleGardenaClientImpl());
         container.registerInstance(GardenaClientImpl, new GardenaClientImpl(
             this.config.appKey,
             settings.GARDENA_SMART_SYSTEM_API_BASE_URL,
             container.resolve(RetryerFetchClient),
             container.resolve(DefaultErrorFactory)));
-
-        container.register(SampleGardenaClientImpl, {
-            useFactory: (context) => new SampleGardenaClientImpl(
-                context.resolve(NodeJsEnvironment))
-        });
 
         container.registerInstance(AutomowerClientImpl, new RateLimitedAutomowerClient(
             this.config.appKey,
@@ -251,8 +247,10 @@ export class PlatformContainerImpl implements PlatformContainer {
             useValue: new GardenaEventStreamService()
         });
 
-        container.register(GardenaMowerControlService, {
-            useValue: new GardenaMowerControlService()
+        container.register(GardenaManualMowerControlService, {
+            useFactory: (context) => new GardenaManualMowerControlService(
+                context.resolve(AccessTokenManagerImpl),
+                context.resolve(GardenaClientImpl))
         });
     }
 

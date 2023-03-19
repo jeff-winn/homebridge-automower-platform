@@ -1,33 +1,45 @@
-
 import * as fs from 'fs';
-import { Environment } from '../../primitives/environment';
+
+import { AccessToken } from '../../model';
 import { GardenaClient, LocationResponse, LocationsResponse } from './gardenaClient';
+
+/**
+ * Defines the file location of the getLocations sample json response.
+ */
+const LOCATIONS_SAMPLE_LOCATION = './.vscode/samples/gardena/get_locations.json';
+
+/**
+ * Defines the file location of the getLocation sample json response.
+ */
+const LOCATION_SAMPLE_LOCATION = './.vscode/samples/gardena/get_location.json';
 
 /**
  * A {@link GardenaClient} which uses sample files to simulate responses from the server.
  */
 export class SampleGardenaClientImpl implements GardenaClient {
-    public constructor(private env: Environment) { }
+    public doCommand(id: string, command: unknown, token: AccessToken): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
     public getLocations(): Promise<LocationsResponse | undefined> {
-        const txt = fs.readFileSync(this.getLocationsSampleFile(), 'utf-8');
+        const txt = this.getLocationsSampleFile();    
 
         const result = JSON.parse(txt) as LocationsResponse;
         return Promise.resolve(result);
     }
 
     protected getLocationsSampleFile(): string {
-        return this.env.unsafeGetEnvironmentVariable('GET_LOCATIONS_SAMPLE')!;
+        return fs.readFileSync(LOCATIONS_SAMPLE_LOCATION, 'utf-8');
     }
 
     public getLocation(): Promise<LocationResponse | undefined> {
-        const txt = fs.readFileSync(this.getSingleLocationSampleFile(), 'utf-8');
+        const txt = this.getLocationSampleFile();
 
         const result = JSON.parse(txt) as LocationResponse;
         return Promise.resolve(result);
     }
 
-    protected getSingleLocationSampleFile(): string {
-        return this.env.unsafeGetEnvironmentVariable('GET_SINGLE_LOCATION_SAMPLE')!;
+    protected getLocationSampleFile(): string {
+        return fs.readFileSync(LOCATION_SAMPLE_LOCATION, 'utf-8');
     }
 }

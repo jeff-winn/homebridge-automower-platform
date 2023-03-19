@@ -12,8 +12,7 @@
 			"linux": {
 				"program": "/usr/local/share/npm-global/lib/node_modules/homebridge/bin/homebridge",
 				"args": [
-					"-D",
-					"-U"
+					"-D"
 				],
 				"env": {
 					"FORCE_COLOR": "1",
