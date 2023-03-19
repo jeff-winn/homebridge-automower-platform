@@ -322,13 +322,14 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
 
     it('should create a schedule switch for a gardena mower', () => {
+        config.device_type = DeviceType.GARDENA;
+
         const service = new Mock<GardenaManualMowerControlService>();
         const policy = new Mock<DeterministicMowerIsActivePolicy>();
         container.setup(o => o.resolve(GardenaManualMowerControlService)).returns(service.object());
         container.setup(o => o.resolve(DeterministicMowerIsActivePolicy)).returns(policy.object());
 
-        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');
-        
+        locale.setup(o => o.format('SCHEDULE')).returns('Schedule');        
         const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
 
         const result = target.unsafeCreateMainSwitch(platformAccessory.object()) as MainSwitchImpl;
@@ -338,6 +339,8 @@ describe('AutomowerAccessoryFactoryImpl', () => {
     });
 
     it('should create an schedule switch for automower', () => {
+        config.device_type = DeviceType.AUTOMOWER;
+
         const service = new Mock<AutomowerMowerControlService>();
         const policy = new Mock<DeterministicMowerIsActivePolicy>();
         container.setup(o => o.resolve(AutomowerMowerControlService)).returns(service.object());
