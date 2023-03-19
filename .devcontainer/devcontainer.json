@@ -12,11 +12,24 @@
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	"features": { },
+	// "features": { },
 
 	"mounts": [
-		"source=${localWorkspaceFolder}/.devcontainer/homebridge,target=/home/node/.homebridge,type=volume"
+		{
+			"source": "${localEnv:USERPROFILE}\\.homebridge",
+			"target": "/home/node/.homebridge",
+			"type": "bind"
+		},
+		{
+			"source": "${localEnv:USERPROFILE}\\.homebridge",
+			"target": "${containerWorkspaceFolder}/.vscode/.homebridge",
+			"type": "bind"
+		}
 	],
+
+	// "mounts": [
+	// 	"source=${localWorkspaceFolder}/.devcontainer/homebridge-config,target=/home/node/.homebridge,type=volume"
+	// ],
 	
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [ 8581 ],
