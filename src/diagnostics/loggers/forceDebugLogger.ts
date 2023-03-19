@@ -1,8 +1,8 @@
 import { Logging } from 'homebridge';
 
-import { ConsoleWrapper } from '../../primitives/consoleWrapper';
 import { Environment } from '../../primitives/environment';
 import { Localization } from '../../primitives/localization';
+import { ConsoleWrapper } from '../primitives/consoleWrapper';
 import { DefaultLogger } from './defaultLogger';
 
 /**

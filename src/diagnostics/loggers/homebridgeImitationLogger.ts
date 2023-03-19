@@ -1,10 +1,10 @@
 import chalk, { Chalk } from 'chalk';
 import { LogLevel } from 'homebridge';
 
-import { ConsoleWrapper } from '../../primitives/consoleWrapper';
 import { Environment } from '../../primitives/environment';
 import { Localization } from '../../primitives/localization';
 import { AbstractPlatformLogger } from '../platformLogger';
+import { ConsoleWrapper } from '../primitives/consoleWrapper';
 
 /**
  * A {@link PlatformLogger} implementation which imitates the native logging that occurs by the Homebridge platform {@link Logging} interface.
