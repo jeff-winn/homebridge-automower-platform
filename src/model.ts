@@ -26,10 +26,29 @@ export enum AuthenticationMode {
  * Describes the activities of a mower.
  */
 export enum Activity {
+    /**
+     * The mower is mowing.
+     */
     MOWING = 'mowing',
+
+    /**
+     * The mower is parked.
+     */
     PARKED = 'parked',
+
+    /**
+     * The mower is going home.
+     */
     GOING_HOME = 'going_home',
+
+    /**
+     * The mower is leaving home.
+     */
     LEAVING_HOME = 'leaving_home',
+
+    /**
+     * The mower activity is unknown.
+     */
     UNKNOWN = 'unknown'
 }
 
@@ -37,12 +56,45 @@ export enum Activity {
  * Describes the states of a mower.
  */
 export enum State {
+    /**
+     * The mower is charging in the docking station.
+     */
     CHARGING = 'charging',
+
+    /**
+     * The mower is in operation.
+     */
     IN_OPERATION = 'in_operation',
+
+
+    /**
+     * The mower is dormant while waiting for an instruction, or until the next scheduled execution.
+     */
+    DORMANT = 'dormant',
+
+    /**
+     * The mower is paused.
+     */
     PAUSED = 'paused',
+
+    /**
+     * The mower has faulted.
+     */
     FAULTED = 'faulted',
+
+    /**
+     * The mower has been tampered.
+     */
     TAMPERED = 'tampered',
+
+    /**
+     * The mower is off.
+     */
     OFF = 'off',
+
+    /**
+     * The mower state is unknown.
+     */
     UNKNOWN = 'unknown'
 }
 

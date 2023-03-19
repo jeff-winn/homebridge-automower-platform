@@ -244,11 +244,21 @@ export interface DeviceDataItem extends DataItem {
 }
 
 /**
+ * Describes a timestamped mower error.
+ */
+export interface TimestampedMowerError {
+    value: MowerError;
+    timestamp: string;
+}
+
+/**
  * Describes a mower.
  */
 export interface MowerServiceDataItem extends DataItem {
     relationships: {
-        data: DeviceLink;
+        device: {
+            data: DeviceLink;
+        };
     };
     attributes: {
         state: {
@@ -259,10 +269,7 @@ export interface MowerServiceDataItem extends DataItem {
             value: MowerActivity;
             timestamp: string;
         };
-        lastErrorCode: {
-            value: MowerError;
-            timestamp: string;
-        };
+        lastErrorCode?: TimestampedMowerError;
         operatingHours: {
             value: number;
         };
@@ -274,7 +281,9 @@ export interface MowerServiceDataItem extends DataItem {
  */
 export interface CommonServiceDataItem extends DataItem {
     relationships: {
-        data: DeviceLink;
+        device: {
+            data: DeviceLink;
+        };
     };
     attributes: {
         name: {

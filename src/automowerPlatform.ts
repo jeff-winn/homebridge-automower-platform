@@ -209,7 +209,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             accessories.push(mower.getUnderlyingAccessory());
         }
 
-        this.log.debug('REGISTERING_PLATFORM_ACCESSORIES', accessories.length);
+        this.debug('REGISTERING_PLATFORM_ACCESSORIES', accessories.length);
         this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }
 
@@ -239,6 +239,15 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         }
 
         return this.container.resolve(Y18nLocalization);
+    }
+
+    private debug(message: string, ...params: unknown[]): void {
+        const locale = this.getLocalization();
+        if (locale !== undefined) {
+            this.log.debug(locale.format(message, ...params));
+        } else {
+            this.log.debug(message, ...params);
+        } 
     }
 
     private info(message: string, ...params: unknown[]): void {
