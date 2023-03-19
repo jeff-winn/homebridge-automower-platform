@@ -53,6 +53,28 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
     }
 
     protected convertState(mower: MowerServiceDataItem): model.State {
+        if (mower.attributes.lastErrorCode !== undefined) {
+            switch (mower.attributes.lastErrorCode.value) {
+                case MowerError.OFF_DISABLED:
+                case MowerError.OFF_HATCH_CLOSED:
+                case MowerError.OFF_HATCH_OPEN:
+                    return model.State.OFF;
+                
+                case MowerError.ALARM_MOWER_LIFTED:
+                case MowerError.LIFTED:
+                case MowerError.TEMPORARILY_LIFTED:
+                    return model.State.TAMPERED;
+    
+                case MowerError.TRAPPED:
+                case MowerError.UPSIDE_DOWN:
+                    return model.State.FAULTED;
+
+                default:
+                    this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.activity.value);
+                    return model.State.UNKNOWN;
+            }
+        }
+        
         if (mower.attributes.activity.value === MowerActivity.PAUSED) {
             return model.State.PAUSED;
         }
@@ -61,28 +83,19 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
             return model.State.CHARGING;
         }
 
+        if (mower.attributes.activity.value === MowerActivity.PARKED_AUTOTIMER || mower.attributes.activity.value === MowerActivity.PARKED_PARK_SELECTED || 
+            mower.attributes.activity.value === MowerActivity.PARKED_TIMER) {
+            return model.State.DORMANT;
+        }
+        
+        if (mower.attributes.activity.value === MowerActivity.OK_CUTTING || mower.attributes.activity.value === MowerActivity.OK_CUTTING_TIMER_OVERRIDDEN) {
+            return model.State.IN_OPERATION;
+        }
+
         if (mower.attributes.state.value === ServiceState.WARNING || mower.attributes.state.value === ServiceState.ERROR) {
             return model.State.FAULTED;
-        }
+        }        
 
-        switch (mower.attributes.lastErrorCode.value) {
-            case MowerError.OFF_DISABLED:
-            case MowerError.OFF_HATCH_CLOSED:
-            case MowerError.OFF_HATCH_OPEN:
-                return model.State.OFF;
-            
-            case MowerError.ALARM_MOWER_LIFTED:
-            case MowerError.LIFTED:
-            case MowerError.TEMPORARILY_LIFTED:
-                return model.State.TAMPERED;
-
-            case MowerError.TRAPPED:
-            case MowerError.UPSIDE_DOWN:
-                return model.State.FAULTED;
-
-            default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.attributes.activity.value);
-                return model.State.UNKNOWN;
-        }
+        return model.State.UNKNOWN;
     }
 }

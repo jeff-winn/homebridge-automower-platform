@@ -92,9 +92,11 @@ describe('GardenaGetMowersService', () => {
             id: '12345',
             type: ItemType.MOWER,
             relationships: {
-                data: {
-                    id: '12345',
-                    type: ItemType.DEVICE
+                device: {
+                    data: {
+                        id: '12345',
+                        type: ItemType.DEVICE
+                    }
                 }
             },
             attributes: {
@@ -199,9 +201,11 @@ describe('GardenaGetMowersService', () => {
             id: '12345',
             type: ItemType.MOWER,
             relationships: {
-                data: {
-                    id: '12345',
-                    type: ItemType.DEVICE
+                device: {
+                    data: {
+                        id: '12345',
+                        type: ItemType.DEVICE
+                    }    
                 }
             },
             attributes: {
@@ -227,9 +231,11 @@ describe('GardenaGetMowersService', () => {
             id: '12345',
             type: ItemType.COMMON,
             relationships: {
-                data: {
-                    id: '12345',
-                    type: ItemType.DEVICE
+                device: {
+                    data: {
+                        id: '12345',
+                        type: ItemType.DEVICE
+                    }    
                 }
             },
             attributes: {
