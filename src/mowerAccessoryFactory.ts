@@ -162,9 +162,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
 
     protected getContolServiceClass(): InjectionToken<MowerControlService> {
-        if (this.config.device_type === DeviceType.AUTOMOWER) {
-            return AutomowerMowerControlService;
-        } else if (this.config.device_type === DeviceType.GARDENA) {
+        if (this.config.device_type !== undefined && this.config.device_type === DeviceType.GARDENA) {
             return GardenaManualMowerControlService;
         }
 
