@@ -75,9 +75,9 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch, Suppor
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         try {
             if (on) {
-                await this.controlService.resumeSchedule(this.accessory.context.mowerId);
+                await this.controlService.resume(this.accessory.context.mowerId);
             } else {
-                await this.controlService.parkUntilFurtherNotice(this.accessory.context.mowerId);
+                await this.controlService.park(this.accessory.context.mowerId);
             }    
 
             callback(HAPStatus.SUCCESS);

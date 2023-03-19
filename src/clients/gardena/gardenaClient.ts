@@ -363,9 +363,24 @@ export interface Error {
 }
 
 /**
+ * Describes a command request.
+ */
+interface CommandRequest {
+    data: unknown;
+}
+
+/**
  * A client used to retrieve information about automowers connected to the account.
  */
 export interface GardenaClient {
+    /**
+     * Instructs the mower to do a command..
+     * @param id The id of the mower.
+     * @param command The command payload (specific to the command being performed).
+     * @param token The access token.
+     */
+    doCommand(id: string, command: unknown, token: AccessToken): Promise<void>;
+
     /**
      * Gets all the mowers connected to the account.
      * @param token The access token.
@@ -390,6 +405,28 @@ export class GardenaClientImpl implements GardenaClient {
 
     public getBaseUrl(): string {
         return this.baseUrl;
+    }
+
+    public async doCommand(id: string, command: unknown, token: AccessToken): Promise<void> {
+        this.guardAppKeyMustBeProvided();
+        
+        const req: CommandRequest = {
+            data: command
+        };
+
+        const res = await this.fetch.execute(`${this.baseUrl}/command/${id}`, {
+            method: 'PUT',
+            headers: {
+                'X-Application-Id': PLUGIN_ID,
+                'X-Api-Key': this.appKey!,
+                'Content-Type': 'application/vnd.api+json',
+                'Authorization': `Bearer ${token.value}`,
+                'Authorization-Provider': token.provider
+            },
+            body: JSON.stringify(req)
+        });
+
+        await this.throwIfStatusNotOk(res);
     }
 
     public async getLocation(locationId: string, token: AccessToken): Promise<LocationResponse | undefined> {

@@ -6,12 +6,12 @@ import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { Activity, MowerConnection, MowerState, State } from '../../src/model';
 import { MowerContext } from '../../src/mowerAccessory';
 import { NameMode } from '../../src/services/homebridge/abstractSwitch';
-import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
+import { MowerControlService, SupportsPauseControl } from '../../src/services/husqvarna/mowerControlService';
 import { MowerIsPausedPolicy } from '../../src/services/policies/mowerIsPausedPolicy';
 import { PauseSwitchImplSpy } from './pauseSwitchImplSpy';
 
 describe('PauseSwitchImpl', () => {
-    let controlService: Mock<MowerControlService>;
+    let controlService: Mock<MowerControlService & SupportsPauseControl>;
     let policy: Mock<MowerIsPausedPolicy>;
 
     let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
@@ -22,7 +22,7 @@ describe('PauseSwitchImpl', () => {
     let target: PauseSwitchImplSpy; 
 
     beforeEach(() => {
-        controlService = new Mock<MowerControlService>();
+        controlService = new Mock<MowerControlService & SupportsPauseControl>();
         policy = new Mock<MowerIsPausedPolicy>();
 
         platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
@@ -69,14 +69,14 @@ describe('PauseSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        controlService.setup(o => o.resumeSchedule(mowerId)).returns(Promise.resolve(undefined));
+        controlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSet(false, (e) => {
             status = e;
         });
 
-        controlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        controlService.verify(o => o.resume(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
@@ -113,7 +113,7 @@ describe('PauseSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        controlService.setup(o => o.resumeSchedule(mowerId)).throws(new Error('hello'));
+        controlService.setup(o => o.resume(mowerId)).throws(new Error('hello'));
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
@@ -121,7 +121,7 @@ describe('PauseSwitchImpl', () => {
             status = e;
         });
 
-        controlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        controlService.verify(o => o.resume(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
@@ -187,7 +187,7 @@ describe('PauseSwitchImpl', () => {
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
-        controlService.setup(o => o.parkUntilFurtherNotice(mowerId)).returns(Promise.resolve(undefined));
+        controlService.setup(o => o.park(mowerId)).returns(Promise.resolve(undefined));
         log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(NameMode.DEFAULT);
@@ -198,47 +198,8 @@ describe('PauseSwitchImpl', () => {
             status = e;
         });
 
-        controlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        controlService.verify(o => o.park(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
-    });
-
-    it('should not update the last activity when paused', () => {
-        const mowerState1: MowerState = {
-            activity: Activity.GOING_HOME,            
-            state: State.IN_OPERATION
-        };
-
-        const mowerState2: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.PAUSED
-        };
-
-        policy.setup(o => o.check()).returns(true);
-        policy.setup(o => o.setMowerState(mowerState1)).returns(undefined);
-        policy.setup(o => o.setMowerState(mowerState2)).returns(undefined);
-
-        const c = new Mock<Characteristic>();
-        c.setup(o => o.updateValue(It.IsAny<boolean>())).returns(c.object());
-        c.setup(o => o.on(CharacteristicEventTypes.SET, 
-            It.IsAny<(o1: CharacteristicValue, o2: CharacteristicSetCallback) => void>())).returns(c.object());
-
-        const statusActive = new Mock<Characteristic>();
-
-        const service = new Mock<Service>();
-        service.setup(o => o.getCharacteristic(Characteristic.On)).returns(c.object());
-        service.setup(o => o.testCharacteristic(Characteristic.StatusActive)).returns(true);
-        service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
-
-        platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
-        log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
-
-        target.init(NameMode.DEFAULT);
-        target.setMowerState(mowerState1);
-        target.setMowerState(mowerState2);
-
-        const result = target.getLastActivity();
-
-        expect(result).toEqual(Activity.GOING_HOME);
     });
 
     it('should not update the last activity when paused', () => {

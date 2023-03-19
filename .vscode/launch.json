@@ -12,9 +12,7 @@
 			"windows": {
 				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
 				"args": [
-					"-D",
-					"-U",
-					"${workspaceFolder}/.homebridge"
+					"-D"
 				],
 				"env": {
 					"FORCE_COLOR": "1",

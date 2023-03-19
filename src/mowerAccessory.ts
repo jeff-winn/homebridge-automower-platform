@@ -9,7 +9,7 @@ import { ArrivingSensor } from './services/arrivingSensor';
 import { BatteryInformation } from './services/batteryInformation';
 import { NameMode } from './services/homebridge/abstractSwitch';
 import { LeavingSensor } from './services/leavingSensor';
-import { MainSwitch, supportsCuttingHeight, supportsMowerSchedule } from './services/mainSwitch';
+import { MainSwitch, supportsCuttingHeight, SupportsCuttingHeightCharacteristic, supportsMowerSchedule, SupportsMowerScheduleInformation } from './services/mainSwitch';
 import { MotionSensor } from './services/motionSensor';
 import { PauseSwitch } from './services/pauseSwitch';
 
@@ -28,14 +28,13 @@ export interface MowerContext extends UnknownContext {
  */
 export class MowerAccessory {
     public constructor(
-        private accessory: PlatformAccessory<MowerContext>,
-        private batteryInformation: BatteryInformation,
-        private accessoryInformation: AccessoryInformation,
-        private motionSensor: MotionSensor,
-        private arrivingSensor: ArrivingSensor,
-        private leavingSensor: LeavingSensor,
-        private pauseSwitch: PauseSwitch,
-        private mainSwitch: MainSwitch) {
+        private readonly accessory: PlatformAccessory<MowerContext>,
+        private readonly batteryInformation: BatteryInformation,
+        private readonly accessoryInformation: AccessoryInformation,
+        private readonly motionSensor: MotionSensor,
+        private readonly arrivingSensor: ArrivingSensor,
+        private readonly leavingSensor: LeavingSensor,
+        private readonly mainSwitch: MainSwitch) {
     }
 
     /**
@@ -55,8 +54,6 @@ export class MowerAccessory {
         this.motionSensor.init();
         this.arrivingSensor.init();
         this.leavingSensor.init();
-
-        this.pauseSwitch.init(NameMode.DEFAULT);
         this.mainSwitch.init(NameMode.DISPLAY_NAME);
     }
 
@@ -87,9 +84,6 @@ export class MowerAccessory {
         if (data.attributes.schedule !== undefined && supportsMowerSchedule(this.mainSwitch)) {
             this.mainSwitch.setMowerSchedule(data.attributes.schedule);
         }
-
-        this.pauseSwitch.setMowerState(data.attributes.mower);
-        this.pauseSwitch.setMowerConnection(data.attributes.connection);
     }
 
     /**
@@ -115,7 +109,6 @@ export class MowerAccessory {
             this.leavingSensor.setMowerState(event.attributes.mower);
             this.motionSensor.setMowerState(event.attributes.mower);
             this.mainSwitch.setMowerState(event.attributes.mower);
-            this.pauseSwitch.setMowerState(event.attributes.mower);
         }
 
         if (event.attributes.connection !== undefined) {
@@ -123,7 +116,6 @@ export class MowerAccessory {
             this.leavingSensor.setMowerConnection(event.attributes.connection);
             this.motionSensor.setMowerConnection(event.attributes.connection);
             this.mainSwitch.setMowerConnection(event.attributes.connection);
-            this.pauseSwitch.setMowerConnection(event.attributes.connection);
         }
     }
 
@@ -138,6 +130,48 @@ export class MowerAccessory {
 
         if (event.attributes.schedule !== undefined && supportsMowerSchedule(this.mainSwitch)) {
             this.mainSwitch.setMowerSchedule(event.attributes.schedule);
+        }
+    }
+}
+
+/**
+ * A {@link MowerAccessory} which represents an Automower.
+ */
+export class AutomowerAccessory extends MowerAccessory {
+    public constructor(
+        accessory: PlatformAccessory<MowerContext>,
+        batteryInformation: BatteryInformation,
+        accessoryInformation: AccessoryInformation,
+        motionSensor: MotionSensor,
+        arrivingSensor: ArrivingSensor,
+        leavingSensor: LeavingSensor,
+        mainSwitch: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation,
+        private readonly pauseSwitch: PauseSwitch) {
+        super(accessory, batteryInformation, accessoryInformation, motionSensor, arrivingSensor, leavingSensor, mainSwitch);
+    }
+
+    public override init(): void {
+        super.init();
+
+        this.pauseSwitch.init(NameMode.DEFAULT);
+    }
+
+    public override refresh(data: Mower): void {
+        super.refresh(data);
+
+        this.pauseSwitch.setMowerState(data.attributes.mower);
+        this.pauseSwitch.setMowerConnection(data.attributes.connection);
+    }
+
+    public override onStatusEventReceived(event: MowerStatusChangedEvent): void {
+        super.onStatusEventReceived(event);
+
+        if (event.attributes.mower !== undefined) {
+            this.pauseSwitch.setMowerState(event.attributes.mower);
+        }
+
+        if (event.attributes.connection !== undefined) {
+            this.pauseSwitch.setMowerConnection(event.attributes.connection);
         }
     }
 }

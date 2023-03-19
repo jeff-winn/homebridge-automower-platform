@@ -1,5 +1,6 @@
-
 import * as fs from 'fs';
+
+import { AccessToken } from '../../model';
 import { GardenaClient, LocationResponse, LocationsResponse } from './gardenaClient';
 
 /**
@@ -16,6 +17,10 @@ const LOCATION_SAMPLE_LOCATION = './samples/gardena/location_1.json';
  * A {@link GardenaClient} which uses sample files to simulate responses from the server.
  */
 export class SampleGardenaClientImpl implements GardenaClient {
+    public doCommand(id: string, command: unknown, token: AccessToken): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
     public getLocations(): Promise<LocationsResponse | undefined> {
         const txt = this.getLocationsSampleFile();    
 
