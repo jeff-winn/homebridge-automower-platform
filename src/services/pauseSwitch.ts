@@ -4,7 +4,7 @@ import { PlatformLogger } from '../diagnostics/platformLogger';
 import { Activity, MowerState, State } from '../model';
 import { MowerContext } from '../mowerAccessory';
 import { AbstractSwitch, Switch } from './homebridge/abstractSwitch';
-import { MowerControlService } from './husqvarna/mowerControlService';
+import { MowerControlService, SupportsPauseControl } from './husqvarna/mowerControlService';
 import { MowerIsPausedPolicy } from './policies/mowerIsPausedPolicy';
 
 /**
@@ -21,7 +21,7 @@ export interface PauseSwitch extends Switch {
 export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
     private lastActivity?: Activity;
 
-    public constructor(name: string, private controlService: MowerControlService, private policy: MowerIsPausedPolicy, 
+    public constructor(name: string, private controlService: MowerControlService & SupportsPauseControl, private policy: MowerIsPausedPolicy, 
         accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }
@@ -35,10 +35,10 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
             if (on) {
                 await this.controlService.pause(this.accessory.context.mowerId);
             } else {
-                if (this.shouldParkMowerUntilFurtherNotice()) {
-                    await this.controlService.parkUntilFurtherNotice(this.accessory.context.mowerId);
+                if (this.shouldPark()) {
+                    await this.controlService.park(this.accessory.context.mowerId);
                 } else {
-                    await this.controlService.resumeSchedule(this.accessory.context.mowerId);
+                    await this.controlService.resume(this.accessory.context.mowerId);
                 }                
             }    
 
@@ -50,7 +50,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
         }        
     }
 
-    protected shouldParkMowerUntilFurtherNotice(): boolean {
+    protected shouldPark(): boolean {
         return this.lastActivity !== undefined && this.lastActivity === Activity.GOING_HOME;
     }
     

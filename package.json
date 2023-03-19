@@ -26,8 +26,8 @@
     "config.schema.json"
   ],
   "funding": {
-    "type" : "paypal",
-    "url" : "https://paypal.me/jeffdwinn"
+    "type": "paypal",
+    "url": "https://paypal.me/jeffdwinn"
   },
   "repository": {
     "type": "git",

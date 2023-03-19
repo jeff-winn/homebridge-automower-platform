@@ -13,6 +13,34 @@ import { supportsCuttingHeight, SupportsCuttingHeightCharacteristic, supportsMow
 import { MowerIsEnabledPolicy } from '../../src/services/policies/mowerIsEnabledPolicy';
 import { AutomowerMainSwitchImplSpy, MainSwitchImplSpy } from './mainSwitchImplSpy';
 
+describe('supportsCuttingHeight', () => {
+    it('should return an object supports cutting height', () => {
+        const target = new Mock<SupportsCuttingHeightCharacteristic>();
+        target.setup(o => o.setCuttingHeight(It.IsAny())).returns(undefined);
+
+        expect(supportsCuttingHeight(target.object())).toBeTruthy();
+    });
+
+    it('should return an object does not support cutting height', () => {
+        const target = new Mock<unknown>();
+        expect(supportsCuttingHeight(target.object())).toBeFalsy();
+    });
+});
+
+describe('supportsMowerSchedule', () => {
+    it('should return an object supports mower schedule', () => {
+        const target = new Mock<SupportsMowerScheduleInformation>();
+        target.setup(o => o.setMowerSchedule(It.IsAny())).returns(undefined);
+
+        expect(supportsMowerSchedule(target.object())).toBeTruthy();
+    });
+
+    it('should return an object does not support mower schedule', () => {
+        const target = new Mock<unknown>();
+        expect(supportsMowerSchedule(target.object())).toBeFalsy();
+    });
+});
+
 describe('MainSwitchImpl', () => {
     let mowerControlService: Mock<MowerControlService>;
     let platformAccessory: Mock<PlatformAccessory<MowerContext>>;
@@ -145,14 +173,14 @@ describe('MainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        mowerControlService.setup(o => o.resumeSchedule(mowerId)).returns(Promise.resolve(undefined));
+        mowerControlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSet(true, (e) => {
             status = e;
         });
 
-        mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        mowerControlService.verify(o => o.resume(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
@@ -166,14 +194,14 @@ describe('MainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).returns(Promise.resolve(undefined));
+        mowerControlService.setup(o => o.park(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSet(false, (e) => {
             status = e;
         });
 
-        mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        mowerControlService.verify(o => o.park(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
@@ -187,7 +215,7 @@ describe('MainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        mowerControlService.setup(o => o.resumeSchedule(mowerId)).throws(new Error('hello'));
+        mowerControlService.setup(o => o.resume(mowerId)).throws(new Error('hello'));
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
@@ -195,7 +223,7 @@ describe('MainSwitchImpl', () => {
             status = e;
         });
 
-        mowerControlService.verify(o => o.resumeSchedule(mowerId), Times.Once());
+        mowerControlService.verify(o => o.resume(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });
@@ -210,7 +238,7 @@ describe('MainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        mowerControlService.setup(o => o.parkUntilFurtherNotice(mowerId)).throws(new Error('hello'));
+        mowerControlService.setup(o => o.park(mowerId)).throws(new Error('hello'));
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
@@ -218,7 +246,7 @@ describe('MainSwitchImpl', () => {
             status = e;
         });
 
-        mowerControlService.verify(o => o.parkUntilFurtherNotice(mowerId), Times.Once());
+        mowerControlService.verify(o => o.park(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });

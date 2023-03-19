@@ -1,7 +1,7 @@
 import { AutomowerClient } from '../../../clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../errors/notAuthorizedError';
 import { AccessTokenManager } from '../accessTokenManager';
-import { MowerControlService } from '../mowerControlService';
+import { MowerControlService, SupportsPauseControl } from '../mowerControlService';
 
 /**
  * Describes an action.
@@ -13,8 +13,8 @@ export interface Action {
     type: string;
 }
 
-export class AutomowerMowerControlService implements MowerControlService {
-    public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
+export class AutomowerMowerControlService implements MowerControlService, SupportsPauseControl {
+    public constructor(private readonly tokenManager: AccessTokenManager, private readonly client: AutomowerClient) { }
 
     public async pause(mowerId: string): Promise<void> {
         try {
@@ -33,7 +33,7 @@ export class AutomowerMowerControlService implements MowerControlService {
         }
     }
 
-    public async resumeSchedule(mowerId: string): Promise<void> {
+    public async resume(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'ResumeSchedule'
@@ -50,7 +50,7 @@ export class AutomowerMowerControlService implements MowerControlService {
         }
     }
 
-    public async parkUntilFurtherNotice(mowerId: string): Promise<void> {
+    public async park(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'ParkUntilFurtherNotice'

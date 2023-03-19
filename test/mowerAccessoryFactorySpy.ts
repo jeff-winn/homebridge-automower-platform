@@ -6,7 +6,7 @@ import { AccessoryInformation } from '../src/services/accessoryInformation';
 import { ArrivingSensor } from '../src/services/arrivingSensor';
 import { BatteryInformation } from '../src/services/batteryInformation';
 import { LeavingSensor } from '../src/services/leavingSensor';
-import { MainSwitch } from '../src/services/mainSwitch';
+import { MainSwitch, SupportsCuttingHeightCharacteristic, SupportsMowerScheduleInformation } from '../src/services/mainSwitch';
 import { MotionSensor } from '../src/services/motionSensor';
 import { PauseSwitch } from '../src/services/pauseSwitch';
 
@@ -14,7 +14,7 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
     private accessory?: MowerAccessory;
 
     private mainSwitch?: MainSwitch;
-    private automowerMainSwitch?: MainSwitch;
+    private automowerMainSwitch?: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation;
     private pauseSwitch?: PauseSwitch;
     private accessoryInformation?: AccessoryInformation;
     private batteryInformation?: BatteryInformation;
@@ -26,7 +26,7 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
         this.accessory = accessory;
     }
 
-    public setAutomowerMainSwitch(mainSwitch: MainSwitch): void {
+    public setAutomowerMainSwitch(mainSwitch: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation): void {
         this.automowerMainSwitch = mainSwitch;
     }
 
@@ -154,7 +154,7 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
         return this.createAutomowerMainSwitch(accessory);
     }
 
-    protected override createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch {
+    protected override createAutomowerMainSwitch(accessory: PlatformAccessory<MowerContext>): MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation {
         if (this.automowerMainSwitch !== undefined) {
             return this.automowerMainSwitch;
         }

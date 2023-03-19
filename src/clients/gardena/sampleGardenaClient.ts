@@ -1,21 +1,26 @@
-
 import * as fs from 'fs';
+
+import { AccessToken } from '../../model';
 import { GardenaClient, LocationResponse, LocationsResponse } from './gardenaClient';
 
 /**
  * Defines the file location of the getLocations sample json response.
  */
-const LOCATIONS_SAMPLE_LOCATION = './samples/gardena/get_locations_1.json';
+const LOCATIONS_SAMPLE_LOCATION = './.vscode/samples/gardena/get_locations.json';
 
 /**
  * Defines the file location of the getLocation sample json response.
  */
-const LOCATION_SAMPLE_LOCATION = './samples/gardena/location_1.json';
+const LOCATION_SAMPLE_LOCATION = './.vscode/samples/gardena/get_location.json';
 
 /**
  * A {@link GardenaClient} which uses sample files to simulate responses from the server.
  */
 export class SampleGardenaClientImpl implements GardenaClient {
+    public doCommand(id: string, command: unknown, token: AccessToken): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
     public getLocations(): Promise<LocationsResponse | undefined> {
         const txt = this.getLocationsSampleFile();    
 
