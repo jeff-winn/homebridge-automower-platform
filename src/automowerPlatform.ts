@@ -209,6 +209,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             accessories.push(mower.getUnderlyingAccessory());
         }
 
+        this.log.debug('REGISTERING_PLATFORM_ACCESSORIES', accessories.length);
         this.api.registerPlatformAccessories(PLUGIN_ID, PLATFORM_NAME, accessories);
     }
 

@@ -78,13 +78,13 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
 
     protected createAccessoryCore(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
-        const result = this.createAutomowerAccessoryImpl(accessory);
+        const result = this.createMowerAccessoryImpl(accessory);
         result.init();
 
         return result;
     }
     
-    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
+    protected createMowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
         if (this.config.device_type !== undefined && this.config.device_type === DeviceType.GARDENA) {
             return new MowerAccessory(accessory,
                 this.createBatteryInformation(accessory),
