@@ -40,11 +40,14 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         for (const mower of mowers) {
             let accessory = platform.getMower(mower.id);
             if (accessory === undefined) {
+                this.log.debug('DISCOVERED_NEW_MOWER', mower.id);
+
                 // The mower was not already present, create a new accessory instance.
                 accessory = this.factory.createAccessory(mower);
                 found.push(accessory);
             }
 
+            this.log.debug('REFRESHING_MOWER', mower.id);
             accessory.refresh(mower);
         }
 

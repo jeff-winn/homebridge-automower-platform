@@ -98,6 +98,7 @@ describe('DiscoveryServiceImpl', () => {
         const mower2Accessory = new Mock<MowerAccessory>();
 
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         getMowersService.setup(o => o.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
         factory.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
@@ -180,15 +181,16 @@ describe('DiscoveryServiceImpl', () => {
         const mower1Accessory = new Mock<MowerAccessory>();
         const mower2Accessory = new Mock<MowerAccessory>();
 
-        log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
         factory.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
         factory.setup(o => o.createAccessory(mower2)).returns(mower2Accessory.object());
 
-        platform.setup(x => x.getMower(mower1Id)).returns(undefined);
-        platform.setup(x => x.getMower(mower2Id)).returns(undefined);
-        platform.setup(x => x.registerMowers(It.IsAny<MowerAccessory[]>())).returns(undefined);
+        platform.setup(o => o.getMower(mower1Id)).returns(undefined);
+        platform.setup(o => o.getMower(mower2Id)).returns(undefined);
+        platform.setup(o => o.registerMowers(It.IsAny<MowerAccessory[]>())).returns(undefined);
         mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
         mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
 
@@ -196,7 +198,7 @@ describe('DiscoveryServiceImpl', () => {
 
         mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
         mower2Accessory.verify(o => o.refresh(mower2), Times.Once());
-        platform.verify(x => x.registerMowers(It.Is<MowerAccessory[]>(x => 
+        platform.verify(o => o.registerMowers(It.Is<MowerAccessory[]>(x => 
             x.length === 2 && x[0] === mower1Accessory.object() && x[1] === mower2Accessory.object()))
         , Times.Once());
     });

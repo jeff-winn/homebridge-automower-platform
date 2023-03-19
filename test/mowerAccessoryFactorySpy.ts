@@ -58,12 +58,12 @@ export class MowerAccessoryFactorySpy extends MowerAccessoryFactoryImpl {
         this.motionSensor = motionSensor;
     }
 
-    protected createAutomowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
+    protected createMowerAccessoryImpl(accessory: PlatformAccessory<MowerContext>): MowerAccessory {
         if (this.accessory !== undefined) {
             return this.accessory;
         }
 
-        return super.createAutomowerAccessoryImpl(accessory);
+        return super.createMowerAccessoryImpl(accessory);
     }
 
     public unsafeCreatePauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {
