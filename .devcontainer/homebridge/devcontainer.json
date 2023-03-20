@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Homebridge",
+	"name": "homebridge",
 
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"build": {
@@ -10,9 +10,6 @@
 			"VARIANT": "16"
 		}
 	},
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": { },
 
 	"mounts": [
 		{
@@ -27,11 +24,10 @@
 		}
 	],
 	
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [ 8581 ],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install",
+	"forwardPorts": [ 
+		8581, 
+		51232  // This value needs to match what is in the config.json file for Homebridge
+	],
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -48,6 +44,5 @@
 		}
 	},
 
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "node"
 }
