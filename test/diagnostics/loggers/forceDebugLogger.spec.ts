@@ -2,7 +2,7 @@ import { Logging } from 'homebridge';
 import { It, Mock, Times } from 'moq.ts';
 
 import { ForceDebugLogger } from '../../../src/diagnostics/loggers/forceDebugLogger';
-import { ConsoleWrapper } from '../../../src/primitives/consoleWrapper';
+import { ConsoleWrapper } from '../../../src/diagnostics/primitives/consoleWrapper';
 import { Environment } from '../../../src/primitives/environment';
 import { Localization } from '../../../src/primitives/localization';
 
