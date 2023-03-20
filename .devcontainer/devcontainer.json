@@ -22,14 +22,10 @@
 		},
 		{
 			"source": "${localEnv:USERPROFILE}\\.homebridge",
-			"target": "${containerWorkspaceFolder}/.vscode/.homebridge",
+			"target": "${containerWorkspaceFolder}/.vscode/homebridge-config",
 			"type": "bind"
 		}
 	],
-
-	// "mounts": [
-	// 	"source=${localWorkspaceFolder}/.devcontainer/homebridge-config,target=/home/node/.homebridge,type=volume"
-	// ],
 	
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [ 8581 ],
@@ -38,7 +34,19 @@
 	// "postCreateCommand": "yarn install",
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"hbenl.vscode-test-explorer",
+				"connorshea.vscode-test-explorer-status-bar",        
+        		"dbaeumer.vscode-eslint",
+        		"kavod-io.vscode-jest-test-adapter",
+        		"ms-vscode.test-adapter-converter",
+        		"ms-vscode.live-server",
+        		"ryanluker.vscode-coverage-gutters"
+			]
+		}
+	},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "node"
