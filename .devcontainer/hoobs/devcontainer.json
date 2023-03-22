@@ -14,17 +14,12 @@
 	"mounts": [
 		{
 			"source": "${localWorkspaceFolder}/.devcontainer/hoobs/scripts",
-			"target": "/devcontainer",
+			"target": "/opt/scripts",
 			"type": "bind"
 		},
 		{
 			"source": "${localEnv:USERPROFILE}\\.hoobs",
 			"target": "/etc/hoobs",
-			"type": "bind"
-		},
-		{
-			"source": "${localEnv:USERPROFILE}\\.hoobs",
-			"target": "${containerWorkspaceFolder}/.vscode/hoobs-config",
 			"type": "bind"
 		}
 	],
@@ -50,7 +45,7 @@
 		}
 	},
 
-	"postCreateCommand": "bash /devcontainer/post-create.sh",
+	"postCreateCommand": "bash /opt/scripts/post-create.sh",
 
 	"remoteUser": "root"
 }
