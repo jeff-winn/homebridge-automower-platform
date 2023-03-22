@@ -1,0 +1,56 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "hoobs",
+
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { 
+			"VARIANT": "16-bullseye"
+		}
+	},
+
+	"mounts": [
+		{
+			"source": "${localWorkspaceFolder}/.devcontainer/hoobs/scripts",
+			"target": "/devcontainer",
+			"type": "bind"
+		},
+		{
+			"source": "${localEnv:USERPROFILE}\\.hoobs",
+			"target": "/etc/hoobs",
+			"type": "bind"
+		},
+		{
+			"source": "${localEnv:USERPROFILE}\\.hoobs",
+			"target": "${containerWorkspaceFolder}/.vscode/hoobs-config",
+			"type": "bind"
+		}
+	],
+
+	// These ports are defined in the post-create.sh script used to setup HOOBS after image creation.
+	"forwardPorts": [ 
+		8080, 
+		50826
+	],
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"hbenl.vscode-test-explorer",
+				"connorshea.vscode-test-explorer-status-bar",        
+        		"dbaeumer.vscode-eslint",
+        		"kavod-io.vscode-jest-test-adapter",
+        		"ms-vscode.test-adapter-converter",
+        		"ms-vscode.live-server",
+        		"ryanluker.vscode-coverage-gutters"
+			]
+		}
+	},
+
+	"postCreateCommand": "bash /devcontainer/post-create.sh",
+
+	"remoteUser": "root"
+}
