@@ -16,11 +16,6 @@
 			"source": "${localEnv:USERPROFILE}\\.homebridge",
 			"target": "/home/node/.homebridge",
 			"type": "bind"
-		},
-		{
-			"source": "${localEnv:USERPROFILE}\\.homebridge",
-			"target": "${containerWorkspaceFolder}/.vscode/homebridge-config",
-			"type": "bind"
 		}
 	],
 	

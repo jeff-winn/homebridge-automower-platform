@@ -1,7 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### HAP-NodeJS files
-.vscode/homebridge-config
-.vscode/hoobs-config
+.vscode/launch.json
 
 ### Node template
 # Logs
