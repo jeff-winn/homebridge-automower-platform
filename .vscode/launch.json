@@ -28,6 +28,7 @@
 				"<node_internals>/**"
 			],
 			"type": "node",
+			"preLaunchTask": "build",
 			"linux": {
 				"program": "/usr/bin/hoobsd",
 				"args": [

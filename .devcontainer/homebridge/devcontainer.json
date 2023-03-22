@@ -16,6 +16,11 @@
 			"source": "${localEnv:USERPROFILE}\\.homebridge",
 			"target": "/home/node/.homebridge",
 			"type": "bind"
+		},
+		{
+			"source": "${localWorkspaceFolder}",
+			"target": "/usr/local/share/npm-global/lib/node_modules/homebridge-automower-platform",
+			"type": "bind"
 		}
 	],
 	
