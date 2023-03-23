@@ -21,6 +21,11 @@
 			"source": "${localWorkspaceFolder}",
 			"target": "/usr/local/share/npm-global/lib/node_modules/homebridge-automower-platform",
 			"type": "bind"
+		},
+		{
+			"source": "${localWorkspaceFolder}/.devcontainer/homebridge/.vscode",
+			"target": "/workspaces/homebridge-automower-platform/.vscode",
+			"type": "bind" 
 		}
 	],
 	

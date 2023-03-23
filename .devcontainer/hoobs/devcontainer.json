@@ -16,6 +16,11 @@
 			"source": "${localWorkspaceFolder}/.devcontainer/hoobs/scripts",
 			"target": "/opt/scripts",
 			"type": "bind"
+		},
+		{
+			"source": "${localWorkspaceFolder}/.devcontainer/hoobs/.vscode",
+			"target": "/workspaces/homebridge-automower-platform/.vscode",
+			"type": "bind" 
 		}
 	],
 
