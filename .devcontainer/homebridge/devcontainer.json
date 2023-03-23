@@ -25,8 +25,7 @@
 	],
 	
 	"forwardPorts": [ 
-		8581, 
-		51232  // This value needs to match what is in the config.json file for Homebridge
+		8581
 	],
 
 	// Configure tool-specific properties.
@@ -42,7 +41,5 @@
         		"ryanluker.vscode-coverage-gutters"
 			]
 		}
-	},
-
-	"remoteUser": "node"
+	}
 }

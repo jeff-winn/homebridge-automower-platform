@@ -16,18 +16,12 @@
 			"source": "${localWorkspaceFolder}/.devcontainer/hoobs/scripts",
 			"target": "/opt/scripts",
 			"type": "bind"
-		},
-		{
-			"source": "${localEnv:USERPROFILE}\\.hoobs",
-			"target": "/etc/hoobs",
-			"type": "bind"
 		}
 	],
 
 	// These ports are defined in the post-create.sh script used to setup HOOBS after image creation.
 	"forwardPorts": [ 
-		8080, 
-		50826
+		8080
 	],
 
 	// Configure tool-specific properties.
@@ -43,9 +37,5 @@
         		"ryanluker.vscode-coverage-gutters"
 			]
 		}
-	},
-
-	"postCreateCommand": "bash /opt/scripts/post-create.sh",
-
-	"remoteUser": "root"
+	}
 }

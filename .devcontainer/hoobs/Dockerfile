@@ -18,6 +18,14 @@ FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-${VARIANT}
 RUN wget -qO- https://dl.hoobs.org/stable | sudo bash -
 RUN apt -y install hoobsd hoobs-cli hoobs-gui
 
-RUN mkdir /etc/hoobs
-RUN ln -s /etc/hoobs /var/lib/hoobs
-RUN ln -s /etc/hoobs /hoobs
+RUN mkdir /opt/hoobs
+
+RUN ln -s /opt/hoobs /var/lib/hoobs && \
+    ln -s /opt/hoobs /hoobs
+
+RUN su -s /bin/sh -c "sudo /usr/bin/hbs install -p 8080"
+RUN su -s /bin/sh -c "sudo /usr/bin/hbs bridge create -b local -p 50826 -a bonjour"
+
+RUN chown -R node:node /opt/hoobs && \
+    chown -R node:node /var/lib/hoobs && \
+    chown -R node:node /hoobs
