@@ -17,6 +17,7 @@ import { DefaultLogger } from '../diagnostics/loggers/defaultLogger';
 import { ForceDebugLogger } from '../diagnostics/loggers/forceDebugLogger';
 import { HomebridgeImitationLogger } from '../diagnostics/loggers/homebridgeImitationLogger';
 import { LoggerType, PlatformLogger } from '../diagnostics/platformLogger';
+import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
@@ -41,7 +42,6 @@ import { DeterministicMowerIsArrivingPolicy } from '../services/policies/mowerIs
 import { DeterministicMowerIsActivePolicy } from '../services/policies/mowerIsEnabledPolicy';
 import { DeterministicMowerIsPausedPolicy } from '../services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from '../services/policies/mowerTamperedPolicy';
-import { ConsoleWrapperImpl } from './consoleWrapper';
 import { isDevelopmentEnvironment, NodeJsEnvironment } from './environment';
 import { Y18nLocalization } from './localization';
 import { PlatformAccessoryFactoryImpl } from './platformAccessoryFactory';

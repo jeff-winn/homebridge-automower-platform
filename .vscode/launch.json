@@ -2,17 +2,38 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch",
+			"name": "Homebridge",
 			"request": "launch",
 			"skipFiles": [
 				"<node_internals>/**"
 			],
 			"type": "node",
 			"preLaunchTask": "build",
-			"windows": {
-				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
+			"linux": {
+				"program": "/usr/local/share/npm-global/lib/node_modules/homebridge/bin/homebridge",
 				"args": [
 					"-D"
+				],
+				"env": {
+					"FORCE_COLOR": "1",
+					"DEBUG": "homebridge-automower-platform",
+					"NODE_ENV": "development"
+				}
+			}
+		},
+		{
+			"name": "HOOBS",
+			"request": "launch",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node",
+			"preLaunchTask": "build",
+			"linux": {
+				"program": "/usr/bin/hoobsd",
+				"args": [
+					"*",
+					"-d"
 				],
 				"env": {
 					"FORCE_COLOR": "1",
