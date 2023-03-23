@@ -6,12 +6,12 @@ import { GardenaClient, LocationResponse, LocationsResponse } from './gardenaCli
 /**
  * Defines the file location of the getLocations sample json response.
  */
-const LOCATIONS_SAMPLE_LOCATION = './.vscode/samples/gardena/get_locations.json';
+const LOCATIONS_SAMPLE_LOCATION = './samples/gardena/get_locations.json';
 
 /**
  * Defines the file location of the getLocation sample json response.
  */
-const LOCATION_SAMPLE_LOCATION = './.vscode/samples/gardena/get_location.json';
+const LOCATION_SAMPLE_LOCATION = './samples/gardena/get_location.json';
 
 /**
  * A {@link GardenaClient} which uses sample files to simulate responses from the server.
