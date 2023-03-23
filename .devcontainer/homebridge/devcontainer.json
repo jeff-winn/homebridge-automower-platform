@@ -36,6 +36,31 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
+			"settings": {
+				"coverage-gutters.showGutterCoverage": true,
+				"typescript.preferences.quoteStyle": "single",
+				"workbench.colorCustomizations": {
+					"debugConsole.infoForeground": "#d3d7cf"
+				},
+				"eslint.enable": true,
+				"editor.tabSize": 4,
+				"files.exclude": {
+					".devcontainer": true,
+					".vscode": true,
+					"build": true,
+					"dist": true,
+					"node_modules": true,
+					".gitattributes": true,
+					"LICENSE": true,
+					"**/bin": true,
+					"**/obj": true,
+					"**/.git": true,
+					"**/.svn": true,
+					"**/.hg": true,
+					"**/CVS": true,
+					"**/.DS_Store": true
+				}
+			},
 			"extensions": [
 				"hbenl.vscode-test-explorer",
 				"connorshea.vscode-test-explorer-status-bar",        
