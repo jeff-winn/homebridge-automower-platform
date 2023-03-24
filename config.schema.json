@@ -18,20 +18,23 @@
           "description": "This is the type of mower device associated with your Husqvarna account.",
           "required": true,
           "default": "automower",
-          "oneOf": [
-            {
-              "title": "Automower",
-              "enum": [
-                "automower"
-              ]
-            },
-            {
-              "title": "Gardena Smart (Preview)",
-              "enum": [
-                "gardena"
-              ]
-            }
-          ]
+          "enum": [
+            "automower",
+            "gardena"
+          ],
+          "x-schema-form": {
+            "type": "select",
+            "titleMap": [
+              {
+                "value": "automower",
+                "name": "Automower"
+              },
+              {
+                "value": "gardena",
+                "name": "Gardena Smart (Preview)"
+              }
+            ]
+          }
         },
         "username": {
           "title": "Email Address",
@@ -60,14 +63,19 @@
           "type": "string",
           "required": true,
           "default": "en",
-          "oneOf": [
-            {
-              "title": "English (en)",
-              "enum": [
-                "en"
-              ]
-            }
-          ]
+          "enum": [
+            "en",
+            "gardena"
+          ],
+          "x-schema-form": {
+            "type": "select",
+            "titleMap": [
+              {
+                "value": "en",
+                "name": "English (en)"
+              }
+            ]
+          }
         },
         "appKey": {
           "title": "Application Key",
@@ -82,20 +90,23 @@
           "type": "string",
           "required": true,
           "default": "password",
-          "oneOf": [
-            {
-              "title": "Password (No longer supported)",
-              "enum": [
-                "password"
-              ]
-            },
-            {
-              "title": "Client Credentials",
-              "enum": [
-                "client_credentials"
-              ]
-            }
-          ]
+          "enum": [
+            "password",
+            "client_credentials"
+          ],
+          "x-schema-form": {
+            "type": "select",
+            "titleMap": [
+              {
+                "value": "password",
+                "name": "Password (No longer supported)"
+              },
+              {
+                "value": "client_credentials",
+                "name": "Client Credentials"
+              }
+            ]
+          }          
         },
         "client_credentials_requires_account": {
           "type": "label",
