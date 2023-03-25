@@ -20,23 +20,24 @@ describe('AutomowerEventStreamClientImpl', () => {
         target = new AutomowerEventStreamClientImplSpy(constants.AUTOMOWER_STREAM_API_BASE_URL, log.object());
     });
 
-    it('should open the socket and connect all events', () => {
+    it('should open the socket and connect all events', async () => {
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
 
         target.callback = () => socket.object();
 
-        target.open({
+        await target.open({
             value: 'hello',
             provider: 'world'
         });
 
         expect(target.isConnecting()).toBeTruthy();
+        
         socket.verify(o => o.on('message', It.IsAny()), Times.Once());
         socket.verify(o => o.on('error', It.IsAny()), Times.Once());
         socket.verify(o => o.on('close', It.IsAny()), Times.Once());
     });
 
-    it('should close the socket when being reopened', () => {
+    it('should close the socket when being reopened', async () => {
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.close()).returns(undefined);
 
@@ -54,12 +55,12 @@ describe('AutomowerEventStreamClientImpl', () => {
             }
         };
 
-        target.open({
+        await target.open({
             value: 'hello1',
             provider: 'world1'
         });
 
-        target.open({
+        await target.open({
             value: 'hello2',
             provider: 'world2'
         });
@@ -67,12 +68,12 @@ describe('AutomowerEventStreamClientImpl', () => {
         socket.verify(o => o.close(), Times.Once());
     });
 
-    it('should ping socket when opened', () => {
+    it('should ping socket when opened', async () => {
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.ping(It.IsAny())).returns(undefined);
 
         target.callback = () => socket.object();
-        target.open({
+        await target.open({
             value: 'hello1',
             provider: 'world1'
         });
@@ -216,18 +217,18 @@ describe('AutomowerEventStreamClientImpl', () => {
         expect(() => target.close()).not.toThrow();
     });
 
-    it('should terminate the connection when connected on close', () => {
+    it('should terminate the connection when connected on close', async () => {
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.terminate()).returns(undefined);
 
         target.callback = () => socket.object();
 
-        target.open({
+        await target.open({
             value: 'hello1',
             provider: 'world1'
         });
 
-        target.close();
+        await target.close();
 
         socket.verify(o => o.terminate(), Times.Once());
     });
