@@ -94,18 +94,22 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     }
 
     protected createSocket(token: AccessToken): Promise<WebSocketWrapper> {
-        const socket = new WebSocketWrapperImpl(this.baseUrl, {
-            headers: {
-                'Authorization': `Bearer ${token.value}`,
-                'X-Application-Id': PLUGIN_ID
-            }
-        });
+        const socket = this.createSocketCore(token);
 
         socket.on('message', this.onSocketMessageReceived.bind(this));
         socket.on('error', this.onErrorReceived.bind(this));
         socket.on('close', this.onCloseReceived.bind(this));
 
         return Promise.resolve(socket);
+    }
+
+    protected createSocketCore(token: AccessToken): WebSocketWrapper {
+        return new WebSocketWrapperImpl(this.baseUrl, {
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'X-Application-Id': PLUGIN_ID
+            }
+        });
     }
 
     public getConnectionId(): string | undefined {

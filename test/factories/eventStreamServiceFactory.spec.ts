@@ -6,7 +6,7 @@ import { EventStreamServiceFactoryImpl } from '../../src/factories/eventStreamSe
 import { DeviceType } from '../../src/model';
 import { PlatformContainer } from '../../src/primitives/platformContainer';
 import { AutomowerEventStreamService } from '../../src/services/husqvarna/automower/automowerEventStreamService';
-import { GardenaEventStreamService } from '../../src/services/husqvarna/gardena/gardenaEventStreamService';
+import { CompositeGardenaEventStreamService } from '../../src/services/husqvarna/gardena/gardenaEventStreamService';
 
 describe('EventStreamServiceFactoryImpl', () => {
     let platformConfig: Mock<PlatformConfig>;
@@ -50,10 +50,10 @@ describe('EventStreamServiceFactoryImpl', () => {
     });
 
     it('resolve the gardena event stream service', () => {
-        const expected = new Mock<GardenaEventStreamService>();
+        const expected = new Mock<CompositeGardenaEventStreamService>();
 
         config.device_type = DeviceType.GARDENA;
-        container.setup(o => o.resolve(GardenaEventStreamService)).returns(expected.object());
+        container.setup(o => o.resolve(CompositeGardenaEventStreamService)).returns(expected.object());
 
         const result = target.create(container.object());
 

@@ -25,11 +25,11 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         target.callback = () => socket.object();
 
-        await target.open({
+        await expect(target.open({
             value: 'hello',
             provider: 'world'
-        });
-
+        })).resolves.toBeUndefined();
+        
         expect(target.isConnecting()).toBeTruthy();
         
         socket.verify(o => o.on('message', It.IsAny()), Times.Once());
