@@ -78,9 +78,7 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
         }
 
         this.onConnecting();
-
-        this.socket = await this.createSocket(token);        
-        this.attachTo(this.socket);
+        this.socket = await this.createSocket(token);
     }
 
     protected onConnecting(): void {
@@ -88,10 +86,6 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     }
 
     protected abstract createSocket(token: AccessToken): Promise<WebSocketWrapper>;
-    
-    protected attachTo(socket: WebSocketWrapper): void {
-        socket.on('close', this.onCloseReceived.bind(this));
-    }
 
     protected onConnectionSucceeded(): void {
         this.setConnecting(false);

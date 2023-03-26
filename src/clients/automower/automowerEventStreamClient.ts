@@ -94,12 +94,18 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     }
 
     protected createSocket(token: AccessToken): Promise<WebSocketWrapper> {
-        return Promise.resolve(new WebSocketWrapperImpl(this.baseUrl, {
+        const socket = new WebSocketWrapperImpl(this.baseUrl, {
             headers: {
                 'Authorization': `Bearer ${token.value}`,
                 'X-Application-Id': PLUGIN_ID
             }
-        }));
+        });
+
+        socket.on('message', this.onSocketMessageReceived.bind(this));
+        socket.on('error', this.onErrorReceived.bind(this));
+        socket.on('close', this.onCloseReceived.bind(this));
+
+        return Promise.resolve(socket);
     }
 
     public getConnectionId(): string | undefined {
@@ -112,13 +118,6 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
 
     public isCallbackSet(): boolean {
         return this.onMessageReceivedCallback !== undefined;
-    }
-
-    protected override attachTo(socket: WebSocketWrapper): void {
-        super.attachTo(socket);
-        
-        socket.on('message', this.onSocketMessageReceived.bind(this));
-        socket.on('error', this.onErrorReceived.bind(this));
     }
     
     protected onErrorReceived(err: ErrorEvent): void {
