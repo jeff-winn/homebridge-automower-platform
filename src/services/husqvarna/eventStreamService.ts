@@ -63,11 +63,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
 
     public async start(): Promise<void> {
         if (!this.attached) { 
-            this.stream.onConnected(this.onConnectedEventReceived.bind(this));
-            this.stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
-            this.stream.onError(this.onErrorEventReceived.bind(this));
             this.attachTo(this.stream);
-
             this.attached = true;
         }
 
@@ -80,7 +76,11 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.flagAsStarted();
     }
 
-    protected abstract attachTo(stream: TStream): void;
+    protected attachTo(stream: TStream): void {
+        stream.onConnected(this.onConnectedEventReceived.bind(this));
+        stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
+        stream.onError(this.onErrorEventReceived.bind(this));
+    }
 
     protected flagAsStarted(): void {
         this.stopping = false;
