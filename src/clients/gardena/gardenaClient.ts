@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 import { ErrorFactory } from '../../errors/errorFactory';
 import { AccessToken } from '../../model';
 import { PLUGIN_ID } from '../../settings';
@@ -10,7 +12,8 @@ export enum ItemType {
     LOCATION = 'LOCATION',
     DEVICE = 'DEVICE',
     MOWER = 'MOWER',
-    COMMON = 'COMMON'
+    COMMON = 'COMMON',
+    WEBSOCKET = 'WEBSOCKET'
 }
 
 /**
@@ -354,6 +357,35 @@ export interface LocationDataItem extends DataItem {
 }
 
 /**
+ * Describes a web socket location.
+ */
+export interface WebSocket {
+    /**
+     * Time window for connection, starting from issuing this POST request, seconds.
+     */
+    validity: number;
+    
+    /**
+     * Location of the socket.
+     */
+    url: string;
+}
+
+/**
+ * Describes a web socket created response.
+ */
+export interface WebSocketCreatedResponse {
+    data: WebSocketDataItem;
+}
+
+/**
+ * Describes an endpoint for subscribing to live updates to the system.
+ */
+export interface WebSocketDataItem extends DataItem {
+    attributes: WebSocket;
+}
+
+/**
  * Describes an error response.
  */
 export interface ErrorResponse {
@@ -369,13 +401,6 @@ export interface Error {
     code: string;
     title: string;
     detail: string;
-}
-
-/**
- * Describes a command request.
- */
-interface CommandRequest {
-    data: unknown;
 }
 
 /**
@@ -402,6 +427,13 @@ export interface GardenaClient {
      * @param token The access token.
      */
     getLocation(locationId: string, token: AccessToken): Promise<LocationResponse | undefined>;
+
+    /**
+     * Creates a socket for stream updates from the location specified.
+     * @param locationId The location id.
+     * @param token The access token.
+     */
+    createSocket(locationId: string, token: AccessToken): Promise<WebSocketCreatedResponse>;
 }
 
 export class GardenaClientImpl implements GardenaClient {
@@ -416,10 +448,39 @@ export class GardenaClientImpl implements GardenaClient {
         return this.baseUrl;
     }
 
+    public async createSocket(locationId: string, token: AccessToken): Promise<WebSocketCreatedResponse> {
+        this.guardAppKeyMustBeProvided();
+
+        const req = {
+            id: uuid(),
+            type: ItemType.WEBSOCKET,
+            attributes: {
+                locationId: locationId
+            }
+        };
+
+        const res = await this.fetch.execute(`${this.baseUrl}/websocket`, {
+            method: 'POST',
+            headers: {
+                'X-Application-Id': PLUGIN_ID,
+                'X-Api-Key': this.appKey!,
+                'Content-Type': 'application/vnd.api+json',
+                'Authorization': `Bearer ${token.value}`,
+                'Authorization-Provider': token.provider
+            },
+            body: JSON.stringify(req)
+        });
+
+        await this.throwIfStatusNotOk(res);
+
+        const response = await res.json() as WebSocketCreatedResponse;
+        return response;
+    }
+
     public async doCommand(id: string, command: unknown, token: AccessToken): Promise<void> {
         this.guardAppKeyMustBeProvided();
         
-        const req: CommandRequest = {
+        const req = {
             data: command
         };
 

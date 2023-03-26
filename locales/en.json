@@ -53,6 +53,7 @@
   "VALUE_NOT_SUPPORTED": "The value '%s' is not supported.",
   "GARDENA_MISSING_REQUIRED_COMMON_SERVICE": "A Gardena mower with id '%s' is missing the required common service and cannot be processed.",
   "GARDENA_MOWER_DETECTED": "A Gardena mower with id '%s' has been detected.",
+  "GARDENA_NO_LOCATIONS_FOUND": "This account does not have any locations registered, if locations were expected please check your account settings.",
   "DISCOVERED_NEW_MOWER": "A new mower '%s' has been discovered, creating a new accessory...",
   "REFRESHING_MOWER": "Refreshing mower '%s' with data from vendor...",
   "REGISTERING_MOWER": "Registering new mower '%s' with the platform...",
