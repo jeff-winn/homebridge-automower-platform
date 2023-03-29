@@ -33,6 +33,31 @@ export interface EventStreamService {
 }
 
 /**
+ * Defines the stream states.
+ */
+enum StreamState {
+    /**
+     * The stream is starting.
+     */
+    STARTING = 'STARTING',
+
+    /**
+     * The stream has started.
+     */
+    STARTED = 'STARTED',
+
+    /**
+     * The stream is stopping.
+     */
+    STOPPING = 'STOPPING',
+    
+    /**
+     * The stream has stopped.
+     */
+    STOPPED = 'STOPPED'
+}
+
+/**
  * An abstract {@link EventStreamService} which supports management of an {@link EventStreamClient} instance.
  */
 export abstract class AbstractEventStreamService<TStream extends EventStreamClient> implements EventStreamService {
@@ -47,8 +72,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     private lastEventReceived?: Date;
     private attached = false;
 
-    private stopping = false;
-    private stopped = true;
+    private state: StreamState = StreamState.STOPPED;
 
     public constructor(private tokenManager: AccessTokenManager, private stream: TStream, 
         protected readonly log: PlatformLogger, private timer: Timer) { }
@@ -67,6 +91,8 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
             this.attached = true;
         }
 
+        this.flagAsStarting();
+
         await this.connect();
         this.startKeepAlive();
 
@@ -76,6 +102,10 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.flagAsStarted();
     }
 
+    protected flagAsStarting(): void {
+        this.state = StreamState.STARTING;
+    }
+
     protected attachTo(stream: TStream): void {
         stream.onConnected(this.onConnectedEventReceived.bind(this));
         stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
@@ -83,8 +113,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected flagAsStarted(): void {
-        this.stopping = false;
-        this.stopped = false;
+        this.state = StreamState.STARTED;
     }
 
     protected onConnectedEventReceived(): Promise<void> {
@@ -122,16 +151,15 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected hasStopped(): boolean {
-        return this.stopped;
+        return this.state === StreamState.STOPPED;
     }
 
     protected isStopping(): boolean {
-        return this.stopping;
+        return this.state === StreamState.STOPPING;
     }
 
     protected flagAsStopped(): void {
-        this.stopping = false;
-        this.stopped = true;
+        this.state = StreamState.STOPPED;
     }
 
     protected getStarted(): Date | undefined {
@@ -252,8 +280,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected flagAsStopping(): void {
-        this.stopping = true;
-        this.stopped = false;
+        this.state = StreamState.STOPPING;
     }
 
     protected disconnect(): void {
