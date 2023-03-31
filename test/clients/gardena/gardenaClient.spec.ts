@@ -1,7 +1,7 @@
 import { It, Mock } from 'moq.ts';
 
 import { FetchClient, Response } from '../../../src/clients/fetchClient';
-import { GardenaClientImpl } from '../../../src/clients/gardena/gardenaClient';
+import { GardenaClientImpl, ItemType } from '../../../src/clients/gardena/gardenaClient';
 import { BadConfigurationError } from '../../../src/errors/badConfigurationError';
 import { ErrorFactory } from '../../../src/errors/errorFactory';
 import { AccessToken } from '../../../src/model';
@@ -126,5 +126,36 @@ describe('GardenaClientImpl', () => {
         const result = await target.getLocations(token);
 
         expect(result).toBeUndefined();
+    });
+
+    it('should create the socket as expected', async () => {
+        const locationId = '12345';
+        const url = 'http://localhost/socket';
+        const validity = 12345;
+
+        const token: AccessToken = {
+            value: 'value',
+            provider: 'provider'
+        };
+        
+        const response = new Response(`{ "data": { "id": "${locationId}", "type": "WEBSOCKET", "attributes": { "url": "${url}", "validity": ${validity} } } }`, {
+            headers: { },
+            size: 0,
+            status: 201,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+        
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returnsAsync(response);
+        
+        const result = await target.createSocket(locationId, token);
+
+        expect(result).toBeDefined();
+        expect(result.data).toBeDefined();
+        expect(result.data.id).toEqual(locationId);
+        expect(result.data.type).toEqual(ItemType.WEBSOCKET);
+        expect(result.data.attributes).toBeDefined();
+        expect(result.data.attributes.url).toEqual(url);
+        expect(result.data.attributes.validity).toEqual(validity);
     });
 });
