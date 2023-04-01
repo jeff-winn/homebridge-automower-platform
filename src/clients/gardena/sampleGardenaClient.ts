@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import { AccessToken } from '../../model';
-import { GardenaClient, LocationResponse, LocationsResponse } from './gardenaClient';
+import { GardenaClient, LocationResponse, LocationsResponse, WebSocketCreatedResponse } from './gardenaClient';
 
 /**
  * Defines the file location of the getLocations sample json response.
@@ -17,6 +17,12 @@ const LOCATION_SAMPLE_LOCATION = './samples/gardena/get_location.json';
  * A {@link GardenaClient} which uses sample files to simulate responses from the server.
  */
 export class SampleGardenaClientImpl implements GardenaClient {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public createSocket(locationId: string, token: AccessToken): Promise<WebSocketCreatedResponse> {
+        throw new Error('This operation is not supported on a sample client.');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public doCommand(id: string, command: unknown, token: AccessToken): Promise<void> {
         return Promise.resolve(undefined);
     }

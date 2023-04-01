@@ -21,6 +21,7 @@ import { ConsoleWrapperImpl } from '../diagnostics/primitives/consoleWrapper';
 import { DefaultErrorFactory } from '../errors/errorFactory';
 import { DiscoveryServiceFactoryImpl } from '../factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from '../factories/eventStreamServiceFactory';
+import { GardenaEventStreamServiceFactoryImpl } from '../factories/gardenaEventStreamServiceFactory';
 import { AuthenticationMode } from '../model';
 import { MowerAccessoryFactoryImpl } from '../mowerAccessoryFactory';
 import { AccessTokenManagerImpl, OAuth2AuthorizationStrategy } from '../services/husqvarna/accessTokenManager';
@@ -33,7 +34,7 @@ import { ChangeSettingsServiceImpl } from '../services/husqvarna/automower/chang
 import { AutomowerMowerScheduleConverterImpl } from '../services/husqvarna/automower/converters/automowerMowerScheduleConverter';
 import { AutomowerMowerStateConverterImpl } from '../services/husqvarna/automower/converters/automowerMowerStateConverter';
 import { GardenaMowerStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaMowerStateConverter';
-import { GardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
+import { CompositeGardenaEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 import { GardenaGetMowersService } from '../services/husqvarna/gardena/gardenaGetMowersService';
 import { GardenaManualMowerControlService } from '../services/husqvarna/gardena/gardenaMowerControlService';
 import { DeterministicMowerFaultedPolicy } from '../services/policies/mowerFaultedPolicy';
@@ -243,8 +244,16 @@ export class PlatformContainerImpl implements PlatformContainer {
                 context.resolve(TimerImpl))                
         });
 
-        container.register(GardenaEventStreamService, {
-            useValue: new GardenaEventStreamService()
+        container.register(GardenaEventStreamServiceFactoryImpl, {
+            useValue: new GardenaEventStreamServiceFactoryImpl(this, this.log)
+        });
+
+        container.register(CompositeGardenaEventStreamService, {
+            useFactory: (context) => new CompositeGardenaEventStreamService(
+                context.resolve(GardenaClientImpl),
+                context.resolve(GardenaEventStreamServiceFactoryImpl),
+                context.resolve(AccessTokenManagerImpl),
+                context.resolve(this.getLoggerClass()))
         });
 
         container.register(GardenaManualMowerControlService, {

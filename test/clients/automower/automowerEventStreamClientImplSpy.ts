@@ -5,7 +5,7 @@ import { WebSocketWrapper } from '../../../src/primitives/webSocketWrapper';
 export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClientImpl {
     public callback?: (token: AccessToken) => WebSocketWrapper;
 
-    protected override createSocket(token: AccessToken): WebSocketWrapper {
+    protected createSocketCore(token: AccessToken): WebSocketWrapper {
         return this.callback!(token);
     }
 
