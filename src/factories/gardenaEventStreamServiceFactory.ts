@@ -1,4 +1,3 @@
-import { GardenaClientImpl } from '../clients/gardena/gardenaClient';
 import { GardenaEventStreamClient, GardenaEventStreamClientImpl } from '../clients/gardena/gardenaEventStreamClient';
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { PlatformContainer } from '../primitives/platformContainer';
@@ -38,7 +37,7 @@ export class GardenaEventStreamServiceFactoryImpl implements GardenaEventStreamS
     }
 
     protected createStreamClient(locationId: string): GardenaEventStreamClient {
-        const client = this.container.resolve(GardenaClientImpl);
+        const client = this.container.resolve(this.container.getGardenaClientClass());
 
         return new GardenaEventStreamClientImpl(
             locationId, client, this.log);
