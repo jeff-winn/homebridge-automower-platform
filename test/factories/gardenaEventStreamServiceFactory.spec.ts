@@ -26,6 +26,7 @@ describe('GardenaEventStreamServiceFactoryImpl', () => {
         const tokenManager = new Mock<AccessTokenManagerImpl>();
         const timer = new Mock<TimerImpl>();
 
+        container.setup(o => o.getGardenaClientClass()).returns(GardenaClientImpl);
         container.setup(o => o.resolve(GardenaClientImpl)).returns(client.object());
         container.setup(o => o.resolve(AccessTokenManagerImpl)).returns(tokenManager.object());
         container.setup(o => o.resolve(TimerImpl)).returns(timer.object());

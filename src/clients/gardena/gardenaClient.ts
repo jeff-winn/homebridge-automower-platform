@@ -452,10 +452,12 @@ export class GardenaClientImpl implements GardenaClient {
         this.guardAppKeyMustBeProvided();
 
         const req = {
-            id: uuid(),
-            type: ItemType.WEBSOCKET,
-            attributes: {
-                locationId: locationId
+            data: {
+                id: uuid(),
+                type: ItemType.WEBSOCKET,
+                attributes: {
+                    locationId: locationId
+                }
             }
         };
 

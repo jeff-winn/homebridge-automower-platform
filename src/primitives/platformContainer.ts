@@ -54,6 +54,8 @@ export interface PlatformContainer {
     resolve<T>(token: InjectionToken<T>): T;
 
     getLoggerClass(): InjectionToken<PlatformLogger>;
+
+    getGardenaClientClass(): InjectionToken<GardenaClient>;
 }
 
 export class PlatformContainerImpl implements PlatformContainer {
@@ -245,12 +247,13 @@ export class PlatformContainerImpl implements PlatformContainer {
         });
 
         container.register(GardenaEventStreamServiceFactoryImpl, {
-            useValue: new GardenaEventStreamServiceFactoryImpl(this, this.log)
+            useFactory: (context) => new GardenaEventStreamServiceFactoryImpl(
+                this, context.resolve(this.getLoggerClass()))
         });
 
         container.register(CompositeGardenaEventStreamService, {
             useFactory: (context) => new CompositeGardenaEventStreamService(
-                context.resolve(GardenaClientImpl),
+                context.resolve(this.getGardenaClientClass()),
                 context.resolve(GardenaEventStreamServiceFactoryImpl),
                 context.resolve(AccessTokenManagerImpl),
                 context.resolve(this.getLoggerClass()))
@@ -259,11 +262,11 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(GardenaManualMowerControlService, {
             useFactory: (context) => new GardenaManualMowerControlService(
                 context.resolve(AccessTokenManagerImpl),
-                context.resolve(GardenaClientImpl))
+                context.resolve(this.getGardenaClientClass()))
         });
     }
 
-    protected getGardenaClientClass(): InjectionToken<GardenaClient> {
+    public getGardenaClientClass(): InjectionToken<GardenaClient> {
         if (isDevelopmentEnvironment()) {
             return SampleGardenaClientImpl;
         }

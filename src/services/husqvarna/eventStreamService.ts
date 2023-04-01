@@ -175,7 +175,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
 
         try {
             const token = await this.tokenManager.getCurrentToken();
-            this.stream.open(token);
+            await this.stream.open(token);
         } catch (e) {
             if (e instanceof BadCredentialsError) {
                 this.tokenManager.flagAsInvalid();
