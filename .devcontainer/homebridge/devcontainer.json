@@ -18,6 +18,11 @@
 			"type": "bind"
 		},
 		{
+			"source": "${localWorkspaceFolder}/.devcontainer/homebridge/scripts",
+			"target": "/opt/scripts",
+			"type": "bind"
+		},
+		{
 			"source": "${localWorkspaceFolder}/.devcontainer/homebridge/.vscode",
 			"target": "/workspaces/homebridge-automower-platform/.vscode",
 			"type": "bind" 
@@ -27,6 +32,8 @@
 	"forwardPorts": [ 
 		8581
 	],
+
+	"postCreateCommand": "/opt/scripts/post-create.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
