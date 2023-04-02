@@ -29,8 +29,6 @@
 		8080
 	],
 
-	"postCreateCommand": "/opt/scripts/post-create.sh",
-
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
