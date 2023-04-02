@@ -66,11 +66,11 @@
 			"extensions": [
 				"hbenl.vscode-test-explorer",
 				"connorshea.vscode-test-explorer-status-bar",        
-        		"dbaeumer.vscode-eslint",
-        		"kavod-io.vscode-jest-test-adapter",
-        		"ms-vscode.test-adapter-converter",
-        		"ms-vscode.live-server",
-        		"ryanluker.vscode-coverage-gutters"
+				"dbaeumer.vscode-eslint",
+				"kavod-io.vscode-jest-test-adapter",
+				"ms-vscode.test-adapter-converter",
+				"ms-vscode.live-server",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		}
 	}
