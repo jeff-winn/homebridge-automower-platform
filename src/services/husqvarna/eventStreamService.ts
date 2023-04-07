@@ -259,7 +259,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected async reconnect(): Promise<void> {
-        this.disconnect();
+        await this.disconnect();
         await this.connect();
 
         this.setStarted(new Date());
@@ -270,20 +270,18 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.stream.ping();
     }
 
-    public stop(): Promise<void> {
+    public async stop(): Promise<void> {
         this.flagAsStopping();
 
         this.stopKeepAlive();
-        this.disconnect();
-
-        return Promise.resolve(undefined);
+        await this.disconnect();
     }
 
     protected flagAsStopping(): void {
         this.state = StreamState.STOPPING;
     }
 
-    protected disconnect(): void {
+    protected async disconnect(): Promise<void> {
         if (!this.stream.isConnected()) {
             // The stream isn't connected. Attempting to close the stream will result in unnecessary errors being thrown.
             this.flagAsStopped();            
@@ -292,7 +290,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
 
         this.log.debug('CLOSING_STREAM');
 
-        this.stream.close();
+        await this.stream.close();
 
         this.log.debug('CLOSED_STREAM');
     }
