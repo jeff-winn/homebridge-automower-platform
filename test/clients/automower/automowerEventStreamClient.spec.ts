@@ -123,6 +123,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should log errors thrown when disconnect callback is executed', () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.unsafeSetConnected(true);
@@ -136,6 +137,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should handle unable to connect when closed before connected', () => {        
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         
         let disconnected = false;
@@ -153,9 +155,12 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         // We don't want disconnected to fire when it never connected as this would cause constant reconnect attempts.
         expect(disconnected).toBeFalsy();
+
+        log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
     it('should handle errors thrown on connected event', () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.onConnected(() => {
@@ -170,7 +175,8 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
 
-    it('should handle disconnected when closed after connected', () => {        
+    it('should handle disconnected when closed after connected', () => {     
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 
         let disconnected = false;
@@ -190,6 +196,8 @@ describe('AutomowerEventStreamClientImpl', () => {
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
         expect(disconnected).toBeTruthy();
+
+        log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
     it('should handle when an error has been received', () => {

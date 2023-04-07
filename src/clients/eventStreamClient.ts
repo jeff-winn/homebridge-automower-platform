@@ -88,6 +88,8 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     protected abstract createSocket(token: AccessToken): Promise<WebSocketWrapper>;
 
     protected onConnectionSucceeded(): void {
+        this.log.debug('CONNECTED');
+
         this.setConnecting(false);
         this.setConnected(true);
         
@@ -105,15 +107,17 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     }
 
     protected onCloseReceived() {
+        this.log.debug('DISCONNECTED');
+        
         if (this.isConnected()) {
             this.setConnected(false);
-            this.notifyCloseReceived();
+            this.notifyDisconnected();
         } else if (this.connecting) {
             this.setConnecting(false);
         }        
     }    
 
-    protected notifyCloseReceived(): void {
+    protected notifyDisconnected(): void {
         if (this.onDisconnectedCallback !== undefined) {
             try {
                 this.onDisconnectedCallback();                
