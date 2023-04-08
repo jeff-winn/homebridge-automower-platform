@@ -38,6 +38,7 @@
 				"editor.tabSize": 4,
 				"files.exclude": {
 					".devcontainer": true,
+					".vscode": true,
 					"build": true,
 					"dist": true,
 					".gitattributes": true,
