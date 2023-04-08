@@ -32,9 +32,9 @@ describe('AbstractEventStreamService', () => {
         };
 
         stream.setup(o => o.open(token)).returnsAsync(undefined);
-        stream.setup(o => o.onConnected(It.IsAny<(() => Promise<void>)>())).returns(undefined);
-        stream.setup(o => o.onDisconnected(It.IsAny<(() => Promise<void>)>())).returns(undefined);
-        stream.setup(o => o.onError(It.IsAny<(() => Promise<void>)>())).returns(undefined);
+        stream.setup(o => o.setOnConnectedCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
+        stream.setup(o => o.setOnDisconnectedCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
+        stream.setup(o => o.setOnErrorCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
 
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
@@ -44,9 +44,9 @@ describe('AbstractEventStreamService', () => {
         await expect(target.start()).resolves.toBeUndefined();
         
         stream.verify(o => o.open(token), Times.Once());
-        stream.verify(o => o.onConnected(It.IsAny<(() => Promise<void>)>()), Times.Once());
-        stream.verify(o => o.onDisconnected(It.IsAny<(() => Promise<void>)>()), Times.Once());
-        stream.verify(o => o.onError(It.IsAny<(() => Promise<void>)>()), Times.Once());
+        stream.verify(o => o.setOnConnectedCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
+        stream.verify(o => o.setOnDisconnectedCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
+        stream.verify(o => o.setOnErrorCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
@@ -90,11 +90,11 @@ describe('AbstractEventStreamService', () => {
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
-    it('should not run the keep alive when being stopped on disconnect', () => {
+    it('should not run the keep alive when being stopped on disconnect', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         target.unsafeFlagAsStopping();
 
-        target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceived();
 
         expect(target.unsafeHasStopped()).toBeTruthy();
         expect(target.unsafeIsStopping()).toBeFalsy();
@@ -102,12 +102,12 @@ describe('AbstractEventStreamService', () => {
         log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
-    it('should not run the keep alive when keep alive is already active', () => {
+    it('should not run the keep alive when keep alive is already active', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         target.unsafeFlagAsKeepAliveActive();
 
-        target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceived();
 
         log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
@@ -119,7 +119,7 @@ describe('AbstractEventStreamService', () => {
         // Don't need to test the keep alive again here, just make sure it would have ran.
         target.shouldRunKeepAlive = false;
 
-        target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceived();
 
         expect(target.keepAliveExecuted).toBeTruthy();
 

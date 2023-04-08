@@ -79,14 +79,14 @@ export interface ErrorEvent {
  */
 export interface AutomowerEventStreamClient extends EventStreamClient {
     /**
-     * Executes the callback when an event is received.
+     * Sets the callback to execute when an event is received.
      * @param callback The callback to execute.
      */
-    on(callback: (event: AutomowerEvent) => Promise<void>): void;
+    setOnEventCallback(callback: (event: AutomowerEvent) => Promise<void>): void;
 }
 
 export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient implements AutomowerEventStreamClient {
-    private onMessageReceivedCallback?: (payload: AutomowerEvent) => void;
+    private onMessageReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
     private connectionId?: string;
     
     public constructor(private baseUrl: string, log: PlatformLogger) { 
@@ -124,17 +124,17 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         return this.onMessageReceivedCallback !== undefined;
     }
     
-    protected onErrorReceived(err: ErrorEvent): void {
+    protected async onErrorReceived(err: ErrorEvent): Promise<void> {
         this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: err.error,
             message: err.message,
             type: err.type
         });
 
-        this.notifyErrorReceived();
+        await this.notifyErrorReceived();
     }
 
-    protected onSocketMessageReceived(buffer: Buffer): void {
+    protected async onSocketMessageReceived(buffer: Buffer): Promise<void> {
         if (buffer.length === 0) {
             return;
         }
@@ -149,7 +149,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
             } else {
                 const mowerEvent = data as AutomowerEvent;
                 if (mowerEvent.type !== undefined) {
-                    this.notifyMessageReceived(mowerEvent);
+                    await this.notifyMessageReceived(mowerEvent);
                 }
             }
         } catch (e) {
@@ -157,18 +157,18 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         }
     }
 
-    protected onConnectedReceived(event: ConnectedEvent): void {
+    protected async onConnectedReceived(event: ConnectedEvent): Promise<void> {
         this.setConnectionId(event.connectionId);
-        this.onConnectionSucceeded();
+        await this.onConnected();
     }
 
-    protected notifyMessageReceived(event: AutomowerEvent): void {
+    protected async notifyMessageReceived(event: AutomowerEvent): Promise<void> {
         if (this.onMessageReceivedCallback !== undefined) {
-            this.onMessageReceivedCallback(event);
+            await this.onMessageReceivedCallback(event);
         }
     }
 
-    public on(callback: (event: AutomowerEvent) => Promise<void>): void {        
+    public setOnEventCallback(callback: (event: AutomowerEvent) => Promise<void>): void {        
         this.onMessageReceivedCallback = callback;
     }
 }

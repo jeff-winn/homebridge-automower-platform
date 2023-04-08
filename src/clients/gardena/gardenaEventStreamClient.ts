@@ -40,7 +40,7 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         return socket;
     }
 
-    protected onSocketMessageReceived(buffer: Buffer): void {
+    protected async onSocketMessageReceived(buffer: Buffer): Promise<void> {
         if (buffer.length === 0) {
             return;
         }
@@ -51,7 +51,7 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
 
             const mowerEvent = data as DataItem;
             if (mowerEvent.type !== undefined) {
-                this.notifyEventReceived(mowerEvent);
+                await this.notifyEventReceived(mowerEvent);
             }
         } catch (e) {
             this.log.error('ERROR_PROCESSING_MESSAGE', e);
@@ -72,9 +72,9 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         this.onMessageReceivedCallback = callback;
     }
 
-    protected notifyEventReceived(event: DataItem): void {
+    protected async notifyEventReceived(event: DataItem): Promise<void> {
         if (this.onMessageReceivedCallback !== undefined) {
-            this.onMessageReceivedCallback(event);
+            await this.onMessageReceivedCallback(event);
         }
     }
 }

@@ -95,60 +95,60 @@ describe('AutomowerEventStreamClientImpl', () => {
         expect(target.isConnected()).toBeFalsy();
     });
     
-    it('should do nothing when no callback is set on error received', () => {
+    it('should do nothing when no callback is set on error received', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
 
-        target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceived({
             error: 'error',
             message: 'error message',
             type: 'error type'
-        });
+        })).resolves.toBeUndefined();
     });
 
-    it('should log errors thrown when error callback is executed', () => {
+    it('should log errors thrown when error callback is executed', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
         log.setup(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny())).returns(undefined);
 
-        target.onError(() => {
+        target.setOnErrorCallback(() => {
             throw new Error('Ouch');
         });
 
-        target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceived({
             error: 'error',
             message: 'error message',
             type: 'error type'
-        });
+        })).resolves.toBeUndefined();
 
         log.verify(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny()), Times.Once());
     });
 
-    it('should log errors thrown when disconnect callback is executed', () => {
+    it('should log errors thrown when disconnect callback is executed', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.unsafeSetConnected(true);
-        target.onDisconnected(() => {
+        target.setOnDisconnectedCallback(() => {
             throw new Error('Ouch');
         });
 
-        target.unsafeOnCloseReceived();
+        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
 
-    it('should handle unable to connect when closed before connected', () => {        
+    it('should handle unable to connect when closed before connected', async () => {        
         log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         
         let disconnected = false;
-        target.onDisconnected(() => {
+        target.setOnDisconnectedCallback(() => {
             disconnected = true;
 
             return Promise.resolve(undefined);
         });
 
         target.unsafeOnConnecting();
-        target.unsafeOnCloseReceived();
+        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -159,39 +159,39 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
-    it('should handle errors thrown on connected event', () => {
+    it('should handle errors thrown on connected event', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
-        target.onConnected(() => {
+        target.setOnConnectedCallback(() => {
             throw new Error('Ouch');
         });
 
-        target.unsafeOnConnectedReceived({
+        await expect(target.unsafeOnConnectedReceived({
             ready: true,
             connectionId: '12345'
-        });
+        })).resolves.toBeUndefined();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
 
-    it('should handle disconnected when closed after connected', () => {     
+    it('should handle disconnected when closed after connected', async () => {     
         log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 
         let disconnected = false;
-        target.onDisconnected(() => {
+        target.setOnDisconnectedCallback(() => {
             disconnected = true;
 
             return Promise.resolve(undefined);
         });
 
-        target.unsafeOnConnectedReceived({
+        await expect(target.unsafeOnConnectedReceived({
             ready: true,
             connectionId: '12345'
-        });
+        })).resolves.toBeUndefined();
 
-        target.unsafeOnCloseReceived();
+        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -200,7 +200,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
-    it('should handle when an error has been received', () => {
+    it('should handle when an error has been received', async () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
         const err: ErrorEvent = {
@@ -210,13 +210,13 @@ describe('AutomowerEventStreamClientImpl', () => {
         };
 
         let handled = false;
-        target.onError(() => {
+        target.setOnErrorCallback(() => {
             handled = true;
 
             return Promise.resolve(undefined);
         });
 
-        target.unsafeOnErrorReceived(err);        
+        await expect(target.unsafeOnErrorReceived(err)).resolves.toBeUndefined();
 
         expect(handled).toBeTruthy();
     });
@@ -236,34 +236,34 @@ describe('AutomowerEventStreamClientImpl', () => {
             provider: 'world1'
         });
 
-        await target.close();
+        await expect(target.close()).resolves.toBeUndefined();
 
         socket.verify(o => o.terminate(), Times.Once());
     });
     
     it('should set the callback', () => {
-        target.on(() => Promise.resolve(undefined));
+        target.setOnEventCallback(() => Promise.resolve(undefined));
 
         expect(target.isCallbackSet()).toBeTruthy();
     });
 
-    it('should return when the buffer is empty', () => {
+    it('should return when the buffer is empty', async () => {
         const payload = Buffer.from([]);
 
-        expect(() => target.unsafeOnSocketMessageReceived(payload)).not.toThrow();
+        await target.unsafeOnSocketMessageReceived(payload);
     });
 
-    it('should log an error when invalid json is received', () => {
+    it('should log an error when invalid json is received', async () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
         const payload = Buffer.from(' ');
 
-        target.unsafeOnSocketMessageReceived(payload);
+        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
 
         log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
 
-    it('should handle the connected event', () => {
+    it('should handle the connected event', async () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 
@@ -274,7 +274,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         };
 
         let connected = false;
-        target.onConnected(() => {
+        target.setOnConnectedCallback(() => {
             connected = true;
 
             return Promise.resolve(undefined);
@@ -282,22 +282,22 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        target.unsafeOnSocketMessageReceived(payload);
+        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
         
         expect(target.isConnected()).toBeTruthy();
         expect(target.getConnectionId()).toBe(id);
         expect(connected).toBeTruthy();
     });
 
-    it('should ignore the event when no type is provided', () => {
+    it('should ignore the event when no type is provided', async () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         const payload = Buffer.from(JSON.stringify({ }));
 
-        expect(() => target.unsafeOnSocketMessageReceived(payload)).not.toThrow();
+        await target.unsafeOnSocketMessageReceived(payload);
     });
 
-    it('should ignore the mower event without a callback', () => {
+    it('should ignore the mower event without a callback', async () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         const id = '12345';
@@ -308,10 +308,10 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        target.unsafeOnSocketMessageReceived(payload);        
+        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
     });
 
-    it('should handle the mower event with a callback', () => {
+    it('should handle the mower event with a callback', async () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         const id = '12345';
@@ -323,14 +323,14 @@ describe('AutomowerEventStreamClientImpl', () => {
         const payload = Buffer.from(JSON.stringify(event));
         let executed = false;
 
-        target.on((e1) => {
+        target.setOnEventCallback((e1) => {
             expect(e1).toStrictEqual(event);
 
             executed = true;
             return Promise.resolve(undefined);
         });
 
-        target.unsafeOnSocketMessageReceived(payload);
+        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
 
         expect(executed).toBeTruthy();
     });

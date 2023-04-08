@@ -107,9 +107,9 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected attachTo(stream: TStream): void {
-        stream.onConnected(this.onConnectedEventReceived.bind(this));
-        stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
-        stream.onError(this.onErrorEventReceived.bind(this));
+        stream.setOnConnectedCallback(this.onConnectedEventReceived.bind(this));
+        stream.setOnDisconnectedCallback(this.onDisconnectedEventReceived.bind(this));
+        stream.setOnErrorCallback(this.onErrorEventReceived.bind(this));
     }
 
     protected flagAsStarted(): void {

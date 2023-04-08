@@ -30,19 +30,19 @@ export class AutomowerEventStreamClientStub implements AutomowerEventStreamClien
         this.keptAlive = true;
     }
 
-    public on(callback: (event: AutomowerEvent) => Promise<void>): void {
+    public setOnEventCallback(callback: (event: AutomowerEvent) => Promise<void>): void {
         this.callbackSet = true;
     }
 
-    public onDisconnected(callback: () => Promise<void>): void {
+    public setOnDisconnectedCallback(callback: () => Promise<void>): void {
         this.disconnectedCallbackSet = true;
     }
 
-    public onConnected(callback: (event: ConnectedEvent) => Promise<void>): void {
+    public setOnConnectedCallback(callback: (event: ConnectedEvent) => Promise<void>): void {
         this.connectedCallbackSet = true;
     }
 
-    public onError(callback: (event: ErrorEvent) => Promise<void>): void {
+    public setOnErrorCallback(callback: (event: ErrorEvent) => Promise<void>): void {
         this.errorCallbackSet = true;
     }
 }
