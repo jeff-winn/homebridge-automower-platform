@@ -16,24 +16,14 @@
 			"source": "${localEnv:USERPROFILE}\\.homebridge",
 			"target": "/home/node/.homebridge",
 			"type": "bind"
-		},
-		{
-			"source": "${localWorkspaceFolder}/.devcontainer/homebridge/scripts",
-			"target": "/opt/scripts",
-			"type": "bind"
-		},
-		{
-			"source": "${localWorkspaceFolder}/.devcontainer/homebridge/.vscode",
-			"target": "/workspaces/homebridge-automower-platform/.vscode",
-			"type": "bind" 
 		}
 	],
+
+	"postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/scripts/post-create.sh",
 	
 	"forwardPorts": [ 
 		8581
 	],
-
-	"postCreateCommand": "/opt/scripts/post-create.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -51,7 +41,6 @@
 					".vscode": true,
 					"build": true,
 					"dist": true,
-					"node_modules": true,
 					".gitattributes": true,
 					"LICENSE": true,
 					"**/bin": true,
