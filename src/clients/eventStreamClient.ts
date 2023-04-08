@@ -23,22 +23,22 @@ export interface EventStreamClient {
     close(): Promise<void>;
 
     /**
-     * Executes the callback when the client is disconnected.
+     * Sets the callback to execute when the client is disconnected.
      * @param callback The callback to execute.
      */
-    onDisconnected(callback: () => Promise<void>): void;
+    setOnDisconnectedCallback(callback: () => Promise<void>): void;
 
     /**
-     * Executes the callback when the client has connected.
+     * Sets the callback to execute when the client has connected.
      * @param callback The callback to execute.
      */
-    onConnected(callback: () => Promise<void>): void;    
+    setOnConnectedCallback(callback: () => Promise<void>): void;    
 
     /**
-     * Executes the callback when the client has encountered an error.
+     * Sets the callback to execute when the client has encountered an error.
      * @param callback The callback to execute.
      */
-    onError(callback: () => Promise<void>): void;
+    setOnErrorCallback(callback: () => Promise<void>): void;
 
     /**
      * Pings the server.
@@ -52,23 +52,23 @@ export interface EventStreamClient {
 export abstract class AbstractEventStreamClient implements EventStreamClient {
     private socket?: WebSocketWrapper;
 
-    private onErrorReceivedCallback?: () => void;
-    private onConnectedCallback?: () => void;
-    private onDisconnectedCallback?: () => void;
+    private onErrorReceivedCallback?: () => Promise<void>;
+    private onConnectedCallback?: () => Promise<void>;
+    private onDisconnectedCallback?: () => Promise<void>;
     private connecting = false;
     private connected = false;
 
     protected constructor(protected readonly log: PlatformLogger) { }
 
-    public onConnected(callback: () => Promise<void>): void {
+    public setOnConnectedCallback(callback: () => Promise<void>): void {
         this.onConnectedCallback = callback;
     }
 
-    public onDisconnected(callback: () => Promise<void>): void {
+    public setOnDisconnectedCallback(callback: () => Promise<void>): void {
         this.onDisconnectedCallback = callback;
     }
 
-    public onError(callback: () => Promise<void>): void {
+    public setOnErrorCallback(callback: () => Promise<void>): void {
         this.onErrorReceivedCallback = callback;
     }
 
@@ -87,46 +87,50 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
 
     protected abstract createSocket(token: AccessToken): Promise<WebSocketWrapper>;
 
-    protected onConnectionSucceeded(): void {
+    protected async onConnected(): Promise<void> {
+        this.log.debug('CONNECTED');
+
         this.setConnecting(false);
         this.setConnected(true);
         
-        this.notifyConnected();
+        await this.notifyConnected();
     }
 
-    private notifyConnected(): void {        
+    protected async notifyConnected(): Promise<void> {        
         if (this.onConnectedCallback !== undefined) {
             try {
-                this.onConnectedCallback();
+                await this.onConnectedCallback();
             } catch (e) {
                 this.log.error('ERROR_HANDLING_CONNECTED_EVENT', e);
             }
         }
     }
 
-    protected onCloseReceived() {
+    protected async onCloseReceived(): Promise<void> {
+        this.log.debug('DISCONNECTED');
+        
         if (this.isConnected()) {
             this.setConnected(false);
-            this.notifyCloseReceived();
+            await this.notifyDisconnected();
         } else if (this.connecting) {
             this.setConnecting(false);
         }        
     }    
 
-    protected notifyCloseReceived(): void {
+    protected async notifyDisconnected(): Promise<void> {
         if (this.onDisconnectedCallback !== undefined) {
             try {
-                this.onDisconnectedCallback();                
+                await this.onDisconnectedCallback();                
             } catch (e) {
                 this.log.error('ERROR_HANDLING_DISCONNECTED_EVENT', e);
             }
         }
     }
     
-    protected notifyErrorReceived(): void {
+    protected async notifyErrorReceived(): Promise<void> {
         if (this.onErrorReceivedCallback !== undefined) {
             try {
-                this.onErrorReceivedCallback();
+                await this.onErrorReceivedCallback();
             } catch (e) {
                 this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
             }

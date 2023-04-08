@@ -9,24 +9,24 @@ export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClien
         return this.callback!(token);
     }
 
-    public unsafeOnSocketMessageReceived(buffer: Buffer): void {
-        this.onSocketMessageReceived(buffer);
+    public unsafeOnSocketMessageReceived(buffer: Buffer): Promise<void> {
+        return this.onSocketMessageReceived(buffer);
     }
 
-    public unsafeOnCloseReceived(): void {
-        this.onCloseReceived();
+    public unsafeOnCloseReceived(): Promise<void> {
+        return this.onCloseReceived();
     }
 
-    public unsafeOnErrorReceived(err: ErrorEvent): void {
-        this.onErrorReceived(err);
+    public unsafeOnErrorReceived(err: ErrorEvent): Promise<void> {
+        return this.onErrorReceived(err);
     }
 
     public unsafeOnConnecting(): void {
         this.onConnecting();
     }
 
-    public unsafeOnConnectedReceived(event: ConnectedEvent): void {
-        this.onConnectedReceived(event);
+    public unsafeOnConnectedReceived(event: ConnectedEvent): Promise<void> {
+        return this.onConnectedReceived(event);
     }
 
     public unsafeSetConnecting(value: boolean): void {

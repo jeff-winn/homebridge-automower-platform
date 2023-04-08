@@ -10,16 +10,16 @@ import { AccessTokenManager } from './accessTokenManager';
  */
 export interface EventStreamService {
     /**
-     * Occurs when a {@link StatusEvent} has been received.
+     * Sets the callback to execute when a {@link MowerStatusChangedEvent} has been received.
      * @param callback The callback to execute.
      */
-    onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void;
+    setOnStatusEventCallback(callback: (event: MowerStatusChangedEvent) => Promise<void>): void;
     
     /**
-     * Occurs when a {@link SettingsEvent} has been received.
+     * Sets the callback to execute when a {@link MowerSettingsChangedEvent} has been received.
      * @param callback The callback to execute.
      */
-    onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void;
+    setOnSettingsEventCallback(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void;
 
     /**
      * Starts streaming events.
@@ -77,11 +77,11 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     public constructor(private tokenManager: AccessTokenManager, private stream: TStream, 
         protected readonly log: PlatformLogger, private timer: Timer) { }
 
-    public onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
+    public setOnSettingsEventCallback(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
         this.onSettingsEventCallback = callback;        
     }
 
-    public onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
+    public setOnStatusEventCallback(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
     }
 
@@ -107,9 +107,9 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected attachTo(stream: TStream): void {
-        stream.onConnected(this.onConnectedEventReceived.bind(this));
-        stream.onDisconnected(this.onDisconnectedEventReceived.bind(this));
-        stream.onError(this.onErrorEventReceived.bind(this));
+        stream.setOnConnectedCallback(this.onConnectedEventReceived.bind(this));
+        stream.setOnDisconnectedCallback(this.onDisconnectedEventReceived.bind(this));
+        stream.setOnErrorCallback(this.onErrorEventReceived.bind(this));
     }
 
     protected flagAsStarted(): void {
@@ -259,7 +259,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected async reconnect(): Promise<void> {
-        this.disconnect();
+        await this.disconnect();
         await this.connect();
 
         this.setStarted(new Date());
@@ -270,20 +270,18 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.stream.ping();
     }
 
-    public stop(): Promise<void> {
+    public async stop(): Promise<void> {
         this.flagAsStopping();
 
         this.stopKeepAlive();
-        this.disconnect();
-
-        return Promise.resolve(undefined);
+        await this.disconnect();
     }
 
     protected flagAsStopping(): void {
         this.state = StreamState.STOPPING;
     }
 
-    protected disconnect(): void {
+    protected async disconnect(): Promise<void> {
         if (!this.stream.isConnected()) {
             // The stream isn't connected. Attempting to close the stream will result in unnecessary errors being thrown.
             this.flagAsStopped();            
@@ -292,7 +290,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
 
         this.log.debug('CLOSING_STREAM');
 
-        this.stream.close();
+        await this.stream.close();
 
         this.log.debug('CLOSED_STREAM');
     }

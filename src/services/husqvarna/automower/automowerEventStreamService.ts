@@ -18,7 +18,7 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
     }
 
     protected attachTo(stream: AutomowerEventStreamClient): void {
-        stream.on(this.onEventReceived.bind(this));
+        stream.setOnEventCallback(this.onEventReceived.bind(this));
     }
     
     protected onEventReceived(event: AutomowerEvent): Promise<void> {

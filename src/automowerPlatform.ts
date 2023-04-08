@@ -121,8 +121,8 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     protected async startReceivingEvents(): Promise<void> {
         const service = this.getEventService();
                 
-        service.onStatusEventReceived(this.onStatusEventReceived.bind(this));
-        service.onSettingsEventReceived(this.onSettingsEventReceived.bind(this));
+        service.setOnStatusEventCallback(this.onStatusEventReceived.bind(this));
+        service.setOnSettingsEventCallback(this.onSettingsEventReceived.bind(this));
         
         await service.start();
     }

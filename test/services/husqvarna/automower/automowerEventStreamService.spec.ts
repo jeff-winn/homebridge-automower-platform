@@ -69,7 +69,7 @@ describe('AutomowerEventStreamService', () => {
     it('should log when connected event received', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
-        target.unsafeOnConnectedEventReceived();
+        await target.unsafeOnConnectedEventReceived();
 
         log.verify(o => o.debug(It.IsAny()), Times.Once());
     });
@@ -94,11 +94,11 @@ describe('AutomowerEventStreamService', () => {
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
 
-    it('should not run the keep alive when being stopped on disconnect', () => {
+    it('should not run the keep alive when being stopped on disconnect', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         target.unsafeFlagAsStopping();
 
-        target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceived();
 
         expect(target.unsafeHasStopped()).toBeTruthy();
         expect(target.unsafeIsStopping()).toBeFalsy();
@@ -106,12 +106,12 @@ describe('AutomowerEventStreamService', () => {
         log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
-    it('should not run the keep alive when keep alive is already active', () => {
+    it('should not run the keep alive when keep alive is already active', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         target.unsafeFlagAsKeepAliveActive();
 
-        target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceived();
 
         log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
@@ -123,7 +123,7 @@ describe('AutomowerEventStreamService', () => {
         // Don't need to test the keep alive again here, just make sure it would have ran.
         target.shouldRunKeepAlive = false;
 
-        target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceived();
 
         expect(target.keepAliveExecuted).toBeTruthy();
 
@@ -356,7 +356,7 @@ describe('AutomowerEventStreamService', () => {
         };
 
         let executed = false;
-        target.onSettingsEventReceived(() => {
+        target.setOnSettingsEventCallback(() => {
             executed = true;
             return Promise.resolve(undefined);
         });
@@ -403,7 +403,7 @@ describe('AutomowerEventStreamService', () => {
         });
         
         let executed = false;
-        target.onStatusEventReceived(() => {
+        target.setOnStatusEventCallback(() => {
             executed = true;
             return Promise.resolve(undefined);
         });
