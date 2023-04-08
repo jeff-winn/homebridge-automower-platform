@@ -138,8 +138,8 @@ describe('AutomowerPlatform', () => {
         discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).returns(Promise.resolve(undefined));
 
         const eventStreamService = new Mock<EventStreamService>();
-        eventStreamService.setup(o => o.onStatusEventReceived(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
-        eventStreamService.setup(o => o.onSettingsEventReceived(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
+        eventStreamService.setup(o => o.setOnStatusEventCallback(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
+        eventStreamService.setup(o => o.setOnSettingsEventCallback(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
         eventStreamService.setup(o => o.start()).returns(Promise.resolve(undefined));
 
         const discoveryServiceFactory = new Mock<DiscoveryServiceFactoryImpl>();

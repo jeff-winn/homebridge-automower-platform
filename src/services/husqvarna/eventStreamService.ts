@@ -10,16 +10,16 @@ import { AccessTokenManager } from './accessTokenManager';
  */
 export interface EventStreamService {
     /**
-     * Occurs when a {@link StatusEvent} has been received.
+     * Sets the callback to execute when a {@link MowerStatusChangedEvent} has been received.
      * @param callback The callback to execute.
      */
-    onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void;
+    setOnStatusEventCallback(callback: (event: MowerStatusChangedEvent) => Promise<void>): void;
     
     /**
-     * Occurs when a {@link SettingsEvent} has been received.
+     * Sets the callback to execute when a {@link MowerSettingsChangedEvent} has been received.
      * @param callback The callback to execute.
      */
-    onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void;
+    setOnSettingsEventCallback(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void;
 
     /**
      * Starts streaming events.
@@ -77,11 +77,11 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     public constructor(private tokenManager: AccessTokenManager, private stream: TStream, 
         protected readonly log: PlatformLogger, private timer: Timer) { }
 
-    public onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
+    public setOnSettingsEventCallback(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
         this.onSettingsEventCallback = callback;        
     }
 
-    public onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
+    public setOnStatusEventCallback(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
     }
 

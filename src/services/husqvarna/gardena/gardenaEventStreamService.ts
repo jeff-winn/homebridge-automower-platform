@@ -30,11 +30,11 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
     public constructor(private readonly client: GardenaClient, private serviceFactory: GardenaEventStreamServiceFactory, private readonly tokenManager: AccessTokenManager, 
         private readonly log: PlatformLogger) { }
 
-    public onSettingsEventReceived(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
+    public setOnSettingsEventCallback(callback: (event: MowerSettingsChangedEvent) => Promise<void>): void {
         this.onSettingsEventCallback = callback;        
     }
 
-    public onStatusEventReceived(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
+    public setOnStatusEventCallback(callback: (event: MowerStatusChangedEvent) => Promise<void>): void {
         this.onStatusEventCallback = callback;        
     }
 
@@ -65,8 +65,8 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
         for (const location of locations.data) {
             const service = this.serviceFactory.create(location.id);
 
-            service.onSettingsEventReceived(this.onSettingsEventCallback);
-            service.onStatusEventReceived(this.onStatusEventCallback);
+            service.setOnSettingsEventCallback(this.onSettingsEventCallback);
+            service.setOnStatusEventCallback(this.onStatusEventCallback);
 
             this.services.set(location.id, service);
 

@@ -356,7 +356,7 @@ describe('AutomowerEventStreamService', () => {
         };
 
         let executed = false;
-        target.onSettingsEventReceived(() => {
+        target.setOnSettingsEventCallback(() => {
             executed = true;
             return Promise.resolve(undefined);
         });
@@ -403,7 +403,7 @@ describe('AutomowerEventStreamService', () => {
         });
         
         let executed = false;
-        target.onStatusEventReceived(() => {
+        target.setOnStatusEventCallback(() => {
             executed = true;
             return Promise.resolve(undefined);
         });
