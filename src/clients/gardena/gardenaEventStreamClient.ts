@@ -1,7 +1,6 @@
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
-import { WebSocketWrapper, WebSocketWrapperImpl } from '../../primitives/webSocketWrapper';
-import { PLUGIN_ID } from '../../settings';
+import { WebSocketWrapper } from '../../primitives/webSocketWrapper';
 import { AbstractEventStreamClient, EventStreamClient } from '../eventStreamClient';
 import { DataItem, Error, GardenaClient } from './gardenaClient';
 
@@ -27,21 +26,15 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
     protected async createSocket(token: AccessToken): Promise<WebSocketWrapper> {
         const response = await this.client.createSocket(this.locationId, token);
         
-        const socket = new WebSocketWrapperImpl(response.data.attributes.url, {
-            headers: {
-                'Authorization': `Bearer ${token.value}`,
-                'X-Application-Id': PLUGIN_ID
-            }
-        });
-
-        socket.on('message', this.onSocketMessageReceived.bind(this));
+        const socket = this.createSocketCore(response.data.attributes.url, token);
+        socket.on('message', this.onMessageReceived.bind(this));
         socket.on('error', this.onErrorReceived.bind(this));
         socket.on('close', this.onCloseReceived.bind(this));
 
         return socket;
     }
 
-    protected async onSocketMessageReceived(buffer: Buffer): Promise<void> {
+    protected async onMessageReceived(buffer: Buffer): Promise<void> {
         if (buffer.length === 0) {
             return;
         }

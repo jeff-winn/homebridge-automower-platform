@@ -250,7 +250,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     it('should return when the buffer is empty', async () => {
         const payload = Buffer.from([]);
 
-        await target.unsafeOnSocketMessageReceived(payload);
+        await target.unsafeOnMessageReceived(payload);
     });
 
     it('should log an error when invalid json is received', async () => {
@@ -258,7 +258,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(' ');
 
-        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
+        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
 
         log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
@@ -282,7 +282,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
+        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
         
         expect(target.isConnected()).toBeTruthy();
         expect(target.getConnectionId()).toBe(id);
@@ -294,7 +294,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify({ }));
 
-        await target.unsafeOnSocketMessageReceived(payload);
+        await target.unsafeOnMessageReceived(payload);
     });
 
     it('should ignore the mower event without a callback', async () => {
@@ -308,7 +308,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
+        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
     });
 
     it('should handle the mower event with a callback', async () => {
@@ -330,7 +330,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnSocketMessageReceived(payload)).resolves.toBeUndefined();
+        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
 
         expect(executed).toBeTruthy();
     });

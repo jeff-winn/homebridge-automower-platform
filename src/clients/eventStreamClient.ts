@@ -1,6 +1,7 @@
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { AccessToken } from '../model';
-import { WebSocketWrapper } from '../primitives/webSocketWrapper';
+import { WebSocketWrapper, WebSocketWrapperImpl } from '../primitives/webSocketWrapper';
+import { PLUGIN_ID } from '../settings';
 
 /**
  * A client which receives a stream of events for all mowers connected to the account.
@@ -86,6 +87,15 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     }
 
     protected abstract createSocket(token: AccessToken): Promise<WebSocketWrapper>;
+
+    protected createSocketCore(url: string, token: AccessToken): WebSocketWrapper {
+        return new WebSocketWrapperImpl(url, {
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'X-Application-Id': PLUGIN_ID
+            }
+        });
+    }
 
     protected async onConnected(): Promise<void> {
         this.log.debug('CONNECTED');

@@ -44,7 +44,8 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
             this.initialized = true;
         }
         
-        for (const service of this.services.values()) {
+        const services = Array.from(this.services.values());
+        for (const service of services) {
             await service.start();
         }
     }
