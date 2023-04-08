@@ -1,7 +1,6 @@
 import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
-import { WebSocketWrapper, WebSocketWrapperImpl } from '../../primitives/webSocketWrapper';
-import { PLUGIN_ID } from '../../settings';
+import { WebSocketWrapper } from '../../primitives/webSocketWrapper';
 import { AbstractEventStreamClient, EventStreamClient } from '../eventStreamClient';
 import { Battery, Calendar, Headlight, MowerMetadata, MowerState, Planner, Position } from './automowerClient';
 
@@ -94,22 +93,13 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     }
 
     protected createSocket(token: AccessToken): Promise<WebSocketWrapper> {
-        const socket = this.createSocketCore(token);
+        const socket = this.createSocketCore(this.baseUrl, token);
 
-        socket.on('message', this.onSocketMessageReceived.bind(this));
+        socket.on('message', this.onMessageReceived.bind(this));
         socket.on('error', this.onErrorReceived.bind(this));
         socket.on('close', this.onCloseReceived.bind(this));
 
         return Promise.resolve(socket);
-    }
-
-    protected createSocketCore(token: AccessToken): WebSocketWrapper {
-        return new WebSocketWrapperImpl(this.baseUrl, {
-            headers: {
-                'Authorization': `Bearer ${token.value}`,
-                'X-Application-Id': PLUGIN_ID
-            }
-        });
     }
 
     public getConnectionId(): string | undefined {
@@ -134,7 +124,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         await this.notifyErrorReceived();
     }
 
-    protected async onSocketMessageReceived(buffer: Buffer): Promise<void> {
+    protected async onMessageReceived(buffer: Buffer): Promise<void> {
         if (buffer.length === 0) {
             return;
         }

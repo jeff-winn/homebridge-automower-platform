@@ -5,12 +5,12 @@ import { WebSocketWrapper } from '../../../src/primitives/webSocketWrapper';
 export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClientImpl {
     public callback?: (token: AccessToken) => WebSocketWrapper;
 
-    protected createSocketCore(token: AccessToken): WebSocketWrapper {
+    protected createSocketCore(url: string, token: AccessToken): WebSocketWrapper {
         return this.callback!(token);
     }
 
-    public unsafeOnSocketMessageReceived(buffer: Buffer): Promise<void> {
-        return this.onSocketMessageReceived(buffer);
+    public unsafeOnMessageReceived(buffer: Buffer): Promise<void> {
+        return this.onMessageReceived(buffer);
     }
 
     public unsafeOnCloseReceived(): Promise<void> {
