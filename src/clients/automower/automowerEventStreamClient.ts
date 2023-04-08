@@ -86,7 +86,7 @@ export interface AutomowerEventStreamClient extends EventStreamClient {
 }
 
 export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient implements AutomowerEventStreamClient {
-    private onMessageReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
+    private onEventReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
     private connectionId?: string;
     
     public constructor(private baseUrl: string, log: PlatformLogger) { 
@@ -121,7 +121,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     }    
 
     public isCallbackSet(): boolean {
-        return this.onMessageReceivedCallback !== undefined;
+        return this.onEventReceivedCallback !== undefined;
     }
     
     protected async onErrorReceived(err: ErrorEvent): Promise<void> {
@@ -145,11 +145,11 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     
             const connectedEvent = data as ConnectedEvent;
             if (connectedEvent.connectionId !== undefined) {
-                this.onConnectedReceived(connectedEvent);
+                await this.onConnectedReceived(connectedEvent);
             } else {
                 const mowerEvent = data as AutomowerEvent;
                 if (mowerEvent.type !== undefined) {
-                    await this.notifyMessageReceived(mowerEvent);
+                    await this.notifyEventReceived(mowerEvent);
                 }
             }
         } catch (e) {
@@ -162,13 +162,13 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         await this.onConnected();
     }
 
-    protected async notifyMessageReceived(event: AutomowerEvent): Promise<void> {
-        if (this.onMessageReceivedCallback !== undefined) {
-            await this.onMessageReceivedCallback(event);
+    protected async notifyEventReceived(event: AutomowerEvent): Promise<void> {
+        if (this.onEventReceivedCallback !== undefined) {
+            await this.onEventReceivedCallback(event);
         }
     }
 
     public setOnEventCallback(callback: (event: AutomowerEvent) => Promise<void>): void {        
-        this.onMessageReceivedCallback = callback;
+        this.onEventReceivedCallback = callback;
     }
 }

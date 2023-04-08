@@ -12,7 +12,7 @@ import { AbstractEventStreamService, EventStreamService } from '../eventStreamSe
  */
 export class GardenaLocationEventStreamService extends AbstractEventStreamService<GardenaEventStreamClient> {
     protected override attachTo(stream: GardenaEventStreamClient): void {
-        stream.on(this.onEventReceived.bind(this));
+        stream.setOnEventCallback(this.onEventReceived.bind(this));
     }
 
     protected onEventReceived(event: DataItem): Promise<void> {
