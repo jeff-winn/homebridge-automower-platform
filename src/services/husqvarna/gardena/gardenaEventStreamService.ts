@@ -39,15 +39,26 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
     }
 
     public async start(): Promise<void> {
-        if (!this.initialized) {
+        if (!this.hasBeenInitialized()) {
             await this.init();
-            this.initialized = true;
+            this.flagAsInitialized();
         }
         
-        const services = Array.from(this.services.values());
-        for (const service of services) {
+        for (const service of this.getServices()) {
             await service.start();
         }
+    }
+
+    protected hasBeenInitialized(): boolean {
+        return this.initialized;
+    }
+
+    protected flagAsInitialized(): void {
+        this.initialized = true;
+    }
+
+    protected getServices(): EventStreamService[] {
+        return Array.from(this.services.values());
     }
 
     protected async init(): Promise<void> {
@@ -70,17 +81,15 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
             service.setOnStatusEventCallback(this.onStatusEventCallback);
 
             this.services.set(location.id, service);
-
-            await service.start();
         }
     }
 
     public async stop(): Promise<void> {
-        if (!this.initialized) {
+        if (!this.hasBeenInitialized()) {
             return;
         }
 
-        for (const service of this.services.values()) {
+        for (const service of this.getServices()) {
             await service.stop();
         }
     }
