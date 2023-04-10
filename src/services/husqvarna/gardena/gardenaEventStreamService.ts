@@ -20,6 +20,9 @@ export class GardenaLocationEventStreamService extends AbstractEventStreamServic
     }
 }
 
+/**
+ * A composite {@link EventStreamService} which can stream events for multiple locations in use for an account.
+ */
 export class CompositeGardenaEventStreamService implements EventStreamService {
     private readonly services: Map<string, EventStreamService> = new Map<string, EventStreamService>();
 
@@ -57,7 +60,7 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
         this.initialized = true;
     }
 
-    protected getServices(): EventStreamService[] {
+    public getServices(): EventStreamService[] {
         return Array.from(this.services.values());
     }
 
