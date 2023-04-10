@@ -37,6 +37,25 @@ describe('CompositeGardenaEventStreamService', () => {
         await expect(target.start()).rejects.toThrowError(InvalidStateError);
     });
 
+    it('should log a warning when no locations detected', async () => {
+        target.setOnStatusEventCallback(_ => Promise.resolve(undefined));
+        target.setOnSettingsEventCallback(_ => Promise.resolve(undefined));
+
+        const token: AccessToken = {
+            provider: 'husqvarna',
+            value: 'hello world'
+        };
+
+        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        
+        client.setup(o => o.getLocations(token)).returnsAsync(undefined);
+        log.setup(o => o.warn('GARDENA_NO_LOCATIONS_FOUND')).returns(undefined);
+
+        await expect(target.start()).resolves.toBeUndefined();
+
+        log.verify(o => o.warn('GARDENA_NO_LOCATIONS_FOUND'), Times.Once());
+    });
+
     it('should initialize start and stop services as expected', async () => {
         target.setOnStatusEventCallback(_ => Promise.resolve(undefined));
         target.setOnSettingsEventCallback(_ => Promise.resolve(undefined));
