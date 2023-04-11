@@ -43,7 +43,7 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
             const data = JSON.parse(buffer.toString());
             this.log.debug('RECEIVED_EVENT', JSON.stringify(data));
 
-            if (!this.firstMessageReceived) {
+            if (!this.hasFirstMessageBeenReceived()) {
                 // The first message has been received.
                 await this.onFirstMessageReceived();
             }
@@ -57,9 +57,17 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         }
     }
 
+    private hasFirstMessageBeenReceived(): boolean {
+        return this.firstMessageReceived;
+    }
+
     protected async onFirstMessageReceived(): Promise<void> {
         await this.onConnected();
     
+        this.flagAsFirstMessageReceived();
+    }
+
+    private flagAsFirstMessageReceived(): void {
         this.firstMessageReceived = true;
     }
 

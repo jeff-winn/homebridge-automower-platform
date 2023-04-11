@@ -42,7 +42,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         socket.setup(o => o.close()).returns(undefined);
 
         const socket2 = new Mock<WebSocketWrapper>();
-        socket2.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
+        socket2.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket2.object());
 
         let attempt = 0;
         target.callback = () => {
