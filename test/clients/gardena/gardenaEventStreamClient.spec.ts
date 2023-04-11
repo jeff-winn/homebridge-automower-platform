@@ -1,34 +1,50 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import * as constants from '../../../src/settings';
-
-import { AutomowerEvent, AutomowerEventTypes, ConnectedEvent, ErrorEvent } from '../../../src/clients/automower/automowerEventStreamClient';
+import { DataItem, GardenaClient, ItemType } from '../../../src/clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
+import { AccessToken } from '../../../src/model';
 import { WebSocketWrapper } from '../../../src/primitives/webSocketWrapper';
-import { AutomowerEventStreamClientImplSpy } from './automowerEventStreamClientImplSpy';
+import { GardenaEventStreamClientImplSpy } from './gardenaEventStreamClientImplSpy';
 
-describe('AutomowerEventStreamClientImpl', () => {
+describe('GardenaEventStreamClientImpl', () => {
     let socket: Mock<WebSocketWrapper>;
+    let locationId: string;
+    let client: Mock<GardenaClient>;
     let log: Mock<PlatformLogger>;
-
-    let target: AutomowerEventStreamClientImplSpy;
+    
+    let target: GardenaEventStreamClientImplSpy;
 
     beforeEach(() => {
         socket = new Mock<WebSocketWrapper>();
+        locationId = '12345';
+        client = new Mock<GardenaClient>();
         log = new Mock<PlatformLogger>();
 
-        target = new AutomowerEventStreamClientImplSpy(constants.AUTOMOWER_STREAM_API_BASE_URL, log.object());
+        target = new GardenaEventStreamClientImplSpy(locationId, client.object(), log.object());
     });
 
     it('should open the socket and connect all events', async () => {
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
 
+        const token: AccessToken = {
+            provider: 'hello',
+            value: 'world'
+        };
+
+        client.setup(o => o.createSocket(locationId, token)).returnsAsync({
+            data: {
+                id: locationId,
+                type: ItemType.WEBSOCKET,
+                attributes: {
+                    url: 'wss://ws-iapi.smart.gardena.dev/v1?auth=helloWorld',
+                    validity: 10
+                }
+            }
+        });
+
         target.callback = () => socket.object();
 
-        await expect(target.open({
-            value: 'hello',
-            provider: 'world'
-        })).resolves.toBeUndefined();
+        await expect(target.open(token)).resolves.toBeUndefined();
         
         expect(target.isConnecting()).toBeTruthy();
         
@@ -38,6 +54,38 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should close the socket when being reopened', async () => {
+        const token1: AccessToken = {
+            value: 'hello1',
+            provider: 'world1'
+        };
+
+        const token2: AccessToken = {
+            value: 'hello2',
+            provider: 'world2'
+        };
+
+        client.setup(o => o.createSocket(locationId, token1)).returnsAsync({
+            data: {
+                id: locationId,
+                type: ItemType.WEBSOCKET,
+                attributes: {
+                    url: 'wss://ws-iapi.smart.gardena.dev/v1?auth=helloWorld-1',
+                    validity: 10
+                }
+            }
+        });
+
+        client.setup(o => o.createSocket(locationId, token2)).returnsAsync({
+            data: {
+                id: locationId,
+                type: ItemType.WEBSOCKET,
+                attributes: {
+                    url: 'wss://ws-iapi.smart.gardena.dev/v1?auth=helloWorld-2',
+                    validity: 10
+                }
+            }
+        });
+
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.close()).returns(undefined);
 
@@ -55,36 +103,38 @@ describe('AutomowerEventStreamClientImpl', () => {
             }
         };
 
-        await target.open({
-            value: 'hello1',
-            provider: 'world1'
-        });
-
-        await target.open({
-            value: 'hello2',
-            provider: 'world2'
-        });
+        await expect(target.open(token1)).resolves.toBeUndefined();
+        await expect(target.open(token2)).resolves.toBeUndefined();
 
         socket.verify(o => o.close(), Times.Once());
     });
 
     it('should ping socket when opened', async () => {
+        const token: AccessToken = {
+            provider: 'hello',
+            value: 'world'
+        };
+
+        client.setup(o => o.createSocket(locationId, token)).returnsAsync({
+            data: {
+                id: locationId,
+                type: ItemType.WEBSOCKET,
+                attributes: {
+                    url: 'wss://ws-iapi.smart.gardena.dev/v1?auth=helloWorld',
+                    validity: 10
+                }
+            }
+        });
+
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.ping(It.IsAny())).returns(undefined);
 
         target.callback = () => socket.object();
-        await target.open({
-            value: 'hello1',
-            provider: 'world1'
-        });
+        await expect(target.open(token)).resolves.toBeUndefined();
 
         target.ping();
 
         socket.verify(o => o.ping('ping'), Times.Once());
-    });
-
-    it('should return undefined when not connected', () => {
-        expect(target.getConnectionId()).toBeUndefined();
     });
 
     it('should not throw an error when ping without being opened', () => {
@@ -94,14 +144,16 @@ describe('AutomowerEventStreamClientImpl', () => {
     it('should return false when not connected', () => {
         expect(target.isConnected()).toBeFalsy();
     });
-    
+
     it('should do nothing when no callback is set on error received', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
 
         await expect(target.unsafeOnErrorReceived({
-            error: 'error',
-            message: 'error message',
-            type: 'error type'
+            code: 'hello',
+            detail: 'world',
+            id: '12345',
+            status: 'status',
+            title: 'title'
         })).resolves.toBeUndefined();
     });
 
@@ -114,9 +166,11 @@ describe('AutomowerEventStreamClientImpl', () => {
         });
 
         await expect(target.unsafeOnErrorReceived({
-            error: 'error',
-            message: 'error message',
-            type: 'error type'
+            code: 'hello',
+            detail: 'world',
+            id: '12345',
+            status: 'status',
+            title: 'title'
         })).resolves.toBeUndefined();
 
         log.verify(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny()), Times.Once());
@@ -167,10 +221,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnConnectedReceived({
-            ready: true,
-            connectionId: '12345'
-        })).resolves.toBeUndefined();
+        await expect(target.unsafeOnFirstMessageReceived()).resolves.toBeUndefined();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -186,11 +237,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnConnectedReceived({
-            ready: true,
-            connectionId: '12345'
-        })).resolves.toBeUndefined();
-
+        await expect(target.unsafeOnFirstMessageReceived()).resolves.toBeUndefined();
         await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
@@ -203,12 +250,6 @@ describe('AutomowerEventStreamClientImpl', () => {
     it('should handle when an error has been received', async () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
-        const err: ErrorEvent = {
-            error: 'hello',
-            message: 'world',
-            type: 'fake'
-        };
-
         let handled = false;
         target.setOnErrorCallback(() => {
             handled = true;
@@ -216,7 +257,13 @@ describe('AutomowerEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnErrorReceived(err)).resolves.toBeUndefined();
+        await expect(target.unsafeOnErrorReceived({
+            code: 'code',
+            detail: 'detail',
+            id: '12345',
+            status: 'status',
+            title: 'title'
+        })).resolves.toBeUndefined();
 
         expect(handled).toBeTruthy();
     });
@@ -226,25 +273,31 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should terminate the connection when connected on close', async () => {
+        const token: AccessToken = {
+            provider: 'hello',
+            value: 'world'
+        };
+
+        client.setup(o => o.createSocket(locationId, token)).returnsAsync({
+            data: {
+                id: locationId,
+                type: ItemType.WEBSOCKET,
+                attributes: {
+                    url: 'wss://ws-iapi.smart.gardena.dev/v1?auth=helloWorld',
+                    validity: 10
+                }
+            }
+        });
+
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.terminate()).returns(undefined);
 
         target.callback = () => socket.object();
 
-        await target.open({
-            value: 'hello1',
-            provider: 'world1'
-        });
-
+        await expect(target.open(token)).resolves.toBeUndefined();
         await expect(target.close()).resolves.toBeUndefined();
 
         socket.verify(o => o.terminate(), Times.Once());
-    });
-    
-    it('should set the callback', () => {
-        target.setOnEventCallback(() => Promise.resolve(undefined));
-
-        expect(target.isCallbackSet()).toBeTruthy();
     });
 
     it('should return when the buffer is empty', async () => {
@@ -263,32 +316,6 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
 
-    it('should handle the connected event', async () => {
-        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
-        log.setup(o => o.info(It.IsAny())).returns(undefined);
-
-        const id = '12345';
-        const event: ConnectedEvent = {
-            ready: true,
-            connectionId: id
-        };
-
-        let connected = false;
-        target.setOnConnectedCallback(() => {
-            connected = true;
-
-            return Promise.resolve(undefined);
-        });
-
-        const payload = Buffer.from(JSON.stringify(event));
-
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
-        
-        expect(target.isConnected()).toBeTruthy();
-        expect(target.getConnectionId()).toBe(id);
-        expect(connected).toBeTruthy();
-    });
-
     it('should ignore the event when no type is provided', async () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
@@ -301,9 +328,9 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         const id = '12345';
-        const event: AutomowerEvent = {
+        const event: DataItem = {
             id: id,
-            type: AutomowerEventTypes.UNKNOWN
+            type: ItemType.MOWER
         };
 
         const payload = Buffer.from(JSON.stringify(event));
@@ -315,9 +342,9 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
         const id = '12345';
-        const event: AutomowerEvent = {
+        const event: DataItem = {
             id: id,
-            type: AutomowerEventTypes.UNKNOWN
+            type: ItemType.MOWER
         };
 
         const payload = Buffer.from(JSON.stringify(event));
