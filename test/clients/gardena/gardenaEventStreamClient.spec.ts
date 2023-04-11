@@ -1,6 +1,6 @@
 import { It, Mock, Times } from 'moq.ts';
 
-import { GardenaClient, ItemType } from '../../../src/clients/gardena/gardenaClient';
+import { DataItem, GardenaClient, ItemType } from '../../../src/clients/gardena/gardenaClient';
 import { PlatformLogger } from '../../../src/diagnostics/platformLogger';
 import { AccessToken } from '../../../src/model';
 import { WebSocketWrapper } from '../../../src/primitives/webSocketWrapper';
@@ -314,5 +314,51 @@ describe('GardenaEventStreamClientImpl', () => {
         await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
 
         log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
+    });
+
+    it('should ignore the event when no type is provided', async () => {
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
+        const payload = Buffer.from(JSON.stringify({ }));
+
+        await target.unsafeOnMessageReceived(payload);
+    });
+
+    it('should ignore the mower event without a callback', async () => {
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
+        const id = '12345';
+        const event: DataItem = {
+            id: id,
+            type: ItemType.MOWER
+        };
+
+        const payload = Buffer.from(JSON.stringify(event));
+
+        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+    });
+
+    it('should handle the mower event with a callback', async () => {
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
+        const id = '12345';
+        const event: DataItem = {
+            id: id,
+            type: ItemType.MOWER
+        };
+
+        const payload = Buffer.from(JSON.stringify(event));
+        let executed = false;
+
+        target.setOnEventCallback((e1) => {
+            expect(e1).toStrictEqual(event);
+
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+
+        expect(executed).toBeTruthy();
     });
 });
