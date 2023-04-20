@@ -26,6 +26,8 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
     protected override onConnecting(): void {
         // If the client is being reused, when it connects the connected callback will need to be executed.
         this.firstMessageReceived = false;
+
+        super.onConnecting();
     }
 
     protected async createSocket(token: AccessToken): Promise<WebSocketWrapper> {
