@@ -47,7 +47,6 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
             await this.raiseMowerSettingsChangedEvent({
                 mowerId: event.id,
                 attributes: {
-                    schedule: undefined,
                     settings: {
                         cuttingHeight: event.attributes.cuttingHeight
                     }
@@ -71,8 +70,7 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         await this.raiseMowerSettingsChangedEvent({
             mowerId: mowerId,
             attributes: {
-                schedule: this.scheduleConverter.convertPlannerAndCalendar(lastStatusEvent.attributes.planner, lastSettingsEvent.attributes.calendar),
-                settings: undefined
+                schedule: this.scheduleConverter.convertPlannerAndCalendar(lastStatusEvent.attributes.planner, lastSettingsEvent.attributes.calendar)
             }
         });
     }
