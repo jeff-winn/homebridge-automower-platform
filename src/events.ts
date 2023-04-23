@@ -14,10 +14,24 @@ export interface MowerEvent {
  * Describes a mower status changed event.
  */
 export interface MowerStatusChangedEvent extends MowerEvent {
+    /**
+     * Describes the event attributes.
+     */
     attributes: {
-        battery: Battery | undefined;
-        mower: MowerState | undefined;
-        connection: MowerConnection | undefined;
+        /**
+         * Describes the battery state.
+         */
+        battery?: Battery;
+
+        /**
+         * Describes the mower state.
+         */
+        mower?: MowerState;
+
+        /**
+         * Describes the connection to the device.
+         */
+        connection?: MowerConnection;
     };
 }
 
@@ -25,8 +39,18 @@ export interface MowerStatusChangedEvent extends MowerEvent {
  * Describes a mower settings changed event.
  */
 export interface MowerSettingsChangedEvent extends MowerEvent {
+    /**
+     * Describes the event attributes.
+     */
     attributes: {
-        schedule: MowerSchedule | undefined;
-        settings: MowerSettings | undefined;
+        /**
+         * Describes the mower schedule.
+         */
+        schedule?: MowerSchedule;
+
+        /**
+         * Describes the mower settings.
+         */
+        settings?: MowerSettings;
     };
 }

@@ -307,20 +307,12 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.lastEventReceived = value;
     }
 
-    protected shouldRaiseMowerSettingsChangedEvent(): boolean {
-        return this.onSettingsEventCallback !== undefined;
-    }
-
     protected raiseMowerSettingsChangedEvent(event: MowerSettingsChangedEvent): Promise<void> {
         if (this.onSettingsEventCallback === undefined) {
             return Promise.resolve(undefined);
         }
 
         return this.onSettingsEventCallback(event);
-    }
-
-    protected shouldRaiseMowerStatusChangedEvent(): boolean {
-        return this.onStatusEventCallback !== undefined;
     }
 
     protected raiseMowerStatusChangedEvent(event: MowerStatusChangedEvent): Promise<void> {

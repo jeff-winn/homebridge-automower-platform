@@ -9,6 +9,7 @@ import { FetchClient, Response } from '../fetchClient';
  * Defines the types of items.
  */
 export enum ItemType {
+    UNKNOWN = 'UNKNOWN',
     LOCATION = 'LOCATION',
     DEVICE = 'DEVICE',
     MOWER = 'MOWER',
@@ -283,7 +284,7 @@ export interface MowerServiceDataItem extends DataItem {
  * Describes a common object.
  */
 export interface CommonServiceDataItem extends DataItem {
-    relationships: {
+    relationships?: {
         device: {
             data: DeviceLink;
         };

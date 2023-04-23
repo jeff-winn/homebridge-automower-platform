@@ -17,8 +17,10 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         super(tokenManager, stream, log, timer);
     }
 
-    protected attachTo(stream: AutomowerEventStreamClient): void {
+    protected override attachTo(stream: AutomowerEventStreamClient): void {
         stream.setOnEventCallback(this.onEventReceived.bind(this));
+
+        super.attachTo(stream);
     }
     
     protected onEventReceived(event: AutomowerEvent): Promise<void> {
@@ -38,16 +40,15 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
                 this.log.warn('RECEIVED_UNKNOWN_EVENT', event.type);
                 return Promise.resolve(undefined);
         }
-    }    
+    }
 
     protected async onSettingsEvent(event: SettingsEvent): Promise<void> {
         this.lastSettingsEvents[event.id] = event;
 
-        if (this.shouldRaiseMowerSettingsChangedEvent() && event.attributes.cuttingHeight !== undefined) {
+        if (event.attributes.cuttingHeight !== undefined) {
             await this.raiseMowerSettingsChangedEvent({
                 mowerId: event.id,
                 attributes: {
-                    schedule: undefined,
                     settings: {
                         cuttingHeight: event.attributes.cuttingHeight
                     }
@@ -62,8 +63,7 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         const lastSettingsEvent = this.lastSettingsEvents.get(mowerId);
         const lastStatusEvent = this.lastStatusEvents.get(mowerId);
 
-        if (!this.shouldRaiseMowerStatusChangedEvent() || lastSettingsEvent === undefined || 
-            lastSettingsEvent.attributes.calendar === undefined || lastStatusEvent === undefined) {
+        if (lastSettingsEvent === undefined || lastSettingsEvent.attributes.calendar === undefined || lastStatusEvent === undefined) {
             // Both pieces of data are required for the conversion.
             return;
         }
@@ -71,8 +71,7 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         await this.raiseMowerSettingsChangedEvent({
             mowerId: mowerId,
             attributes: {
-                schedule: this.scheduleConverter.convertPlannerAndCalendar(lastStatusEvent.attributes.planner, lastSettingsEvent.attributes.calendar),
-                settings: undefined
+                schedule: this.scheduleConverter.convertPlannerAndCalendar(lastStatusEvent.attributes.planner, lastSettingsEvent.attributes.calendar)
             }
         });
     }
@@ -80,21 +79,19 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
     protected async onStatusEvent(event: StatusEvent): Promise<void> {    
         this.lastStatusEvents[event.id] = event;
 
-        if (this.shouldRaiseMowerStatusChangedEvent()) {
-            await this.raiseMowerStatusChangedEvent({
-                mowerId: event.id,
-                attributes: {
-                    battery: {
-                        level: event.attributes.battery.batteryPercent
-                    },
-                    connection: {
-                        connected: event.attributes.metadata.connected
-                    },
-                    mower: this.stateConverter.convertMowerState(event.attributes.mower)
-                }
-            });
-        }
-        
+        await this.raiseMowerStatusChangedEvent({
+            mowerId: event.id,
+            attributes: {
+                battery: {
+                    level: event.attributes.battery.batteryPercent
+                },
+                connection: {
+                    connected: event.attributes.metadata.connected
+                },
+                mower: this.stateConverter.convertMowerState(event.attributes.mower)
+            }
+        });
+
         await this.raiseMowerScheduleChangedEventIfNeeded(event.id);
     }
 }
