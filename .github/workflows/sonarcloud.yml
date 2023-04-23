@@ -31,13 +31,13 @@ jobs:
     - run: npm run release
 
     - name: Scan with SonarCloud
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: sonarsource/sonarcloud-github-action@v1.9.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Check Quality Gate
-      uses: SonarSource/sonarqube-quality-gate-action@master
+      uses: sonarsource/sonarqube-quality-gate-action@V1.1.0
 
       # Only run the checks for pull requests
       if: ${{ github.event_name == 'pull_request' }}
