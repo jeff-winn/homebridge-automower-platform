@@ -283,7 +283,7 @@ export interface MowerServiceDataItem extends DataItem {
  * Describes a common object.
  */
 export interface CommonServiceDataItem extends DataItem {
-    relationships: {
+    relationships?: {
         device: {
             data: DeviceLink;
         };
