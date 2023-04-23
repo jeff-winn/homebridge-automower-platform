@@ -9,6 +9,7 @@ import { FetchClient, Response } from '../fetchClient';
  * Defines the types of items.
  */
 export enum ItemType {
+    UNKNOWN = 'UNKNOWN',
     LOCATION = 'LOCATION',
     DEVICE = 'DEVICE',
     MOWER = 'MOWER',

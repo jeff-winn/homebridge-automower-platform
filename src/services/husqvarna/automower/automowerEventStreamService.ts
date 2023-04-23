@@ -17,8 +17,10 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         super(tokenManager, stream, log, timer);
     }
 
-    protected attachTo(stream: AutomowerEventStreamClient): void {
+    protected override attachTo(stream: AutomowerEventStreamClient): void {
         stream.setOnEventCallback(this.onEventReceived.bind(this));
+
+        super.attachTo(stream);
     }
     
     protected onEventReceived(event: AutomowerEvent): Promise<void> {

@@ -20,6 +20,8 @@ export class GardenaLocationEventStreamService extends AbstractEventStreamServic
 
     protected override attachTo(stream: GardenaEventStreamClient): void {
         stream.setOnEventCallback(this.onEventReceived.bind(this));
+
+        super.attachTo(stream);
     }
 
     protected onEventReceived(event: DataItem): Promise<void> {

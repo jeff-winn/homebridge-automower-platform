@@ -2,7 +2,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import * as model from '../../../../src/model';
 
-import { Activity, HeadlightMode, Mode, MowerState, OverrideAction, Planner, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
+import { Activity, HeadlightMode, Mode, MowerState, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
 import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../../src/clients/automower/automowerEventStreamClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { BadCredentialsError } from '../../../../src/errors/badCredentialsError';

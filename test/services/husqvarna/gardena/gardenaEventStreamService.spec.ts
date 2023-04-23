@@ -1,7 +1,10 @@
 import { It, Mock, Times } from 'moq.ts';
 
+import * as model from '../../../../src/model';
+
 import {
-    BatteryState, CommonServiceDataItem, GardenaClient, ItemType, LocationsResponse, MowerActivity,
+    BatteryState, CommonServiceDataItem,
+    GardenaClient, ItemType, LocationsResponse, MowerActivity,
     MowerServiceDataItem, RFLinkState, ServiceState
 } from '../../../../src/clients/gardena/gardenaClient';
 import { GardenaEventStreamClient } from '../../../../src/clients/gardena/gardenaEventStreamClient';
@@ -38,6 +41,33 @@ describe('GardenaLocationEventStreamService', () => {
             stream.object(),
             log.object(),
             timer.object());
+    });
+
+    it('should get the token and login to the stream', async () => {
+        const token: model.AccessToken = {
+            value: 'abcd1234',
+            provider: 'provider'
+        };
+
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
+        
+        stream.setup(o => o.setOnEventCallback(It.IsAny())).returns(undefined);
+        stream.setup(o => o.setOnConnectedCallback(It.IsAny())).returns(undefined);
+        stream.setup(o => o.setOnDisconnectedCallback(It.IsAny())).returns(undefined);
+        stream.setup(o => o.setOnErrorCallback(It.IsAny())).returns(undefined);
+        stream.setup(o => o.open(token)).returnsAsync(undefined);
+
+        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
+        timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
+
+        await expect(target.start()).resolves.toBeUndefined();
+        
+        timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
+        stream.verify(o => o.setOnEventCallback(It.IsAny()), Times.Once());
+        stream.verify(o => o.setOnConnectedCallback(It.IsAny()), Times.Once());
+        stream.verify(o => o.setOnDisconnectedCallback(It.IsAny()), Times.Once());
+        stream.verify(o => o.setOnErrorCallback(It.IsAny()), Times.Once());
+        stream.verify(o => o.open(token), Times.Once());
     });
 
     it('should run the mower event callback when mower event is received', async () => {
@@ -126,6 +156,17 @@ describe('GardenaLocationEventStreamService', () => {
         await expect(target.unsafeOnEventReceived(event)).resolves.toBeUndefined();
 
         expect(executed).toBeTruthy();
+    });
+
+    it('should log a warning when the event is unknown', async () => {
+        log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
+        
+        await target.unsafeOnEventReceived({
+            id: '12345',
+            type: ItemType.UNKNOWN
+        });        
+
+        log.verify(o => o.warn(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
     });
 });
 
