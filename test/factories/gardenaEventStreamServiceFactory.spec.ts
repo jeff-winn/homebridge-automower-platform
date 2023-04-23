@@ -1,11 +1,12 @@
 import { Mock } from 'moq.ts';
 
+import { GardenaClientImpl } from '../../src/clients/gardena/gardenaClient';
+import { PlatformLogger } from '../../src/diagnostics/platformLogger';
 import { GardenaEventStreamServiceFactoryImpl } from '../../src/factories/gardenaEventStreamServiceFactory';
 import { PlatformContainer } from '../../src/primitives/platformContainer';
-import { PlatformLogger } from '../../src/diagnostics/platformLogger';
-import { GardenaClientImpl } from '../../src/clients/gardena/gardenaClient';
-import { AccessTokenManagerImpl } from '../../src/services/husqvarna/accessTokenManager';
 import { TimerImpl } from '../../src/primitives/timer';
+import { AccessTokenManagerImpl } from '../../src/services/husqvarna/accessTokenManager';
+import { GardenaMowerStateConverterImpl } from '../../src/services/husqvarna/gardena/converters/gardenaMowerStateConverter';
 import { GardenaLocationEventStreamService } from '../../src/services/husqvarna/gardena/gardenaEventStreamService';
 
 describe('GardenaEventStreamServiceFactoryImpl', () => {
@@ -22,11 +23,13 @@ describe('GardenaEventStreamServiceFactoryImpl', () => {
     });
 
     it('should create a new service instance for the location specified', () => {
+        const stateConverter = new Mock<GardenaMowerStateConverterImpl>();
         const client = new Mock<GardenaClientImpl>();
         const tokenManager = new Mock<AccessTokenManagerImpl>();
         const timer = new Mock<TimerImpl>();
 
         container.setup(o => o.getGardenaClientClass()).returns(GardenaClientImpl);
+        container.setup(o => o.resolve(GardenaMowerStateConverterImpl)).returns(stateConverter.object());
         container.setup(o => o.resolve(GardenaClientImpl)).returns(client.object());
         container.setup(o => o.resolve(AccessTokenManagerImpl)).returns(tokenManager.object());
         container.setup(o => o.resolve(TimerImpl)).returns(timer.object());

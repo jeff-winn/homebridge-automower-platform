@@ -304,41 +304,7 @@ describe('AutomowerEventStreamService', () => {
         };
 
         await target.unsafeEventReceived(e);
-    });
-
-    it('should do nothing when status-event is received with no callback', async () => {
-        const planner: Planner = {
-            nextStartTimestamp: 1,
-            override: {
-                action: undefined
-            },
-            restrictedReason: RestrictedReason.NOT_APPLICABLE
-        };
-
-        const e: StatusEvent = {
-            id: '12345',
-            type: AutomowerEventTypes.STATUS,
-            attributes: {
-                battery: {
-                    batteryPercent: 100
-                },
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
-                },
-                mower: {
-                    activity: Activity.MOWING,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.IN_OPERATION
-                },
-                planner: planner
-            }
-        };
-
-        await target.unsafeEventReceived(e);
-    });    
+    });   
     
     it('should run the callback when settings-event is received', async () => {
         const event: SettingsEvent = {

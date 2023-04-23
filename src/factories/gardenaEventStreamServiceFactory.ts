@@ -4,6 +4,7 @@ import { PlatformContainer } from '../primitives/platformContainer';
 import { TimerImpl } from '../primitives/timer';
 import { AccessTokenManagerImpl } from '../services/husqvarna/accessTokenManager';
 import { EventStreamService } from '../services/husqvarna/eventStreamService';
+import { GardenaMowerStateConverterImpl } from '../services/husqvarna/gardena/converters/gardenaMowerStateConverter';
 import { GardenaLocationEventStreamService } from '../services/husqvarna/gardena/gardenaEventStreamService';
 
 /**
@@ -26,10 +27,12 @@ export class GardenaEventStreamServiceFactoryImpl implements GardenaEventStreamS
     public create(locationId: string): EventStreamService {
         const stream = this.createStreamClient(locationId);
 
-        const tokenManager = this.container.resolve(AccessTokenManagerImpl);
+        const stateConverter = this.container.resolve(GardenaMowerStateConverterImpl);
+        const tokenManager = this.container.resolve(AccessTokenManagerImpl);        
         const timer = this.container.resolve(TimerImpl);
         
         return new GardenaLocationEventStreamService(
+            stateConverter,
             tokenManager,
             stream,
             this.log,
