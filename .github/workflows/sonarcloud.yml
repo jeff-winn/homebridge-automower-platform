@@ -37,7 +37,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Check Quality Gate
-      uses: sonarsource/sonarqube-quality-gate-action@V1.1.0
+      uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
 
       # Only run the checks for pull requests
       if: ${{ github.event_name == 'pull_request' }}
