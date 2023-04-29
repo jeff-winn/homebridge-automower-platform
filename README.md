@@ -3,7 +3,7 @@
 
 [![build](https://github.com/jeff-winn/homebridge-automower-platform/actions/workflows/build.yml/badge.svg)](https://github.com/jeff-winn/homebridge-automower-platform/actions/workflows/build.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=homebridge-automower-platform&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=homebridge-automower-platform) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=homebridge-automower-platform&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=homebridge-automower-platform) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=homebridge-automower-platform&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=homebridge-automower-platform) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=homebridge-automower-platform&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=homebridge-automower-platform)
 
-A plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) as [Apple HomeKit](https://www.apple.com/ios/home/) accessories using the [Husqvarna Group](https://developer.husqvarnagroup.cloud) cloud services.
+A plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) and [Gardena Smart](https://www.gardena.com/int/products/lawn-care/robotic-mower/) robotic lawn mowers as [Apple HomeKit](https://www.apple.com/ios/home/) accessories using the [Husqvarna Group](https://developer.husqvarnagroup.cloud) cloud services.
 
 Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mowers(s).
 
@@ -11,11 +11,14 @@ Be advised, because this plug-in uses cloud services, service disruptions or out
 The following hardware requirements are necessary for the proper operation of the plug-in. If you are unsure whether your mower is supported by the plug-in, you can find the compatibility matrix [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/compatibility-matrix).
 
 - The Automower *must* have an Automower Connect module installed, Bluetooth only models will require an upgrade. For more information, please contact your local Husqvarna Automower dealer.
+- The Sileno *must* be a Smart series mower which you can control remotely via an app while not near the device, Bluetooth only models are not supported.
 
 #### Known Issues
 - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and you are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/removing-mower) should correct the issue.
 
 #### Supported Capabilities
+Be advised, the capabilities mentioned below vary between product lines by Husqvarna. Depending on the type of mower you have purchased, different capabilities will be provided by the plug-in.
+
 - A switch to control whether each mower (based on configuration - see documentation):
   - *should* mow the property.
   - or *has* the on-board schedule enabled or disabled.
