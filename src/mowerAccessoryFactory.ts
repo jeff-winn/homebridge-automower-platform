@@ -22,7 +22,7 @@ import { PauseSwitch, PauseSwitchImpl } from './services/pauseSwitch';
 import { DeterministicMowerFaultedPolicy } from './services/policies/mowerFaultedPolicy';
 import { DeterministicMowerInMotionPolicy } from './services/policies/mowerInMotionPolicy';
 import { DeterministicMowerIsArrivingPolicy } from './services/policies/mowerIsArrivingPolicy';
-import { DeterministicMowerIsActivePolicy } from './services/policies/mowerIsEnabledPolicy';
+import { DeterministicMowerIsActivePolicy, DeterministicMowerIsScheduledPolicy } from './services/policies/mowerIsEnabledPolicy';
 import { DeterministicMowerIsLeavingPolicy } from './services/policies/mowerIsLeavingPolicy';
 import { DeterministicMowerIsPausedPolicy } from './services/policies/mowerIsPausedPolicy';
 import { DeterministicMowerTamperedPolicy } from './services/policies/mowerTamperedPolicy';
@@ -148,7 +148,7 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
             this.locale.format('SCHEDULE'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(this.getContolServiceClass()),
             this.container.resolve(ChangeSettingsServiceImpl),
-            this.container.resolve(DeterministicMowerIsActivePolicy),
+            this.container.resolve(DeterministicMowerIsScheduledPolicy),
             accessory, this.api, this.log);
     }
 
