@@ -84,6 +84,75 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.activity).toEqual(model.Activity.PARKED);
     });
 
+    it('should return dormant when parked while restricted in charge station', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.PARKED_IN_CS,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.HOME,
+                    state: State.RESTRICTED
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convertMower(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.PARKED);
+        expect(result.state).toEqual(model.State.DORMANT);
+    });
+
     it('should return parked when parked in charge station', () => {
         const mower: Mower = {
             id: '12345',
