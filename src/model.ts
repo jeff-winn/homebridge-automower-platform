@@ -66,7 +66,6 @@ export enum State {
      */
     IN_OPERATION = 'in_operation',
 
-
     /**
      * The mower is dormant while waiting for an instruction, or until the next scheduled execution.
      */
