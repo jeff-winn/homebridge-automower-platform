@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Activity, Mower, MowerState, State } from '../../../../clients/automower/automowerClient';
+import { Activity, Mode, Mower, MowerState, State } from '../../../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../diagnostics/platformLogger';
 
 /**
@@ -63,6 +63,10 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
     protected convertState(mower: MowerState): model.State {
         if (mower.state === State.STOPPED && mower.errorCode !== 0) {
             return model.State.TAMPERED;
+        }
+
+        if (mower.mode === Mode.HOME && mower.activity === Activity.PARKED_IN_CS) {
+            return model.State.DORMANT;
         }
 
         if (mower.activity === Activity.CHARGING) {
