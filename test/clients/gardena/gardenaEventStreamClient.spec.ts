@@ -24,6 +24,7 @@ describe('GardenaEventStreamClientImpl', () => {
     });
 
     it('should open the socket and connect all events', async () => {
+        log.setup(o => o.debug('OPENING_CONNECTION')).returns(undefined);
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
 
         const token: AccessToken = {
@@ -54,6 +55,8 @@ describe('GardenaEventStreamClientImpl', () => {
     });
 
     it('should close the socket when being reopened', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
+
         const token1: AccessToken = {
             value: 'hello1',
             provider: 'world1'
@@ -110,6 +113,8 @@ describe('GardenaEventStreamClientImpl', () => {
     });
 
     it('should ping socket when opened', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
+
         const token: AccessToken = {
             provider: 'hello',
             value: 'world'
@@ -273,6 +278,8 @@ describe('GardenaEventStreamClientImpl', () => {
     });
 
     it('should terminate the connection when connected on close', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
+
         const token: AccessToken = {
             provider: 'hello',
             value: 'world'

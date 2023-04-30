@@ -117,8 +117,6 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected onConnectedEventReceived(): Promise<void> {
-        this.log.debug('CONNECTED');
-
         if (this.isKeepAliveActive()) {
             this.startKeepAlive();
             this.clearKeepAliveFlag();
@@ -137,8 +135,6 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected async onDisconnectedEventReceived(): Promise<void> {
-        this.log.debug('DISCONNECTED');
-
         if (this.isStopping()) {
             // The service is intentionally being stopped.
             this.flagAsStopped();
@@ -171,11 +167,12 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     private async connect(): Promise<void> {
-        this.log.debug('OPENING_CONNECTION');
-
         try {
             const token = await this.tokenManager.getCurrentToken();
+
+            this.log.debug('STARTING_STREAM');
             await this.stream.open(token);
+            this.log.debug('STARTED_STREAM');
         } catch (e) {
             if (e instanceof BadCredentialsError) {
                 this.tokenManager.flagAsInvalid();
@@ -289,9 +286,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         }
 
         this.log.debug('CLOSING_STREAM');
-
         await this.stream.close();
-
         this.log.debug('CLOSED_STREAM');
     }
     

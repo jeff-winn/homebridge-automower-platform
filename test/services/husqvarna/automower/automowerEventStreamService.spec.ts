@@ -64,15 +64,7 @@ describe('AutomowerEventStreamService', () => {
         expect(stream.closed).toBeFalsy();
 
         timer.verify(o => o.stop(), Times.Once());
-    });
-    
-    it('should log when connected event received', async () => {
-        log.setup(o => o.debug(It.IsAny())).returns(undefined);
-
-        await target.unsafeOnConnectedEventReceived();
-
-        log.verify(o => o.debug(It.IsAny()), Times.Once());
-    });
+    });    
 
     it('should not restart the keep alive on error when keep alive is not already active', async () => {
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
@@ -95,29 +87,21 @@ describe('AutomowerEventStreamService', () => {
     });
 
     it('should not run the keep alive when being stopped on disconnect', async () => {
-        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         target.unsafeFlagAsStopping();
 
         await target.unsafeOnDisconnectedEventReceived();
 
         expect(target.unsafeHasStopped()).toBeTruthy();
         expect(target.unsafeIsStopping()).toBeFalsy();
-
-        log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
     it('should not run the keep alive when keep alive is already active', async () => {
-        log.setup(o => o.debug(It.IsAny())).returns(undefined);
-
         target.unsafeFlagAsKeepAliveActive();
 
         await target.unsafeOnDisconnectedEventReceived();
-
-        log.verify(o => o.debug('DISCONNECTED'), Times.Once());
     });
 
     it('should handle disconnected event received', async () => {
-        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.stop()).returns(undefined);
 
         // Don't need to test the keep alive again here, just make sure it would have ran.
@@ -127,7 +111,6 @@ describe('AutomowerEventStreamService', () => {
 
         expect(target.keepAliveExecuted).toBeTruthy();
 
-        log.verify(o => o.debug(It.IsAny()), Times.Once());
         timer.verify(o => o.stop(), Times.Once());
     });
 
@@ -250,7 +233,6 @@ describe('AutomowerEventStreamService', () => {
     });
 
     it('should start the keep alive timer on connected if keep alive is active', async () => {
-        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
 
         target.unsafeFlagAsKeepAliveActive();
@@ -259,7 +241,6 @@ describe('AutomowerEventStreamService', () => {
 
         expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
 
-        log.verify(o => o.debug('CONNECTED'), Times.Once());
         timer.verify(o => o.start(It.IsAny(), It.IsAny()), Times.Once());        
     });
 

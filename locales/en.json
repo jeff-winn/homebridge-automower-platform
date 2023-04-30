@@ -17,6 +17,8 @@
   "RECONNECT_NOT_NEEDED": "Reconnection is not required.",  
   "CONNECTED": "Connected!",
   "DISCONNECTED": "Disconnected!",
+  "STARTING_STREAM": "Starting the stream...",
+  "STARTED_STREAM": "Stream started.",
   "CLOSING_STREAM": "Closing the stream...",
   "CLOSED_STREAM": "Stream closed.",
   "UNEXPECTED_SOCKET_ERROR": "An error occurred within the socket stream, see the following for additional details:\n",

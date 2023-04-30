@@ -21,6 +21,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should open the socket and connect all events', async () => {
+        log.setup(o => o.debug('OPENING_CONNECTION')).returns(undefined);
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
 
         target.callback = () => socket.object();
@@ -38,6 +39,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should close the socket when being reopened', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.close()).returns(undefined);
 
@@ -69,6 +71,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should ping socket when opened', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.ping(It.IsAny())).returns(undefined);
 
@@ -226,6 +229,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should terminate the connection when connected on close', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         socket.setup(o => o.on(It.IsAny(), It.IsAny())).returns(socket.object());
         socket.setup(o => o.terminate()).returns(undefined);
 
