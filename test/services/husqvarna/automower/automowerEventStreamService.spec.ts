@@ -71,7 +71,7 @@ describe('AutomowerEventStreamService', () => {
 
         target.unsafeClearKeepAliveFlag();
 
-        await target.unsafeOnErrorEventReceived();
+        await expect(target.unsafeOnCheckKeepAliveAsync()).resolves.toBeUndefined();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Never());
     });
@@ -81,7 +81,7 @@ describe('AutomowerEventStreamService', () => {
 
         target.unsafeFlagAsKeepAliveActive();
 
-        await target.unsafeOnErrorEventReceived();
+        await expect(target.unsafeOnCheckKeepAliveAsync()).resolves.toBeUndefined();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
@@ -237,7 +237,7 @@ describe('AutomowerEventStreamService', () => {
 
         target.unsafeFlagAsKeepAliveActive();
 
-        await target.unsafeOnConnectedEventReceived();
+        await expect(target.unsafeOnCheckKeepAliveAsync()).resolves.toBeUndefined();
 
         expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
 

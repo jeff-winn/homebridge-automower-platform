@@ -107,32 +107,23 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected attachTo(stream: TStream): void {
-        stream.setOnConnectedCallback(this.onConnectedEventReceived.bind(this));
+        stream.setOnConnectedCallback(this.onCheckKeepAliveAsync.bind(this));
+        stream.setOnErrorCallback(this.onCheckKeepAliveAsync.bind(this));
         stream.setOnDisconnectedCallback(this.onDisconnectedEventReceived.bind(this));
-        stream.setOnErrorCallback(this.onErrorEventReceived.bind(this));
     }
 
     protected flagAsStarted(): void {
         this.state = StreamState.STARTED;
     }
 
-    protected onConnectedEventReceived(): Promise<void> {
+    protected onCheckKeepAliveAsync(): Promise<void> {
         if (this.isKeepAliveActive()) {
             this.startKeepAlive();
             this.clearKeepAliveFlag();
         }
 
         return Promise.resolve(undefined);
-    }
-
-    protected onErrorEventReceived(): Promise<void> {        
-        if (this.isKeepAliveActive()) {
-            this.startKeepAlive();
-            this.clearKeepAliveFlag();
-        }
-        
-        return Promise.resolve(undefined);
-    }
+    }    
 
     protected async onDisconnectedEventReceived(): Promise<void> {
         if (this.isStopping()) {

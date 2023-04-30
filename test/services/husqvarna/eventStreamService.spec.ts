@@ -67,7 +67,7 @@ describe('AbstractEventStreamService', () => {
 
         target.unsafeClearKeepAliveFlag();
 
-        await expect(target.unsafeOnErrorEventReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCheckKeepAliveAsync()).resolves.toBeUndefined();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Never());
     });
@@ -77,7 +77,7 @@ describe('AbstractEventStreamService', () => {
 
         target.unsafeFlagAsKeepAliveActive();
 
-        await expect(target.unsafeOnErrorEventReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCheckKeepAliveAsync()).resolves.toBeUndefined();
 
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
     });
@@ -241,7 +241,7 @@ describe('AbstractEventStreamService', () => {
 
         target.unsafeFlagAsKeepAliveActive();
 
-        await expect(target.unsafeOnConnectedEventReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCheckKeepAliveAsync()).resolves.toBeUndefined();
 
         expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
 
