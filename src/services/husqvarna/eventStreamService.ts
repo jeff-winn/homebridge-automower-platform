@@ -107,38 +107,25 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected attachTo(stream: TStream): void {
-        stream.setOnConnectedCallback(this.onConnectedEventReceived.bind(this));
+        stream.setOnConnectedCallback(this.onCheckKeepAliveAsync.bind(this));
+        stream.setOnErrorCallback(this.onCheckKeepAliveAsync.bind(this));
         stream.setOnDisconnectedCallback(this.onDisconnectedEventReceived.bind(this));
-        stream.setOnErrorCallback(this.onErrorEventReceived.bind(this));
     }
 
     protected flagAsStarted(): void {
         this.state = StreamState.STARTED;
     }
 
-    protected onConnectedEventReceived(): Promise<void> {
-        this.log.debug('CONNECTED');
-
+    protected onCheckKeepAliveAsync(): Promise<void> {
         if (this.isKeepAliveActive()) {
             this.startKeepAlive();
             this.clearKeepAliveFlag();
         }
 
         return Promise.resolve(undefined);
-    }
-
-    protected onErrorEventReceived(): Promise<void> {        
-        if (this.isKeepAliveActive()) {
-            this.startKeepAlive();
-            this.clearKeepAliveFlag();
-        }
-        
-        return Promise.resolve(undefined);
-    }
+    }    
 
     protected async onDisconnectedEventReceived(): Promise<void> {
-        this.log.debug('DISCONNECTED');
-
         if (this.isStopping()) {
             // The service is intentionally being stopped.
             this.flagAsStopped();
@@ -171,11 +158,12 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     private async connect(): Promise<void> {
-        this.log.debug('OPENING_CONNECTION');
-
         try {
             const token = await this.tokenManager.getCurrentToken();
+
+            this.log.debug('STARTING_STREAM');
             await this.stream.open(token);
+            this.log.debug('STARTED_STREAM');
         } catch (e) {
             if (e instanceof BadCredentialsError) {
                 this.tokenManager.flagAsInvalid();
@@ -289,9 +277,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         }
 
         this.log.debug('CLOSING_STREAM');
-
         await this.stream.close();
-
         this.log.debug('CLOSED_STREAM');
     }
     

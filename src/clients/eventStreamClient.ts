@@ -78,6 +78,8 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
             this.socket.close();
         }
 
+        this.log.debug('OPENING_CONNECTION');
+        
         this.onConnecting();
         this.socket = await this.createSocket(token);
     }

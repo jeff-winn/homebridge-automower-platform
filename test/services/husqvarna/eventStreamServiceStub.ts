@@ -35,16 +35,12 @@ export class EventStreamServiceStub extends AbstractEventStreamService<EventStre
         this.setStarted(value);
     }
 
-    public unsafeOnConnectedEventReceived(): Promise<void> {
-        return this.onConnectedEventReceived();
+    public unsafeOnCheckKeepAliveAsync(): Promise<void> {
+        return this.onCheckKeepAliveAsync();
     }
 
     public unsafeOnDisconnectedEventReceived(): Promise<void> {
         return this.onDisconnectedEventReceived();
-    }
-
-    public unsafeOnErrorEventReceived(): Promise<void> {
-        return this.onErrorEventReceived();
     }
 
     public unsafeFlagAsKeepAliveActive() {
