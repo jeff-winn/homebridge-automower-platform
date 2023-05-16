@@ -19,7 +19,18 @@
 					"DEBUG": "homebridge-automower-platform",
 					"NODE_ENV": "development"
 				}
+			},
+			"windows": {
+				"program": "${workspaceFolder}\\node_modules\\homebridge\\bin\\homebridge",
+				"args": [
+					"-D"
+				],
+				"env": {
+					"FORCE_COLOR": "1",
+					"DEBUG": "homebridge-automower-platform",
+					"NODE_ENV": "development"
+				}
 			}
-		}
+		}		
 	]
 }
