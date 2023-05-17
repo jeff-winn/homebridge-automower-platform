@@ -917,9 +917,76 @@ describe('AutomowerScheduleConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result.runOnSchedule).toBeTruthy();
+    });
+
+    it('should return false indicating not set to run on schedule when run continuously task is provided', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 0,
+                            duration: 1440,
+                            sunday: true,
+                            monday: true,
+                            tuesday: true,
+                            wednesday: true,
+                            thursday: true,
+                            friday: true,
+                            saturday: true
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convertMower(mower);
+
+        expect(result.runOnSchedule).toBeFalsy();
     });   
 
-    it('should return false indicating set to run on schedule when parked', () => {
+    it('should return false to run in future when parked', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -984,5 +1051,60 @@ describe('AutomowerScheduleConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result.runInFuture).toBeFalsy();
+    });
+
+    it('should return false indicating set to not run continuously when no tasks are available', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.MOWING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: []
+                }
+            }
+        };
+
+        const result = target.convertMower(mower);
+
+        expect(result.runContinuously).toBeFalsy();
     });
 });
