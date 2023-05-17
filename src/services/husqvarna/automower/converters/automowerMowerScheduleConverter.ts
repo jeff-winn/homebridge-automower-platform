@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Calendar, Mower, Planner, RestrictedReason } from '../../../../clients/automower/automowerClient';
+import { Calendar, Mower, Planner, RestrictedReason, Task } from '../../../../clients/automower/automowerClient';
 
 /**
  * A mechanism which converts a {@link Mower} to a {@link model.MowerSchedule} instance.
@@ -27,7 +27,7 @@ export class AutomowerMowerScheduleConverterImpl implements AutomowerMowerSchedu
 
     public convertPlannerAndCalendar(planner: Planner, calendar: Calendar): model.MowerSchedule {
         return {
-            runContinuously: this.isSetToRunContinuously(planner, calendar),
+            runContinuously: this.isSetToRunContinuously(calendar),
             runInFuture: this.isSetToRunInFuture(planner),
             runOnSchedule: this.isSetToRunOnASchedule(calendar)
         };
@@ -41,7 +41,7 @@ export class AutomowerMowerScheduleConverterImpl implements AutomowerMowerSchedu
         let result = false;
 
         for (const task of calendar.tasks) {
-            if (task !== undefined && (task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday)) {
+            if (task !== undefined && this.isAnyDayOfWeekTask(task) && !this.isAlwaysRunTask(task)) {
                 result = true;
             }
         }
@@ -49,13 +49,26 @@ export class AutomowerMowerScheduleConverterImpl implements AutomowerMowerSchedu
         return result;
     }
 
-    protected isSetToRunContinuously(planner: Planner, calendar: Calendar): boolean {
+    protected isSetToRunContinuously(calendar: Calendar): boolean {
+        if (calendar.tasks.length !== 1) {
+            // If set to run continuously, there will only be a single task.
+            return false;
+        }
+
         const task = calendar.tasks[0];
         if (task === undefined) {
             return false;
         }
         
-        return planner.nextStartTimestamp === 0 && task.start === 0 && task.duration === 1440 && 
+        return this.isAlwaysRunTask(task);
+    }
+
+    private isAnyDayOfWeekTask(task: Task): boolean {
+        return task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday;
+    }
+
+    private isAlwaysRunTask(task: Task): boolean {
+        return task.start === 0 && task.duration === 1440 && 
             task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
     }
 }

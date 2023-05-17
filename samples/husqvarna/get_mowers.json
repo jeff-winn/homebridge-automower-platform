@@ -1,0 +1,75 @@
+{
+    "status": 200,
+    "statusText": "OK",
+    "body": {
+        "data": [
+            {
+                "type": "mower",
+                "id": "ddfdacd8-d364-481b-9386-a0cb6d4f43a5",
+                "attributes": {
+                    "system": {
+                        "name": "Automower",
+                        "model": "HUSQVARNA AUTOMOWER® 430XH",
+                        "serialNumber": 12345
+                    },
+                    "battery": {
+                        "batteryPercent": 44
+                    },
+                    "mower": {
+                        "mode": "MAIN_AREA",
+                        "activity": "CHARGING",
+                        "state": "IN_OPERATION",
+                        "errorCode": 0,
+                        "errorCodeTimestamp": 0
+                    },
+                    "calendar": {
+                        "tasks": [
+                            {
+                                "start": 0,
+                                "duration": 1440,
+                                "monday": true,
+                                "tuesday": true,
+                                "wednesday": true,
+                                "thursday": true,
+                                "friday": true,
+                                "saturday": true,
+                                "sunday": true
+                            }
+                        ]
+                    },
+                    "planner": {
+                        "nextStartTimestamp": 1684262215000,
+                        "override": {
+                            "action": "NOT_ACTIVE"
+                        },
+                        "restrictedReason": "NOT_APPLICABLE"
+                    },
+                    "metadata": {
+                        "connected": true,
+                        "statusTimestamp": 1684273818612
+                    },
+                    "positions": [
+                        {
+                            "latitude": 0.00,
+                            "longitude": 0.00
+                        }
+                    ],
+                    "settings": {
+                        "cuttingHeight": 8,
+                        "headlight": {
+                            "mode": "EVENING_AND_NIGHT"
+                        }
+                    },
+                    "statistics": {
+                        "numberOfChargingCycles": 319,
+                        "numberOfCollisions": 10661,
+                        "totalChargingTime": 1069200,
+                        "totalCuttingTime": 3088800,
+                        "totalRunningTime": 3376800,
+                        "totalSearchingTime": 288000
+                    }
+                }
+            }
+        ]
+    }
+}

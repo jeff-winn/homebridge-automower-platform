@@ -1,0 +1,27 @@
+{
+    "id": "ddfdacd8-d364-481b-9386-a0cb6d4f43a5",
+    "type": "status-event",
+    "attributes": {
+        "battery": {
+            "batteryPercent": 70
+        },
+        "mower": {
+            "mode": "MAIN_AREA",
+            "activity": "UNKNOWN",
+            "state": "STOPPED",
+            "errorCode": 0,
+            "errorCodeTimestamp": 0
+        },
+        "planner": {
+            "nextStartTimestamp": 0,
+            "override": {
+                "action": null
+            },
+            "restrictedReason": "NOT_APPLICABLE"
+        },
+        "metadata": {
+            "connected": true,
+            "statusTimestamp": 1684280357287
+        }
+    }
+}
