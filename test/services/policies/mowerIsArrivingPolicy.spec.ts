@@ -14,10 +14,10 @@ describe('DeterministicMowerIsArrivingPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return true when mower is going home and in operation', () => {
+    it('should return true when mower is going home', () => {
         target.setMowerState({
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
         });
 
         const result = target.check();
@@ -25,9 +25,9 @@ describe('DeterministicMowerIsArrivingPolicy', () => {
         expect(result).toBeTruthy();
     });
 
-    it('should return false when mower is going home but paused', () => {
+    it('should return false when mower is paused', () => {
         target.setMowerState({
-            activity: Activity.GOING_HOME,
+            activity: Activity.MOWING,
             state: State.PAUSED
         });
 

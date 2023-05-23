@@ -27,6 +27,6 @@ export class DeterministicMowerIsLeavingPolicy implements MowerIsLeavingPolicy {
             return false;
         }
 
-        return this.state.activity === Activity.LEAVING_HOME && this.state.state === State.IN_OPERATION;
+        return this.state.activity === Activity.MOWING && this.state.state === State.LEAVING_HOME;
     }
 }

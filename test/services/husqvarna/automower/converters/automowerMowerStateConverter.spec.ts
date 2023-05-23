@@ -84,7 +84,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.activity).toEqual(model.Activity.PARKED);
     });
 
-    it('should return dormant when parked while restricted in charge station', () => {
+    it('should return idle when parked while restricted in charge station', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -150,7 +150,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
-        expect(result.state).toEqual(model.State.DORMANT);
+        expect(result.state).toEqual(model.State.IDLE);
     });
 
     it('should return parked when parked in charge station', () => {
@@ -354,7 +354,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.activity).toEqual(model.Activity.GOING_HOME);
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.GOING_HOME);
     });
     
     it('should return leaving when leaving', () => {
@@ -422,7 +423,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.activity).toEqual(model.Activity.LEAVING_HOME);
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.LEAVING_HOME);
     });
 
     it('should return mowing when stopped in garden', () => {
@@ -1241,7 +1243,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.state).toEqual(model.State.PAUSED);
     });
 
-    it('should return off when not applicable', () => {
+    it('should return unknown when not applicable', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -1306,7 +1308,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.state).toEqual(model.State.OFF);
+        expect(result.activity).toEqual(model.Activity.UNKNOWN);
+        expect(result.state).toEqual(model.State.UNKNOWN);
     });
 
     it('should return off when off', () => {
@@ -1374,7 +1377,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.state).toEqual(model.State.OFF);
+        expect(result.activity).toEqual(model.Activity.OFF);
+        expect(result.state).toEqual(model.State.UNKNOWN);
     });
 
     it('should return unknown when waiting for power up', () => {

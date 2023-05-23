@@ -89,8 +89,8 @@ describe('ArrivingContactSensorImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(service.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
         };
 
         policy.setup(o => o.setMowerState(state)).returns(undefined);
@@ -118,8 +118,8 @@ describe('ArrivingContactSensorImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Arriving Sensor')).returns(service.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
         };
 
         policy.setup(o => o.setMowerState(state)).returns(undefined);

@@ -15,7 +15,7 @@ describe('GardenaMowerStateConverterImpl', () => {
         target = new GardenaMowerStateConverterImpl(log.object());
     });
 
-    it('should return parked and off when charging while disabled', () => {
+    it('should return off and unknown when charging while disabled', () => {
         const mower: MowerServiceDataItem = {
             id: '12345',
             type: ItemType.MOWER,
@@ -48,11 +48,11 @@ describe('GardenaMowerStateConverterImpl', () => {
 
         const result = target.convert(mower);
 
-        expect(result.activity).toBe(Activity.PARKED);
-        expect(result.state).toBe(State.OFF);
+        expect(result.activity).toBe(Activity.OFF);
+        expect(result.state).toBe(State.UNKNOWN);
     });
 
-    it('should return parked and dormant when park selected and not charging', () => {
+    it('should return parked and idle when park selected and not charging', () => {
         const mower: MowerServiceDataItem = {
             id: '12345',
             type: ItemType.MOWER,
@@ -82,6 +82,6 @@ describe('GardenaMowerStateConverterImpl', () => {
         const result = target.convert(mower);
 
         expect(result.activity).toBe(Activity.PARKED);
-        expect(result.state).toBe(State.DORMANT);
+        expect(result.state).toBe(State.IDLE);
     });
 });

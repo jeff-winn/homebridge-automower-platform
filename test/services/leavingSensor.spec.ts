@@ -87,8 +87,8 @@ describe('LeavingContactSensorImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.LEAVING_HOME
         };
 
         policy.setup(o => o.setMowerState(state)).returns(undefined);
@@ -116,8 +116,8 @@ describe('LeavingContactSensorImpl', () => {
         platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Leaving Sensor')).returns(service.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,            
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,            
+            state: State.LEAVING_HOME
         };
 
         policy.setup(o => o.setMowerState(state)).returns(undefined);

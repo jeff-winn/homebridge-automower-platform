@@ -29,27 +29,22 @@ export enum Activity {
     /**
      * The mower is mowing.
      */
-    MOWING = 'mowing',
+    MOWING,
 
     /**
      * The mower is parked.
      */
-    PARKED = 'parked',
+    PARKED,
 
     /**
-     * The mower is going home.
+     * The mower is off.
      */
-    GOING_HOME = 'going_home',
-
-    /**
-     * The mower is leaving home.
-     */
-    LEAVING_HOME = 'leaving_home',
-
+    OFF,
+    
     /**
      * The mower activity is unknown.
      */
-    UNKNOWN = 'unknown'
+    UNKNOWN
 }
 
 /**
@@ -57,44 +52,49 @@ export enum Activity {
  */
 export enum State {
     /**
+     * The mower is going home.
+     */
+    GOING_HOME,
+
+    /**
+     * The mower is leaving home.
+     */
+    LEAVING_HOME,
+    
+    /**
      * The mower is charging in the docking station.
      */
-    CHARGING = 'charging',
+    CHARGING,
 
     /**
      * The mower is in operation.
      */
-    IN_OPERATION = 'in_operation',
+    IN_OPERATION,
 
     /**
-     * The mower is dormant while waiting for an instruction, or until the next scheduled execution.
+     * The mower is idle while waiting for an instruction, or until the next scheduled execution.
      */
-    DORMANT = 'dormant',
+    IDLE,
 
     /**
      * The mower is paused.
      */
-    PAUSED = 'paused',
+    PAUSED,
 
     /**
      * The mower has faulted.
      */
-    FAULTED = 'faulted',
+    FAULTED,
 
     /**
      * The mower has been tampered.
      */
-    TAMPERED = 'tampered',
-
-    /**
-     * The mower is off.
-     */
-    OFF = 'off',
+    TAMPERED,
 
     /**
      * The mower state is unknown.
      */
-    UNKNOWN = 'unknown'
+    UNKNOWN
 }
 
 /**

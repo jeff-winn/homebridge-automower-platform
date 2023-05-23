@@ -14,10 +14,10 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return true when leaving home and in operation', () => {
+    it('should return true when mower is leaving home', () => {
         target.setMowerState({
-            activity: Activity.LEAVING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.LEAVING_HOME
         });
 
         const result = target.check();
@@ -25,9 +25,9 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
         expect(result).toBeTruthy();
     });
 
-    it('should return false when leaving home and paused', () => {
+    it('should return false when mower is paused', () => {
         target.setMowerState({
-            activity: Activity.LEAVING_HOME,
+            activity: Activity.MOWING,
             state: State.PAUSED
         });
 
@@ -36,9 +36,9 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return false when leaving home and faulted', () => {
+    it('should return false when mower is faulted', () => {
         target.setMowerState({
-            activity: Activity.LEAVING_HOME,
+            activity: Activity.MOWING,
             state: State.FAULTED
         });
 
@@ -47,9 +47,9 @@ describe('DeterministicMowerIsLeavingPolicy', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should return false when leaving home and tampered', () => {
+    it('should return false when mower is tampered', () => {
         target.setMowerState({
-            activity: Activity.LEAVING_HOME,
+            activity: Activity.MOWING,
             state: State.TAMPERED
         });
 
