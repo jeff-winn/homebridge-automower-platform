@@ -35,19 +35,19 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
     }
 
     protected convertActivity(mower: MowerState): model.Activity {
+        if (mower.state === State.OFF) {
+            return model.Activity.OFF;
+        }
+
         switch (mower.activity) {
             case Activity.CHARGING:                
             case Activity.PARKED_IN_CS:
             case Activity.NOT_APPLICABLE:
                 return model.Activity.PARKED;
-            
-            case Activity.GOING_HOME:
-                return model.Activity.GOING_HOME;
-            
-            case Activity.LEAVING:
-                return model.Activity.LEAVING_HOME;
 
             case Activity.STOPPED_IN_GARDEN:
+            case Activity.GOING_HOME:
+            case Activity.LEAVING:
             case Activity.MOWING:
                 return model.Activity.MOWING;
 
@@ -66,11 +66,19 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
         }
 
         if (mower.mode === Mode.HOME && mower.activity === Activity.PARKED_IN_CS) {
-            return model.State.DORMANT;
+            return model.State.IDLE;
         }
 
         if (mower.activity === Activity.CHARGING) {
             return model.State.CHARGING;
+        }
+        
+        if (mower.activity === Activity.GOING_HOME) {
+            return model.State.GOING_HOME;
+        }
+
+        if (mower.activity === Activity.LEAVING) {
+            return model.State.LEAVING_HOME;
         }
         
         switch (mower.state) {
@@ -89,8 +97,6 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
 
             case State.NOT_APPLICABLE:
             case State.OFF:
-                return model.State.OFF;
-            
             case State.WAIT_POWER_UP:
             case State.WAIT_UPDATING:
             case State.UNKNOWN:

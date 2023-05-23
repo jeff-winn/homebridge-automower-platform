@@ -158,8 +158,8 @@ describe('PauseSwitchImpl', () => {
 
     it('should park on resume when the mower was previously going home', async () => {
         const mowerState: MowerState = {
-            activity: Activity.GOING_HOME,            
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,            
+            state: State.GOING_HOME
         };
 
         const mowerId = '12345';
@@ -204,12 +204,12 @@ describe('PauseSwitchImpl', () => {
 
     it('should not update the last activity when paused', () => {
         const mowerState1: MowerState = {
-            activity: Activity.GOING_HOME,            
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,            
+            state: State.GOING_HOME
         };
 
         const mowerState2: MowerState = {
-            activity: Activity.GOING_HOME,
+            activity: Activity.MOWING,
             state: State.PAUSED
         };
 
@@ -236,15 +236,16 @@ describe('PauseSwitchImpl', () => {
         target.setMowerState(mowerState1);
         target.setMowerState(mowerState2);
 
-        const result = target.getLastActivity();
+        const result = target.getLastState();
 
-        expect(result).toEqual(Activity.GOING_HOME);
+        expect(result!.activity).toEqual(Activity.MOWING);
+        expect(result!.state).toEqual(State.GOING_HOME);
     });
 
     it('should update the last activity when going home', () => {
         const mowerState: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
         };
 
         policy.setup(o => o.check()).returns(true);
@@ -268,9 +269,10 @@ describe('PauseSwitchImpl', () => {
         target.init(NameMode.DEFAULT);
         target.setMowerState(mowerState);
 
-        const result = target.getLastActivity();
+        const result = target.getLastState();
 
-        expect(result).toEqual(Activity.GOING_HOME);
+        expect(result!.activity).toEqual(Activity.MOWING);
+        expect(result!.state).toEqual(State.GOING_HOME);
     });
 
     it('should throw an error when not initialized on set mower connection', () => {

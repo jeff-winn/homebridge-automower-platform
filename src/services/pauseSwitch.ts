@@ -19,15 +19,15 @@ export interface PauseSwitch extends Switch {
 }
 
 export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
-    private lastActivity?: Activity;
+    private lastState?: MowerState;
 
     public constructor(name: string, private controlService: MowerControlService & SupportsPauseControl, private policy: MowerIsPausedPolicy, 
         accessory: PlatformAccessory<MowerContext>, api: API, log: PlatformLogger) {
         super(name, accessory, api, log);
     }
 
-    public getLastActivity(): Activity | undefined {
-        return this.lastActivity;
+    public getLastState(): MowerState | undefined {
+        return this.lastState;
     }
     
     protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
@@ -51,7 +51,8 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
     }
 
     protected shouldPark(): boolean {
-        return this.lastActivity !== undefined && this.lastActivity === Activity.GOING_HOME;
+        return this.lastState !== undefined && 
+            this.lastState.activity === Activity.MOWING && this.lastState.state === State.GOING_HOME;
     }
     
     public setMowerState(state: MowerState): void {
@@ -67,7 +68,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
             return;
         }
 
-        this.lastActivity = state.activity;
+        this.lastState = state;
     }
 
     /**

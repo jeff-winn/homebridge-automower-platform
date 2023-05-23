@@ -158,8 +158,8 @@ describe('MotionSensorImpl', () => {
         tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
         };
         
         const service = new Mock<Service>();
@@ -199,8 +199,8 @@ describe('MotionSensorImpl', () => {
         tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
-            state: State.IN_OPERATION
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
         };
         
         const service = new Mock<Service>();
@@ -240,7 +240,7 @@ describe('MotionSensorImpl', () => {
         tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
+            activity: Activity.MOWING,
             state: State.FAULTED
         };
         
@@ -282,7 +282,7 @@ describe('MotionSensorImpl', () => {
         tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
+            activity: Activity.MOWING,
             state: State.FAULTED
         };
         
@@ -324,7 +324,7 @@ describe('MotionSensorImpl', () => {
         tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
+            activity: Activity.MOWING,
             state: State.TAMPERED
         };
         
@@ -367,7 +367,7 @@ describe('MotionSensorImpl', () => {
         tampered.setup(o => o.updateValue(It.IsAny())).returns(tampered.object());
 
         const state: MowerState = {
-            activity: Activity.GOING_HOME,
+            activity: Activity.MOWING,
             state: State.TAMPERED
         };
         

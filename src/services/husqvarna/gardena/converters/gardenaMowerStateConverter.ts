@@ -25,17 +25,17 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
     }
 
     protected convertActivity(mower: MowerServiceDataItem): model.Activity {
+        if (mower.attributes.lastErrorCode?.value === MowerError.OFF_DISABLED) {
+            return model.Activity.OFF;
+        }
+
         switch (mower.attributes.activity.value) {
             case MowerActivity.OK_CUTTING:
             case MowerActivity.OK_CUTTING_TIMER_OVERRIDDEN:
             case MowerActivity.PAUSED:
-                return model.Activity.MOWING;
-
             case MowerActivity.OK_LEAVING:
-                return model.Activity.LEAVING_HOME;
-
             case MowerActivity.OK_SEARCHING:
-                return model.Activity.GOING_HOME;
+                return model.Activity.MOWING;
 
             case MowerActivity.OK_CHARGING:
             case MowerActivity.PARKED_AUTOTIMER:
@@ -58,7 +58,7 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
                 case MowerError.OFF_DISABLED:
                 case MowerError.OFF_HATCH_CLOSED:
                 case MowerError.OFF_HATCH_OPEN:
-                    return model.State.OFF;
+                    return model.State.UNKNOWN;
                 
                 case MowerError.ALARM_MOWER_LIFTED:
                 case MowerError.LIFTED:
@@ -75,6 +75,14 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
             }
         }
         
+        if (mower.attributes.activity.value === MowerActivity.OK_SEARCHING) {
+            return model.State.GOING_HOME;
+        }
+
+        if (mower.attributes.activity.value === MowerActivity.OK_LEAVING) {
+            return model.State.LEAVING_HOME;
+        }
+
         if (mower.attributes.activity.value === MowerActivity.PAUSED) {
             return model.State.PAUSED;
         }
@@ -85,7 +93,7 @@ export class GardenaMowerStateConverterImpl implements GardenaMowerStateConverte
 
         if (mower.attributes.activity.value === MowerActivity.PARKED_AUTOTIMER || mower.attributes.activity.value === MowerActivity.PARKED_PARK_SELECTED || 
             mower.attributes.activity.value === MowerActivity.PARKED_TIMER) {
-            return model.State.DORMANT;
+            return model.State.IDLE;
         }
         
         if (mower.attributes.activity.value === MowerActivity.OK_CUTTING || mower.attributes.activity.value === MowerActivity.OK_CUTTING_TIMER_OVERRIDDEN) {
