@@ -1,0 +1,27 @@
+{
+    "id": "REDACTED",
+    "type": "status-event",
+    "attributes": {
+        "battery": {
+            "batteryPercent": 79
+        },
+        "mower": {
+            "mode": "HOME",
+            "activity": "GOING_HOME",
+            "state": "IN_OPERATION",
+            "errorCode": 0,
+            "errorCodeTimestamp": 0
+        },
+        "planner": {
+            "nextStartTimestamp": 0,
+            "override": {
+                "action": null
+            },
+            "restrictedReason": "NOT_APPLICABLE"
+        },
+        "metadata": {
+            "connected": true,
+            "statusTimestamp": 1684894147220
+        }
+    }
+}
