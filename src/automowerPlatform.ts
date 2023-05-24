@@ -84,20 +84,23 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));
     }
 
-    protected async onFinishedLaunching(): Promise<void> {
-        try {
-            this.ensureContainerIsInitialized();
+    protected onFinishedLaunching(): void {
+        this.onFinishedLaunchingAsync().then()
+            .catch(err => {
+                if (err instanceof BadConfigurationError) {
+                    // The message should be in a format that is readable to an end user, just display that instead.
+                    this.error(err.message);
+                } else {
+                    this.error('ERROR_STARTING_PLUGIN', err);
+                }
+            });
+    }
 
-            await this.discoverMowers();
-            await this.startReceivingEvents();
-        } catch (e) {
-            if (e instanceof BadConfigurationError) {
-                // The message should be in a format that is readable to an end user, just display that instead.
-                this.error(e.message);
-            } else {
-                this.error('ERROR_STARTING_PLUGIN', e);
-            }
-        }
+    private async onFinishedLaunchingAsync(): Promise<void> {
+        this.ensureContainerIsInitialized();
+
+        await this.discoverMowersAsync();
+        await this.startReceivingEventsAsync();
     }
     
     protected ensureContainerIsInitialized(): void {
@@ -113,16 +116,16 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return new PlatformContainerImpl(this.config, this.api, this.log);
     }
 
-    protected async discoverMowers(): Promise<void> {
+    protected async discoverMowersAsync(): Promise<void> {
         const service = this.getDiscoveryService();
         await service.discoverMowers(this);
     }
 
-    protected async startReceivingEvents(): Promise<void> {
+    protected async startReceivingEventsAsync(): Promise<void> {
         const service = this.getEventService();
                 
-        service.setOnStatusEventCallback(this.onStatusEventReceived.bind(this));
-        service.setOnSettingsEventCallback(this.onSettingsEventReceived.bind(this));
+        service.setOnStatusEventCallback(this.onStatusEventReceivedAsync.bind(this));
+        service.setOnSettingsEventCallback(this.onSettingsEventReceivedAsync.bind(this));
         
         await service.start();
     }
@@ -138,7 +141,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.eventService;
     }
 
-    private onStatusEventReceived(event: MowerStatusChangedEvent): Promise<void> {
+    private onStatusEventReceivedAsync(event: MowerStatusChangedEvent): Promise<void> {
         const mower = this.getMower(event.mowerId);
         if (mower !== undefined) {
             mower.onStatusEventReceived(event);
@@ -147,7 +150,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return Promise.resolve(undefined);
     }
 
-    private onSettingsEventReceived(event: MowerSettingsChangedEvent): Promise<void> {
+    private onSettingsEventReceivedAsync(event: MowerSettingsChangedEvent): Promise<void> {
         const mower = this.getMower(event.mowerId);
         if (mower !== undefined) {
             mower.onSettingsEventReceived(event);
@@ -176,13 +179,16 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.mowers.find(o => o.getId() === mowerId);
     }
 
-    protected async onShutdown(): Promise<void> {
-        try {
-            await this.getEventService()?.stop();
-            await this.getTokenManager()?.logout();
-        } catch (e) {
-            this.error('ERROR_SHUTTING_DOWN_PLUGIN', e);
-        }
+    protected onShutdown(): void {
+        this.onShutdownAsync().then()
+            .catch(err => {
+                this.error('ERROR_SHUTTING_DOWN_PLUGIN', err);
+            });
+    }
+
+    private async onShutdownAsync(): Promise<void> {
+        await this.getEventService()?.stop();
+        await this.getTokenManager()?.logout();
     }
 
     /**

@@ -133,13 +133,9 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     protected setExpiration(token: OAuthToken | undefined): void {
-        if (token === undefined) {
-            // The token has not been provided.
+        if (token?.expires_in === undefined) {
+            // The token has not been provided, or does not expire.
             this.expires = undefined;
-            return;
-        }
-
-        if (token.expires_in === undefined) {
             return;
         }
 
