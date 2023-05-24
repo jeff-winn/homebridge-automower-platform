@@ -77,6 +77,51 @@ describe('DeterministicMowerIsScheduledPolicy', () => {
         expect(target.check()).toBeTruthy();
     });
 
+    it('should return true when run continuously and going home', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
+        });
+
+        target.setMowerSchedule({
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+        
+        expect(target.check()).toBeTruthy();
+    });
+
+    it('should return true when run continuously and leaving home', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.LEAVING_HOME
+        });
+
+        target.setMowerSchedule({
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+        
+        expect(target.check()).toBeTruthy();
+    });
+
+    it('should return true when run continuously and charging while mowing', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.CHARGING
+        });
+
+        target.setMowerSchedule({
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+        
+        expect(target.check()).toBeTruthy();
+    });
+
     it('should return true when run on schedule and run in future', () => {
         target.setMowerState({
             activity: Activity.MOWING,
@@ -183,6 +228,28 @@ describe('DeterministicMowerIsActivePolicy', () => {
         target.setMowerState({
             activity: Activity.MOWING,
             state: State.IN_OPERATION
+        });
+
+        const result = target.check();
+
+        expect(result).toBeTruthy();
+    });
+
+    it('should return true when mower is going home while mowing', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.GOING_HOME
+        });
+
+        const result = target.check();
+
+        expect(result).toBeTruthy();
+    });
+
+    it('should return true when mower is charging while mowing', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.CHARGING
         });
 
         const result = target.check();
