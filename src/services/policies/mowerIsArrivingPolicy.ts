@@ -27,6 +27,6 @@ export class DeterministicMowerIsArrivingPolicy implements MowerIsArrivingPolicy
             return false;
         }
 
-        return this.state.activity === Activity.MOWING && this.state.state === State.GOING_HOME;
+        return this.state.state === State.GOING_HOME;
     }
 }

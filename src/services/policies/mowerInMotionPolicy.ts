@@ -23,8 +23,8 @@ export class DeterministicMowerInMotionPolicy implements MowerInMotionPolicy {
             return false;
         }
 
-        return this.mower.activity === Activity.MOWING && 
-            (this.mower.state === State.GOING_HOME || this.mower.state === State.LEAVING_HOME || this.mower.state === State.IN_OPERATION);
+        return this.mower.state === State.GOING_HOME || this.mower.state === State.LEAVING_HOME || 
+               this.mower.state === State.IN_OPERATION;
     }
 
     public setMowerState(mower: MowerState): void {

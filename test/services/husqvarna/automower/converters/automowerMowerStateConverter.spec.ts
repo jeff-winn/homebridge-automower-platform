@@ -291,7 +291,76 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.activity).toEqual(model.Activity.PARKED);
     });
 
-    it('should return going home when going home', () => {
+    it('should return going home when going home to charge while mowing', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.GOING_HOME,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.MAIN_AREA,
+                    state: State.IN_OPERATION
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convertMower(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.GOING_HOME);
+    });
+
+    it('should return going home when going home to park indefinitely', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -356,7 +425,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.activity).toEqual(model.Activity.PARKED);
         expect(result.state).toEqual(model.State.GOING_HOME);
     });
     
