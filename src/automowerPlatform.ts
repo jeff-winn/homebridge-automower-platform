@@ -84,24 +84,23 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));
     }
 
-    private onFinishedLaunching(): void {
-        this.onFinishedLaunchingAsync().then();
+    protected onFinishedLaunching(): void {
+        this.onFinishedLaunchingAsync().then()
+            .catch(err => {
+                if (err instanceof BadConfigurationError) {
+                    // The message should be in a format that is readable to an end user, just display that instead.
+                    this.error(err.message);
+                } else {
+                    this.error('ERROR_STARTING_PLUGIN', err);
+                }
+            });
     }
 
-    protected async onFinishedLaunchingAsync(): Promise<void> {
-        try {
-            this.ensureContainerIsInitialized();
+    private async onFinishedLaunchingAsync(): Promise<void> {
+        this.ensureContainerIsInitialized();
 
-            await this.discoverMowersAsync();
-            await this.startReceivingEventsAsync();
-        } catch (e) {
-            if (e instanceof BadConfigurationError) {
-                // The message should be in a format that is readable to an end user, just display that instead.
-                this.error(e.message);
-            } else {
-                this.error('ERROR_STARTING_PLUGIN', e);
-            }
-        }
+        await this.discoverMowersAsync();
+        await this.startReceivingEventsAsync();
     }
     
     protected ensureContainerIsInitialized(): void {
@@ -180,17 +179,16 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.mowers.find(o => o.getId() === mowerId);
     }
 
-    private onShutdown(): void {
-        this.onShutdownAsync().then();
+    protected onShutdown(): void {
+        this.onShutdownAsync().then()
+            .catch(err => {
+                this.error('ERROR_SHUTTING_DOWN_PLUGIN', err);
+            });
     }
 
-    protected async onShutdownAsync(): Promise<void> {
-        try {
-            await this.getEventService()?.stop();
-            await this.getTokenManager()?.logout();
-        } catch (e) {
-            this.error('ERROR_SHUTTING_DOWN_PLUGIN', e);
-        }
+    private async onShutdownAsync(): Promise<void> {
+        await this.getEventService()?.stop();
+        await this.getTokenManager()?.logout();
     }
 
     /**

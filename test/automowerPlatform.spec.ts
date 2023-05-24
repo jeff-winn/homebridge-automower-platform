@@ -98,6 +98,7 @@ describe('AutomowerPlatform', () => {
         expect(result).toBeUndefined();
     });
 
+    /** Required for compliance with homebridge verified status */
     it('should catch configuration errors that occur while finishing launching', async () => {
         log.setup(o => o.error(It.IsAny<string>(), It.IsAny<Error>())).returns(undefined);
         container.setup(o => o.registerEverything()).returns(undefined);
@@ -109,7 +110,10 @@ describe('AutomowerPlatform', () => {
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
         container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
         
-        await target.unsafeOnFinishedLaunchingAsync();
+        target.unsafeOnFinishedLaunching();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error('Ouch'), Times.Once());
     });
@@ -126,7 +130,10 @@ describe('AutomowerPlatform', () => {
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
         container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
         
-        await target.unsafeOnFinishedLaunchingAsync();
+        target.unsafeOnFinishedLaunching();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error(It.IsAny<string>(), It.IsAny<Error>()), Times.Once());
     });
@@ -150,8 +157,11 @@ describe('AutomowerPlatform', () => {
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
         container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
 
-        await target.unsafeOnFinishedLaunchingAsync();
+        target.unsafeOnFinishedLaunching();
 
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
+        
         expect(target.containerConfigured).toBeTruthy();
 
         discoveryService.verify(o => o.discoverMowers(target), Times.Once());
@@ -170,7 +180,10 @@ describe('AutomowerPlatform', () => {
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
         container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
 
-        await target.unsafeOnShutdownAsync();
+        target.unsafeOnShutdown();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error(It.IsAny<string>(), It.IsAny<Error>()), Times.Once());
     });
