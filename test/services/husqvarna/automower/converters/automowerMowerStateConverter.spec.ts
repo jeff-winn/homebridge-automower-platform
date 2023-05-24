@@ -304,13 +304,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.GOING_HOME,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.UNKNOWN
+                    mode: Mode.HOME,
+                    state: State.IN_OPERATION
                 },
                 planner: {
                     nextStartTimestamp: 0,
                     override: { },
-                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
                 },
                 positions: [],
                 settings: {

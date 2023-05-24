@@ -43,6 +43,11 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.Activity.MOWING;
         }
 
+        if (mower.mode === Mode.HOME && mower.activity === Activity.GOING_HOME) {
+            // The mower is actively still moving around the property.
+            return model.Activity.MOWING;
+        }
+
         if (mower.mode === Mode.HOME) {
             return model.Activity.PARKED;
         }
