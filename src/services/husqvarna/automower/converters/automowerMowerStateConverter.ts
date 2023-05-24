@@ -39,25 +39,16 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.Activity.OFF;
         }
 
-        switch (mower.activity) {
-            case Activity.CHARGING:                
-            case Activity.PARKED_IN_CS:
-            case Activity.NOT_APPLICABLE:
-                return model.Activity.PARKED;
-
-            case Activity.STOPPED_IN_GARDEN:
-            case Activity.GOING_HOME:
-            case Activity.LEAVING:
-            case Activity.MOWING:
-                return model.Activity.MOWING;
-
-            case Activity.UNKNOWN:
-                return model.Activity.UNKNOWN;
-
-            default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.activity);
-                return model.Activity.UNKNOWN;
+        if (mower.mode === Mode.MAIN_AREA || mower.mode === Mode.SECONDARY_AREA) {
+            return model.Activity.MOWING;
         }
+
+        if (mower.mode === Mode.HOME) {
+            return model.Activity.PARKED;
+        }
+        
+        this.log.debug('VALUE_NOT_SUPPORTED', mower.activity);
+        return model.Activity.UNKNOWN;
     }
 
     protected convertState(mower: MowerState): model.State {
@@ -65,12 +56,12 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.State.TAMPERED;
         }
 
-        if (mower.mode === Mode.HOME && mower.activity === Activity.PARKED_IN_CS) {
-            return model.State.IDLE;
-        }
-
         if (mower.activity === Activity.CHARGING) {
             return model.State.CHARGING;
+        }
+
+        if (mower.mode === Mode.HOME && mower.activity === Activity.PARKED_IN_CS) {
+            return model.State.IDLE;
         }
         
         if (mower.activity === Activity.GOING_HOME) {

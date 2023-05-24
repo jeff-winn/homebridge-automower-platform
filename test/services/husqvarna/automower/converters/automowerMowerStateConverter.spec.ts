@@ -1,4 +1,4 @@
-import { Mock } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
 import * as model from '../../../../../src/model';
 
@@ -29,7 +29,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.CHARGING,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.HOME,
                     state: State.UNKNOWN
                 },
                 planner: {
@@ -82,6 +82,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
+        expect(result.state).toEqual(model.State.CHARGING);
     });
 
     it('should return idle when parked while restricted in charge station', () => {
@@ -166,7 +167,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.PARKED_IN_CS,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.HOME,
                     state: State.UNKNOWN
                 },
                 planner: {
@@ -219,6 +220,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
+        expect(result.state).toEqual(model.State.IDLE);
     });
 
     it('should return parked when not applicable', () => {
@@ -234,7 +236,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.NOT_APPLICABLE,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.HOME,
                     state: State.UNKNOWN
                 },
                 planner: {
@@ -493,6 +495,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.UNKNOWN);
     });
 
     it('should return mowing when mowing', () => {
@@ -564,6 +567,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
     });
 
     it('should return unknown when unknown', () => {
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -576,7 +581,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.UNKNOWN,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.UNKNOWN,
                     state: State.UNKNOWN
                 },
                 planner: {
@@ -629,6 +634,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.UNKNOWN);
+
+        log.verify(o => o.debug(It.IsAny(), It.IsAny()), Times.Once());
     });   
 
     it('should return tampered when stopped with error', () => {
@@ -699,7 +706,76 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.state).toEqual(model.State.TAMPERED);
     });
 
-    it('should return charging when activity is charging', () => {
+    it('should return charging while mowing secondary area', () => {
+        const mower: Mower = {
+            id: '12345',
+            type: 'mower',
+            attributes: {
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1
+                },
+                mower: {
+                    activity: Activity.CHARGING,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0,
+                    mode: Mode.SECONDARY_AREA,
+                    state: State.UNKNOWN
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: { },
+                    restrictedReason: RestrictedReason.PARK_OVERRIDE
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 1,
+                    headlight: {
+                        mode: HeadlightMode.ALWAYS_ON
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 1,
+                    numberOfCollisions: 1,
+                    totalChargingTime: 1,
+                    totalCuttingTime: 1,
+                    totalRunningTime: 1,
+                    totalSearchingTime: 1
+                },
+                system: {
+                    model: 'Hello World',
+                    name: 'Groovy',
+                    serialNumber: 1
+                },
+                battery: {
+                    batteryPercent: 100
+                },
+                calendar: {
+                    tasks: [ 
+                        {
+                            start: 1,
+                            duration: 1,
+                            sunday: true,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: false
+                        }
+                    ]
+                }
+            }
+        };
+
+        const result = target.convertMower(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.CHARGING);
+    });
+
+    it('should return charging while mowing main area', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -764,6 +840,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
         expect(result.state).toEqual(model.State.CHARGING);
     });
 
@@ -1244,6 +1321,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
     });
 
     it('should return unknown when not applicable', () => {
+        log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
+
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -1256,7 +1335,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.UNKNOWN,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.UNKNOWN,
                     state: State.NOT_APPLICABLE
                 },
                 planner: {
@@ -1310,6 +1389,8 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.UNKNOWN);
         expect(result.state).toEqual(model.State.UNKNOWN);
+
+        log.verify(o => o.debug(It.IsAny(), It.IsAny()), Times.Once());
     });
 
     it('should return off when off', () => {

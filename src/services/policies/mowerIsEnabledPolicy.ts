@@ -81,7 +81,8 @@ export class DeterministicMowerIsScheduledPolicy extends AbstractMowerIsEnabledP
         if (this.mowerSchedule.runContinuously) {
             // The mower is set to run continuously, which means the switch is now being used to control whether the
             // mower is actually mowing the yard rather than whether a schedule is enabled.
-            return mowerState.state === State.IN_OPERATION;
+            return mowerState.activity === Activity.MOWING && (mowerState.state === State.IN_OPERATION || mowerState.state === State.LEAVING_HOME || 
+                    mowerState.state === State.GOING_HOME || mowerState.state === State.CHARGING);
         }
 
         return this.mowerSchedule.runOnSchedule && this.mowerSchedule.runInFuture;
@@ -93,7 +94,7 @@ export class DeterministicMowerIsScheduledPolicy extends AbstractMowerIsEnabledP
  */
 export class DeterministicMowerIsActivePolicy extends AbstractMowerIsEnabledPolicy {
     protected override checkCore(mowerState: MowerState): boolean {
-        return mowerState.activity === Activity.MOWING && 
-               (mowerState.state === State.IN_OPERATION || mowerState.state === State.LEAVING_HOME || mowerState.state === State.GOING_HOME);
+        return mowerState.activity === Activity.MOWING && (mowerState.state === State.IN_OPERATION || mowerState.state === State.LEAVING_HOME || 
+            mowerState.state === State.GOING_HOME || mowerState.state === State.CHARGING);
     }
 }
