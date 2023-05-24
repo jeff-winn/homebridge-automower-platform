@@ -109,7 +109,7 @@ describe('AutomowerPlatform', () => {
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
         container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
         
-        await target.unsafeOnFinishedLaunching();
+        await target.unsafeOnFinishedLaunchingAsync();
 
         log.verify(o => o.error('Ouch'), Times.Once());
     });
@@ -126,7 +126,7 @@ describe('AutomowerPlatform', () => {
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
         container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
         
-        await target.unsafeOnFinishedLaunching();
+        await target.unsafeOnFinishedLaunchingAsync();
 
         log.verify(o => o.error(It.IsAny<string>(), It.IsAny<Error>()), Times.Once());
     });
@@ -150,7 +150,7 @@ describe('AutomowerPlatform', () => {
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
         container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
 
-        await target.unsafeOnFinishedLaunching();
+        await target.unsafeOnFinishedLaunchingAsync();
 
         expect(target.containerConfigured).toBeTruthy();
 
@@ -170,7 +170,7 @@ describe('AutomowerPlatform', () => {
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
         container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
 
-        await target.unsafeOnShutdown();
+        await target.unsafeOnShutdownAsync();
 
         log.verify(o => o.error(It.IsAny<string>(), It.IsAny<Error>()), Times.Once());
     });

@@ -19,12 +19,12 @@ export class AutomowerPlatformSpy extends AutomowerPlatform {
         return this.getDiscoveryService();
     }
 
-    public unsafeOnFinishedLaunching(): Promise<void> {
-        return this.onFinishedLaunching();
+    public unsafeOnFinishedLaunchingAsync(): Promise<void> {
+        return this.onFinishedLaunchingAsync();
     }
 
-    public unsafeOnShutdown(): Promise<void> {
-        return this.onShutdown();
+    public unsafeOnShutdownAsync(): Promise<void> {
+        return this.onShutdownAsync();
     }
     
     protected override ensureContainerIsInitialized(): void {
