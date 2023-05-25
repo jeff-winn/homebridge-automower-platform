@@ -122,7 +122,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     protected canTokenBeRefreshed(): boolean {
-        return this.currentToken !== undefined && this.currentToken.refresh_token !== undefined;
+        return this.currentToken?.refresh_token !== undefined;
     }
 
     /**
