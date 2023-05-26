@@ -109,7 +109,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     protected attachTo(stream: TStream): void {
         stream.setOnConnectedCallback(this.onCheckKeepAliveAsync.bind(this));
         stream.setOnErrorCallback(this.onCheckKeepAliveAsync.bind(this));
-        stream.setOnDisconnectedCallback(this.onDisconnectedEventReceived.bind(this));
+        stream.setOnDisconnectedCallback(this.onDisconnectedEventReceivedAsync.bind(this));
     }
 
     protected flagAsStarted(): void {
@@ -125,7 +125,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         return Promise.resolve(undefined);
     }    
 
-    protected async onDisconnectedEventReceived(): Promise<void> {
+    protected async onDisconnectedEventReceivedAsync(): Promise<void> {
         if (this.isStopping()) {
             // The service is intentionally being stopped.
             this.flagAsStopped();
@@ -133,7 +133,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
             // The keep alive is not already active, attempt to trigger the reconnection immediately.
             this.stopKeepAlive();
 
-            await this.keepAlive();
+            await this.keepAliveAsync();
         }
     }
 
@@ -178,10 +178,17 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
     }
 
     protected startKeepAlive(): void {
-        this.timer.start(this.keepAlive.bind(this), this.KEEP_ALIVE_INTERVAL);
+        this.timer.start(this.keepAliveCallback.bind(this), this.KEEP_ALIVE_INTERVAL);
+    }
+
+    protected keepAliveCallback(): void {
+        this.keepAliveAsync().then()
+            .catch(err => {
+                this.log.error('ERROR_KEEPING_STREAM_ALIVE', err);
+            });
     }
     
-    protected async keepAlive(): Promise<void> {        
+    protected async keepAliveAsync(): Promise<void> {        
         try {
             if (this.shouldReconnect()) {
                 this.flagAsKeepAliveActive();
@@ -196,13 +203,11 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
             } else {
                 this.pingOnce();
             }
-        } catch (e) {
-            this.log.error('ERROR_KEEPING_STREAM_ALIVE', e);
         } finally {
             if (!this.isKeepAliveActive()) {
                 // The keep alive is not trying to reconnect, restart the timer.
                 this.startKeepAlive();
-            }            
+            }
         }
     }
     

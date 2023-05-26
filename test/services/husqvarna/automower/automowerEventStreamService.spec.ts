@@ -89,7 +89,7 @@ describe('AutomowerEventStreamService', () => {
     it('should not run the keep alive when being stopped on disconnect', async () => {
         target.unsafeFlagAsStopping();
 
-        await target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceivedAsync();
 
         expect(target.unsafeHasStopped()).toBeTruthy();
         expect(target.unsafeIsStopping()).toBeFalsy();
@@ -98,7 +98,7 @@ describe('AutomowerEventStreamService', () => {
     it('should not run the keep alive when keep alive is already active', async () => {
         target.unsafeFlagAsKeepAliveActive();
 
-        await target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceivedAsync();
     });
 
     it('should handle disconnected event received', async () => {
@@ -107,7 +107,7 @@ describe('AutomowerEventStreamService', () => {
         // Don't need to test the keep alive again here, just make sure it would have ran.
         target.shouldRunKeepAlive = false;
 
-        await target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceivedAsync();
 
         expect(target.keepAliveExecuted).toBeTruthy();
 
@@ -134,7 +134,7 @@ describe('AutomowerEventStreamService', () => {
         stream.opened = true;
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();
+        await target.unsafeKeepAliveAsync();
 
         expect(stream.keptAlive).toBeTruthy();
 
@@ -149,7 +149,10 @@ describe('AutomowerEventStreamService', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();
+        target.unsafeKeepAliveCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
@@ -162,7 +165,10 @@ describe('AutomowerEventStreamService', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();
+        target.unsafeKeepAliveCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -178,7 +184,10 @@ describe('AutomowerEventStreamService', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();
+        await target.unsafeKeepAliveCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -193,7 +202,7 @@ describe('AutomowerEventStreamService', () => {
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();        
+        await target.unsafeKeepAliveAsync();        
 
         expect(stream.opened).toBeTruthy();
     });
@@ -212,7 +221,7 @@ describe('AutomowerEventStreamService', () => {
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();        
+        await target.unsafeKeepAliveAsync();        
 
         expect(stream.closed).toBeTruthy();        
         expect(stream.opened).toBeTruthy();
@@ -225,7 +234,7 @@ describe('AutomowerEventStreamService', () => {
         stream.opened = true;
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();        
+        await target.unsafeKeepAliveAsync();        
 
         expect(stream.keptAlive).toBeTruthy();
 
@@ -257,7 +266,7 @@ describe('AutomowerEventStreamService', () => {
         tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();        
+        await target.unsafeKeepAliveAsync();        
 
         expect(stream.closed).toBeTruthy();
         expect(stream.opened).toBeTruthy();
