@@ -53,24 +53,24 @@ export interface EventStreamClient {
 export abstract class AbstractEventStreamClient implements EventStreamClient {
     private socket?: WebSocketWrapper;
 
-    private onErrorReceivedCallback?: () => Promise<void>;
-    private onConnectedCallback?: () => Promise<void>;
-    private onDisconnectedCallback?: () => Promise<void>;
+    private errorReceivedCallback?: () => Promise<void>;
+    private connectedCallback?: () => Promise<void>;
+    private disconnectedCallback?: () => Promise<void>;
     private connecting = false;
     private connected = false;
 
     protected constructor(protected readonly log: PlatformLogger) { }
 
     public setOnConnectedCallback(callback: () => Promise<void>): void {
-        this.onConnectedCallback = callback;
+        this.connectedCallback = callback;
     }
 
     public setOnDisconnectedCallback(callback: () => Promise<void>): void {
-        this.onDisconnectedCallback = callback;
+        this.disconnectedCallback = callback;
     }
 
     public setOnErrorCallback(callback: () => Promise<void>): void {
-        this.onErrorReceivedCallback = callback;
+        this.errorReceivedCallback = callback;
     }
 
     public async open(token: AccessToken): Promise<void> {
@@ -109,9 +109,9 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     }
 
     protected async notifyConnected(): Promise<void> {        
-        if (this.onConnectedCallback !== undefined) {
+        if (this.connectedCallback !== undefined) {
             try {
-                await this.onConnectedCallback();
+                await this.connectedCallback();
             } catch (e) {
                 this.log.error('ERROR_HANDLING_CONNECTED_EVENT', e);
             }
@@ -130,9 +130,9 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     }    
 
     protected async notifyDisconnected(): Promise<void> {
-        if (this.onDisconnectedCallback !== undefined) {
+        if (this.disconnectedCallback !== undefined) {
             try {
-                await this.onDisconnectedCallback();                
+                await this.disconnectedCallback();                
             } catch (e) {
                 this.log.error('ERROR_HANDLING_DISCONNECTED_EVENT', e);
             }
@@ -140,9 +140,9 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     }
     
     protected async notifyErrorReceived(): Promise<void> {
-        if (this.onErrorReceivedCallback !== undefined) {
+        if (this.errorReceivedCallback !== undefined) {
             try {
-                await this.onErrorReceivedCallback();
+                await this.errorReceivedCallback();
             } catch (e) {
                 this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
             }
