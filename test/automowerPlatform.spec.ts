@@ -110,7 +110,7 @@ describe('AutomowerPlatform', () => {
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
         container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
         
-        target.unsafeOnFinishedLaunching();
+        target.unsafeOnFinishedLaunchingCallback();
 
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);
@@ -130,7 +130,7 @@ describe('AutomowerPlatform', () => {
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
         container.setup(o => o.resolve(DiscoveryServiceFactoryImpl)).returns(discoveryServiceFactory.object());
         
-        target.unsafeOnFinishedLaunching();
+        target.unsafeOnFinishedLaunchingCallback();
 
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);
@@ -157,7 +157,7 @@ describe('AutomowerPlatform', () => {
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
         container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
 
-        target.unsafeOnFinishedLaunching();
+        target.unsafeOnFinishedLaunchingCallback();
 
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);
@@ -180,7 +180,7 @@ describe('AutomowerPlatform', () => {
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());
         container.setup(o => o.resolve(EventStreamServiceFactoryImpl)).returns(eventStreamServiceFactory.object());
 
-        target.unsafeOnShutdown();
+        target.unsafeOnShutdownCallback();
 
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);

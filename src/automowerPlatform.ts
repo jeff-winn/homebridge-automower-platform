@@ -80,12 +80,12 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     public constructor(private log: Logging, config: PlatformConfig, private api: API) {
         this.config = new AutomowerPlatformConfig(config);
 
-        api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunching.bind(this));
-        api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));
+        api.on(APIEvent.DID_FINISH_LAUNCHING, this.onFinishedLaunchingCallback.bind(this));
+        api.on(APIEvent.SHUTDOWN, this.onShutdownCallback.bind(this));
     }
 
-    protected onFinishedLaunching(): void {
-        this.onFinishedLaunchingAsync().then()
+    protected onFinishedLaunchingCallback(): void {
+        this.onFinishedLaunchingCallbackAsync().then()
             .catch(err => {
                 if (err instanceof BadConfigurationError) {
                     // The message should be in a format that is readable to an end user, just display that instead.
@@ -96,7 +96,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
             });
     }
 
-    private async onFinishedLaunchingAsync(): Promise<void> {
+    private async onFinishedLaunchingCallbackAsync(): Promise<void> {
         this.ensureContainerIsInitialized();
 
         await this.discoverMowersAsync();
@@ -179,14 +179,14 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         return this.mowers.find(o => o.getId() === mowerId);
     }
 
-    protected onShutdown(): void {
-        this.onShutdownAsync().then()
+    protected onShutdownCallback(): void {
+        this.onShutdownCallbackAsync().then()
             .catch(err => {
                 this.error('ERROR_SHUTTING_DOWN_PLUGIN', err);
             });
     }
 
-    private async onShutdownAsync(): Promise<void> {
+    private async onShutdownCallbackAsync(): Promise<void> {
         await this.getEventService()?.stop();
         await this.getTokenManager()?.logout();
     }
