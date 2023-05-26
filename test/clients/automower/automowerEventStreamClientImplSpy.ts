@@ -13,8 +13,8 @@ export class AutomowerEventStreamClientImplSpy extends AutomowerEventStreamClien
         this.onMessageReceivedCallback(buffer);
     }
 
-    public unsafeOnCloseReceivedAsync(): Promise<void> {
-        return this.onCloseReceivedAsync();
+    public unsafeOnCloseReceivedCallback(): void {
+        this.onCloseReceivedCallback();
     }
 
     public unsafeOnErrorReceivedCallback(err: ErrorEvent): void {

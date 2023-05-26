@@ -196,7 +196,10 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
+        target.unsafeOnCloseReceivedCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -213,7 +216,10 @@ describe('GardenaEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnecting();
-        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
+        target.unsafeOnCloseReceivedCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -249,7 +255,10 @@ describe('GardenaEventStreamClientImpl', () => {
         });
 
         await expect(target.unsafeOnFirstMessageReceivedAsync()).resolves.toBeUndefined();
-        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
+        target.unsafeOnCloseReceivedCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();

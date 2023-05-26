@@ -118,7 +118,14 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
         }
     }
 
-    protected async onCloseReceivedAsync(): Promise<void> {
+    protected onCloseReceivedCallback(): void {
+        this.onCloseReceivedCallbackAsync().then()
+            .catch(err => {
+                this.log.error('ERROR_HANDLING_DISCONNECTED_EVENT', err);
+            });
+    }
+
+    private async onCloseReceivedCallbackAsync(): Promise<void> {
         this.log.debug('DISCONNECTED');
         
         if (this.isConnected()) {
@@ -131,11 +138,7 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
 
     protected async notifyDisconnectedAsync(): Promise<void> {
         if (this.disconnectedCallback !== undefined) {
-            try {
-                await this.disconnectedCallback();                
-            } catch (e) {
-                this.log.error('ERROR_HANDLING_DISCONNECTED_EVENT', e);
-            }
+            await this.disconnectedCallback();
         }
     }
     

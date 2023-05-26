@@ -36,7 +36,7 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         const socket = this.createSocketCore(response.data.attributes.url, token);
         socket.on('message', this.onMessageReceivedCallback.bind(this));
         socket.on('error', this.onErrorReceivedCallback.bind(this));
-        socket.on('close', this.onCloseReceivedAsync.bind(this));
+        socket.on('close', this.onCloseReceivedCallback.bind(this));
 
         return socket;
     }

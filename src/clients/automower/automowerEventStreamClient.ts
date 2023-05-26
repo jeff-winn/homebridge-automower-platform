@@ -97,7 +97,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
 
         socket.on('message', this.onMessageReceivedCallback.bind(this));
         socket.on('error', this.onErrorReceivedCallback.bind(this));
-        socket.on('close', this.onCloseReceivedAsync.bind(this));
+        socket.on('close', this.onCloseReceivedCallback.bind(this));
 
         return Promise.resolve(socket);
     }
