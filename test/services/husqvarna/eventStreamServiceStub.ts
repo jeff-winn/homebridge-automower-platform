@@ -5,15 +5,19 @@ export class EventStreamServiceStub extends AbstractEventStreamService<EventStre
     public shouldRunKeepAlive = true;
     public keepAliveExecuted = false;
            
-    public unsafeKeepAlive(): Promise<void> {
-        return this.keepAlive();
+    public unsafeKeepAliveCallback(): void {
+        this.keepAliveCallback();
+    }
+    
+    public unsafeKeepAliveAsync(): Promise<void> {
+        return this.keepAliveAsync();
     }    
 
-    protected override keepAlive(): Promise<void> {
+    protected override keepAliveAsync(): Promise<void> {
         this.keepAliveExecuted = true;
 
         if (this.shouldRunKeepAlive) {
-            return super.keepAlive();
+            return super.keepAliveAsync();
         }
 
         return Promise.resolve(undefined);
@@ -39,8 +43,8 @@ export class EventStreamServiceStub extends AbstractEventStreamService<EventStre
         return this.onCheckKeepAliveAsync();
     }
 
-    public unsafeOnDisconnectedEventReceived(): Promise<void> {
-        return this.onDisconnectedEventReceived();
+    public unsafeOnDisconnectedEventReceivedAsync(): Promise<void> {
+        return this.onDisconnectedEventReceivedAsync();
     }
 
     public unsafeFlagAsKeepAliveActive() {

@@ -85,7 +85,7 @@ describe('AbstractEventStreamService', () => {
     it('should not run the keep alive when being stopped on disconnect', async () => {
         target.unsafeFlagAsStopping();
 
-        await target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceivedAsync();
 
         expect(target.unsafeHasStopped()).toBeTruthy();
         expect(target.unsafeIsStopping()).toBeFalsy();
@@ -94,7 +94,7 @@ describe('AbstractEventStreamService', () => {
     it('should not run the keep alive when keep alive is already active', async () => {
         target.unsafeFlagAsKeepAliveActive();
 
-        await target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceivedAsync();
     });
 
     it('should handle disconnected event received', async () => {
@@ -103,7 +103,7 @@ describe('AbstractEventStreamService', () => {
         // Don't need to test the keep alive again here, just make sure it would have ran.
         target.shouldRunKeepAlive = false;
 
-        await target.unsafeOnDisconnectedEventReceived();
+        await target.unsafeOnDisconnectedEventReceivedAsync();
 
         expect(target.keepAliveExecuted).toBeTruthy();
 
@@ -134,7 +134,7 @@ describe('AbstractEventStreamService', () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
 
         stream.verify(o => o.ping(), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -149,7 +149,10 @@ describe('AbstractEventStreamService', () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        target.unsafeKeepAliveCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
@@ -160,7 +163,10 @@ describe('AbstractEventStreamService', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.unsafeKeepAlive();
+        target.unsafeKeepAliveCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(target.unsafeIsKeepAliveActive()).toBeFalsy();
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -175,7 +181,10 @@ describe('AbstractEventStreamService', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        target.unsafeKeepAliveCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -192,7 +201,7 @@ describe('AbstractEventStreamService', () => {
         stream.setup(o => o.open(token)).returnsAsync(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
 
         stream.verify(o => o.open(token), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Never());
@@ -215,7 +224,7 @@ describe('AbstractEventStreamService', () => {
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
         
         stream.verify(o => o.close(), Times.Once());
         stream.verify(o => o.open(token), Times.Once());
@@ -230,7 +239,7 @@ describe('AbstractEventStreamService', () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
 
         stream.verify(o => o.ping(), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
@@ -264,7 +273,7 @@ describe('AbstractEventStreamService', () => {
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeKeepAlive()).resolves.toBeUndefined();
+        await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
 
         stream.verify(o => o.close(), Times.Once());
         stream.verify(o => o.open(token), Times.Once());
