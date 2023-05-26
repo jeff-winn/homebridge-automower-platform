@@ -6,11 +6,11 @@ export class SwitchSpy extends AbstractSwitch {
     public service: Service | undefined;
     public onSetCalled = false;
 
-    public unsafeOnSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
-        return this.onSetCallback(value, callback);
+    public unsafeOnSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): void {
+        this.onSetCallback(value, callback);
     }
 
-    protected onSet(): Promise<void> {
+    protected override onSetAsync(): Promise<void> {
         this.onSetCalled = true;
         return Promise.resolve(undefined);
     }

@@ -72,7 +72,7 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch, Suppor
         super(name, accessory, api, log);
     }
 
-    protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+    protected override async onSetAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         try {
             if (on) {
                 await this.controlService.resume(this.accessory.context.mowerId);
@@ -82,9 +82,8 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch, Suppor
 
             callback(HAPStatus.SUCCESS);
         } catch (e) {
-            this.log.error('ERROR_HANDLING_SET', this.name, this.accessory.displayName, e);
-
-            callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+            callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);            
+            throw e;
         }        
     }
 
@@ -140,20 +139,23 @@ export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsC
         this.log.info('CHANGED_VALUE', this.cuttingHeight.displayName, this.accessory.displayName, value);
     }
 
-    protected onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): Promise<void> {
+    protected onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): void {
         const actualValue = value as number;
-        return this.onSetCuttingHeight(actualValue, callback);
+
+        this.onSetCuttingHeightAsync(actualValue, callback).then()
+            .catch(err => {
+                this.log.error('ERROR_HANDLING_SET', this.cuttingHeight!.displayName, this.accessory.displayName, err);
+            });
     }
 
-    protected async onSetCuttingHeight(value: number, callback: CharacteristicSetCallback): Promise<void> {
+    protected async onSetCuttingHeightAsync(value: number, callback: CharacteristicSetCallback): Promise<void> {
         try {
             await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value);
 
             callback(HAPStatus.SUCCESS);
         } catch (e) {
-            this.log.error('ERROR_HANDLING_SET', this.cuttingHeight!.displayName, this.accessory.displayName, e);
-
             callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+            throw e;
         }
     }
 }

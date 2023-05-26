@@ -51,7 +51,7 @@ describe('PauseSwitchImpl', () => {
         controlService.setup(o => o.pause(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(true, (e) => {
+        await target.unsafeOnSetAsync(true, (e) => {
             status = e;
         });
 
@@ -72,7 +72,7 @@ describe('PauseSwitchImpl', () => {
         controlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(false, (e) => {
+        await target.unsafeOnSetAsync(false, (e) => {
             status = e;
         });
 
@@ -94,9 +94,12 @@ describe('PauseSwitchImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(true, (e) => {
+        target.unsafeOnSetCallback(true, (e) => {
             status = e;
         });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         controlService.verify(o => o.pause(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
@@ -117,9 +120,12 @@ describe('PauseSwitchImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(false, (e) => {
+        target.unsafeOnSetCallback(false, (e) => {
             status = e;
         });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         controlService.verify(o => o.resume(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
@@ -194,7 +200,7 @@ describe('PauseSwitchImpl', () => {
         target.setMowerState(mowerState);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(false, (e) => {
+        await target.unsafeOnSetAsync(false, (e) => {
             status = e;
         });
 
