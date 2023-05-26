@@ -153,13 +153,16 @@ describe('GardenaEventStreamClientImpl', () => {
     it('should do nothing when no callback is set on error received', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeOnErrorReceivedAsync({
+        target.unsafeOnErrorReceivedCallback({
             code: 'hello',
             detail: 'world',
             id: '12345',
             status: 'status',
             title: 'title'
-        })).resolves.toBeUndefined();
+        });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should log errors thrown when error callback is executed', async () => {
@@ -170,13 +173,16 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnErrorReceivedAsync({
+        target.unsafeOnErrorReceivedCallback({
             code: 'hello',
             detail: 'world',
             id: '12345',
             status: 'status',
             title: 'title'
-        })).resolves.toBeUndefined();
+        });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny()), Times.Once());
     });
@@ -262,13 +268,16 @@ describe('GardenaEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnErrorReceivedAsync({
+        target.unsafeOnErrorReceivedCallback({
             code: 'code',
             detail: 'detail',
             id: '12345',
             status: 'status',
             title: 'title'
-        })).resolves.toBeUndefined();
+        });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(handled).toBeTruthy();
     });

@@ -141,11 +141,7 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
     
     protected async notifyErrorReceivedAsync(): Promise<void> {
         if (this.errorReceivedCallback !== undefined) {
-            try {
-                await this.errorReceivedCallback();
-            } catch (e) {
-                this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
-            }
+            await this.errorReceivedCallback();            
         }
     }
 

@@ -22,8 +22,8 @@ export class GardenaEventStreamClientImplSpy extends GardenaEventStreamClientImp
         return this.onCloseReceivedAsync();
     }
 
-    public unsafeOnErrorReceivedAsync(err: Error): Promise<void> {
-        return this.onErrorReceivedAsync(err);
+    public unsafeOnErrorReceivedCallback(err: Error): void {
+        this.onErrorReceivedCallback(err);
     }
 
     public unsafeOnConnecting(): void {

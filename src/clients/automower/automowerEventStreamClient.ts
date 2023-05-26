@@ -96,7 +96,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         const socket = this.createSocketCore(this.baseUrl, token);
 
         socket.on('message', this.onMessageReceivedCallback.bind(this));
-        socket.on('error', this.onErrorReceivedAsync.bind(this));
+        socket.on('error', this.onErrorReceivedCallback.bind(this));
         socket.on('close', this.onCloseReceivedAsync.bind(this));
 
         return Promise.resolve(socket);
@@ -113,8 +113,15 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     public isCallbackSet(): boolean {
         return this.messageReceivedCallback !== undefined;
     }
+
+    protected onErrorReceivedCallback(err: ErrorEvent): void {
+        this.onErrorReceivedCallbackAsync(err).then()
+            .catch(e => {
+                this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
+            });
+    }
     
-    protected async onErrorReceivedAsync(err: ErrorEvent): Promise<void> {
+    private async onErrorReceivedCallbackAsync(err: ErrorEvent): Promise<void> {
         this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: err.error,
             message: err.message,

@@ -35,7 +35,7 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         
         const socket = this.createSocketCore(response.data.attributes.url, token);
         socket.on('message', this.onMessageReceivedCallback.bind(this));
-        socket.on('error', this.onErrorReceivedAsync.bind(this));
+        socket.on('error', this.onErrorReceivedCallback.bind(this));
         socket.on('close', this.onCloseReceivedAsync.bind(this));
 
         return socket;
@@ -81,7 +81,14 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         this.firstMessageReceived = true;
     }
 
-    protected async onErrorReceivedAsync(err: Error): Promise<void> {
+    protected onErrorReceivedCallback(err: Error): void {
+        this.onErrorReceivedCallbackAsync(err).then()
+            .catch(e => {
+                this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
+            });
+    }
+
+    private async onErrorReceivedCallbackAsync(err: Error): Promise<void> {
         this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: err.title,
             message: err.detail,
