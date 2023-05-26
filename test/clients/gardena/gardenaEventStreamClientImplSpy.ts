@@ -10,8 +10,8 @@ export class GardenaEventStreamClientImplSpy extends GardenaEventStreamClientImp
         return this.callback!(token);
     }
 
-    public unsafeOnMessageReceived(buffer: Buffer): Promise<void> {
-        return this.onMessageReceived(buffer);
+    public unsafeOnMessageReceivedCallback(buffer: Buffer): void {
+        return this.onMessageReceivedCallback(buffer);
     }
 
     public unsafeOnFirstMessageReceived(): Promise<void> {
