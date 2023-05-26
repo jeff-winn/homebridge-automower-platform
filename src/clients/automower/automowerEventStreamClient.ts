@@ -96,8 +96,8 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         const socket = this.createSocketCore(this.baseUrl, token);
 
         socket.on('message', this.onMessageReceivedCallback.bind(this));
-        socket.on('error', this.onErrorReceived.bind(this));
-        socket.on('close', this.onCloseReceived.bind(this));
+        socket.on('error', this.onErrorReceivedAsync.bind(this));
+        socket.on('close', this.onCloseReceivedAsync.bind(this));
 
         return Promise.resolve(socket);
     }
@@ -114,14 +114,14 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         return this.messageReceivedCallback !== undefined;
     }
     
-    protected async onErrorReceived(err: ErrorEvent): Promise<void> {
+    protected async onErrorReceivedAsync(err: ErrorEvent): Promise<void> {
         this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: err.error,
             message: err.message,
             type: err.type
         });
 
-        await this.notifyErrorReceived();
+        await this.notifyErrorReceivedAsync();
     }
 
     protected onMessageReceivedCallback(buffer: Buffer): void {
@@ -141,21 +141,21 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
 
         const connectedEvent = data as ConnectedEvent;
         if (connectedEvent.connectionId !== undefined) {
-            await this.onConnectedReceived(connectedEvent);
+            await this.onConnectedReceivedAsync(connectedEvent);
         } else {
             const mowerEvent = data as AutomowerEvent;
             if (mowerEvent.type !== undefined) {
-                await this.notifyEventReceived(mowerEvent);
+                await this.notifyEventReceivedAsync(mowerEvent);
             }
         }
     }
 
-    protected async onConnectedReceived(event: ConnectedEvent): Promise<void> {
+    protected async onConnectedReceivedAsync(event: ConnectedEvent): Promise<void> {
         this.setConnectionId(event.connectionId);
-        await this.onConnected();
+        await this.onConnectedAsync();
     }
 
-    protected async notifyEventReceived(event: AutomowerEvent): Promise<void> {
+    protected async notifyEventReceivedAsync(event: AutomowerEvent): Promise<void> {
         if (this.messageReceivedCallback !== undefined) {
             await this.messageReceivedCallback(event);
         }

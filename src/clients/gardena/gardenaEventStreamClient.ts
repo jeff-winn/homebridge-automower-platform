@@ -35,8 +35,8 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         
         const socket = this.createSocketCore(response.data.attributes.url, token);
         socket.on('message', this.onMessageReceivedCallback.bind(this));
-        socket.on('error', this.onErrorReceived.bind(this));
-        socket.on('close', this.onCloseReceived.bind(this));
+        socket.on('error', this.onErrorReceivedAsync.bind(this));
+        socket.on('close', this.onCloseReceivedAsync.bind(this));
 
         return socket;
     }
@@ -58,12 +58,12 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
 
         if (!this.hasFirstMessageBeenReceived()) {
             // The first message has been received.
-            await this.onFirstMessageReceived();
+            await this.onFirstMessageReceivedAsync();
         }
 
         const mowerEvent = data as DataItem;
         if (mowerEvent.type !== undefined) {
-            await this.notifyEventReceived(mowerEvent);
+            await this.notifyEventReceivedAsync(mowerEvent);
         }
     }
 
@@ -71,8 +71,8 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         return this.firstMessageReceived;
     }
 
-    protected async onFirstMessageReceived(): Promise<void> {
-        await this.onConnected();
+    protected async onFirstMessageReceivedAsync(): Promise<void> {
+        await this.onConnectedAsync();
     
         this.flagAsFirstMessageReceived();
     }
@@ -81,21 +81,21 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         this.firstMessageReceived = true;
     }
 
-    protected async onErrorReceived(err: Error): Promise<void> {
+    protected async onErrorReceivedAsync(err: Error): Promise<void> {
         this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: err.title,
             message: err.detail,
             type: err.code
         });
 
-        await this.notifyErrorReceived();
+        await this.notifyErrorReceivedAsync();
     }
 
     public setOnEventCallback(callback: (event: DataItem) => Promise<void>): void {
         this.messageReceivedCallback = callback;
     }
 
-    protected async notifyEventReceived(event: DataItem): Promise<void> {
+    protected async notifyEventReceivedAsync(event: DataItem): Promise<void> {
         if (this.messageReceivedCallback !== undefined) {
             await this.messageReceivedCallback(event);
         }

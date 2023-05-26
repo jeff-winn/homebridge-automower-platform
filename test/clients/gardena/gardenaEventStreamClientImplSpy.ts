@@ -14,16 +14,16 @@ export class GardenaEventStreamClientImplSpy extends GardenaEventStreamClientImp
         return this.onMessageReceivedCallback(buffer);
     }
 
-    public unsafeOnFirstMessageReceived(): Promise<void> {
-        return this.onFirstMessageReceived();
+    public unsafeOnFirstMessageReceivedAsync(): Promise<void> {
+        return this.onFirstMessageReceivedAsync();
     }
 
-    public unsafeOnCloseReceived(): Promise<void> {
-        return this.onCloseReceived();
+    public unsafeOnCloseReceivedAsync(): Promise<void> {
+        return this.onCloseReceivedAsync();
     }
 
-    public unsafeOnErrorReceived(err: Error): Promise<void> {
-        return this.onErrorReceived(err);
+    public unsafeOnErrorReceivedAsync(err: Error): Promise<void> {
+        return this.onErrorReceivedAsync(err);
     }
 
     public unsafeOnConnecting(): void {

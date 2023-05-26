@@ -101,7 +101,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     it('should do nothing when no callback is set on error received', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceivedAsync({
             error: 'error',
             message: 'error message',
             type: 'error type'
@@ -116,7 +116,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceivedAsync({
             error: 'error',
             message: 'error message',
             type: 'error type'
@@ -134,7 +134,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -151,7 +151,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnecting();
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -170,7 +170,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnConnectedReceived({
+        await expect(target.unsafeOnConnectedReceivedAsync({
             ready: true,
             connectionId: '12345'
         })).resolves.toBeUndefined();
@@ -189,12 +189,12 @@ describe('AutomowerEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnConnectedReceived({
+        await expect(target.unsafeOnConnectedReceivedAsync({
             ready: true,
             connectionId: '12345'
         })).resolves.toBeUndefined();
 
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -219,7 +219,7 @@ describe('AutomowerEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnErrorReceived(err)).resolves.toBeUndefined();
+        await expect(target.unsafeOnErrorReceivedAsync(err)).resolves.toBeUndefined();
 
         expect(handled).toBeTruthy();
     });

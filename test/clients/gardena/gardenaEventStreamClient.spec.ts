@@ -153,7 +153,7 @@ describe('GardenaEventStreamClientImpl', () => {
     it('should do nothing when no callback is set on error received', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceivedAsync({
             code: 'hello',
             detail: 'world',
             id: '12345',
@@ -170,7 +170,7 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceivedAsync({
             code: 'hello',
             detail: 'world',
             id: '12345',
@@ -190,7 +190,7 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -207,7 +207,7 @@ describe('GardenaEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnecting();
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -226,7 +226,7 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnFirstMessageReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnFirstMessageReceivedAsync()).resolves.toBeUndefined();
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -242,8 +242,8 @@ describe('GardenaEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnFirstMessageReceived()).resolves.toBeUndefined();
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnFirstMessageReceivedAsync()).resolves.toBeUndefined();
+        await expect(target.unsafeOnCloseReceivedAsync()).resolves.toBeUndefined();
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -262,7 +262,7 @@ describe('GardenaEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnErrorReceived({
+        await expect(target.unsafeOnErrorReceivedAsync({
             code: 'code',
             detail: 'detail',
             id: '12345',
