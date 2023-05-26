@@ -176,7 +176,7 @@ describe('MainSwitchImpl', () => {
         mowerControlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(true, (e) => {
+        await target.unsafeOnSetAsync(true, (e) => {
             status = e;
         });
 
@@ -197,7 +197,7 @@ describe('MainSwitchImpl', () => {
         mowerControlService.setup(o => o.park(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(false, (e) => {
+        await target.unsafeOnSetAsync(false, (e) => {
             status = e;
         });
 
@@ -219,9 +219,12 @@ describe('MainSwitchImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(true, (e) => {
+        target.unsafeOnSetCallback(true, (e) => {
             status = e;
         });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         mowerControlService.verify(o => o.resume(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
@@ -242,9 +245,12 @@ describe('MainSwitchImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSet(false, (e) => {
+        target.unsafeOnSetCallback(false, (e) => {
             status = e;
         });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         mowerControlService.verify(o => o.park(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
@@ -332,7 +338,7 @@ describe('AutomowerMainSwitchImpl', () => {
         changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeSetCuttingHeight(cuttingHeight, (e) => {
+        await target.unsafeSetCuttingHeightAsync(cuttingHeight, (e) => {
             status = e;
         });
 
@@ -384,9 +390,12 @@ describe('AutomowerMainSwitchImpl', () => {
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeSetCuttingHeight(cuttingHeightValue, (e) => {
+        target.unsafeOnSetCuttingHeightCallback(cuttingHeightValue, (e) => {
             status = e;
         });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeightValue), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());

@@ -30,7 +30,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
         return this.lastState;
     }
     
-    protected async onSet(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+    protected override async onSetAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         try {
             if (on) {
                 await this.controlService.pause(this.accessory.context.mowerId);
@@ -44,9 +44,8 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
 
             callback(HAPStatus.SUCCESS);
         } catch (e) {
-            this.log.error('ERROR_HANDLING_SET', this.name, this.accessory.displayName, e);
-
             callback(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+            throw e;
         }        
     }
 
