@@ -102,13 +102,13 @@ export abstract class AbstractSwitch extends AbstractAccessoryService implements
     protected onSetCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): void {
         const actualValue = value as boolean;
         
-        this.onSetAsync(actualValue, callback).then()
+        this.onSetCallbackAsync(actualValue, callback).then()
             .catch(err => {
                 this.log.error('ERROR_HANDLING_SET', this.name, this.accessory.displayName, err);
             });
     }
 
-    protected abstract onSetAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void>;
+    protected abstract onSetCallbackAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void>;
 
     protected createService(displayName: string): Service {
         return new this.Service.Switch(displayName, this.name);

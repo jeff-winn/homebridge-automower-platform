@@ -51,7 +51,7 @@ describe('PauseSwitchImpl', () => {
         controlService.setup(o => o.pause(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSetAsync(true, (e) => {
+        await target.unsafeOnSetCallbackAsync(true, (e) => {
             status = e;
         });
 
@@ -72,7 +72,7 @@ describe('PauseSwitchImpl', () => {
         controlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSetAsync(false, (e) => {
+        await target.unsafeOnSetCallbackAsync(false, (e) => {
             status = e;
         });
 
@@ -200,7 +200,7 @@ describe('PauseSwitchImpl', () => {
         target.setMowerState(mowerState);
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSetAsync(false, (e) => {
+        await target.unsafeOnSetCallbackAsync(false, (e) => {
             status = e;
         });
 

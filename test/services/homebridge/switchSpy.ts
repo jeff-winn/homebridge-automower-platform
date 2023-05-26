@@ -10,7 +10,7 @@ export class SwitchSpy extends AbstractSwitch {
         this.onSetCallback(value, callback);
     }
 
-    protected override onSetAsync(): Promise<void> {
+    protected override onSetCallbackAsync(): Promise<void> {
         this.onSetCalled = true;
         return Promise.resolve(undefined);
     }
