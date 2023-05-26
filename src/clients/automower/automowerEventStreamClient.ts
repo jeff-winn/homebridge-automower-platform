@@ -85,7 +85,7 @@ export interface AutomowerEventStreamClient extends EventStreamClient {
 }
 
 export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient implements AutomowerEventStreamClient {
-    private onEventReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
+    private messageReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
     private connectionId?: string;
     
     public constructor(private baseUrl: string, log: PlatformLogger) { 
@@ -95,7 +95,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     protected createSocket(token: AccessToken): Promise<WebSocketWrapper> {
         const socket = this.createSocketCore(this.baseUrl, token);
 
-        socket.on('message', this.onMessageReceived.bind(this));
+        socket.on('message', this.onMessageReceivedCallback.bind(this));
         socket.on('error', this.onErrorReceived.bind(this));
         socket.on('close', this.onCloseReceived.bind(this));
 
@@ -111,7 +111,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     }    
 
     public isCallbackSet(): boolean {
-        return this.onEventReceivedCallback !== undefined;
+        return this.messageReceivedCallback !== undefined;
     }
     
     protected async onErrorReceived(err: ErrorEvent): Promise<void> {
@@ -124,26 +124,29 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
         await this.notifyErrorReceived();
     }
 
-    protected async onMessageReceived(buffer: Buffer): Promise<void> {
+    protected onMessageReceivedCallback(buffer: Buffer): void {
+        this.onMessageReceivedCallbackAsync(buffer).then()
+            .catch(err => {
+                this.log.error('ERROR_PROCESSING_MESSAGE', err);
+            });
+    }
+
+    private async onMessageReceivedCallbackAsync(buffer: Buffer): Promise<void> {
         if (buffer.length === 0) {
             return;
         }
 
-        try {
-            const data = JSON.parse(buffer.toString());
-            this.log.debug('RECEIVED_EVENT', JSON.stringify(data));
-    
-            const connectedEvent = data as ConnectedEvent;
-            if (connectedEvent.connectionId !== undefined) {
-                await this.onConnectedReceived(connectedEvent);
-            } else {
-                const mowerEvent = data as AutomowerEvent;
-                if (mowerEvent.type !== undefined) {
-                    await this.notifyEventReceived(mowerEvent);
-                }
+        const data = JSON.parse(buffer.toString());
+        this.log.debug('RECEIVED_EVENT', JSON.stringify(data));
+
+        const connectedEvent = data as ConnectedEvent;
+        if (connectedEvent.connectionId !== undefined) {
+            await this.onConnectedReceived(connectedEvent);
+        } else {
+            const mowerEvent = data as AutomowerEvent;
+            if (mowerEvent.type !== undefined) {
+                await this.notifyEventReceived(mowerEvent);
             }
-        } catch (e) {
-            this.log.error('ERROR_PROCESSING_MESSAGE', e);
         }
     }
 
@@ -153,12 +156,12 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     }
 
     protected async notifyEventReceived(event: AutomowerEvent): Promise<void> {
-        if (this.onEventReceivedCallback !== undefined) {
-            await this.onEventReceivedCallback(event);
+        if (this.messageReceivedCallback !== undefined) {
+            await this.messageReceivedCallback(event);
         }
     }
 
     public setOnEventCallback(callback: (event: AutomowerEvent) => Promise<void>): void {        
-        this.onEventReceivedCallback = callback;
+        this.messageReceivedCallback = callback;
     }
 }

@@ -254,7 +254,10 @@ describe('AutomowerEventStreamClientImpl', () => {
     it('should return when the buffer is empty', async () => {
         const payload = Buffer.from([]);
 
-        await target.unsafeOnMessageReceived(payload);
+        target.unsafeOnMessageReceivedCallback(payload);
+        
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should log an error when invalid json is received', async () => {
@@ -262,7 +265,10 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(' ');
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
@@ -286,8 +292,11 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
         
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
+
         expect(target.isConnected()).toBeTruthy();
         expect(target.getConnectionId()).toBe(id);
         expect(connected).toBeTruthy();
@@ -298,7 +307,10 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify({ }));
 
-        await target.unsafeOnMessageReceived(payload);
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should ignore the mower event without a callback', async () => {
@@ -312,7 +324,10 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should handle the mower event with a callback', async () => {
@@ -334,7 +349,10 @@ describe('AutomowerEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(executed).toBeTruthy();
     });
