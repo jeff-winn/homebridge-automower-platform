@@ -72,7 +72,7 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch, Suppor
         super(name, accessory, api, log);
     }
 
-    protected override async onSetAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+    protected override async onSetCallbackAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         try {
             if (on) {
                 await this.controlService.resume(this.accessory.context.mowerId);
@@ -142,13 +142,13 @@ export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsC
     protected onSetCuttingHeightCallback(value: CharacteristicValue, callback: CharacteristicSetCallback): void {
         const actualValue = value as number;
 
-        this.onSetCuttingHeightAsync(actualValue, callback).then()
+        this.onSetCuttingHeightCallbackAsync(actualValue, callback).then()
             .catch(err => {
                 this.log.error('ERROR_HANDLING_SET', this.cuttingHeight!.displayName, this.accessory.displayName, err);
             });
     }
 
-    protected async onSetCuttingHeightAsync(value: number, callback: CharacteristicSetCallback): Promise<void> {
+    protected async onSetCuttingHeightCallbackAsync(value: number, callback: CharacteristicSetCallback): Promise<void> {
         try {
             await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value);
 

@@ -30,7 +30,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
         return this.lastState;
     }
     
-    protected override async onSetAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
+    protected override async onSetCallbackAsync(on: boolean, callback: CharacteristicSetCallback): Promise<void> {
         try {
             if (on) {
                 await this.controlService.pause(this.accessory.context.mowerId);

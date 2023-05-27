@@ -153,13 +153,16 @@ describe('GardenaEventStreamClientImpl', () => {
     it('should do nothing when no callback is set on error received', async () => {
         log.setup(o => o.error('UNEXPECTED_SOCKET_ERROR', It.IsAny())).returns(undefined);
 
-        await expect(target.unsafeOnErrorReceived({
+        target.unsafeOnErrorReceivedCallback({
             code: 'hello',
             detail: 'world',
             id: '12345',
             status: 'status',
             title: 'title'
-        })).resolves.toBeUndefined();
+        });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should log errors thrown when error callback is executed', async () => {
@@ -170,13 +173,16 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnErrorReceived({
+        target.unsafeOnErrorReceivedCallback({
             code: 'hello',
             detail: 'world',
             id: '12345',
             status: 'status',
             title: 'title'
-        })).resolves.toBeUndefined();
+        });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error('ERROR_HANDLING_ERROR_EVENT', It.IsAny()), Times.Once());
     });
@@ -190,7 +196,10 @@ describe('GardenaEventStreamClientImpl', () => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        target.unsafeOnCloseReceivedCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
     });
@@ -207,7 +216,10 @@ describe('GardenaEventStreamClientImpl', () => {
         });
 
         target.unsafeOnConnecting();
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        target.unsafeOnCloseReceivedCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -219,16 +231,21 @@ describe('GardenaEventStreamClientImpl', () => {
     });
 
     it('should handle errors thrown on connected event', async () => {
-        log.setup(o => o.debug(It.IsAny())).returns(undefined);   
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
+        const payload = Buffer.from('{"id": "12345", "type": "UNKNOWN"}');
+        
         target.setOnConnectedCallback(() => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnFirstMessageReceived()).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
 
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
+
+        log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
 
     it('should handle disconnected when closed after connected', async () => {     
@@ -242,8 +259,11 @@ describe('GardenaEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnFirstMessageReceived()).resolves.toBeUndefined();
-        await expect(target.unsafeOnCloseReceived()).resolves.toBeUndefined();
+        await expect(target.unsafeOnFirstMessageReceivedAsync()).resolves.toBeUndefined();
+        target.unsafeOnCloseReceivedCallback();
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(target.isConnecting()).toBeFalsy();
         expect(target.isConnected()).toBeFalsy();
@@ -262,13 +282,16 @@ describe('GardenaEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnErrorReceived({
+        target.unsafeOnErrorReceivedCallback({
             code: 'code',
             detail: 'detail',
             id: '12345',
             status: 'status',
             title: 'title'
-        })).resolves.toBeUndefined();
+        });
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(handled).toBeTruthy();
     });
@@ -310,7 +333,10 @@ describe('GardenaEventStreamClientImpl', () => {
     it('should return when the buffer is empty', async () => {
         const payload = Buffer.from([]);
 
-        await target.unsafeOnMessageReceived(payload);
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should log an error when invalid json is received', async () => {
@@ -318,7 +344,10 @@ describe('GardenaEventStreamClientImpl', () => {
 
         const payload = Buffer.from(' ');
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
@@ -328,7 +357,10 @@ describe('GardenaEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify({ }));
 
-        await target.unsafeOnMessageReceived(payload);
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should ignore the mower event without a callback', async () => {
@@ -342,7 +374,10 @@ describe('GardenaEventStreamClientImpl', () => {
 
         const payload = Buffer.from(JSON.stringify(event));
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
     });
 
     it('should handle the mower event with a callback', async () => {
@@ -364,7 +399,10 @@ describe('GardenaEventStreamClientImpl', () => {
             return Promise.resolve(undefined);
         });
 
-        await expect(target.unsafeOnMessageReceived(payload)).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
+
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
 
         expect(executed).toBeTruthy();
     });

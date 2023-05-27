@@ -9,7 +9,7 @@ import { NameMode } from '../../src/services/homebridge/abstractSwitch';
 import { DISPLAY_NAME } from '../../src/services/homebridge/characteristics/cuttingHeight';
 import { ChangeSettingsService } from '../../src/services/husqvarna/automower/changeSettingsService';
 import { MowerControlService } from '../../src/services/husqvarna/mowerControlService';
-import { supportsCuttingHeight, SupportsCuttingHeightCharacteristic, supportsMowerSchedule, SupportsMowerScheduleInformation } from '../../src/services/mainSwitch';
+import { SupportsCuttingHeightCharacteristic, SupportsMowerScheduleInformation, supportsCuttingHeight, supportsMowerSchedule } from '../../src/services/mainSwitch';
 import { MowerIsEnabledPolicy } from '../../src/services/policies/mowerIsEnabledPolicy';
 import { AutomowerMainSwitchImplSpy, MainSwitchImplSpy } from './mainSwitchImplSpy';
 
@@ -176,7 +176,7 @@ describe('MainSwitchImpl', () => {
         mowerControlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSetAsync(true, (e) => {
+        await target.unsafeOnSetCallbackAsync(true, (e) => {
             status = e;
         });
 
@@ -197,7 +197,7 @@ describe('MainSwitchImpl', () => {
         mowerControlService.setup(o => o.park(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeOnSetAsync(false, (e) => {
+        await target.unsafeOnSetCallbackAsync(false, (e) => {
             status = e;
         });
 
@@ -338,7 +338,7 @@ describe('AutomowerMainSwitchImpl', () => {
         changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
-        await target.unsafeSetCuttingHeightAsync(cuttingHeight, (e) => {
+        await target.unsafeSetCuttingHeightCallbackAsync(cuttingHeight, (e) => {
             status = e;
         });
 

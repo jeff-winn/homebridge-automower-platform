@@ -16,7 +16,7 @@ export interface GardenaEventStreamClient extends EventStreamClient {
 }
 
 export class GardenaEventStreamClientImpl extends AbstractEventStreamClient implements GardenaEventStreamClient {
-    private onMessageReceivedCallback?: (payload: DataItem) => Promise<void>;
+    private messageReceivedCallback?: (payload: DataItem) => Promise<void>;
     private firstMessageReceived = false;
 
     public constructor(private readonly locationId: string, private readonly client: GardenaClient, log: PlatformLogger) {
@@ -34,33 +34,36 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         const response = await this.client.createSocket(this.locationId, token);
         
         const socket = this.createSocketCore(response.data.attributes.url, token);
-        socket.on('message', this.onMessageReceived.bind(this));
-        socket.on('error', this.onErrorReceived.bind(this));
-        socket.on('close', this.onCloseReceived.bind(this));
+        socket.on('message', this.onMessageReceivedCallback.bind(this));
+        socket.on('error', this.onErrorReceivedCallback.bind(this));
+        socket.on('close', this.onCloseReceivedCallback.bind(this));
 
         return socket;
     }
 
-    protected async onMessageReceived(buffer: Buffer): Promise<void> {
+    protected onMessageReceivedCallback(buffer: Buffer): void {
+        this.onMessageReceivedCallbackAsync(buffer).then()
+            .catch(err => {
+                this.log.error('ERROR_PROCESSING_MESSAGE', err);
+            });
+    }
+
+    private async onMessageReceivedCallbackAsync(buffer: Buffer): Promise<void> {
         if (buffer.length === 0) {
             return;
         }
 
-        try {
-            const data = JSON.parse(buffer.toString());
-            this.log.debug('RECEIVED_EVENT', JSON.stringify(data));
+        const data = JSON.parse(buffer.toString());
+        this.log.debug('RECEIVED_EVENT', JSON.stringify(data));
 
-            if (!this.hasFirstMessageBeenReceived()) {
-                // The first message has been received.
-                await this.onFirstMessageReceived();
-            }
+        if (!this.hasFirstMessageBeenReceived()) {
+            // The first message has been received.
+            await this.onFirstMessageReceivedAsync();
+        }
 
-            const mowerEvent = data as DataItem;
-            if (mowerEvent.type !== undefined) {
-                await this.notifyEventReceived(mowerEvent);
-            }
-        } catch (e) {
-            this.log.error('ERROR_PROCESSING_MESSAGE', e);
+        const mowerEvent = data as DataItem;
+        if (mowerEvent.type !== undefined) {
+            await this.notifyEventReceivedAsync(mowerEvent);
         }
     }
 
@@ -68,8 +71,8 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         return this.firstMessageReceived;
     }
 
-    protected async onFirstMessageReceived(): Promise<void> {
-        await this.onConnected();
+    protected async onFirstMessageReceivedAsync(): Promise<void> {
+        await this.onConnectedAsync();
     
         this.flagAsFirstMessageReceived();
     }
@@ -78,23 +81,30 @@ export class GardenaEventStreamClientImpl extends AbstractEventStreamClient impl
         this.firstMessageReceived = true;
     }
 
-    protected async onErrorReceived(err: Error): Promise<void> {
+    protected onErrorReceivedCallback(err: Error): void {
+        this.onErrorReceivedCallbackAsync(err).then()
+            .catch(e => {
+                this.log.error('ERROR_HANDLING_ERROR_EVENT', e);
+            });
+    }
+
+    private async onErrorReceivedCallbackAsync(err: Error): Promise<void> {
         this.log.error('UNEXPECTED_SOCKET_ERROR', {
             error: err.title,
             message: err.detail,
             type: err.code
         });
 
-        await this.notifyErrorReceived();
+        await this.notifyErrorReceivedAsync();
     }
 
     public setOnEventCallback(callback: (event: DataItem) => Promise<void>): void {
-        this.onMessageReceivedCallback = callback;
+        this.messageReceivedCallback = callback;
     }
 
-    protected async notifyEventReceived(event: DataItem): Promise<void> {
-        if (this.onMessageReceivedCallback !== undefined) {
-            await this.onMessageReceivedCallback(event);
+    protected async notifyEventReceivedAsync(event: DataItem): Promise<void> {
+        if (this.messageReceivedCallback !== undefined) {
+            await this.messageReceivedCallback(event);
         }
     }
 }
