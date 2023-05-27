@@ -178,16 +178,18 @@ describe('AutomowerEventStreamClientImpl', () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);   
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
 
+        const payload = Buffer.from('{"ready": true,"connectionId": "12345"}');
+
         target.setOnConnectedCallback(() => {
             throw new Error('Ouch');
         });
 
-        await expect(target.unsafeOnConnectedReceivedAsync({
-            ready: true,
-            connectionId: '12345'
-        })).resolves.toBeUndefined();
+        target.unsafeOnMessageReceivedCallback(payload);
 
-        log.verify(o => o.error(It.IsAny(), It.IsAny()), Times.Once());
+        // Required to cause the async function to execute.
+        await new Promise(process.nextTick);
+
+        log.verify(o => o.error('ERROR_PROCESSING_MESSAGE', It.IsAny()), Times.Once());
     });
 
     it('should handle disconnected when closed after connected', async () => {     

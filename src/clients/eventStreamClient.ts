@@ -110,11 +110,7 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
 
     protected async notifyConnectedAsync(): Promise<void> {        
         if (this.connectedCallback !== undefined) {
-            try {
-                await this.connectedCallback();
-            } catch (e) {
-                this.log.error('ERROR_HANDLING_CONNECTED_EVENT', e);
-            }
+            await this.connectedCallback();
         }
     }
 
