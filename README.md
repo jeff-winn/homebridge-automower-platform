@@ -7,6 +7,10 @@ A plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robo
 
 Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mowers(s).
 
+#### Installation
+For help installing and configuring the plugin, please see the documentation found at:
+https://jeff-winn.github.io/homebridge-automower-platform
+
 #### Hardware Requirements
 The following hardware requirements are necessary for the proper operation of the plug-in. If you are unsure whether your mower is supported by the plug-in, you can find the compatibility matrix [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/compatibility-matrix).
 
@@ -42,9 +46,6 @@ Be advised, the capabilities mentioned below vary between product lines by Husqv
 - Streams events from Husqvarna rather than polling for changes. This allows you to run automations without having to worry about the timing of when a change is noticed, it should be within a few seconds.
 - Does not cause logout of Husqvarna mobile application.
 - Multiple languages may be supported in logs (need help with translations).
-
-For help installing and configuring the plugin, please see the documentation found at:
-https://jeff-winn.github.io/homebridge-automower-platform
 
 #### Disclaimer
 This plug-in is in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are property of Husqvarna and/or the Husqvarna Group.
