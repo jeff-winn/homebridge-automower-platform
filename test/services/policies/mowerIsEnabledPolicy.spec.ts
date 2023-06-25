@@ -62,6 +62,23 @@ describe('DeterministicMowerIsScheduledPolicy', () => {
         expect(target.check()).toBeFalsy();
     });
 
+    it('should return true when the mower is scheduled to run but forced to mow', () => {
+        target.setMowerState({
+            activity: Activity.MOWING,
+            state: State.IN_OPERATION
+        });
+
+        target.setMowerSchedule({
+            runContinuously: false,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+
+        const result = target.check();
+
+        expect(result).toBeTruthy();
+    });
+
     it('should return true when run continuously and in operation', () => {
         target.setMowerState({
             activity: Activity.MOWING,
