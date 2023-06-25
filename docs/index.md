@@ -2,7 +2,7 @@
 layout: home
 paginate: false
 alt_title: "Homebridge Automower Platform"
-sub_title: "A Homebridge plugin for the Husqvarna Automower robotic lawn mower"
+sub_title: "A Homebridge plugin for the Husqvarna Automower and Gardena Smart robotic lawn mowers"
 introduction: |
   A [Homebridge](https://github.com/homebridge/homebridge) plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) and [Gardena Smart](https://www.gardena.com/int/products/lawn-care/robotic-mower/) robotic lawn mowers as [Apple HomeKit](https://www.apple.com/ios/home/) accessories using the [Husqvarna Group](https://developer.husqvarnagroup.cloud) cloud services.
   
