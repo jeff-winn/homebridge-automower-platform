@@ -2,7 +2,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import * as model from '../../../../../src/model';
 
-import { Activity, HeadlightMode, Mode, Mower, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
+import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../../src/diagnostics/platformLogger';
 import { AutomowerMowerStateConverterImpl } from '../../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
 
@@ -14,6 +14,88 @@ describe('AutomowerMowerStateConverterImpl', () => {
         log = new Mock<PlatformLogger>();
 
         target = new AutomowerMowerStateConverterImpl(log.object());
+    });
+
+    it('should return mowing when forced to mow', () => {
+        const mower: Mower = {
+            type: 'mower',
+            id: 'ed6c1900-5a15-4143-8c9b-6fb01ad1a606',
+            attributes: {
+                system: {
+                    name: 'Dobby',
+                    model: 'HUSQVARNA AUTOMOWER® 430XH',
+                    serialNumber: 192401442
+                },
+                battery: {
+                    batteryPercent: 69
+                },
+                mower: {
+                    mode: Mode.MAIN_AREA,
+                    activity: Activity.MOWING,
+                    state: State.IN_OPERATION,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0
+                },
+                calendar: {
+                    tasks: [
+                        {
+                            start: 0,
+                            duration: 1440,
+                            monday: true,
+                            tuesday: true,
+                            wednesday: true,
+                            thursday: true,
+                            friday: true,
+                            saturday: false,
+                            sunday: true
+                        },
+                        {
+                            start: 750,
+                            duration: 60,
+                            monday: false,
+                            tuesday: false,
+                            wednesday: false,
+                            thursday: false,
+                            friday: false,
+                            saturday: true,
+                            sunday: false
+                        }
+                    ]
+                },
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: OverrideAction.FORCE_MOW
+                    },
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
+                },
+                metadata: {
+                    connected: true,
+                    statusTimestamp: 1687708005776
+                },
+                positions: [],
+                settings: {
+                    cuttingHeight: 8,
+                    headlight: {
+                        mode: HeadlightMode.EVENING_AND_NIGHT
+                    }
+                },
+                statistics: {
+                    numberOfChargingCycles: 350,
+                    numberOfCollisions: 11473,
+                    totalChargingTime: 1170000,
+                    totalCuttingTime: 3315600,
+                    totalRunningTime: 3636000,
+                    totalSearchingTime: 320400
+                }
+            }
+        };
+
+        const result = target.convertMower(mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.IN_OPERATION);
     });
 
     it('should return parked when charging', () => {

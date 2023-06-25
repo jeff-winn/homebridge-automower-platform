@@ -139,8 +139,8 @@ describe('DeterministicMowerIsScheduledPolicy', () => {
 
     it('should return false when run on schedule and not run in future', () => {
         target.setMowerState({
-            activity: Activity.MOWING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.IDLE
         });
 
         target.setMowerSchedule({
@@ -154,8 +154,8 @@ describe('DeterministicMowerIsScheduledPolicy', () => {
 
     it('should return false when not run on schedule and run in future', () => {
         target.setMowerState({
-            activity: Activity.MOWING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.IDLE
         });
 
         target.setMowerSchedule({
@@ -169,8 +169,8 @@ describe('DeterministicMowerIsScheduledPolicy', () => {
 
     it('should return false when not run on schedule and not run in future', () => {
         target.setMowerState({
-            activity: Activity.MOWING,
-            state: State.IN_OPERATION
+            activity: Activity.PARKED,
+            state: State.IDLE
         });
 
         target.setMowerSchedule({
