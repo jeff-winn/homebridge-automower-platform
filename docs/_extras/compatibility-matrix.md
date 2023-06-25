@@ -6,9 +6,10 @@ introduction: |
 ---
 This matrix contains the mowers that have asked for support and have been confirmed to be supported by the plug-in.
 
-| Model | Year | Compatible? | Connect Module? |
-| ----- | ---- | --------- | ------------------------ |
-| Automower 430XH | 2020 | Yes | Included |
-| Automower 315 | 2018 | No | Not included |
+| Manufacturer | Model | Year | Compatible? |
+| ------------ | ----- | ---- | ----------- |
+| Husqvarna | Automower 430XH | 2020 | Yes |
+| Husqvarna | Automower 315 | 2018 | No |
+| Gardena | Sileno Smart City 500 | 2016 | Yes |
 
-If you wish to have an incompatible mower upgraded to support this plug-in, please contact your local Husqvarna Automower dealer and inquire about getting an Automower Connect module upgrade.
+If you wish to have an incompatible Automower upgraded to support this plug-in, please contact your local Husqvarna Automower dealer and inquire about getting an Automower Connect module upgrade.
