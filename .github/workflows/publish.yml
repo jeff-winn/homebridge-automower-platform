@@ -93,9 +93,10 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
+    # Updates the version that was used for the release.
     - name: Bump version
       run: |
         git config user.name 'github-actions[bot]'
         git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
         git commit -am "Bumping version"
-        git push
+        git push origin HEAD:main
