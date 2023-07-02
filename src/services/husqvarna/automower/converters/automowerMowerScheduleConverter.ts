@@ -43,6 +43,7 @@ export class AutomowerMowerScheduleConverterImpl implements AutomowerMowerSchedu
         for (const task of calendar.tasks) {
             if (task !== undefined && this.isAnyDayOfWeekTask(task) && !this.isAlwaysRunTask(task)) {
                 result = true;
+                break;
             }
         }
 
