@@ -1,5 +1,5 @@
 import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
-import { Battery, MowerState, State } from '../model';
+import { Activity, Battery, MowerState, State } from '../model';
 import { MowerContext } from '../mowerAccessory';
 import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
 
@@ -25,7 +25,10 @@ export interface BatteryInformation {
     setChargingState(state: MowerState): void;
 }
 
-export class BatteryInformationImpl extends AbstractAccessoryService implements BatteryInformation {        
+export class BatteryInformationImpl extends AbstractAccessoryService implements BatteryInformation {       
+    private lastBattery?: Battery;
+    private lastState?: MowerState;
+
     private batteryService?: Service;
     private lowBattery?: Characteristic;
     private batteryLevel?: Characteristic;
@@ -50,12 +53,18 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
         this.chargingState = this.batteryService.getCharacteristic(this.Characteristic.ChargingState);
     }
     
-    public setChargingState(state: MowerState) {  
+    public setChargingState(state: MowerState): void {
+        this.lastState = state;
+        this.refreshChargingState();
+    }
+
+    private refreshChargingState(): void {
         if (this.chargingState === undefined) {        
             throw new Error('The service has not been initialized.');
         }
 
-        if (state.state === State.CHARGING) {
+        if (this.lastState !== undefined && (this.lastState.state === State.CHARGING || 
+            (this.lastState.activity === Activity.PARKED && this.lastBattery !== undefined && this.lastBattery.level < 100))) {
             this.chargingState.updateValue(this.Characteristic.ChargingState.CHARGING);
         } else {
             this.chargingState.updateValue(this.Characteristic.ChargingState.NOT_CHARGING);
@@ -67,12 +76,15 @@ export class BatteryInformationImpl extends AbstractAccessoryService implements 
             throw new Error('The service has not been initialized.');
         }
 
-        this.batteryLevel.updateValue(battery.level);          
+        this.batteryLevel.updateValue(battery.level);
 
         if (battery.level <= 20) {
             this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
         } else {
             this.lowBattery.updateValue(this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
         }
+
+        this.lastBattery = battery;
+        this.refreshChargingState();
     }
 }

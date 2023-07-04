@@ -127,6 +127,68 @@ describe('BatteryServiceImpl', () => {
         batteryLevel.verify(o => o.updateValue(100), Times.Once());
     });
 
+    it('sets the battery service as charging while parked with less than 100 percent battery', () => {
+        const serviceInstance = new Mock<Service>();
+        const lowBattery = new Mock<Characteristic>();
+        const batteryLevel = new Mock<Characteristic>();
+        const chargingState = new Mock<Characteristic>();
+
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+        chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+
+        accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
+
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+ 
+        target.init();
+
+        target.setBatteryLevel({
+            level: 99
+        });
+
+        target.setChargingState({
+            activity: Activity.PARKED,
+            state: State.IDLE
+        });
+
+        chargingState.verify(o => o.updateValue(Characteristic.ChargingState.CHARGING), Times.Once());
+        lowBattery.verify(o => o.updateValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL), Times.Once());
+    });
+
+    it('sets the battery service as not charging while parked with 100 percent battery', () => {
+        const serviceInstance = new Mock<Service>();
+        const lowBattery = new Mock<Characteristic>();
+        const batteryLevel = new Mock<Characteristic>();
+        const chargingState = new Mock<Characteristic>();
+
+        lowBattery.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(lowBattery.object());
+        batteryLevel.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(batteryLevel.object());
+        chargingState.setup(o => o.updateValue(It.IsAny<CharacteristicValue>())).returns(chargingState.object());
+
+        accessory.setup(o => o.getService(Service.Battery)).returns(serviceInstance.object());
+
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.StatusLowBattery)).returns(lowBattery.object());
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.BatteryLevel)).returns(batteryLevel.object());
+        serviceInstance.setup(o => o.getCharacteristic(Characteristic.ChargingState)).returns(chargingState.object());
+ 
+        target.init();        
+
+        target.setChargingState({
+            activity: Activity.PARKED,
+            state: State.IDLE
+        });
+
+        target.setBatteryLevel({
+            level: 100
+        });
+
+        chargingState.verify(o => o.updateValue(Characteristic.ChargingState.NOT_CHARGING), Times.Exactly(2));
+        lowBattery.verify(o => o.updateValue(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL), Times.Once());
+    });
+
     it('sets the battery service as charging', () => {
         const serviceInstance = new Mock<Service>();
         const lowBattery = new Mock<Characteristic>();
