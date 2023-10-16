@@ -15,6 +15,64 @@ describe('GardenaMowerStateConverterImpl', () => {
         target = new GardenaMowerStateConverterImpl(log.object());
     });
 
+    it('should return unknown and faulted when upside down', () => {
+        const mower: MowerServiceDataItem = {
+            id: '7a1ef85b-4e21-4d4d-8b77-1876aa913fb5',
+            type: ItemType.MOWER,
+            attributes: {
+                state: {
+                    value: ServiceState.ERROR,
+                    timestamp: '2023-07-17T17:52:25.000+00:00'
+                },
+                activity: {
+                    value: MowerActivity.NONE,
+                    timestamp: '2023-07-17T17:52:25.000+00:00'
+                },
+                lastErrorCode: {
+                    value: MowerError.UPSIDE_DOWN,
+                    timestamp: '2023-07-17T17:52:26.000+00:00'
+                },
+                operatingHours: {
+                    value: 1140
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result.activity).toBe(Activity.UNKNOWN);
+        expect(result.state).toBe(State.FAULTED);
+    });
+
+    it('should return unknown and tampered when lifted', () => {
+        const mower: MowerServiceDataItem = {
+            id: '7a1ef85b-4e21-4d4d-8b77-1876aa913fb5',
+            type: ItemType.MOWER,
+            attributes: {
+                state: {
+                    value: ServiceState.ERROR,
+                    timestamp: '2023-07-17T17:57:19.000+00:00'
+                },
+                activity: {
+                    value: MowerActivity.NONE,
+                    timestamp: '2023-07-17T17:57:19.000+00:00'
+                },
+                lastErrorCode: {
+                    value: MowerError.LIFTED,
+                    timestamp: '2023-07-17T17:57:19.000+00:00'
+                },
+                operatingHours: {
+                    value: 1140
+                }
+            }
+        };
+
+        const result = target.convert(mower);
+
+        expect(result.activity).toBe(Activity.UNKNOWN);
+        expect(result.state).toBe(State.TAMPERED);
+    });
+
     it('should return off and unknown when charging while disabled', () => {
         const mower: MowerServiceDataItem = {
             id: '12345',

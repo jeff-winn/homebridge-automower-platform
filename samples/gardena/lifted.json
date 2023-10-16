@@ -1,0 +1,21 @@
+{
+    "id": "7a1ef85b-4e21-4d4d-8b77-1876aa913fb5",
+    "type": "MOWER",
+    "attributes": {
+        "state": {
+            "value": "ERROR",
+            "timestamp": "2023-07-17T17:57:19.000+00:00"
+        },
+        "activity": {
+            "value": "NONE",
+            "timestamp": "2023-07-17T17:57:19.000+00:00"
+        },
+        "lastErrorCode": {
+            "value": "LIFTED",
+            "timestamp": "2023-07-17T17:57:19.000+00:00"
+        },
+        "operatingHours": {
+            "value": 1140
+        }
+    }
+}
