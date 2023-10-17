@@ -259,7 +259,7 @@ export interface TimestampedMowerError {
  * Describes a mower.
  */
 export interface MowerServiceDataItem extends DataItem {
-    relationships: {
+    relationships?: {
         device: {
             data: DeviceLink;
         };
