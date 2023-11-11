@@ -36,6 +36,40 @@
             ]
           }
         },
+        "sensor_mode": {
+          "title": "Sensors",
+          "type": "string",
+          "description": "This determines which sensors (if any) will be made available within HomeKit for the devices.",
+          "required": true,
+          "default": "all",
+          "enum": [
+            "all",
+            "motion_only",
+            "contact_only",
+            "none"
+          ],
+          "x-schema-form": {
+            "type": "select",
+            "titleMap": [
+              {
+                "value": "all",
+                "name": "All sensors"
+              },
+              {
+                "value": "motion_only",
+                "name": "Motion sensors only"
+              },
+              {
+                "value": "contact_only",
+                "name": "Contact sensors only"
+              },
+              {
+                "value": "none",
+                "name": "None (Disabled)"
+              }
+            ]
+          }
+        },
         "username": {
           "title": "Email Address",
           "type": "string",
@@ -148,6 +182,7 @@
         ]
       },
       "device_type",
+      "sensor_mode",
       {
         "type": "fieldset",
         "title": "Account Settings",

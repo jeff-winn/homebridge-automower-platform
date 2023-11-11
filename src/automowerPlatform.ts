@@ -8,7 +8,7 @@ import { BadConfigurationError } from './errors/badConfigurationError';
 import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from './events';
 import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
-import { AuthenticationMode, DeviceType } from './model';
+import { AuthenticationMode, DeviceType, SensorMode } from './model';
 import { MowerAccessory, MowerContext } from './mowerAccessory';
 import { MowerAccessoryFactory, MowerAccessoryFactoryImpl } from './mowerAccessoryFactory';
 import { Localization, Y18nLocalization } from './primitives/localization';
@@ -34,6 +34,7 @@ export class AutomowerPlatformConfig {
     public lang?: string;
     public device_type?: DeviceType;
     public logger_type?: LoggerType;
+    public sensor_mode?: SensorMode;
     
     public constructor(config: PlatformConfig) {
         this.name = config.name;
@@ -47,6 +48,7 @@ export class AutomowerPlatformConfig {
         this.lang = config.lang;
         this.device_type = config.device_type;
         this.logger_type = config.logger_type;
+        this.sensor_mode = config.sensor_mode;
     }
 
     /**
