@@ -34,7 +34,7 @@ export enum SensorMode {
     /**
      * Only motion sensors will be available.
      */
-    MOTION_ONLY = 'motion',
+    MOTION_ONLY = 'motion_only',
 
     /**
      * Only contact sensors will be available.

@@ -66,6 +66,22 @@ export class AutomowerPlatformConfig {
     public getAuthenticationModeOrDefault(): AuthenticationMode {
         return this.authentication_mode ?? AuthenticationMode.PASSWORD;
     }
+
+    /**
+     * Identifies whether the motion sensors should be enabled.
+     * @returns true if the motion sensors should be enabled, otherwise false.
+     */
+    public shouldEnableMotionSensors(): boolean {
+        return this.sensor_mode === undefined || (this.sensor_mode === SensorMode.ALL || this.sensor_mode === SensorMode.MOTION_ONLY);
+    }
+
+    /**
+     * Identifies whether the contact sensors should be enabled.
+     * @returns true if the contact sensors should be enabled, otherwise false.
+     */
+    public shouldEnableContactSensors(): boolean {
+        return this.sensor_mode === undefined || (this.sensor_mode === SensorMode.ALL || this.sensor_mode === SensorMode.CONTACT_ONLY);
+    }
 }
 
 /**
