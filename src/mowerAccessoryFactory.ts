@@ -89,20 +89,20 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
             return new MowerAccessory(accessory,
                 this.createBatteryInformation(accessory),
                 this.createAccessoryInformation(accessory),
+                this.createMainSwitch(accessory),
                 this.createMotionSensor(accessory),
                 this.createArrivingSensor(accessory),
-                this.createLeavingSensor(accessory),
-                this.createMainSwitch(accessory));
+                this.createLeavingSensor(accessory));
         }
 
         return new AutomowerAccessory(accessory,
             this.createBatteryInformation(accessory),
             this.createAccessoryInformation(accessory),
+            this.createAutomowerMainSwitch(accessory),
+            this.createPauseSwitch(accessory),
             this.createMotionSensor(accessory),
             this.createArrivingSensor(accessory),
-            this.createLeavingSensor(accessory),
-            this.createAutomowerMainSwitch(accessory),
-            this.createPauseSwitch(accessory));
+            this.createLeavingSensor(accessory));
     }
 
     protected createPauseSwitch(accessory: PlatformAccessory<MowerContext>): PauseSwitch {

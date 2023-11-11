@@ -34,8 +34,8 @@ describe('MowerAccessory', () => {
         mainSwitch = new Mock<MainSwitch & SupportsMowerScheduleInformation & SupportsCuttingHeightCharacteristic>();
     
         target = new MowerAccessory(accessory.object(), batteryService.object(), 
-            informationService.object(), motionSensorService.object(), arrivingSensor.object(),
-            leavingSensor.object(), mainSwitch.object());
+            informationService.object(), mainSwitch.object(), motionSensorService.object(), arrivingSensor.object(),
+            leavingSensor.object());
     });
 
     it('should return the underlying platform accessory', () => {
@@ -328,68 +328,7 @@ describe('MowerAccessory', () => {
         });
         
         mainSwitch.verify(o => o.setMowerSchedule(schedule), Times.Never());
-    });
-
-    it('should refresh the services including cutting height', () => {
-        const battery: Battery = {
-            level: 100
-        };
-
-        const state: MowerState = {
-            activity: Activity.MOWING,
-            state: State.IN_OPERATION
-        };        
-        
-        const connection: MowerConnection = {
-            connected: true
-        };
-
-        const mower: Mower = {
-            id: '12345',
-            attributes: {
-                battery: battery,
-                connection: connection,
-                mower: state,
-                location: undefined,
-                metadata: {
-                    manufacturer: 'Husqvarna',
-                    model: 'model',
-                    name: 'name',
-                    serialNumber: '1234'
-                },
-                schedule: undefined,
-                settings: {
-                    cuttingHeight: 1
-                }
-            }
-        };
-
-        batteryService.setup(o => o.setBatteryLevel(battery)).returns(undefined);
-        batteryService.setup(o => o.setChargingState(state)).returns(undefined);
-        mainSwitch.setup(o => o.setMowerState(state)).returns(undefined);
-        mainSwitch.setup(o => o.setMowerConnection(connection)).returns(undefined);
-        mainSwitch.setup(o => o.setCuttingHeight(1)).returns(undefined);
-        arrivingSensor.setup(o => o.setMowerState(state)).returns(undefined);
-        arrivingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
-        leavingSensor.setup(o => o.setMowerState(state)).returns(undefined);
-        leavingSensor.setup(o => o.setMowerConnection(connection)).returns(undefined);
-        motionSensorService.setup(o => o.setMowerState(state)).returns(undefined);
-        motionSensorService.setup(o => o.setMowerConnection(connection)).returns(undefined);        
-        
-        target.refresh(mower);
-
-        batteryService.verify(o => o.setBatteryLevel(battery), Times.Once());
-        batteryService.verify(o => o.setChargingState(state), Times.Once());
-        mainSwitch.verify(o => o.setMowerState(state), Times.Once());
-        mainSwitch.verify(o => o.setMowerConnection(connection), Times.Once());
-        mainSwitch.verify(o => o.setCuttingHeight(1), Times.Once());
-        arrivingSensor.verify(o => o.setMowerState(state), Times.Once());
-        arrivingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
-        leavingSensor.verify(o => o.setMowerState(state), Times.Once());
-        leavingSensor.verify(o => o.setMowerConnection(connection), Times.Once());
-        motionSensorService.verify(o => o.setMowerState(state), Times.Once());
-        motionSensorService.verify(o => o.setMowerConnection(connection), Times.Once());
-    });
+    });    
 
     it('should refresh the services including cutting height', () => {
         const battery: Battery = {
@@ -480,8 +419,8 @@ describe('AutomowerAccessory', () => {
         mainSwitch = new Mock<MainSwitch & SupportsMowerScheduleInformation & SupportsCuttingHeightCharacteristic>();
     
         target = new AutomowerAccessory(accessory.object(), batteryService.object(), 
-            informationService.object(), motionSensorService.object(), arrivingSensor.object(),
-            leavingSensor.object(), mainSwitch.object(), pauseSwitch.object());
+            informationService.object(), mainSwitch.object(), pauseSwitch.object(), motionSensorService.object(), arrivingSensor.object(),
+            leavingSensor.object());
     });
 
     it('should initialize all services', () => {

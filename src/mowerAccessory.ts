@@ -31,10 +31,10 @@ export class MowerAccessory {
         private readonly accessory: PlatformAccessory<MowerContext>,
         private readonly batteryInformation: BatteryInformation,
         private readonly accessoryInformation: AccessoryInformation,
-        private readonly motionSensor: MotionSensor,
-        private readonly arrivingSensor: ArrivingSensor,
-        private readonly leavingSensor: LeavingSensor,
-        private readonly mainSwitch: MainSwitch) {
+        private readonly mainSwitch: MainSwitch,
+        private readonly motionSensor?: MotionSensor,
+        private readonly arrivingSensor?: ArrivingSensor,
+        private readonly leavingSensor?: LeavingSensor) {
     }
 
     /**
@@ -50,11 +50,12 @@ export class MowerAccessory {
      */
     public init(): void {
         this.accessoryInformation.init();
-        this.batteryInformation.init();
-        this.motionSensor.init();
-        this.arrivingSensor.init();
-        this.leavingSensor.init();
+        this.batteryInformation.init();        
         this.mainSwitch.init(NameMode.DISPLAY_NAME);
+
+        this.motionSensor?.init();
+        this.arrivingSensor?.init();
+        this.leavingSensor?.init();
     }
 
     /**
@@ -65,14 +66,20 @@ export class MowerAccessory {
         this.batteryInformation.setBatteryLevel(data.attributes.battery);
         this.batteryInformation.setChargingState(data.attributes.mower);
 
-        this.arrivingSensor.setMowerState(data.attributes.mower);
-        this.arrivingSensor.setMowerConnection(data.attributes.connection);
+        if (this.arrivingSensor !== undefined) {
+            this.arrivingSensor.setMowerState(data.attributes.mower);
+            this.arrivingSensor.setMowerConnection(data.attributes.connection);
+        }
 
-        this.leavingSensor.setMowerState(data.attributes.mower);
-        this.leavingSensor.setMowerConnection(data.attributes.connection);
+        if (this.leavingSensor !== undefined) {
+            this.leavingSensor.setMowerState(data.attributes.mower);
+            this.leavingSensor.setMowerConnection(data.attributes.connection);
+        }
 
-        this.motionSensor.setMowerState(data.attributes.mower);
-        this.motionSensor.setMowerConnection(data.attributes.connection);
+        if (this.motionSensor !== undefined) {
+            this.motionSensor.setMowerState(data.attributes.mower);
+            this.motionSensor.setMowerConnection(data.attributes.connection);
+        }
 
         this.mainSwitch.setMowerState(data.attributes.mower);
         this.mainSwitch.setMowerConnection(data.attributes.connection);
@@ -105,16 +112,16 @@ export class MowerAccessory {
 
         if (event.attributes.mower !== undefined) {
             this.batteryInformation.setChargingState(event.attributes.mower);
-            this.arrivingSensor.setMowerState(event.attributes.mower);
-            this.leavingSensor.setMowerState(event.attributes.mower);
-            this.motionSensor.setMowerState(event.attributes.mower);
+            this.arrivingSensor?.setMowerState(event.attributes.mower);
+            this.leavingSensor?.setMowerState(event.attributes.mower);
+            this.motionSensor?.setMowerState(event.attributes.mower);
             this.mainSwitch.setMowerState(event.attributes.mower);
         }
 
         if (event.attributes.connection !== undefined) {
-            this.arrivingSensor.setMowerConnection(event.attributes.connection);
-            this.leavingSensor.setMowerConnection(event.attributes.connection);
-            this.motionSensor.setMowerConnection(event.attributes.connection);
+            this.arrivingSensor?.setMowerConnection(event.attributes.connection);
+            this.leavingSensor?.setMowerConnection(event.attributes.connection);
+            this.motionSensor?.setMowerConnection(event.attributes.connection);
             this.mainSwitch.setMowerConnection(event.attributes.connection);
         }
     }
@@ -142,12 +149,12 @@ export class AutomowerAccessory extends MowerAccessory {
         accessory: PlatformAccessory<MowerContext>,
         batteryInformation: BatteryInformation,
         accessoryInformation: AccessoryInformation,
+        mainSwitch: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation,
+        private readonly pauseSwitch: PauseSwitch,
         motionSensor: MotionSensor,
         arrivingSensor: ArrivingSensor,
-        leavingSensor: LeavingSensor,
-        mainSwitch: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation,
-        private readonly pauseSwitch: PauseSwitch) {
-        super(accessory, batteryInformation, accessoryInformation, motionSensor, arrivingSensor, leavingSensor, mainSwitch);
+        leavingSensor: LeavingSensor) {
+        super(accessory, batteryInformation, accessoryInformation, mainSwitch, motionSensor, arrivingSensor, leavingSensor);
     }
 
     public override init(): void {
