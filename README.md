@@ -56,7 +56,7 @@ The following describes the configuration settings available within the plugin. 
   "platform": "Homebridge Automower Platform",
   "name": "Homebridge Automower Platform",
   "device_type": "automower",
-  "sensor_mode": "none",
+  "sensor_mode": "all",
   "lang": "en",
   "authentication_mode": "client_credentials",
   "appKey": "<<REDACTED>>",
