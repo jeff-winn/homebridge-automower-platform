@@ -45,6 +45,16 @@ describe('MotionSensorImpl', () => {
         expect(result).toBeDefined();
     });
     
+    it('should return true when the sensor is disabled', () => {
+        target.disable();
+
+        expect(target.isDisabled()).toBeTruthy();
+    });
+
+    it('should return false when the sensor is not disabled by default', () => {
+        expect(target.isDisabled()).toBeFalsy();
+    });
+
     it('should be initialized with an existing service', () => {
         const motionDetected = new Mock<Characteristic>();
         
@@ -56,6 +66,25 @@ describe('MotionSensorImpl', () => {
         target.init();
 
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
+    });
+
+    it('should not throw error on init when the service does not exist and sensor is disabled', () => {
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(undefined);
+
+        target.disable();
+
+        expect(() => target.init()).not.toThrowError();
+    });
+
+    it('should remove the service on init when the service exists and sensor is disabled', () => {
+        const service = new Mock<Service>();
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        platformAccessory.setup(o => o.removeService(service.object())).returns(undefined);
+
+        target.disable();
+        target.init();
+
+        platformAccessory.verify(o => o.removeService(service.object()), Times.Once());
     });
 
     it('should create a new service on init', () => {
