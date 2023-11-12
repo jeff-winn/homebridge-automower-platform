@@ -71,14 +71,14 @@ The following describes the configuration settings available within the plugin. 
   - _gardena_: For use with Gardena Smart robotic lawn mowers
 - _sensor_mode_: This determines which sensors will be registered for each mower that is located. The following sensor modes are supported:
   - _all_: All sensors available
-  - _motion_only_: Only motion sensors will be registered.
-  - _contact_only_: Only contact sensors will be registered.
+  - _motion_only_: Only motion sensors will be registered
+  - _contact_only_: Only contact sensors will be registered
   - _none_: No sensors
 - _lang_: This will be the language used during logging. The following languages are supported:
   - _en_: English (US)
 - _authentication_mode_: The type of authentication modes available to login to Husqvarna Group cloud services. The following authentication modes are supported:
-  - _client_credentials_: Uses an application key and secret defined by the Husqvarna Group cloud services to login. This will require additional setup on their website.
-  - _password_:  Uses your login credentials. Be advised, this mode is no longer officially supported by Husqvarna Group cloud services and may be terminated at any point in the future.
+  - _client_credentials_: Uses an application key and secret defined by the Husqvarna Group cloud services to login. This will require additional setup on their website
+  - _password_:  Uses your login credentials. __Be advised, this mode is no longer officially supported by Husqvarna Group cloud services and may be terminated at any point in the future__
 - _appKey_: This is the application key as registered on the Husqvarna Group cloud services
 - _application_secret_: This is the application secret as registered on the Husqvarna Group cloud services
 
