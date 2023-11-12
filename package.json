@@ -1,6 +1,6 @@
 {
   "name": "homebridge-automower-platform",
-  "version": "2.0.0-rc2",
+  "version": "2.0.0-rc3",
   "displayName": "Homebridge Automower Platform",
   "description": "A platform plugin for Homebridge to connect your Husqvarna Automower to Apple HomeKit.",
   "license": "MIT",
