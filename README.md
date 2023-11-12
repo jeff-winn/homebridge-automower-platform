@@ -42,7 +42,7 @@ Be advised, the capabilities mentioned below vary between product lines by Husqv
 
 ** These features are not directly supported within the Apple HomeKit app and will require a 3rd party application (such as Controller for HomeKit) to use for any automations.
 
-## Additional Capabilities:
+## Additional Capabilities
 - The sensors may now be turned on or off based on your personal needs within the configuration settings.
 - Streams events from Husqvarna rather than polling for changes. This allows you to run automations without having to worry about the timing of when a change is noticed, it should be within a few seconds.
 - Does not cause logout of Husqvarna mobile application.
@@ -81,7 +81,7 @@ The following describes the configuration settings available within the plugin. 
 - _appKey_: This is the application key as registered on the Husqvarna Group cloud services
 - _application_secret_: This is the application secret as registered on the Husqvarna Group cloud services
 
-Other Settings:
+#### Other Settings
 These settings will likely never be required unless explicitly asked to do so by someone helping maintain the plugin. These will not able to be configured in the plugin settings by the user interface, and manually editing the config section will be needed. These settings may change at any time, without warning.
 
 - _logger_type_: Used to change how the plugin logs information to the output stream. This is here to aid with debugging issues that may occur in the plugin.
