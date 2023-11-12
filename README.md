@@ -78,9 +78,16 @@ The following describes the configuration settings available within the plugin. 
   - _en_: English (US)
 - _authentication_mode_: The type of authentication modes available to login to Husqvarna Group cloud services. The following authentication modes are supported:
   - _client_credentials_: Uses an application key and secret defined by the Husqvarna Group cloud services to login. This will require additional setup on their website
-  - _password_:  Uses your login credentials. __Be advised, this mode is no longer officially supported by Husqvarna Group cloud services and may be terminated at any point in the future__
 - _appKey_: This is the application key as registered on the Husqvarna Group cloud services
 - _application_secret_: This is the application secret as registered on the Husqvarna Group cloud services
+
+Other Settings:
+These settings will likely never be required unless explicitly asked to do so by someone helping maintain the plugin. These will not able to be configured in the plugin settings by the user interface, and manually editing the config section will be needed. These settings may change at any time, without warning.
+
+- _logger_type_: Used to change how the plugin logs information to the output stream. This is here to aid with debugging issues that may occur in the plugin.
+  - _default_: This is the default mode, nothing to see here
+  - _imitation_: This mode allows debug logging based on an environment configuration setting
+  - _force_debug_: This is likely the easiest approach to debugging just this plugin, without having to debug all plugins on a server
 
 ## Disclaimer
 This plug-in is in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are property of Husqvarna and/or the Husqvarna Group.
