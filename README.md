@@ -53,8 +53,8 @@ The following describes the configuration settings available within the plugin. 
 
 ```json
 {
-  "name": "Homebridge Automower Platform",
   "platform": "Homebridge Automower Platform",
+  "name": "Homebridge Automower Platform",
   "device_type": "automower",
   "sensor_mode": "none",
   "lang": "en",
@@ -64,8 +64,8 @@ The following describes the configuration settings available within the plugin. 
 }
 ```
 
-- _name_: This will be the name of the plugin that shows up in the logs
 - _platform_: This __MUST__ be "Homebridge Automower Platform"
+- _name_: This will be the name of the plugin that shows up in the logs
 - _device_type_: This determines which kind of mower is being configured. The following device types are supported:
   - _automower_: For use with Husqvarna Automower robotic lawn mowers
   - _gardena_: For use with Gardena Smart robotic lawn mowers
