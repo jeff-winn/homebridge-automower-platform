@@ -1,5 +1,5 @@
 {
-  "GARDENA_PREVIEW_IN_USE": "ATTENTION: Thank you for trying the preview of the Gardena Smart device type! Be advised, because this is a preview it will undoubtedly contain bugs. If you happen to find any, please report them at: https://bit.ly/3Shuiyc",
+  "GARDENA_PREVIEW_IN_USE": "ATTENTION: Thank you for trying the beta of the Gardena Smart device type! Be advised, because this is a beta it will undoubtedly contain bugs. If you happen to find any, please report them at: https://bit.ly/3Shuiyc",
   "DISCOVERING_NEW_MOWERS": "Discovering new mowers...",
   "COMPLETED_MOWER_DISCOVERY": "Completed mower discovery, %d new mower(s) found.",
   "LOGGING_IN": "Logging into the Husqvarna platform...",
