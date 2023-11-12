@@ -31,6 +31,9 @@ jobs:
       with:
         distribution: 'oracle'
         java-version: '17'
+
+    - run: echo $JAVA_HOME
+    - run: echo $JAVA_HOME_17_X64
       
     - run: npm ci
     - run: npm run release
