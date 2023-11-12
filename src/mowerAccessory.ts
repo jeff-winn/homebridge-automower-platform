@@ -51,11 +51,12 @@ export class MowerAccessory {
     public init(): void {
         this.accessoryInformation.init();
         this.batteryInformation.init();        
-        this.mainSwitch.init(NameMode.DISPLAY_NAME);
 
         this.motionSensor.init();
         this.arrivingSensor.init();
         this.leavingSensor.init();
+
+        this.mainSwitch.init(NameMode.DISPLAY_NAME);
     }
 
     /**
@@ -68,8 +69,10 @@ export class MowerAccessory {
 
         this.arrivingSensor.setMowerState(data.attributes.mower);
         this.arrivingSensor.setMowerConnection(data.attributes.connection);
+
         this.leavingSensor.setMowerState(data.attributes.mower);
         this.leavingSensor.setMowerConnection(data.attributes.connection);
+
         this.motionSensor.setMowerState(data.attributes.mower);
         this.motionSensor.setMowerConnection(data.attributes.connection);
 
