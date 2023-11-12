@@ -21,7 +21,7 @@ The following hardware requirements are necessary for the proper operation of th
 - Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and you are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/removing-mower) should correct the issue.
 
 ## Supported Capabilities
-Be advised, the capabilities mentioned below vary between product lines by Husqvarna. Depending on the type of mower you have purchased, different capabilities will be provided by the plug-in.
+Be advised, the capabilities mentioned below vary between product lines by Husqvarna. Depending on the type of robotic mower you are using, different capabilities will be provided by the plug-in.
 
 - A switch to control whether each mower (based on configuration - see documentation):
   - *should* mow the property.
