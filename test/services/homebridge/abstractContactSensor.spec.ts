@@ -38,18 +38,50 @@ describe('AbstractContactSensor', () => {
         expect(result).toBeDefined();
     });
 
+    it('should return true when the sensor is disabled', () => {
+        target.disable();
+
+        expect(target.isDisabled()).toBeTruthy();
+    });
+
+    it('should return false when the sensor is not disabled by default', () => {
+        expect(target.isDisabled()).toBeFalsy();
+    });
+
     it('should return undefined service when not initialized', () => {
         expect(target.getUnderlyingService()).toBeUndefined();
     });
 
-    it('should throw an error when not initialized on set mower connection', () => {
+    it('should not throw an error when no characteristic on refresh characteristic', () => {
+        expect(() => target.unsafeRefreshCharacteristic()).not.toThrowError();
+    });
+
+    it('should not throw an error when no characteristic on set mower connection', () => {
         const metadata: MowerConnection = {
             connected: false
         };
 
-        expect(() => target.setMowerConnection(metadata)).toThrowError();
+        expect(() => target.setMowerConnection(metadata)).not.toThrowError();
     });
     
+    it('should not throw error on init when the service does not exist and sensor is disabled', () => {
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Test')).returns(undefined);
+
+        target.disable();
+        expect(() => target.init()).not.toThrowError();
+    });
+
+    it('should remove the service on init when the service exists and sensor is disabled', () => {
+        const service = new Mock<Service>();
+        platformAccessory.setup(o => o.getServiceById(Service.ContactSensor, 'Test')).returns(service.object());
+        platformAccessory.setup(o => o.removeService(service.object())).returns(undefined);
+
+        target.disable();
+        target.init();
+
+        platformAccessory.verify(o => o.removeService(service.object()), Times.Once());
+    });
+
     it('should set active status to true when connected', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
 

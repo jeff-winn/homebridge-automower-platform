@@ -45,6 +45,16 @@ describe('MotionSensorImpl', () => {
         expect(result).toBeDefined();
     });
     
+    it('should return true when the sensor is disabled', () => {
+        target.disable();
+
+        expect(target.isDisabled()).toBeTruthy();
+    });
+
+    it('should return false when the sensor is not disabled by default', () => {
+        expect(target.isDisabled()).toBeFalsy();
+    });
+
     it('should be initialized with an existing service', () => {
         const motionDetected = new Mock<Characteristic>();
         
@@ -56,6 +66,25 @@ describe('MotionSensorImpl', () => {
         target.init();
 
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
+    });
+
+    it('should not throw error on init when the service does not exist and sensor is disabled', () => {
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(undefined);
+
+        target.disable();
+
+        expect(() => target.init()).not.toThrowError();
+    });
+
+    it('should remove the service on init when the service exists and sensor is disabled', () => {
+        const service = new Mock<Service>();
+        platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
+        platformAccessory.setup(o => o.removeService(service.object())).returns(undefined);
+
+        target.disable();
+        target.init();
+
+        platformAccessory.verify(o => o.removeService(service.object()), Times.Once());
     });
 
     it('should create a new service on init', () => {
@@ -77,7 +106,7 @@ describe('MotionSensorImpl', () => {
         service.verify(o => o.getCharacteristic(Characteristic.MotionDetected), Times.Once());
     });
 
-    it('should throw an error when fault service has not been initialized on set mower state', () => {                
+    it('should not throw an error when fault service has not been initialized on set mower state', () => {                
         const service = new Mock<Service>();
         platformAccessory.setup(o => o.getServiceById(Service.MotionSensor, 'Motion Sensor')).returns(service.object());
         service.setup(o => o.getCharacteristic(It.IsAny())).returns(undefined!);
@@ -91,10 +120,10 @@ describe('MotionSensorImpl', () => {
         expect(() => target.setMowerState({
             activity: Activity.PARKED,
             state: State.CHARGING
-        })).toThrowError();
+        })).not.toThrowError();
     });
 
-    it('should throw an error when tampered service has not been initialized on set mower state', () => {
+    it('should not throw an error when tampered service has not been initialized on set mower state', () => {
         const faulted = new Mock<Characteristic>();
         faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
 
@@ -113,10 +142,10 @@ describe('MotionSensorImpl', () => {
         expect(() => target.setMowerState({
             activity: Activity.PARKED,
             state: State.CHARGING
-        })).toThrowError();
+        })).not.toThrowError();
     });
 
-    it('should throw an error when motion service has not been initialized on set mower state', () => {
+    it('should not throw an error when motion service has not been initialized on set mower state', () => {
         const faulted = new Mock<Characteristic>();
         faulted.setup(o => o.updateValue(It.IsAny())).returns(faulted.object());
 
@@ -142,7 +171,7 @@ describe('MotionSensorImpl', () => {
         expect(() => target.setMowerState({
             activity: Activity.PARKED,
             state: State.CHARGING
-        })).toThrowError();
+        })).not.toThrowError();
     });
 
     it('should refresh the motion characteristic when the value has changed from undefined to false', () => {
@@ -397,12 +426,12 @@ describe('MotionSensorImpl', () => {
         tampered.verify(o => o.updateValue(Characteristic.StatusTampered.TAMPERED), Times.Once());
     });
 
-    it('should throw an error when not initialized on set mower metadata', () => {
+    it('should not throw an error when not initialized on set mower metadata', () => {
         const metadata: MowerConnection = {
             connected: false
         };
 
-        expect(() => target.setMowerConnection(metadata)).toThrowError();
+        expect(() => target.setMowerConnection(metadata)).not.toThrowError();
     });
 
     it('should set active status to true when connected', () => {

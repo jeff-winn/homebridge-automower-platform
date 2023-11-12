@@ -5,4 +5,8 @@ export class ContactSensorSpy extends AbstractContactSensor {
     public unsafeCreateService(displayName: string): Service {
         return this.createService(displayName);
     }
+
+    public unsafeRefreshCharacteristic(): void {
+        this.refreshCharacteristic();
+    }
 }

@@ -49,6 +49,76 @@ describe('AutomowerPlatform', () => {
         container.verify(o => o.registerEverything(), Times.Once());
     });
 
+    it('should enable contact sensors by default when sensor mode not specified', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME
+        });
+
+        expect(t.shouldEnableContactSensors()).toBeTruthy();
+    });
+
+    it('should enable contact sensors when sensor mode is all', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME,
+            sensor_mode: 'all'
+        });
+
+        expect(t.shouldEnableContactSensors()).toBeTruthy();
+    });
+
+    it('should enable contact sensors when sensor mode is contact_only', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME,
+            sensor_mode: 'contact_only'
+        });
+
+        expect(t.shouldEnableContactSensors()).toBeTruthy();
+    });
+
+    it('should disable contact sensors when sensor mode is motion_only', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME,
+            sensor_mode: 'motion_only'
+        });
+
+        expect(t.shouldEnableContactSensors()).toBeFalsy();
+    });
+
+    it('should enable motion sensors by default when sensor mode not specified', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME
+        });
+
+        expect(t.shouldEnableMotionSensors()).toBeTruthy();
+    });
+
+    it('should enable motion sensors when sensor mode is all', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME,
+            sensor_mode: 'all'
+        });
+
+        expect(t.shouldEnableMotionSensors()).toBeTruthy();
+    });
+
+    it('should enable motion sensors when sensor mode is motion_only', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME,
+            sensor_mode: 'motion_only'
+        });
+
+        expect(t.shouldEnableMotionSensors()).toBeTruthy();
+    });
+
+    it('should disable motion sensors when sensor mode is contact_only', () => {
+        const t = new AutomowerPlatformConfig({ 
+            platform: PLATFORM_NAME,
+            sensor_mode: 'contact_only'
+        });
+
+        expect(t.shouldEnableMotionSensors()).toBeFalsy();
+    });
+
     it('should return password authentication mode when not specified', () => {
         const t = new AutomowerPlatformConfig({
             platform: PLATFORM_NAME

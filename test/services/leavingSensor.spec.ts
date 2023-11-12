@@ -67,13 +67,13 @@ describe('LeavingContactSensorImpl', () => {
         service.verify(o => o.getCharacteristic(Characteristic.ContactSensorState), Times.Once());
     });
 
-    it('should throw an error when not initialized on set mower state', () => {
+    it('should not throw an error when not initialized on set mower state', () => {
         policy.setup(o => o.setMowerState(It.IsAny())).returns(undefined);
         
         expect(() => target.setMowerState({
             activity: Activity.PARKED,
             state: State.CHARGING
-        })).toThrowError();
+        })).not.toThrowError();
     });
 
     it('should refresh the contact state when value has changed from undefined to false', () => {

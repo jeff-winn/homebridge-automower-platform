@@ -2,6 +2,22 @@ import { API, Characteristic, PlatformAccessory, Service } from 'homebridge';
 import { MowerContext } from '../../mowerAccessory';
 
 /**
+ * Identifies a service as supports being disabled.
+ */
+export interface SupportDisable {
+    /**
+     * Disables the service.
+     */
+    disable(): void;
+
+    /**
+     * Identifies whether the service has been disabled.
+     * @returns true if the service has been disabled, otherwise false.
+     */
+    isDisabled(): boolean;
+}
+
+/**
  * An abstract class which represents a base accessory service.
  */
 export abstract class AbstractAccessoryService {    

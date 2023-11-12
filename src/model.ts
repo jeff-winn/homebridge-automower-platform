@@ -23,6 +23,31 @@ export enum AuthenticationMode {
 }
 
 /**
+ * Defines the supported sensor modes.
+ */
+export enum SensorMode {
+    /**
+     * All sensors will be available (default).
+     */
+    ALL = 'all',
+
+    /**
+     * Only motion sensors will be available.
+     */
+    MOTION_ONLY = 'motion_only',
+
+    /**
+     * Only contact sensors will be available.
+     */
+    CONTACT_ONLY = 'contact_only',
+
+    /**
+     * No sensors will be available.
+     */
+    NONE = 'none'
+}
+
+/**
  * Describes the activities of a mower.
  */
 export enum Activity {

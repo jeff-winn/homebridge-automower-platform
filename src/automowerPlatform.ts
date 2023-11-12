@@ -8,7 +8,7 @@ import { BadConfigurationError } from './errors/badConfigurationError';
 import { MowerSettingsChangedEvent, MowerStatusChangedEvent } from './events';
 import { DiscoveryServiceFactoryImpl } from './factories/discoveryServiceFactory';
 import { EventStreamServiceFactoryImpl } from './factories/eventStreamServiceFactory';
-import { AuthenticationMode, DeviceType } from './model';
+import { AuthenticationMode, DeviceType, SensorMode } from './model';
 import { MowerAccessory, MowerContext } from './mowerAccessory';
 import { MowerAccessoryFactory, MowerAccessoryFactoryImpl } from './mowerAccessoryFactory';
 import { Localization, Y18nLocalization } from './primitives/localization';
@@ -34,6 +34,7 @@ export class AutomowerPlatformConfig {
     public lang?: string;
     public device_type?: DeviceType;
     public logger_type?: LoggerType;
+    public sensor_mode?: SensorMode;
     
     public constructor(config: PlatformConfig) {
         this.name = config.name;
@@ -47,6 +48,7 @@ export class AutomowerPlatformConfig {
         this.lang = config.lang;
         this.device_type = config.device_type;
         this.logger_type = config.logger_type;
+        this.sensor_mode = config.sensor_mode;
     }
 
     /**
@@ -63,6 +65,22 @@ export class AutomowerPlatformConfig {
      */
     public getAuthenticationModeOrDefault(): AuthenticationMode {
         return this.authentication_mode ?? AuthenticationMode.PASSWORD;
+    }
+
+    /**
+     * Identifies whether the motion sensors should be enabled.
+     * @returns true if the motion sensors should be enabled, otherwise false.
+     */
+    public shouldEnableMotionSensors(): boolean {
+        return this.sensor_mode === undefined || (this.sensor_mode === SensorMode.ALL || this.sensor_mode === SensorMode.MOTION_ONLY);
+    }
+
+    /**
+     * Identifies whether the contact sensors should be enabled.
+     * @returns true if the contact sensors should be enabled, otherwise false.
+     */
+    public shouldEnableContactSensors(): boolean {
+        return this.sensor_mode === undefined || (this.sensor_mode === SensorMode.ALL || this.sensor_mode === SensorMode.CONTACT_ONLY);
     }
 }
 

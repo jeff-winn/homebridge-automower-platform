@@ -4,7 +4,7 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { MowerConnection } from '../../model';
 import { MowerContext } from '../../mowerAccessory';
 import { Policy } from '../policies/policy';
-import { AbstractAccessoryService } from './abstractAccessoryService';
+import { AbstractAccessoryService, SupportDisable } from './abstractAccessoryService';
 
 /**
  * Defines the value which indicates the contact sensor is open.
@@ -19,7 +19,7 @@ export const CONTACT_SENSOR_CLOSED = 0;
 /**
  * Identifies a contact sensor.
  */
-export interface ContactSensor {
+export interface ContactSensor extends SupportDisable {
     /**
      * Initializes the sensor.
      */
@@ -41,6 +41,7 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
     private statusActive?: Characteristic;
 
     private lastValue?: number;
+    private disabled = false;
 
     public constructor(protected name: string, protected policy: Policy, protected accessory: PlatformAccessory<MowerContext>, 
         protected api: API, protected log: PlatformLogger) {
@@ -53,6 +54,14 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
     
     public init(): void {
         this.underlyingService = this.accessory.getServiceById(this.Service.ContactSensor, this.name);
+        if (this.isDisabled()) {
+            if (this.underlyingService !== undefined) {
+                this.accessory.removeService(this.underlyingService);
+            }
+            
+            return;
+        }
+
         if (this.underlyingService === undefined) {
             this.underlyingService = this.createService(this.name);
             this.underlyingService.setCharacteristic(this.Characteristic.ConfiguredName, this.name);
@@ -64,6 +73,14 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
         this.statusActive = this.underlyingService.getCharacteristic(this.Characteristic.StatusActive);
     }
 
+    public disable(): void {
+        this.disabled = true;
+    }
+
+    public isDisabled(): boolean {
+        return this.disabled;
+    }
+
     protected createService(displayName: string): Service {
         return new this.Service.ContactSensor(displayName, this.name);
     }
@@ -73,7 +90,7 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
      */
     protected refreshCharacteristic(): void {
         if (this.contactState === undefined) {
-            throw new Error('The sensor has not been initialized.');
+            return;
         }
 
         const lastValue = this.getLastValue();
@@ -111,7 +128,7 @@ export abstract class AbstractContactSensor extends AbstractAccessoryService imp
 
     public setMowerConnection(connection: MowerConnection): void {
         if (this.statusActive === undefined) {
-            throw new Error('The service has not been initialized.');
+            return;
         }
 
         this.statusActive.updateValue(connection.connected);

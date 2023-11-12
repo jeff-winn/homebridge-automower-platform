@@ -31,10 +31,10 @@ export class MowerAccessory {
         private readonly accessory: PlatformAccessory<MowerContext>,
         private readonly batteryInformation: BatteryInformation,
         private readonly accessoryInformation: AccessoryInformation,
+        private readonly mainSwitch: MainSwitch,
         private readonly motionSensor: MotionSensor,
         private readonly arrivingSensor: ArrivingSensor,
-        private readonly leavingSensor: LeavingSensor,
-        private readonly mainSwitch: MainSwitch) {
+        private readonly leavingSensor: LeavingSensor) {
     }
 
     /**
@@ -50,10 +50,12 @@ export class MowerAccessory {
      */
     public init(): void {
         this.accessoryInformation.init();
-        this.batteryInformation.init();
+        this.batteryInformation.init();        
+
         this.motionSensor.init();
         this.arrivingSensor.init();
         this.leavingSensor.init();
+
         this.mainSwitch.init(NameMode.DISPLAY_NAME);
     }
 
@@ -142,12 +144,12 @@ export class AutomowerAccessory extends MowerAccessory {
         accessory: PlatformAccessory<MowerContext>,
         batteryInformation: BatteryInformation,
         accessoryInformation: AccessoryInformation,
+        mainSwitch: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation,
+        private readonly pauseSwitch: PauseSwitch,
         motionSensor: MotionSensor,
         arrivingSensor: ArrivingSensor,
-        leavingSensor: LeavingSensor,
-        mainSwitch: MainSwitch & SupportsCuttingHeightCharacteristic & SupportsMowerScheduleInformation,
-        private readonly pauseSwitch: PauseSwitch) {
-        super(accessory, batteryInformation, accessoryInformation, motionSensor, arrivingSensor, leavingSensor, mainSwitch);
+        leavingSensor: LeavingSensor) {
+        super(accessory, batteryInformation, accessoryInformation, mainSwitch, motionSensor, arrivingSensor, leavingSensor);
     }
 
     public override init(): void {
