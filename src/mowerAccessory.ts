@@ -32,9 +32,9 @@ export class MowerAccessory {
         private readonly batteryInformation: BatteryInformation,
         private readonly accessoryInformation: AccessoryInformation,
         private readonly mainSwitch: MainSwitch,
-        private readonly motionSensor?: MotionSensor,
-        private readonly arrivingSensor?: ArrivingSensor,
-        private readonly leavingSensor?: LeavingSensor) {
+        private readonly motionSensor: MotionSensor,
+        private readonly arrivingSensor: ArrivingSensor,
+        private readonly leavingSensor: LeavingSensor) {
     }
 
     /**
@@ -53,9 +53,9 @@ export class MowerAccessory {
         this.batteryInformation.init();        
         this.mainSwitch.init(NameMode.DISPLAY_NAME);
 
-        this.motionSensor?.init();
-        this.arrivingSensor?.init();
-        this.leavingSensor?.init();
+        this.motionSensor.init();
+        this.arrivingSensor.init();
+        this.leavingSensor.init();
     }
 
     /**
@@ -66,20 +66,12 @@ export class MowerAccessory {
         this.batteryInformation.setBatteryLevel(data.attributes.battery);
         this.batteryInformation.setChargingState(data.attributes.mower);
 
-        if (this.arrivingSensor !== undefined) {
-            this.arrivingSensor.setMowerState(data.attributes.mower);
-            this.arrivingSensor.setMowerConnection(data.attributes.connection);
-        }
-
-        if (this.leavingSensor !== undefined) {
-            this.leavingSensor.setMowerState(data.attributes.mower);
-            this.leavingSensor.setMowerConnection(data.attributes.connection);
-        }
-
-        if (this.motionSensor !== undefined) {
-            this.motionSensor.setMowerState(data.attributes.mower);
-            this.motionSensor.setMowerConnection(data.attributes.connection);
-        }
+        this.arrivingSensor.setMowerState(data.attributes.mower);
+        this.arrivingSensor.setMowerConnection(data.attributes.connection);
+        this.leavingSensor.setMowerState(data.attributes.mower);
+        this.leavingSensor.setMowerConnection(data.attributes.connection);
+        this.motionSensor.setMowerState(data.attributes.mower);
+        this.motionSensor.setMowerConnection(data.attributes.connection);
 
         this.mainSwitch.setMowerState(data.attributes.mower);
         this.mainSwitch.setMowerConnection(data.attributes.connection);
@@ -112,16 +104,16 @@ export class MowerAccessory {
 
         if (event.attributes.mower !== undefined) {
             this.batteryInformation.setChargingState(event.attributes.mower);
-            this.arrivingSensor?.setMowerState(event.attributes.mower);
-            this.leavingSensor?.setMowerState(event.attributes.mower);
-            this.motionSensor?.setMowerState(event.attributes.mower);
+            this.arrivingSensor.setMowerState(event.attributes.mower);
+            this.leavingSensor.setMowerState(event.attributes.mower);
+            this.motionSensor.setMowerState(event.attributes.mower);
             this.mainSwitch.setMowerState(event.attributes.mower);
         }
 
         if (event.attributes.connection !== undefined) {
-            this.arrivingSensor?.setMowerConnection(event.attributes.connection);
-            this.leavingSensor?.setMowerConnection(event.attributes.connection);
-            this.motionSensor?.setMowerConnection(event.attributes.connection);
+            this.arrivingSensor.setMowerConnection(event.attributes.connection);
+            this.leavingSensor.setMowerConnection(event.attributes.connection);
+            this.motionSensor.setMowerConnection(event.attributes.connection);
             this.mainSwitch.setMowerConnection(event.attributes.connection);
         }
     }

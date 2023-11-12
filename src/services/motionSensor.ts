@@ -3,7 +3,7 @@ import { MowerContext } from '../mowerAccessory';
 
 import { PlatformLogger } from '../diagnostics/platformLogger';
 import { MowerConnection, MowerState } from '../model';
-import { AbstractAccessoryService } from './homebridge/abstractAccessoryService';
+import { AbstractAccessoryService, SupportDisable } from './homebridge/abstractAccessoryService';
 import { MowerFaultedPolicy } from './policies/mowerFaultedPolicy';
 import { MowerInMotionPolicy } from './policies/mowerInMotionPolicy';
 import { MowerTamperedPolicy } from './policies/mowerTamperedPolicy';
@@ -11,7 +11,7 @@ import { MowerTamperedPolicy } from './policies/mowerTamperedPolicy';
 /**
  * A sensor which identifies whether a mower is in motion.
  */
-export interface MotionSensor {
+export interface MotionSensor extends SupportDisable {
     /**
      * Initializes the service.
      */
@@ -43,6 +43,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
     private lastTamperedValue?: boolean;
     private lastFaultedValue?: boolean;
     private lastMotionValue?: boolean;
+    private disabled = false;
 
     public constructor(private name: string, private motionPolicy: MowerInMotionPolicy, private faultedPolicy: MowerFaultedPolicy, 
         private tamperedPolicy: MowerTamperedPolicy, accessory: PlatformAccessory<MowerContext>, 
@@ -53,6 +54,14 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
 
     public init(): void {
         this.underlyingService = this.accessory.getServiceById(this.Service.MotionSensor, this.name);
+        if (this.isDisabled()) {
+            if (this.underlyingService !== undefined) {
+                this.accessory.removeService(this.underlyingService);
+            }
+            
+            return;
+        }
+
         if (this.underlyingService === undefined) {
             this.underlyingService = this.createService(this.name);
             this.underlyingService.setCharacteristic(this.Characteristic.ConfiguredName, this.name);
@@ -66,13 +75,21 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
         this.statusActive = this.underlyingService.getCharacteristic(this.Characteristic.StatusActive);
     }
 
+    public disable(): void {
+        this.disabled = true;
+    }
+
+    public isDisabled(): boolean {
+        return this.disabled;
+    }
+
     protected createService(displayName: string): Service {
         return new this.Service.MotionSensor(displayName, this.name);
     }
 
     public setMowerConnection(connection: MowerConnection): void {
         if (this.statusActive === undefined) {
-            throw new Error('The service has not been initialized.');
+            return;
         }
 
         this.statusActive.updateValue(connection.connected);
@@ -95,7 +112,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
 
     protected checkTampered(): void {
         if (this.tampered === undefined) {
-            throw new Error('The service has not been initialized.');
+            return;
         }
 
         const lastValue = this.getLastTamperedValue();
@@ -121,7 +138,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
 
     protected checkFaulted(): void {
         if (this.faulted === undefined) {
-            throw new Error('The service has not been initialized.');
+            return;
         }
 
         const lastValue = this.getLastFaultedValue();        
@@ -146,7 +163,7 @@ export class MotionSensorImpl extends AbstractAccessoryService implements Motion
 
     protected checkMotionDetected(): void {
         if (this.motionDetected === undefined) {
-            throw new Error('The service has not been initialized.');
+            return;
         }
 
         const lastValue = this.getLastMotionValue();

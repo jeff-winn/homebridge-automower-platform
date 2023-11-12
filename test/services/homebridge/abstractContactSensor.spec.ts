@@ -42,12 +42,16 @@ describe('AbstractContactSensor', () => {
         expect(target.getUnderlyingService()).toBeUndefined();
     });
 
-    it('should throw an error when not initialized on set mower connection', () => {
+    it('should not throw an error when no characteristic on refresh characteristic', () => {
+        expect(() => target.unsafeRefreshCharacteristic()).not.toThrowError();
+    });
+
+    it('should not throw an error when no characteristic on set mower connection', () => {
         const metadata: MowerConnection = {
             connected: false
         };
 
-        expect(() => target.setMowerConnection(metadata)).toThrowError();
+        expect(() => target.setMowerConnection(metadata)).not.toThrowError();
     });
     
     it('should set active status to true when connected', () => {

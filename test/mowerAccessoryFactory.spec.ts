@@ -4,7 +4,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerPlatformConfig } from '../src/automowerPlatform';
 import { PlatformLogger } from '../src/diagnostics/platformLogger';
-import { Activity, DeviceType, Mower, State } from '../src/model';
+import { Activity, DeviceType, Mower, SensorMode, State } from '../src/model';
 import { MowerAccessory, MowerContext } from '../src/mowerAccessory';
 import { Localization } from '../src/primitives/localization';
 import { PlatformAccessoryFactory } from '../src/primitives/platformAccessoryFactory';
@@ -424,6 +424,40 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         expect(result).toBeInstanceOf(ArrivingContactSensorImpl);
     });
 
+    it('should create a disabled arriving sensor when sensor mode is motion only', () => {
+        config.sensor_mode = SensorMode.MOTION_ONLY;
+
+        const policy = new Mock<DeterministicMowerIsArrivingPolicy>();
+        container.setup(o => o.resolve(DeterministicMowerIsArrivingPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('ARRIVING_SENSOR')).returns('Arriving');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as ArrivingContactSensorImpl;
+
+        expect(result).toBeDefined();
+        expect(result.isDisabled()).toBeTruthy();
+        expect(result).toBeInstanceOf(ArrivingContactSensorImpl);
+    });
+
+    it('should create a disabled arriving sensor when sensor mode is none', () => {
+        config.sensor_mode = SensorMode.NONE;
+
+        const policy = new Mock<DeterministicMowerIsArrivingPolicy>();
+        container.setup(o => o.resolve(DeterministicMowerIsArrivingPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('ARRIVING_SENSOR')).returns('Arriving');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateArrivingSensor(platformAccessory.object()) as ArrivingContactSensorImpl;
+
+        expect(result).toBeDefined();
+        expect(result.isDisabled()).toBeTruthy();
+        expect(result).toBeInstanceOf(ArrivingContactSensorImpl);
+    });
+
     it('should create an leaving sensor', () => {
         const policy = new Mock<DeterministicMowerIsLeavingPolicy>();
         container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(policy.object());
@@ -435,6 +469,40 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateLeavingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(LeavingContactSensorImpl);
+    });
+
+    it('should create a disabled leaving sensor when sensor mode is motion only', () => {
+        config.sensor_mode = SensorMode.MOTION_ONLY;
+
+        const policy = new Mock<DeterministicMowerIsLeavingPolicy>();
+        container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('LEAVING_SENSOR')).returns('Leaving');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateLeavingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
+
+        expect(result).toBeDefined();
+        expect(result.isDisabled()).toBeTruthy();
+        expect(result).toBeInstanceOf(LeavingContactSensorImpl);
+    });
+
+    it('should create a disabled leaving sensor when sensor mode is none', () => {
+        config.sensor_mode = SensorMode.NONE;
+
+        const policy = new Mock<DeterministicMowerIsLeavingPolicy>();
+        container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(policy.object());
+
+        locale.setup(o => o.format('LEAVING_SENSOR')).returns('Leaving');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateLeavingSensor(platformAccessory.object()) as LeavingContactSensorImpl;
+
+        expect(result).toBeDefined();
+        expect(result.isDisabled()).toBeTruthy();
         expect(result).toBeInstanceOf(LeavingContactSensorImpl);
     });
 
@@ -454,6 +522,50 @@ describe('AutomowerAccessoryFactoryImpl', () => {
         const result = target.unsafeCreateMotionSensor(platformAccessory.object()) as MotionSensorImpl;
 
         expect(result).toBeDefined();
+        expect(result).toBeInstanceOf(MotionSensorImpl);
+    });
+
+    it('should create a disabled motion sensor when sensor mode is contact only', () => {
+        config.sensor_mode = SensorMode.CONTACT_ONLY;
+
+        const motionPolicy = new Mock<DeterministicMowerInMotionPolicy>();
+        const faultedPolicy = new Mock<DeterministicMowerFaultedPolicy>();
+        const tamperedPolicy = new Mock<DeterministicMowerTamperedPolicy>();
+
+        container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(motionPolicy.object());
+        container.setup(o => o.resolve(DeterministicMowerFaultedPolicy)).returns(faultedPolicy.object());
+        container.setup(o => o.resolve(DeterministicMowerTamperedPolicy)).returns(tamperedPolicy.object());
+
+        locale.setup(o => o.format('MOTION_SENSOR')).returns('Motion');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateMotionSensor(platformAccessory.object()) as MotionSensorImpl;
+
+        expect(result).toBeDefined();
+        expect(result.isDisabled()).toBeTruthy();
+        expect(result).toBeInstanceOf(MotionSensorImpl);
+    });
+
+    it('should create a disabled motion sensor when sensor mode is none', () => {
+        config.sensor_mode = SensorMode.NONE;
+
+        const motionPolicy = new Mock<DeterministicMowerInMotionPolicy>();
+        const faultedPolicy = new Mock<DeterministicMowerFaultedPolicy>();
+        const tamperedPolicy = new Mock<DeterministicMowerTamperedPolicy>();
+
+        container.setup(o => o.resolve(DeterministicMowerIsLeavingPolicy)).returns(motionPolicy.object());
+        container.setup(o => o.resolve(DeterministicMowerFaultedPolicy)).returns(faultedPolicy.object());
+        container.setup(o => o.resolve(DeterministicMowerTamperedPolicy)).returns(tamperedPolicy.object());
+
+        locale.setup(o => o.format('MOTION_SENSOR')).returns('Motion');
+        
+        const platformAccessory = new Mock<PlatformAccessory<MowerContext>>();
+
+        const result = target.unsafeCreateMotionSensor(platformAccessory.object()) as MotionSensorImpl;
+
+        expect(result).toBeDefined();
+        expect(result.isDisabled()).toBeTruthy();
         expect(result).toBeInstanceOf(MotionSensorImpl);
     });
 

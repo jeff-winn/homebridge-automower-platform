@@ -114,17 +114,29 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
 
     protected createArrivingSensor(accessory: PlatformAccessory<MowerContext>): ArrivingSensor {
-        return new ArrivingContactSensorImpl(
+        const sensor = new ArrivingContactSensorImpl(
             this.locale.format('ARRIVING_SENSOR'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(DeterministicMowerIsArrivingPolicy),
             accessory, this.api, this.log);
+
+        if (!this.config.shouldEnableContactSensors()) {
+            sensor.disable();
+        }
+
+        return sensor;
     }
 
     protected createLeavingSensor(accessory: PlatformAccessory<MowerContext>): LeavingSensor {
-        return new LeavingContactSensorImpl(
+        const sensor = new LeavingContactSensorImpl(
             this.locale.format('LEAVING_SENSOR'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(DeterministicMowerIsLeavingPolicy),
             accessory, this.api, this.log);
+
+        if (!this.config.shouldEnableContactSensors()) {
+            sensor.disable();
+        }
+        
+        return sensor;
     }
 
     protected createBatteryInformation(accessory: PlatformAccessory<MowerContext>): BatteryInformation {
@@ -153,12 +165,18 @@ export class MowerAccessoryFactoryImpl implements MowerAccessoryFactory {
     }
 
     protected createMotionSensor(accessory: PlatformAccessory<MowerContext>): MotionSensor {
-        return new MotionSensorImpl(
+        const sensor = new MotionSensorImpl(
             this.locale.format('MOTION_SENSOR'), // WARNING: Changing the name will cause a breaking change!
             this.container.resolve(DeterministicMowerInMotionPolicy),
             this.container.resolve(DeterministicMowerFaultedPolicy),
             this.container.resolve(DeterministicMowerTamperedPolicy),
             accessory, this.api, this.log);
+
+        if (!this.config.shouldEnableMotionSensors()) {
+            sensor.disable();
+        }
+
+        return sensor;
     }
 
     protected getContolServiceClass(): InjectionToken<MowerControlService> {
