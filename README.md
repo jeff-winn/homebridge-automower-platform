@@ -48,5 +48,39 @@ Be advised, the capabilities mentioned below vary between product lines by Husqv
 - Does not cause logout of Husqvarna mobile application.
 - Multiple languages may be supported in logs (need help with translations).
 
+## Configuration Settings
+The following describes the configuration settings available within the plugin. If you are using Homebridge, manually configuring the plugin is highly discouraged. However, the section is described as follows:
+
+```json
+{
+  "name": "Homebridge Automower Platform",
+  "platform": "Homebridge Automower Platform",
+  "device_type": "automower",
+  "sensor_mode": "none",
+  "lang": "en",
+  "authentication_mode": "client_credentials",
+  "appKey": "<<REDACTED>>",
+  "application_secret": "<<REDACTED>>"
+}
+```
+
+- _name_: This will be the name of the plugin that shows up in the logs
+- _platform_: This __MUST__ be "Homebridge Automower Platform"
+- _device_type_: This determines which kind of mower is being configured. The following device types are supported:
+  - _automower_: For use with Husqvarna Automower robotic lawn mowers
+  - _gardena_: For use with Gardena Smart robotic lawn mowers
+- _sensor_mode_: This determines which sensors will be registered for each mower that is located. The following sensor modes are supported:
+  - _all_: All sensors available
+  - _motion_only_: Only motion sensors will be registered.
+  - _contact_only_: Only contact sensors will be registered.
+  - _none_: No sensors
+- _lang_: This will be the language used during logging. The following languages are supported:
+  - _en_: English (US)
+- _authentication_mode_: The type of authentication modes available to login to Husqvarna Group cloud services. The following authentication modes are supported:
+  - _client_credentials_: Uses an application key and secret defined by the Husqvarna Group cloud services to login. This will require additional setup on their website.
+  - _password_:  Uses your login credentials. Be advised, this mode is no longer officially supported by Husqvarna Group cloud services and may be terminated at any point in the future.
+- _appKey_: This is the application key as registered on the Husqvarna Group cloud services
+- _application_secret_: This is the application secret as registered on the Husqvarna Group cloud services
+
 ## Disclaimer
 This plug-in is in no way affiliated with Husqvarna, the Husqvarna Group, or any of its subsidiaries or partners. Any trademarks used here-in are property of Husqvarna and/or the Husqvarna Group.
