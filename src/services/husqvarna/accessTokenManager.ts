@@ -166,7 +166,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         this.log.debug('LOGGING_OUT');
 
-        await this.client.logout(this.config.appKey!, token);
+        await this.client.logoutPassword(this.config.appKey!, token);
         this.currentToken = undefined;
 
         this.log.debug('LOGGED_OUT');

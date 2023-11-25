@@ -231,7 +231,7 @@ describe('AccessTokenManagerImpl', () => {
 
         await target.logout();        
 
-        client.verify(x => x.logout(appKey, It.IsAny<OAuthToken>()), Times.Never());
+        client.verify(x => x.logoutPassword(appKey, It.IsAny<OAuthToken>()), Times.Never());
     });
 
     it('should logout the user when the user has been logged in', async () => {
@@ -245,14 +245,14 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.logout(appKey, token)).returns(Promise.resolve(undefined));
+        client.setup(x => x.logoutPassword(appKey, token)).returns(Promise.resolve(undefined));
 
         target.unsafeSetCurrentToken(token);
         await target.logout();
 
         const result = target.unsafeGetCurrentToken();
 
-        client.verify(x => x.logout(appKey, token), Times.Once());
+        client.verify(x => x.logoutPassword(appKey, token), Times.Once());
         expect(result).toBeUndefined();
     });
 });
