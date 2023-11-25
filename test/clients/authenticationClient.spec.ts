@@ -181,6 +181,72 @@ describe('AuthenticationClientImpl', () => {
         await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
     });
 
+    it('should not throw an error on successful response when logout client credentials', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 200,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.logoutClientCredentialsAsync({
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        })).resolves.not.toThrowError();
+    });
+
+    it('should throw error on not authorized 401 response when logout client credentials', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 401,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.logoutClientCredentialsAsync({
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        })).rejects.toThrowError();
+    });
+
+    it('should throw error on response not ok when logout client credentials', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 500,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.logoutClientCredentialsAsync({
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        })).rejects.toThrowError();
+    });
+
     it('should throw a simultaneous login error on 400 response when simultaneous login detected for client credentials', async () => {
         errorFactory.setup(o => o.simultaneousLoginError(It.IsAny(), It.IsAny())).returns(new SimultaneousLoginError('hello', '12345'));
 

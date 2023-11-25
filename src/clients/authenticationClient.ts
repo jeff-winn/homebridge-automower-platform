@@ -77,6 +77,12 @@ export interface AuthenticationClient {
     exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken>;
 
     /**
+     * Logout the user.
+     * @param token The OAuth token.
+     */
+    logoutClientCredentialsAsync(token: OAuthToken): Promise<void>;
+
+    /**
      * Exchanges the password for an {@link OAuthToken}.
      * @param appKey The application key.
      * @param username The username.
@@ -116,6 +122,25 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         });
 
         return await this.exchange(body);
+    }
+
+    public async logoutClientCredentialsAsync(token: OAuthToken): Promise<void> {
+        const req = {
+            token: token.access_token
+        };
+
+        const response = await this.fetch.execute(this.baseUrl + '/oauth2/revoke', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization-Provider': token.provider,
+                'X-Application-Id': PLUGIN_ID
+            },
+            body: JSON.stringify(req)
+        });
+
+        this.throwIfNotAuthorized(response);
+        await this.throwIfStatusNotOk(response);
     }
 
     public async exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken> {
