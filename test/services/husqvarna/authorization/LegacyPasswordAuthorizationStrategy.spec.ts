@@ -105,7 +105,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
         config.username = username;
         config.password = password;
         
-        client.setup(o => o.exchangePassword(appKey, username, password, DeviceType.AUTOMOWER)).returnsAsync(token);
+        client.setup(o => o.exchangePasswordAsync(appKey, username, password, DeviceType.AUTOMOWER)).returnsAsync(token);
         log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
 
         await expect(target.authorizeAsync(client.object())).resolves.toBe(token);

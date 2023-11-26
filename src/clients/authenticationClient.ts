@@ -89,7 +89,7 @@ export interface AuthenticationClient {
      * @param password The password.
      * @param deviceType The type of device.
      */
-    exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken>;
+    exchangePasswordAsync(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken>;
 
     /**
      * Logout the user.
@@ -143,7 +143,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         await this.throwIfStatusNotOk(response);
     }
 
-    public async exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken> {
+    public async exchangePasswordAsync(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken> {
         const body = this.encode({
             client_id: appKey,
             grant_type: 'password',

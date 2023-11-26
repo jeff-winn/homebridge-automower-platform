@@ -55,7 +55,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(AccountLockedError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(AccountLockedError);
     });
 
     it('should throw a bad credentials error on 400 response when incorrect response body for password exchange', async () => {
@@ -71,7 +71,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a bad credentials error on 400 response when unknown error for password exchange', async () => {
@@ -95,7 +95,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a not authorized error on 401 response', async () => {
@@ -112,7 +112,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(NotAuthorizedError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(NotAuthorizedError);
     });
 
     it('should throw an error when response is not ok', async () => {
@@ -126,7 +126,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(Error);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(Error);
     });
 
     it('should return an oauth token when logged in with automower client credentials successfully', async () => {
@@ -294,7 +294,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
 
     it('should return an oauth token when logged in with gardena password successfully', async () => {
@@ -320,7 +320,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
     });
 
     it('should logout successfully', async () => {

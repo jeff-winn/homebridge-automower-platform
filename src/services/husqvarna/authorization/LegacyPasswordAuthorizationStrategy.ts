@@ -17,7 +17,7 @@ export class LegacyPasswordAuthorizationStrategy implements OAuth2AuthorizationS
 
         this.log.warn('AUTHENTICATION_SCHEME_NOT_SUPPORTED');
 
-        return await client.exchangePassword(this.config.appKey!, this.config.username!, this.config.password!, this.config.getDeviceTypeOrDefault());
+        return await client.exchangePasswordAsync(this.config.appKey!, this.config.username!, this.config.password!, this.config.getDeviceTypeOrDefault());
     }    
 
     public async deauthorizeAsync(token: OAuthToken, client: AuthenticationClient): Promise<void> {
