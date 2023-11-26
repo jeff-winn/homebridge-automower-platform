@@ -51,7 +51,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
     public async getCurrentTokenAsync(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
-            await this.refreshToken();
+            await this.refreshTokenAsync();
         }
 
         const current = this.getRequiredCurrentToken();
@@ -61,13 +61,13 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         };
     }
 
-    protected async refreshToken(): Promise<void> {
+    protected async refreshTokenAsync(): Promise<void> {
         let newToken: OAuthToken;
 
         if (this.canTokenBeRefreshed() && !this.isTokenInvalidated()) {
-            newToken = await this.doRefreshToken();
+            newToken = await this.doRefreshTokenAsync();
         } else {
-            newToken = await this.doLogin();
+            newToken = await this.doLoginAsync();
         }
         
         this.unsafeSetCurrentToken(newToken);
@@ -109,7 +109,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         return this.currentToken !== undefined;
     }
 
-    protected async doLogin(): Promise<OAuthToken> {
+    protected async doLoginAsync(): Promise<OAuthToken> {
         this.log.debug('LOGGING_IN');
 
         const token = await this.login.authorizeAsync(this.client);
@@ -118,7 +118,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         return token;
     }
 
-    protected async doRefreshToken(): Promise<OAuthToken> {
+    protected async doRefreshTokenAsync(): Promise<OAuthToken> {
         this.log.debug('REFRESHING_TOKEN');
 
         const newToken = await this.client.refreshAsync(this.config.appKey!, this.currentToken!);

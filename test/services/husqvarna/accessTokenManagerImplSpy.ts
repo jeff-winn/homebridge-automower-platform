@@ -6,15 +6,15 @@ export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
     public refreshed = false;
     public overrideInvalidated?: boolean;
 
-    protected override async doLogin(): Promise<OAuthToken> {
-        const token = await super.doLogin();
+    protected override async doLoginAsync(): Promise<OAuthToken> {
+        const token = await super.doLoginAsync();
 
         this.loggedIn = true;
         return token;
     }
 
-    protected async doRefreshToken(): Promise<OAuthToken> {
-        const token = await super.doRefreshToken();
+    protected async doRefreshTokenAsync(): Promise<OAuthToken> {
+        const token = await super.doRefreshTokenAsync();
 
         this.refreshed = true;
         return token;
@@ -36,12 +36,12 @@ export class AccessTokenManagerImplSpy extends AccessTokenManagerImpl {
         return super.isTokenInvalidated();
     }
 
-    public unsafeDoLogin(): Promise<OAuthToken> {
-        return super.doLogin();
+    public unsafeDoLoginAsync(): Promise<OAuthToken> {
+        return super.doLoginAsync();
     }
 
-    public unsafeRefreshToken(): Promise<OAuthToken> {
-        return super.doRefreshToken();
+    public unsafeRefreshTokenAsync(): Promise<OAuthToken> {
+        return super.doRefreshTokenAsync();
     }
 
     public unsafeSetCurrentToken(token: OAuthToken | undefined) {
