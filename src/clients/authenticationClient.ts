@@ -96,7 +96,7 @@ export interface AuthenticationClient {
      * @param appKey The application key.
      * @param token The OAuth token.
      */
-    logoutPassword(appKey: string, token: OAuthToken): Promise<void>;
+    logoutPasswordAsync(appKey: string, token: OAuthToken): Promise<void>;
 
     /**
      * Refreshes the token.
@@ -201,7 +201,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    public async logoutPassword(appKey: string, token: OAuthToken): Promise<void> {
+    public async logoutPasswordAsync(appKey: string, token: OAuthToken): Promise<void> {
         const response = await this.fetch.execute(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {

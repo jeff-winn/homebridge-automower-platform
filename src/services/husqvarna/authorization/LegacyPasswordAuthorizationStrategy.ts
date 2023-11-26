@@ -23,7 +23,7 @@ export class LegacyPasswordAuthorizationStrategy implements OAuth2AuthorizationS
     public async deauthorizeAsync(token: OAuthToken, client: AuthenticationClient): Promise<void> {
         this.guardAppKeyMustBeProvided();
 
-        await client.logoutPassword(this.config.appKey!, token);
+        await client.logoutPasswordAsync(this.config.appKey!, token);
     }
 
     private guardAppKeyMustBeProvided(): void {

@@ -160,10 +160,10 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
             user_id: 'user_id'
         };
 
-        client.setup(o => o.logoutPassword(appKey, token)).returnsAsync(undefined);
+        client.setup(o => o.logoutPasswordAsync(appKey, token)).returnsAsync(undefined);
 
         await target.deauthorizeAsync(token, client.object());
 
-        client.verify(o => o.logoutPassword(appKey, token), Times.Once());
+        client.verify(o => o.logoutPasswordAsync(appKey, token), Times.Once());
     });
 });
