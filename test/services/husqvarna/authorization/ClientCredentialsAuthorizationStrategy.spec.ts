@@ -78,7 +78,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
             user_id: 'user_id'
         };
 
-        client.setup(o => o.exchangeClientCredentials(appKey, appSecret, DeviceType.AUTOMOWER)).returnsAsync(token);
+        client.setup(o => o.exchangeClientCredentialsAsync(appKey, appSecret, DeviceType.AUTOMOWER)).returnsAsync(token);
 
         await expect(target.authorizeAsync(client.object())).resolves.toBe(token);
     });

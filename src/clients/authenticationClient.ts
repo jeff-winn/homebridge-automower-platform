@@ -74,7 +74,7 @@ export interface AuthenticationClient {
      * @param appSecret The application secret.
      * @param deviceType The type of device.
      */
-    exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken>;
+    exchangeClientCredentialsAsync(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken>;
 
     /**
      * Logout the user.
@@ -113,7 +113,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return this.baseUrl;
     }
 
-    public async exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken> {
+    public async exchangeClientCredentialsAsync(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken> {
         const body = this.encode({
             grant_type: 'client_credentials',
             client_id: appKey,

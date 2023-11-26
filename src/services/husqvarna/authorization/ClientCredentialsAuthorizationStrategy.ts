@@ -13,7 +13,7 @@ export class ClientCredentialsAuthorizationStrategy implements OAuth2Authorizati
         this.guardAppKeyMustBeProvided();
         this.guardApplicationSecretMustBeProvided();
         
-        return await client.exchangeClientCredentials(this.config.appKey!, this.config.application_secret!, this.config.getDeviceTypeOrDefault());
+        return await client.exchangeClientCredentialsAsync(this.config.appKey!, this.config.application_secret!, this.config.getDeviceTypeOrDefault());
     }
 
     private guardAppKeyMustBeProvided(): void {

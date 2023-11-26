@@ -152,7 +152,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
+        await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
 
     it('should return an oauth token when logged in with gardena client credentials successfully', async () => {
@@ -178,7 +178,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
+        await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
     });
 
     it('should not throw an error on successful response when logout client credentials', async () => {
@@ -268,7 +268,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(SimultaneousLoginError);
+        await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(SimultaneousLoginError);
     });
 
     it('should return an oauth token when logged in with automower password successfully', async () => {
