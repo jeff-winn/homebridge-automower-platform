@@ -206,7 +206,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     private async onShutdownCallbackAsync(): Promise<void> {
         await this.getEventService()?.stop();
-        await this.getTokenManager()?.logout();
+        await this.getTokenManager()?.logoutAsync();
     }
 
     /**

@@ -38,7 +38,7 @@ export interface AccessTokenManager {
     /**
      * Logout the user.
      */
-    logout(): Promise<void>;
+    logoutAsync(): Promise<void>;
 }
 
 export class AccessTokenManagerImpl implements AccessTokenManager {
@@ -164,7 +164,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         this.invalidated = false;
     }
 
-    public async logout(): Promise<void> {
+    public async logoutAsync(): Promise<void> {
         const token = this.unsafeGetCurrentToken();
         if (token === undefined) {
             return;

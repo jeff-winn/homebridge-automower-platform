@@ -229,7 +229,7 @@ describe('AccessTokenManagerImpl', () => {
     it('should do nothing if the user is not logged in', async () => {
         target.unsafeSetCurrentToken(undefined);
 
-        await target.logout();        
+        await target.logoutAsync();        
 
         login.verify(x => x.deauthorizeAsync(It.IsAny<OAuthToken>(), client.object()), Times.Never());
     });
@@ -248,7 +248,7 @@ describe('AccessTokenManagerImpl', () => {
         login.setup(x => x.deauthorizeAsync(token, client.object())).returnsAsync(undefined);
 
         target.unsafeSetCurrentToken(token);
-        await target.logout();
+        await target.logoutAsync();
 
         const result = target.unsafeGetCurrentToken();
 
