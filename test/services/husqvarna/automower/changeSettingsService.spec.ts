@@ -26,7 +26,7 @@ describe('ChangeSettingsServiceImpl', () => {
 
         const mowerId = 'abcd1234';
         
-        tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(x => x.getCurrentTokenAsync()).returns(Promise.resolve(token));
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
         client.setup(x => x.changeSettings(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
@@ -44,7 +44,7 @@ describe('ChangeSettingsServiceImpl', () => {
         const mowerId = 'abcd1234';
         const cuttingHeight = 1;
 
-        tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(x => x.getCurrentTokenAsync()).returns(Promise.resolve(token));
         client.setup(x => x.changeSettings(mowerId, It.Is<ChangeSettingsRequest>(o => o.cuttingHeight === cuttingHeight), token)).returns(Promise.resolve(undefined));
 
         await target.changeCuttingHeight(mowerId, cuttingHeight);

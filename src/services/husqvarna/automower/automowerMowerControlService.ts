@@ -22,7 +22,7 @@ export class AutomowerMowerControlService implements MowerControlService, Suppor
                 type: 'Pause'
             };
 
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
             return await this.client.doAction(mowerId, action, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
@@ -39,7 +39,7 @@ export class AutomowerMowerControlService implements MowerControlService, Suppor
                 type: 'ResumeSchedule'
             };
 
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
             return await this.client.doAction(mowerId, action, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
@@ -56,7 +56,7 @@ export class AutomowerMowerControlService implements MowerControlService, Suppor
                 type: 'ParkUntilFurtherNotice'
             };
 
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
             return await this.client.doAction(mowerId, action, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {

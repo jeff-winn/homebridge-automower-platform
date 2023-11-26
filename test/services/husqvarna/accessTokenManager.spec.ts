@@ -96,7 +96,7 @@ describe('AccessTokenManagerImpl', () => {
                 user_id: userId
             } as OAuthToken));
         
-        const token = await target.getCurrentToken();
+        const token = await target.getCurrentTokenAsync();
 
         expect(target.loggedIn).toBeTruthy();
 
@@ -137,13 +137,13 @@ describe('AccessTokenManagerImpl', () => {
             }
         });
 
-        const originalToken = await target.getCurrentToken();
+        const originalToken = await target.getCurrentTokenAsync();
 
         expect(originalToken.value).toBe(token1.access_token);
         expect(originalToken.provider).toBe(token1.provider);
 
         target.flagAsInvalid();
-        const refreshToken = await target.getCurrentToken();
+        const refreshToken = await target.getCurrentTokenAsync();
 
         expect(refreshToken.value).toBe(token2.access_token);
         expect(refreshToken.provider).toBe(token2.provider);
@@ -173,12 +173,12 @@ describe('AccessTokenManagerImpl', () => {
         login.setup(o => o.authorizeAsync(client.object())).returns(Promise.resolve(token1));
         client.setup(x => x.refreshAsync(appKey, token1)).returns(Promise.resolve(token2));
 
-        const originalToken = await target.getCurrentToken();
+        const originalToken = await target.getCurrentTokenAsync();
 
         expect(originalToken.value).toBe(token1.access_token);
         expect(originalToken.provider).toBe(token1.provider);
 
-        const refreshToken = await target.getCurrentToken();
+        const refreshToken = await target.getCurrentTokenAsync();
 
         expect(refreshToken.value).toBe(token2.access_token);
         expect(refreshToken.provider).toBe(token2.provider);
@@ -215,12 +215,12 @@ describe('AccessTokenManagerImpl', () => {
             return Promise.resolve(token1);
         });
 
-        const originalToken = await target.getCurrentToken();
+        const originalToken = await target.getCurrentTokenAsync();
 
         expect(originalToken.value).toBe(token1.access_token);
         expect(originalToken.provider).toBe(token1.provider);
 
-        const refreshToken = await target.getCurrentToken();
+        const refreshToken = await target.getCurrentTokenAsync();
 
         expect(refreshToken.value).toBe(token2.access_token);
         expect(refreshToken.provider).toBe(token2.provider);

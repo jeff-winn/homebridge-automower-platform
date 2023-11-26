@@ -43,7 +43,7 @@ describe('AutomowerEventStreamService', () => {
             provider: 'provider'
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.start();
@@ -144,7 +144,7 @@ describe('AutomowerEventStreamService', () => {
     it('should flag the token as invalid when failing to authenticate', async () => {
         stream.opened = false;
 
-        tokenManager.setup(o => o.getCurrentToken()).throws(new BadCredentialsError('Unable to authenticate', 'ERR0000'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new BadCredentialsError('Unable to authenticate', 'ERR0000'));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
@@ -161,7 +161,7 @@ describe('AutomowerEventStreamService', () => {
     it('should restart the keep alive when when unable to authenticate', async () => {
         stream.opened = false;
 
-        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Ouch'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new Error('Ouch'));
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
@@ -180,7 +180,7 @@ describe('AutomowerEventStreamService', () => {
     it('should not throw errors when reconnecting', async () => {
         stream.opened = false;
 
-        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Unable to authenticate'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new Error('Unable to authenticate'));
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
@@ -199,7 +199,7 @@ describe('AutomowerEventStreamService', () => {
         };
         
         stream.opened = false;
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.unsafeKeepAliveAsync();        
@@ -218,7 +218,7 @@ describe('AutomowerEventStreamService', () => {
         };
         
         stream.opened = true;
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.unsafeKeepAliveAsync();        
@@ -263,7 +263,7 @@ describe('AutomowerEventStreamService', () => {
         };
 
         stream.opened = true;
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await target.unsafeKeepAliveAsync();        

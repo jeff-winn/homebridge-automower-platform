@@ -28,7 +28,7 @@ export interface AccessTokenManager {
     /**
      * Gets the current token.
      */
-    getCurrentToken(): Promise<AccessToken>;
+    getCurrentTokenAsync(): Promise<AccessToken>;
 
     /**
      * Flags the token as invalid, which will cause the next attempt to get a new token.
@@ -49,7 +49,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
         private login: OAuth2AuthorizationStrategy, private log: PlatformLogger) { }
 
-    public async getCurrentToken(): Promise<AccessToken> {
+    public async getCurrentTokenAsync(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
             await this.refreshToken();
         }

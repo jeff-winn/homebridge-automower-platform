@@ -30,7 +30,7 @@ describe('GardenaGetMowersService', () => {
     });
 
     it('should flag the token as invalid if not authorized', async () => {
-        tokenManager.setup(o => o.getCurrentToken()).throws(new NotAuthorizedError('Unable to authenticate', 'ERR0000'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new NotAuthorizedError('Unable to authenticate', 'ERR0000'));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
 
         await expect(target.getMowers()).rejects.toThrowError(NotAuthorizedError);
@@ -45,7 +45,7 @@ describe('GardenaGetMowersService', () => {
             value: '12345'
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returnsAsync(token);
         client.setup(o => o.getLocations(token)).returnsAsync({
             data: []
         });        
@@ -118,7 +118,7 @@ describe('GardenaGetMowersService', () => {
             }
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returnsAsync(token);
         client.setup(o => o.getLocations(token)).returnsAsync({
             data: [
                 {
@@ -266,7 +266,7 @@ describe('GardenaGetMowersService', () => {
             }            
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returnsAsync(token);
         client.setup(o => o.getLocations(token)).returnsAsync({
             data: [
                 {
