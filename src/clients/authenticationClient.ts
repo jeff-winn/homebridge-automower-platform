@@ -125,18 +125,19 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     public async logoutClientCredentialsAsync(token: OAuthToken): Promise<void> {
-        const req = {
+        const body = this.encode({
             token: token.access_token
-        };
+        });
 
         const response = await this.fetch.execute(this.baseUrl + '/oauth2/revoke', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token.access_token}`,
                 'Authorization-Provider': token.provider,
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
                 'X-Application-Id': PLUGIN_ID
             },
-            body: JSON.stringify(req)
+            body: body
         });
 
         this.throwIfNotAuthorized(response);
