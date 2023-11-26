@@ -7,21 +7,28 @@ import { OAuth2AuthorizationStrategy } from '../accessTokenManager';
  * An authorization strategy which exchanges the application key and secret for an authorization token.
  */
 export class ClientCredentialsAuthorizationStrategy implements OAuth2AuthorizationStrategy {
-    public constructor(private errorFactory: ErrorFactory) { }
+    public constructor(private errorFactory: ErrorFactory, private config: AutomowerPlatformConfig) { }
 
-    public async authorizeAsync(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
-        if (config.appKey === undefined || config.appKey === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The application key setting is missing, please check your configuration and try again.', 
-                'CFG0002');
-        }
-
-        if (config.application_secret === undefined || config.application_secret === '') {
-            throw this.errorFactory.badConfigurationError(
-                'The application secret setting is missing, please check your configuration and try again.', 
-                'CFG0002');
-        }
+    public async authorizeAsync(client: AuthenticationClient): Promise<OAuthToken> {
+        this.guardAppKeyMustBeProvided();
+        this.guardApplicationSecretMustBeProvided();
         
-        return await client.exchangeClientCredentials(config.appKey, config.application_secret, config.getDeviceTypeOrDefault());
-    }    
+        return await client.exchangeClientCredentials(this.config.appKey!, this.config.application_secret!, this.config.getDeviceTypeOrDefault());
+    }
+
+    private guardAppKeyMustBeProvided(): void {
+        if (this.config.appKey === undefined || this.config.appKey === '') {
+            throw this.errorFactory.badConfigurationError('APP_KEY_MISSING', 'CFG0002');
+        }
+    }
+
+    private guardApplicationSecretMustBeProvided(): void {
+        if (this.config.application_secret === undefined || this.config.application_secret === '') {
+            throw this.errorFactory.badConfigurationError('APP_SECRET_MISSING', 'CFG0002');
+        }
+    }
+
+    public async deauthorizeAsync(token: OAuthToken, client: AuthenticationClient): Promise<void> {
+        await client.logoutClientCredentialsAsync(token);
+    }
 }

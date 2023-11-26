@@ -85,7 +85,7 @@ describe('AccessTokenManagerImpl', () => {
         const tokenType = 'Bearer';
         const userId = 'user id';
 
-        login.setup(o => o.authorizeAsync(config, client.object())).returns(
+        login.setup(o => o.authorizeAsync(client.object())).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -127,7 +127,7 @@ describe('AccessTokenManagerImpl', () => {
         };
                 
         let attempt = 0;
-        login.setup(o => o.authorizeAsync(config, client.object())).callback(() => {
+        login.setup(o => o.authorizeAsync(client.object())).callback(() => {
             attempt++;
 
             if (attempt === 1) {
@@ -170,7 +170,7 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        login.setup(o => o.authorizeAsync(config, client.object())).returns(Promise.resolve(token1));
+        login.setup(o => o.authorizeAsync(client.object())).returns(Promise.resolve(token1));
         client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
 
         const originalToken = await target.getCurrentToken();
@@ -206,7 +206,7 @@ describe('AccessTokenManagerImpl', () => {
         };
        
         let called = false;
-        login.setup(o => o.authorizeAsync(config, client.object())).callback(() => {
+        login.setup(o => o.authorizeAsync(client.object())).callback(() => {
             if (called) {
                 return Promise.resolve(token2);
             }
@@ -231,7 +231,7 @@ describe('AccessTokenManagerImpl', () => {
 
         await target.logout();        
 
-        client.verify(x => x.logoutPassword(appKey, It.IsAny<OAuthToken>()), Times.Never());
+        login.verify(x => x.deauthorizeAsync(It.IsAny<OAuthToken>(), client.object()), Times.Never());
     });
 
     it('should logout the user when the user has been logged in', async () => {
@@ -245,14 +245,14 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.logoutPassword(appKey, token)).returns(Promise.resolve(undefined));
+        login.setup(x => x.deauthorizeAsync(token, client.object())).returnsAsync(undefined);
 
         target.unsafeSetCurrentToken(token);
         await target.logout();
 
         const result = target.unsafeGetCurrentToken();
 
-        client.verify(x => x.logoutPassword(appKey, token), Times.Once());
+        login.verify(x => x.deauthorizeAsync(token, client.object()), Times.Once());
         expect(result).toBeUndefined();
     });
 });

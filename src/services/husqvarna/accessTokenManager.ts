@@ -4,15 +4,21 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
 
 /**
- * A mechanism which authorizes the client.
+ * A mechanism which authorizes the plugin.
  */
 export interface OAuth2AuthorizationStrategy {
     /**
-     * Authorizes the application.
-     * @param config The configuration settings.
+     * Authorizes the plugin.
      * @param client The authentication client.
      */
-    authorizeAsync(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
+    authorizeAsync(client: AuthenticationClient): Promise<OAuthToken>;
+
+    /**
+     * Deauthorizes the plugin.
+     * @param token The token to deauthorize.
+     * @param client The authentication client.
+     */
+    deauthorizeAsync(token: OAuthToken, client: AuthenticationClient): Promise<void>;
 }
 
 /**
@@ -106,7 +112,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doLogin(): Promise<OAuthToken> {
         this.log.debug('LOGGING_IN');
 
-        const token = await this.login.authorizeAsync(this.config, this.client);
+        const token = await this.login.authorizeAsync(this.client);
         
         this.log.debug('LOGGED_IN');
         return token;
@@ -166,7 +172,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         this.log.debug('LOGGING_OUT');
 
-        await this.client.logoutPassword(this.config.appKey!, token);
+        await this.login.deauthorizeAsync(token, this.client);
         this.currentToken = undefined;
 
         this.log.debug('LOGGED_OUT');

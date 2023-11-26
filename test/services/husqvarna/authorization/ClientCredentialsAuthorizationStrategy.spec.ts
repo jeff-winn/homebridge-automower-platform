@@ -1,4 +1,4 @@
-import { It, Mock } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 import { AutomowerPlatformConfig } from '../../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authenticationClient';
 import { BadConfigurationError } from '../../../../src/errors/badConfigurationError';
@@ -28,7 +28,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         errorFactory = new Mock<ErrorFactory>();
 
-        target = new ClientCredentialsAuthorizationStrategy(errorFactory.object());
+        target = new ClientCredentialsAuthorizationStrategy(errorFactory.object(), config);
     });
 
     it('should throw an error when the config app key is undefined', async () => {
@@ -37,7 +37,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.appKey = undefined;
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app key is empty', async () => {
@@ -46,7 +46,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.appKey = '';
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app secret is undefined', async () => {
@@ -55,7 +55,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.application_secret = undefined;
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app secret is empty', async () => {
@@ -64,7 +64,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.application_secret = '';
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should exchange the client credentials for an oauth token', async () => {
@@ -80,6 +80,24 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         client.setup(o => o.exchangeClientCredentials(appKey, appSecret, DeviceType.AUTOMOWER)).returnsAsync(token);
 
-        await expect(target.authorizeAsync(config, client.object())).resolves.toBe(token);
+        await expect(target.authorizeAsync(client.object())).resolves.toBe(token);
+    });
+
+    it('should do client credentials logout on deauthorize', async () => {
+        const token: OAuthToken = {
+            access_token: 'access_token',
+            expires_in: 100,
+            provider: 'provider',
+            refresh_token: 'refresh_token',
+            scope: 'scope',
+            token_type: 'token_type',
+            user_id: 'user_id'
+        };
+
+        client.setup(o => o.logoutClientCredentialsAsync(token)).returnsAsync(undefined);
+
+        await target.deauthorizeAsync(token, client.object());
+
+        client.verify(o => o.logoutClientCredentialsAsync(token), Times.Once());
     });
 });

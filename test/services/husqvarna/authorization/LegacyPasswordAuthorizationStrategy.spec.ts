@@ -1,4 +1,4 @@
-import { It, Mock } from 'moq.ts';
+import { It, Mock, Times } from 'moq.ts';
 
 import { AutomowerPlatformConfig } from '../../../../src/automowerPlatform';
 import { AuthenticationClient, OAuthToken } from '../../../../src/clients/authenticationClient';
@@ -33,25 +33,25 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
         log = new Mock<PlatformLogger>();
         errorFactory = new Mock<ErrorFactory>();
 
-        target = new LegacyPasswordAuthorizationStrategy(errorFactory.object(), log.object());
+        target = new LegacyPasswordAuthorizationStrategy(errorFactory.object(), log.object(), config);
     });
 
-    it('should throw an error when the config app key is undefined', async () => {
+    it('should throw an error when the config app key is undefined on authorize', async () => {
         errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
             .returns(new BadConfigurationError('hello world', '12345'));
 
         config.appKey = undefined;
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
-    it('should throw an error when the config app key is empty', async () => {
+    it('should throw an error when the config app key is empty on authorize', async () => {
         errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
             .returns(new BadConfigurationError('hello world', '12345'));
 
         config.appKey = '';
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is undefined', async () => {
@@ -60,7 +60,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.username = undefined;
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is empty', async () => {
@@ -69,7 +69,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.username = '';
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is undefined', async () => {
@@ -78,7 +78,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.password = undefined;
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is empty', async () => {
@@ -87,7 +87,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
             
         config.password = '';
 
-        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should exchange the password for an oauth token', async () => {
@@ -108,6 +108,62 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
         client.setup(o => o.exchangePassword(appKey, username, password, DeviceType.AUTOMOWER)).returnsAsync(token);
         log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
 
-        await expect(target.authorizeAsync(config, client.object())).resolves.toBe(token);
+        await expect(target.authorizeAsync(client.object())).resolves.toBe(token);
+    });
+
+    it('should throw an error when the app key is undefined on deauthorize', async () => {
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        config.appKey = undefined;
+        
+        const token: OAuthToken = {
+            access_token: 'access_token',
+            expires_in: 100,
+            provider: 'provider',
+            refresh_token: 'refresh_token',
+            scope: 'scope',
+            token_type: 'token_type',
+            user_id: 'user_id'
+        };
+
+        await expect(target.deauthorizeAsync(token, client.object())).rejects.toThrowError(BadConfigurationError);
+    });
+
+    it('should throw an error when the app key is empty on deauthorize', async () => {
+        errorFactory.setup(o => o.badConfigurationError(It.IsAny(), It.IsAny()))
+            .returns(new BadConfigurationError('hello world', '12345'));
+
+        config.appKey = '';
+
+        const token: OAuthToken = {
+            access_token: 'access_token',
+            expires_in: 100,
+            provider: 'provider',
+            refresh_token: 'refresh_token',
+            scope: 'scope',
+            token_type: 'token_type',
+            user_id: 'user_id'
+        };
+
+        await expect(target.deauthorizeAsync(token, client.object())).rejects.toThrowError(BadConfigurationError);
+    });
+
+    it('should do password logout on deauthorize', async () => {
+        const token: OAuthToken = {
+            access_token: 'access_token',
+            expires_in: 100,
+            provider: 'provider',
+            refresh_token: 'refresh_token',
+            scope: 'scope',
+            token_type: 'token_type',
+            user_id: 'user_id'
+        };
+
+        client.setup(o => o.logoutPassword(appKey, token)).returnsAsync(undefined);
+
+        await target.deauthorizeAsync(token, client.object());
+
+        client.verify(o => o.logoutPassword(appKey, token), Times.Once());
     });
 });
