@@ -85,7 +85,7 @@ describe('AccessTokenManagerImpl', () => {
         const tokenType = 'Bearer';
         const userId = 'user id';
 
-        login.setup(o => o.authorize(config, client.object())).returns(
+        login.setup(o => o.authorizeAsync(client.object())).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -96,7 +96,7 @@ describe('AccessTokenManagerImpl', () => {
                 user_id: userId
             } as OAuthToken));
         
-        const token = await target.getCurrentToken();
+        const token = await target.getCurrentTokenAsync();
 
         expect(target.loggedIn).toBeTruthy();
 
@@ -127,7 +127,7 @@ describe('AccessTokenManagerImpl', () => {
         };
                 
         let attempt = 0;
-        login.setup(o => o.authorize(config, client.object())).callback(() => {
+        login.setup(o => o.authorizeAsync(client.object())).callback(() => {
             attempt++;
 
             if (attempt === 1) {
@@ -137,13 +137,13 @@ describe('AccessTokenManagerImpl', () => {
             }
         });
 
-        const originalToken = await target.getCurrentToken();
+        const originalToken = await target.getCurrentTokenAsync();
 
         expect(originalToken.value).toBe(token1.access_token);
         expect(originalToken.provider).toBe(token1.provider);
 
         target.flagAsInvalid();
-        const refreshToken = await target.getCurrentToken();
+        const refreshToken = await target.getCurrentTokenAsync();
 
         expect(refreshToken.value).toBe(token2.access_token);
         expect(refreshToken.provider).toBe(token2.provider);
@@ -170,15 +170,15 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        login.setup(o => o.authorize(config, client.object())).returns(Promise.resolve(token1));
-        client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
+        login.setup(o => o.authorizeAsync(client.object())).returns(Promise.resolve(token1));
+        client.setup(x => x.refreshAsync(appKey, token1)).returns(Promise.resolve(token2));
 
-        const originalToken = await target.getCurrentToken();
+        const originalToken = await target.getCurrentTokenAsync();
 
         expect(originalToken.value).toBe(token1.access_token);
         expect(originalToken.provider).toBe(token1.provider);
 
-        const refreshToken = await target.getCurrentToken();
+        const refreshToken = await target.getCurrentTokenAsync();
 
         expect(refreshToken.value).toBe(token2.access_token);
         expect(refreshToken.provider).toBe(token2.provider);
@@ -206,7 +206,7 @@ describe('AccessTokenManagerImpl', () => {
         };
        
         let called = false;
-        login.setup(o => o.authorize(config, client.object())).callback(() => {
+        login.setup(o => o.authorizeAsync(client.object())).callback(() => {
             if (called) {
                 return Promise.resolve(token2);
             }
@@ -215,12 +215,12 @@ describe('AccessTokenManagerImpl', () => {
             return Promise.resolve(token1);
         });
 
-        const originalToken = await target.getCurrentToken();
+        const originalToken = await target.getCurrentTokenAsync();
 
         expect(originalToken.value).toBe(token1.access_token);
         expect(originalToken.provider).toBe(token1.provider);
 
-        const refreshToken = await target.getCurrentToken();
+        const refreshToken = await target.getCurrentTokenAsync();
 
         expect(refreshToken.value).toBe(token2.access_token);
         expect(refreshToken.provider).toBe(token2.provider);
@@ -229,9 +229,9 @@ describe('AccessTokenManagerImpl', () => {
     it('should do nothing if the user is not logged in', async () => {
         target.unsafeSetCurrentToken(undefined);
 
-        await target.logout();        
+        await target.logoutAsync();        
 
-        client.verify(x => x.logout(appKey, It.IsAny<OAuthToken>()), Times.Never());
+        login.verify(x => x.deauthorizeAsync(It.IsAny<OAuthToken>(), client.object()), Times.Never());
     });
 
     it('should logout the user when the user has been logged in', async () => {
@@ -245,14 +245,14 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        client.setup(x => x.logout(appKey, token)).returns(Promise.resolve(undefined));
+        login.setup(x => x.deauthorizeAsync(token, client.object())).returnsAsync(undefined);
 
         target.unsafeSetCurrentToken(token);
-        await target.logout();
+        await target.logoutAsync();
 
         const result = target.unsafeGetCurrentToken();
 
-        client.verify(x => x.logout(appKey, token), Times.Once());
+        login.verify(x => x.deauthorizeAsync(token, client.object()), Times.Once());
         expect(result).toBeUndefined();
     });
 });

@@ -74,7 +74,13 @@ export interface AuthenticationClient {
      * @param appSecret The application secret.
      * @param deviceType The type of device.
      */
-    exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken>;
+    exchangeClientCredentialsAsync(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken>;
+
+    /**
+     * Logout the user.
+     * @param token The OAuth token.
+     */
+    logoutClientCredentialsAsync(token: OAuthToken): Promise<void>;
 
     /**
      * Exchanges the password for an {@link OAuthToken}.
@@ -83,21 +89,21 @@ export interface AuthenticationClient {
      * @param password The password.
      * @param deviceType The type of device.
      */
-    exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken>;
+    exchangePasswordAsync(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken>;
 
     /**
      * Logout the user.
      * @param appKey The application key.
      * @param token The OAuth token.
      */
-    logout(appKey: string, token: OAuthToken): Promise<void>;
+    logoutPasswordAsync(appKey: string, token: OAuthToken): Promise<void>;
 
     /**
      * Refreshes the token.
      * @param appKey The application key.
      * @param token The OAuth token to refresh.
      */
-    refresh(appKey: string, token: OAuthToken): Promise<OAuthToken>;
+    refreshAsync(appKey: string, token: OAuthToken): Promise<OAuthToken>;
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
@@ -107,7 +113,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return this.baseUrl;
     }
 
-    public async exchangeClientCredentials(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken> {
+    public async exchangeClientCredentialsAsync(appKey: string, appSecret: string, deviceType: DeviceType): Promise<OAuthToken> {
         const body = this.encode({
             grant_type: 'client_credentials',
             client_id: appKey,
@@ -118,7 +124,26 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         return await this.exchange(body);
     }
 
-    public async exchangePassword(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken> {
+    public async logoutClientCredentialsAsync(token: OAuthToken): Promise<void> {
+        const req = {
+            token: token.access_token
+        };
+
+        const response = await this.fetch.execute(this.baseUrl + '/oauth2/revoke', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token.access_token}`,
+                'Authorization-Provider': token.provider,
+                'X-Application-Id': PLUGIN_ID
+            },
+            body: JSON.stringify(req)
+        });
+
+        this.throwIfNotAuthorized(response);
+        await this.throwIfStatusNotOk(response);
+    }
+
+    public async exchangePasswordAsync(appKey: string, username: string, password: string, deviceType: DeviceType): Promise<OAuthToken> {
         const body = this.encode({
             client_id: appKey,
             grant_type: 'password',
@@ -176,7 +201,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    public async logout(appKey: string, token: OAuthToken): Promise<void> {
+    public async logoutPasswordAsync(appKey: string, token: OAuthToken): Promise<void> {
         const response = await this.fetch.execute(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
@@ -195,7 +220,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    public async refresh(appKey: string, token: OAuthToken): Promise<OAuthToken> {
+    public async refreshAsync(appKey: string, token: OAuthToken): Promise<OAuthToken> {
         const body = this.encode({
             client_id: appKey,
             grant_type: 'refresh_token',

@@ -87,7 +87,7 @@ export class GardenaManualMowerControlService implements MowerControlService {
                 }
             };
 
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
             return await this.client.doCommand(mowerId, command, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {
@@ -108,7 +108,7 @@ export class GardenaManualMowerControlService implements MowerControlService {
                 }
             };
 
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
             return await this.client.doCommand(mowerId, command, token);
         } catch (e) {
             if (e instanceof NotAuthorizedError) {

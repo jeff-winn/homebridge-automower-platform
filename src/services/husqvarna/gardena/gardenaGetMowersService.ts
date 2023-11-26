@@ -25,7 +25,7 @@ export class GardenaGetMowersService implements GetMowersService {
         this.notifyPreviewFeatureIsBeingUsed();
         
         try {
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
 
             const refs = await this.getLocationsForAccount(token);
             for (const ref of refs) {

@@ -159,7 +159,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
 
     private async connect(): Promise<void> {
         try {
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
 
             this.log.debug('STARTING_STREAM');
             await this.stream.open(token);

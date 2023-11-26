@@ -19,7 +19,7 @@ export class ChangeSettingsServiceImpl implements ChangeSettingsService {
     
     public async changeCuttingHeight(mowerId: string, newValue: number): Promise<void> {
         try {
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
 
             return await this.client.changeSettings(mowerId, {
                 cuttingHeight: newValue

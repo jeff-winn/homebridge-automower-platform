@@ -27,7 +27,7 @@ describe('GardenaManualMowerControlService', () => {
         };
 
         const mowerId = '1234';
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).returns(Promise.resolve(undefined));        
 
         await expect(target.resume(mowerId)).resolves.toBeUndefined();
@@ -47,7 +47,7 @@ describe('GardenaManualMowerControlService', () => {
 
         const mowerId = '12345';
         
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
@@ -64,7 +64,7 @@ describe('GardenaManualMowerControlService', () => {
 
         const mowerId = '12345';
         
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).throws(new BadConfigurationError('Ouch', 'ERR0000'));
 
@@ -80,7 +80,7 @@ describe('GardenaManualMowerControlService', () => {
         };
 
         const mowerId = '1234';
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).returns(Promise.resolve(undefined));        
 
         await expect(target.park(mowerId)).resolves.toBeUndefined();
@@ -99,7 +99,7 @@ describe('GardenaManualMowerControlService', () => {
 
         const mowerId = '12345';
         
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
@@ -116,7 +116,7 @@ describe('GardenaManualMowerControlService', () => {
 
         const mowerId = '12345';
         
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).throws(new BadConfigurationError('Ouch', 'ERR0000'));
 

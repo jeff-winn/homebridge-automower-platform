@@ -57,7 +57,7 @@ describe('GardenaLocationEventStreamService', () => {
         stream.setup(o => o.setOnErrorCallback(It.IsAny())).returns(undefined);
         stream.setup(o => o.open(token)).returnsAsync(undefined);
 
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         await expect(target.start()).resolves.toBeUndefined();
@@ -207,7 +207,7 @@ describe('CompositeGardenaEventStreamService', () => {
             value: 'hello world'
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returnsAsync(token);
         
         client.setup(o => o.getLocations(token)).returnsAsync(undefined);
         log.setup(o => o.warn('GARDENA_NO_LOCATIONS_FOUND')).returns(undefined);
@@ -226,7 +226,7 @@ describe('CompositeGardenaEventStreamService', () => {
             value: 'hello world'
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returnsAsync(token);
 
         const locations: LocationsResponse = {
             data: [
@@ -270,7 +270,7 @@ describe('CompositeGardenaEventStreamService', () => {
             value: 'hello world'
         };
 
-        tokenManager.setup(o => o.getCurrentToken()).returnsAsync(token);
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returnsAsync(token);
 
         const locations: LocationsResponse = {
             data: [

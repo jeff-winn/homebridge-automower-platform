@@ -21,7 +21,7 @@ export class AutomowerGetMowersService implements GetMowersService {
 
     public async getMowers(): Promise<model.Mower[]> {
         try {
-            const token = await this.tokenManager.getCurrentToken();
+            const token = await this.tokenManager.getCurrentTokenAsync();
             const mowers = await this.client.getMowers(token);
 
             const result: model.Mower[] = [];

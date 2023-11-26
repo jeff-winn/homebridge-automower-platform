@@ -36,7 +36,7 @@ describe('AbstractEventStreamService', () => {
         stream.setup(o => o.setOnDisconnectedCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
         stream.setup(o => o.setOnErrorCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
 
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));       
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
         log.setup(o => o.debug('OPENING_CONNECTION')).returns(undefined);
@@ -143,7 +143,7 @@ describe('AbstractEventStreamService', () => {
     it('should flag the token as invalid when failing to authenticate', async () => {
         stream.setup(o => o.isConnected()).returns(false);
 
-        tokenManager.setup(o => o.getCurrentToken()).throws(new BadCredentialsError('Unable to authenticate', 'ERR0000'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new BadCredentialsError('Unable to authenticate', 'ERR0000'));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
@@ -159,7 +159,7 @@ describe('AbstractEventStreamService', () => {
     });
 
     it('should restart the keep alive when when unable to authenticate', async () => {
-        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Ouch'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new Error('Ouch'));
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
@@ -176,7 +176,7 @@ describe('AbstractEventStreamService', () => {
     // WARNING: throwing errors while reconnecting will cause the process running homebridge to be restarted
     // as it occurrs on a background thread.
     it('should not throw errors when reconnecting', async () => {
-        tokenManager.setup(o => o.getCurrentToken()).throws(new Error('Unable to authenticate'));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new Error('Unable to authenticate'));
 
         log.setup(o => o.error(It.IsAny(), It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
@@ -195,7 +195,7 @@ describe('AbstractEventStreamService', () => {
             provider: 'bob'
         };
         
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         stream.setup(o => o.isConnected()).returns(false);
         stream.setup(o => o.open(token)).returnsAsync(undefined);
@@ -220,7 +220,7 @@ describe('AbstractEventStreamService', () => {
         stream.setup(o => o.isConnected()).returns(true);
         stream.setup(o => o.open(token)).returnsAsync(undefined);
         stream.setup(o => o.close()).returnsAsync(undefined);
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
@@ -269,7 +269,7 @@ describe('AbstractEventStreamService', () => {
         stream.setup(o => o.isConnected()).returns(true);
         stream.setup(o => o.close()).returnsAsync(undefined);
         stream.setup(o => o.open(token)).returnsAsync(undefined);
-        tokenManager.setup(o => o.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 

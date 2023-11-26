@@ -124,12 +124,14 @@ export class PlatformContainerImpl implements PlatformContainer {
         container.register(LegacyPasswordAuthorizationStrategy, {
             useFactory: (context) => new LegacyPasswordAuthorizationStrategy(
                 context.resolve(DefaultErrorFactory),
-                context.resolve(this.getLoggerClass()))
+                context.resolve(this.getLoggerClass()),
+                this.config)
         });
 
         container.register(ClientCredentialsAuthorizationStrategy, {
             useFactory: (context) => new ClientCredentialsAuthorizationStrategy(
-                context.resolve(DefaultErrorFactory))
+                context.resolve(DefaultErrorFactory),
+                this.config)
         });
         
         container.registerInstance(AccessTokenManagerImpl, new AccessTokenManagerImpl(

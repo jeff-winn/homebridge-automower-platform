@@ -55,7 +55,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(AccountLockedError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(AccountLockedError);
     });
 
     it('should throw a bad credentials error on 400 response when incorrect response body for password exchange', async () => {
@@ -71,7 +71,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a bad credentials error on 400 response when unknown error for password exchange', async () => {
@@ -95,7 +95,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
 
     it('should throw a not authorized error on 401 response', async () => {
@@ -112,7 +112,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(NotAuthorizedError);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(NotAuthorizedError);
     });
 
     it('should throw an error when response is not ok', async () => {
@@ -126,7 +126,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(Error);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(Error);
     });
 
     it('should return an oauth token when logged in with automower client credentials successfully', async () => {
@@ -152,7 +152,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
+        await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
 
     it('should return an oauth token when logged in with gardena client credentials successfully', async () => {
@@ -178,7 +178,73 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
+        await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
+    });
+
+    it('should not throw an error on successful response when logout client credentials', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 200,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.logoutClientCredentialsAsync({
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        })).resolves.not.toThrowError();
+    });
+
+    it('should throw error on not authorized 401 response when logout client credentials', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 401,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.logoutClientCredentialsAsync({
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        })).rejects.toThrowError();
+    });
+
+    it('should throw error on response not ok when logout client credentials', async () => {
+        const response = new Response(undefined, {
+            headers: { },
+            size: 0,
+            status: 500,
+            timeout: 0,
+            url: 'http://localhost',
+        });
+
+        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+
+        await expect(target.logoutClientCredentialsAsync({
+            access_token: '12345',
+            expires_in: 1,
+            provider: 'hello',
+            refresh_token: 'abcd1234',
+            scope: 'everything',
+            token_type: 'fancy',
+            user_id: 'me'
+        })).rejects.toThrowError();
     });
 
     it('should throw a simultaneous login error on 400 response when simultaneous login detected for client credentials', async () => {
@@ -202,7 +268,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangeClientCredentials(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(SimultaneousLoginError);
+        await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(SimultaneousLoginError);
     });
 
     it('should return an oauth token when logged in with automower password successfully', async () => {
@@ -228,7 +294,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
 
     it('should return an oauth token when logged in with gardena password successfully', async () => {
@@ -254,7 +320,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.exchangePassword(APPKEY, USERNAME, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
+        await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
     });
 
     it('should logout successfully', async () => {
@@ -268,7 +334,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await target.logout(APPKEY, {
+        await target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -290,7 +356,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await target.logout(APPKEY, {
+        await target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -315,7 +381,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.logout(APPKEY, {
+        await expect(target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -337,7 +403,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.logout(APPKEY, {
+        await expect(target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -362,7 +428,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -387,7 +453,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -409,7 +475,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -442,7 +508,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',

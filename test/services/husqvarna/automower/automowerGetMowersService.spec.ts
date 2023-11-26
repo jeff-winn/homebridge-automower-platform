@@ -32,7 +32,7 @@ describe('GetMowersServiceImpl', () => {
             provider: 'provider'
         };
         
-        tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(x => x.getCurrentTokenAsync()).returns(Promise.resolve(token));
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
         client.setup(x => x.getMowers(token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
@@ -98,7 +98,7 @@ describe('GetMowersServiceImpl', () => {
             }
         };
     
-        tokenManager.setup(x => x.getCurrentToken()).returns(Promise.resolve(token));
+        tokenManager.setup(x => x.getCurrentTokenAsync()).returns(Promise.resolve(token));
         mowerStateConverter.setup(o => o.convertMower(mower)).returns({
             activity: model.Activity.MOWING,
             state: model.State.IN_OPERATION

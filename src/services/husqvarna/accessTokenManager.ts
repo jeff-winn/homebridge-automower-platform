@@ -4,15 +4,21 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
 
 /**
- * A mechanism which authorizes the client.
+ * A mechanism which authorizes the plugin.
  */
 export interface OAuth2AuthorizationStrategy {
     /**
-     * Exchanges the configuration settings for an {@link OAuthToken}.
-     * @param config The configuration settings.
+     * Authorizes the plugin.
      * @param client The authentication client.
      */
-    authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
+    authorizeAsync(client: AuthenticationClient): Promise<OAuthToken>;
+
+    /**
+     * Deauthorizes the plugin.
+     * @param token The token to deauthorize.
+     * @param client The authentication client.
+     */
+    deauthorizeAsync(token: OAuthToken, client: AuthenticationClient): Promise<void>;
 }
 
 /**
@@ -22,7 +28,7 @@ export interface AccessTokenManager {
     /**
      * Gets the current token.
      */
-    getCurrentToken(): Promise<AccessToken>;
+    getCurrentTokenAsync(): Promise<AccessToken>;
 
     /**
      * Flags the token as invalid, which will cause the next attempt to get a new token.
@@ -32,7 +38,7 @@ export interface AccessTokenManager {
     /**
      * Logout the user.
      */
-    logout(): Promise<void>;
+    logoutAsync(): Promise<void>;
 }
 
 export class AccessTokenManagerImpl implements AccessTokenManager {
@@ -43,9 +49,9 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     public constructor(private client: AuthenticationClient, private config: AutomowerPlatformConfig, 
         private login: OAuth2AuthorizationStrategy, private log: PlatformLogger) { }
 
-    public async getCurrentToken(): Promise<AccessToken> {
+    public async getCurrentTokenAsync(): Promise<AccessToken> {
         if (this.shouldRefreshToken()) {
-            await this.refreshToken();
+            await this.refreshTokenAsync();
         }
 
         const current = this.getRequiredCurrentToken();
@@ -55,13 +61,13 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         };
     }
 
-    protected async refreshToken(): Promise<void> {
+    protected async refreshTokenAsync(): Promise<void> {
         let newToken: OAuthToken;
 
         if (this.canTokenBeRefreshed() && !this.isTokenInvalidated()) {
-            newToken = await this.doRefreshToken();
+            newToken = await this.doRefreshTokenAsync();
         } else {
-            newToken = await this.doLogin();
+            newToken = await this.doLoginAsync();
         }
         
         this.unsafeSetCurrentToken(newToken);
@@ -103,19 +109,19 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         return this.currentToken !== undefined;
     }
 
-    protected async doLogin(): Promise<OAuthToken> {
+    protected async doLoginAsync(): Promise<OAuthToken> {
         this.log.debug('LOGGING_IN');
 
-        const token = await this.login.authorize(this.config, this.client);
+        const token = await this.login.authorizeAsync(this.client);
         
         this.log.debug('LOGGED_IN');
         return token;
     }
 
-    protected async doRefreshToken(): Promise<OAuthToken> {
+    protected async doRefreshTokenAsync(): Promise<OAuthToken> {
         this.log.debug('REFRESHING_TOKEN');
 
-        const newToken = await this.client.refresh(this.config.appKey!, this.currentToken!);
+        const newToken = await this.client.refreshAsync(this.config.appKey!, this.currentToken!);
 
         this.log.debug('REFRESHED_TOKEN');
         return newToken;
@@ -158,7 +164,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
         this.invalidated = false;
     }
 
-    public async logout(): Promise<void> {
+    public async logoutAsync(): Promise<void> {
         const token = this.unsafeGetCurrentToken();
         if (token === undefined) {
             return;
@@ -166,7 +172,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
 
         this.log.debug('LOGGING_OUT');
 
-        await this.client.logout(this.config.appKey!, token);
+        await this.login.deauthorizeAsync(token, this.client);
         this.currentToken = undefined;
 
         this.log.debug('LOGGED_OUT');

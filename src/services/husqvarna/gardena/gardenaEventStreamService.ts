@@ -113,7 +113,7 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
             throw new InvalidStateError('The service has not been initialized.');
         }
 
-        const token = await this.tokenManager.getCurrentToken();
+        const token = await this.tokenManager.getCurrentTokenAsync();
 
         const locations = await this.client.getLocations(token);
         if (locations === undefined) {
