@@ -121,7 +121,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doRefreshToken(): Promise<OAuthToken> {
         this.log.debug('REFRESHING_TOKEN');
 
-        const newToken = await this.client.refresh(this.config.appKey!, this.currentToken!);
+        const newToken = await this.client.refreshAsync(this.config.appKey!, this.currentToken!);
 
         this.log.debug('REFRESHED_TOKEN');
         return newToken;

@@ -171,7 +171,7 @@ describe('AccessTokenManagerImpl', () => {
         };
         
         login.setup(o => o.authorizeAsync(client.object())).returns(Promise.resolve(token1));
-        client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
+        client.setup(x => x.refreshAsync(appKey, token1)).returns(Promise.resolve(token2));
 
         const originalToken = await target.getCurrentToken();
 

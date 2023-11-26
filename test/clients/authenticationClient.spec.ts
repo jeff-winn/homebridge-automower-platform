@@ -428,7 +428,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -453,7 +453,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -475,7 +475,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',
@@ -508,7 +508,7 @@ describe('AuthenticationClientImpl', () => {
 
         fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
-        await expect(target.refresh(APPKEY, {
+        await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
             expires_in: 1,
             provider: 'hello',

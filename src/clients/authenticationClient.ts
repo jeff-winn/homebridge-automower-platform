@@ -103,7 +103,7 @@ export interface AuthenticationClient {
      * @param appKey The application key.
      * @param token The OAuth token to refresh.
      */
-    refresh(appKey: string, token: OAuthToken): Promise<OAuthToken>;
+    refreshAsync(appKey: string, token: OAuthToken): Promise<OAuthToken>;
 }
 
 export class AuthenticationClientImpl implements AuthenticationClient {
@@ -220,7 +220,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
         }
     }
 
-    public async refresh(appKey: string, token: OAuthToken): Promise<OAuthToken> {
+    public async refreshAsync(appKey: string, token: OAuthToken): Promise<OAuthToken> {
         const body = this.encode({
             client_id: appKey,
             grant_type: 'refresh_token',
