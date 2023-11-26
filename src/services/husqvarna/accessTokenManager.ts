@@ -8,11 +8,11 @@ import { AccessToken } from '../../model';
  */
 export interface OAuth2AuthorizationStrategy {
     /**
-     * Exchanges the configuration settings for an {@link OAuthToken}.
+     * Authorizes the application.
      * @param config The configuration settings.
      * @param client The authentication client.
      */
-    authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
+    authorizeAsync(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken>;
 }
 
 /**
@@ -106,7 +106,7 @@ export class AccessTokenManagerImpl implements AccessTokenManager {
     protected async doLogin(): Promise<OAuthToken> {
         this.log.debug('LOGGING_IN');
 
-        const token = await this.login.authorize(this.config, this.client);
+        const token = await this.login.authorizeAsync(this.config, this.client);
         
         this.log.debug('LOGGED_IN');
         return token;

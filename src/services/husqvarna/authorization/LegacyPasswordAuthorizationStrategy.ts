@@ -10,7 +10,7 @@ import { OAuth2AuthorizationStrategy } from '../accessTokenManager';
 export class LegacyPasswordAuthorizationStrategy implements OAuth2AuthorizationStrategy {
     public constructor(private errorFactory: ErrorFactory, private log: PlatformLogger) { }
     
-    public async authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
+    public async authorizeAsync(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
         if (config.appKey === undefined || config.appKey === '') {
             throw this.errorFactory.badConfigurationError('APP_KEY_MISSING', 'CFG0002');
         }

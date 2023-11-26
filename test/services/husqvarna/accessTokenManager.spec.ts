@@ -85,7 +85,7 @@ describe('AccessTokenManagerImpl', () => {
         const tokenType = 'Bearer';
         const userId = 'user id';
 
-        login.setup(o => o.authorize(config, client.object())).returns(
+        login.setup(o => o.authorizeAsync(config, client.object())).returns(
             Promise.resolve({
                 access_token: accessToken,
                 expires_in: expiresIn,
@@ -127,7 +127,7 @@ describe('AccessTokenManagerImpl', () => {
         };
                 
         let attempt = 0;
-        login.setup(o => o.authorize(config, client.object())).callback(() => {
+        login.setup(o => o.authorizeAsync(config, client.object())).callback(() => {
             attempt++;
 
             if (attempt === 1) {
@@ -170,7 +170,7 @@ describe('AccessTokenManagerImpl', () => {
             user_id: 'user id'
         };
         
-        login.setup(o => o.authorize(config, client.object())).returns(Promise.resolve(token1));
+        login.setup(o => o.authorizeAsync(config, client.object())).returns(Promise.resolve(token1));
         client.setup(x => x.refresh(appKey, token1)).returns(Promise.resolve(token2));
 
         const originalToken = await target.getCurrentToken();
@@ -206,7 +206,7 @@ describe('AccessTokenManagerImpl', () => {
         };
        
         let called = false;
-        login.setup(o => o.authorize(config, client.object())).callback(() => {
+        login.setup(o => o.authorizeAsync(config, client.object())).callback(() => {
             if (called) {
                 return Promise.resolve(token2);
             }

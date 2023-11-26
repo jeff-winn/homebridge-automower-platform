@@ -9,7 +9,7 @@ import { OAuth2AuthorizationStrategy } from '../accessTokenManager';
 export class ClientCredentialsAuthorizationStrategy implements OAuth2AuthorizationStrategy {
     public constructor(private errorFactory: ErrorFactory) { }
 
-    public async authorize(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
+    public async authorizeAsync(config: AutomowerPlatformConfig, client: AuthenticationClient): Promise<OAuthToken> {
         if (config.appKey === undefined || config.appKey === '') {
             throw this.errorFactory.badConfigurationError(
                 'The application key setting is missing, please check your configuration and try again.', 

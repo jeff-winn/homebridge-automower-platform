@@ -42,7 +42,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.appKey = undefined;
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app key is empty', async () => {
@@ -51,7 +51,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.appKey = '';
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is undefined', async () => {
@@ -60,7 +60,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.username = undefined;
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config username is empty', async () => {
@@ -69,7 +69,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.username = '';
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is undefined', async () => {
@@ -78,7 +78,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
 
         config.password = undefined;
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config password is empty', async () => {
@@ -87,7 +87,7 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
             
         config.password = '';
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should exchange the password for an oauth token', async () => {
@@ -108,6 +108,6 @@ describe('LegacyPasswordAuthorizationStrategy', () => {
         client.setup(o => o.exchangePassword(appKey, username, password, DeviceType.AUTOMOWER)).returnsAsync(token);
         log.setup(o => o.warn(It.IsAny<string>(), It.IsAny())).returns(undefined);
 
-        await expect(target.authorize(config, client.object())).resolves.toBe(token);
+        await expect(target.authorizeAsync(config, client.object())).resolves.toBe(token);
     });
 });

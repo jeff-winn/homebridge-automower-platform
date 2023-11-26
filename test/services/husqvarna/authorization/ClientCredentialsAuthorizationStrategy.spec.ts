@@ -37,7 +37,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.appKey = undefined;
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app key is empty', async () => {
@@ -46,7 +46,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.appKey = '';
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app secret is undefined', async () => {
@@ -55,7 +55,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.application_secret = undefined;
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should throw an error when the config app secret is empty', async () => {
@@ -64,7 +64,7 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         config.application_secret = '';
 
-        await expect(target.authorize(config, client.object())).rejects.toThrowError(BadConfigurationError);
+        await expect(target.authorizeAsync(config, client.object())).rejects.toThrowError(BadConfigurationError);
     });
 
     it('should exchange the client credentials for an oauth token', async () => {
@@ -80,6 +80,6 @@ describe('ClientCredentialsAuthorizationStrategy', () => {
 
         client.setup(o => o.exchangeClientCredentials(appKey, appSecret, DeviceType.AUTOMOWER)).returnsAsync(token);
 
-        await expect(target.authorize(config, client.object())).resolves.toBe(token);
+        await expect(target.authorizeAsync(config, client.object())).resolves.toBe(token);
     });
 });
