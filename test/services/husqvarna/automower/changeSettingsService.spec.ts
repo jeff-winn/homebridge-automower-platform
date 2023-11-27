@@ -30,7 +30,7 @@ describe('ChangeSettingsServiceImpl', () => {
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
         client.setup(x => x.changeSettings(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        await expect(target.changeCuttingHeight(mowerId, 1)).rejects.toThrow(NotAuthorizedError);
+        await expect(target.changeCuttingHeightAsync(mowerId, 1)).rejects.toThrow(NotAuthorizedError);
 
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
@@ -47,7 +47,7 @@ describe('ChangeSettingsServiceImpl', () => {
         tokenManager.setup(x => x.getCurrentTokenAsync()).returns(Promise.resolve(token));
         client.setup(x => x.changeSettings(mowerId, It.Is<ChangeSettingsRequest>(o => o.cuttingHeight === cuttingHeight), token)).returns(Promise.resolve(undefined));
 
-        await target.changeCuttingHeight(mowerId, cuttingHeight);
+        await target.changeCuttingHeightAsync(mowerId, cuttingHeight);
 
         client.verify(o => o.changeSettings(mowerId, It.IsAny(), token), Times.Once());
     });

@@ -150,7 +150,7 @@ export class AutomowerMainSwitchImpl extends MainSwitchImpl implements SupportsC
 
     protected async onSetCuttingHeightCallbackAsync(value: number, callback: CharacteristicSetCallback): Promise<void> {
         try {
-            await this.settingsService.changeCuttingHeight(this.accessory.context.mowerId, value);
+            await this.settingsService.changeCuttingHeightAsync(this.accessory.context.mowerId, value);
 
             callback(HAPStatus.SUCCESS);
         } catch (e) {

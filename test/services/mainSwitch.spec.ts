@@ -335,14 +335,14 @@ describe('AutomowerMainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
+        changeSettingsService.setup(o => o.changeCuttingHeightAsync(mowerId, cuttingHeight)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeSetCuttingHeightCallbackAsync(cuttingHeight, (e) => {
             status = e;
         });
 
-        changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeight), Times.Once());
+        changeSettingsService.verify(o => o.changeCuttingHeightAsync(mowerId, cuttingHeight), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
@@ -386,7 +386,7 @@ describe('AutomowerMainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        changeSettingsService.setup(o => o.changeCuttingHeight(mowerId, cuttingHeightValue)).throws(new Error('hello'));
+        changeSettingsService.setup(o => o.changeCuttingHeightAsync(mowerId, cuttingHeightValue)).throws(new Error('hello'));
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
@@ -397,7 +397,7 @@ describe('AutomowerMainSwitchImpl', () => {
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);
 
-        changeSettingsService.verify(o => o.changeCuttingHeight(mowerId, cuttingHeightValue), Times.Once());
+        changeSettingsService.verify(o => o.changeCuttingHeightAsync(mowerId, cuttingHeightValue), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });

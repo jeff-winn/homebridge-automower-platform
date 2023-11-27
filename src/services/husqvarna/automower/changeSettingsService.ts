@@ -11,13 +11,13 @@ export interface ChangeSettingsService {
      * @param mowerId The mower id.
      * @param newValue The new cutting height value.
      */
-    changeCuttingHeight(mowerId: string, newValue: number): Promise<void>;
+    changeCuttingHeightAsync(mowerId: string, newValue: number): Promise<void>;
 }
 
 export class ChangeSettingsServiceImpl implements ChangeSettingsService {
     public constructor(private tokenManager: AccessTokenManager, private client: AutomowerClient) { }
     
-    public async changeCuttingHeight(mowerId: string, newValue: number): Promise<void> {
+    public async changeCuttingHeightAsync(mowerId: string, newValue: number): Promise<void> {
         try {
             const token = await this.tokenManager.getCurrentTokenAsync();
 
