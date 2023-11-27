@@ -50,7 +50,7 @@ export class AutomowerMowerControlService implements MowerControlService, Suppor
         }
     }
 
-    public async park(mowerId: string): Promise<void> {
+    public async parkUntilFurtherNoticeAsync(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'ParkUntilFurtherNotice'

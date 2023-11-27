@@ -99,7 +99,7 @@ describe('AutomowerMowerControlService', () => {
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         client.setup(o => o.doAction(mowerId, It.IsAny(), token)).returns(Promise.resolve(undefined));
 
-        await target.park(mowerId);
+        await target.parkUntilFurtherNoticeAsync(mowerId);
 
         client.verify(o => o.doAction(mowerId, 
             It.Is<Action>(action => action.type === 'ParkUntilFurtherNotice'), 
@@ -118,7 +118,7 @@ describe('AutomowerMowerControlService', () => {
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doAction(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        await expect(target.park(mowerId)).rejects.toThrow(NotAuthorizedError);
+        await expect(target.parkUntilFurtherNoticeAsync(mowerId)).rejects.toThrow(NotAuthorizedError);
 
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });

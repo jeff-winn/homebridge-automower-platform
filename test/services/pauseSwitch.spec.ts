@@ -193,7 +193,7 @@ describe('PauseSwitchImpl', () => {
         service.setup(o => o.getCharacteristic(Characteristic.StatusActive)).returns(statusActive.object());
 
         platformAccessory.setup(o => o.getServiceById(Service.Switch, 'Pause')).returns(service.object());
-        controlService.setup(o => o.park(mowerId)).returns(Promise.resolve(undefined));
+        controlService.setup(o => o.parkUntilFurtherNoticeAsync(mowerId)).returns(Promise.resolve(undefined));
         log.setup(o => o.info(It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         target.init(NameMode.DEFAULT);
@@ -204,7 +204,7 @@ describe('PauseSwitchImpl', () => {
             status = e;
         });
 
-        controlService.verify(o => o.park(mowerId), Times.Once());
+        controlService.verify(o => o.parkUntilFurtherNoticeAsync(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 

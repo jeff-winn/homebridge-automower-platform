@@ -35,7 +35,7 @@ export class PauseSwitchImpl extends AbstractSwitch implements PauseSwitch {
             if (on) {
                 await this.controlService.pause(this.accessory.context.mowerId);
             } else if (this.shouldPark()) {
-                await this.controlService.park(this.accessory.context.mowerId);
+                await this.controlService.parkUntilFurtherNoticeAsync(this.accessory.context.mowerId);
             } else {
                 await this.controlService.resumeAsync(this.accessory.context.mowerId);
             }

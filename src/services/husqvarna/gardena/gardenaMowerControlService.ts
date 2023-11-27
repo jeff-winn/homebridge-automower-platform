@@ -98,7 +98,7 @@ export class GardenaManualMowerControlService implements MowerControlService {
         }
     }
 
-    public async park(mowerId: string): Promise<void> {
+    public async parkUntilFurtherNoticeAsync(mowerId: string): Promise<void> {
         try {
             const command: MowerCommand = {
                 id: uuid(),

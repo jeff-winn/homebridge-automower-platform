@@ -83,7 +83,7 @@ describe('GardenaManualMowerControlService', () => {
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).returns(Promise.resolve(undefined));        
 
-        await expect(target.park(mowerId)).resolves.toBeUndefined();
+        await expect(target.parkUntilFurtherNoticeAsync(mowerId)).resolves.toBeUndefined();
 
         client.verify(o => o.doCommand(mowerId, It.Is<MowerCommand>(x => 
             x.type === CommandType.MOWER_CONTROL && 
@@ -103,7 +103,7 @@ describe('GardenaManualMowerControlService', () => {
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        await expect(target.park(mowerId)).rejects.toThrow(NotAuthorizedError);
+        await expect(target.parkUntilFurtherNoticeAsync(mowerId)).rejects.toThrow(NotAuthorizedError);
 
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
@@ -120,7 +120,7 @@ describe('GardenaManualMowerControlService', () => {
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
         client.setup(o => o.doCommand(mowerId, It.IsAny(), token)).throws(new BadConfigurationError('Ouch', 'ERR0000'));
 
-        await expect(target.park(mowerId)).rejects.toThrow(BadConfigurationError);
+        await expect(target.parkUntilFurtherNoticeAsync(mowerId)).rejects.toThrow(BadConfigurationError);
 
         tokenManager.verify(x => x.flagAsInvalid(), Times.Never());
     });

@@ -77,7 +77,7 @@ export class MainSwitchImpl extends AbstractSwitch implements MainSwitch, Suppor
             if (on) {
                 await this.controlService.resumeAsync(this.accessory.context.mowerId);
             } else {
-                await this.controlService.park(this.accessory.context.mowerId);
+                await this.controlService.parkUntilFurtherNoticeAsync(this.accessory.context.mowerId);
             }    
 
             callback(HAPStatus.SUCCESS);
