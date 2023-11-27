@@ -173,14 +173,14 @@ describe('MainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        mowerControlService.setup(o => o.resume(mowerId)).returns(Promise.resolve(undefined));
+        mowerControlService.setup(o => o.resumeAsync(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSetCallbackAsync(true, (e) => {
             status = e;
         });
 
-        mowerControlService.verify(o => o.resume(mowerId), Times.Once());
+        mowerControlService.verify(o => o.resumeAsync(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
@@ -215,7 +215,7 @@ describe('MainSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        mowerControlService.setup(o => o.resume(mowerId)).throws(new Error('hello'));
+        mowerControlService.setup(o => o.resumeAsync(mowerId)).throws(new Error('hello'));
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
@@ -226,7 +226,7 @@ describe('MainSwitchImpl', () => {
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);
 
-        mowerControlService.verify(o => o.resume(mowerId), Times.Once());
+        mowerControlService.verify(o => o.resumeAsync(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });

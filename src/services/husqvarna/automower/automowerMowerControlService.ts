@@ -33,7 +33,7 @@ export class AutomowerMowerControlService implements MowerControlService, Suppor
         }
     }
 
-    public async resume(mowerId: string): Promise<void> {
+    public async resumeAsync(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'ResumeSchedule'

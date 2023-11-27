@@ -26,7 +26,7 @@ export interface MowerControlService {
      * Resume the mower.
      * @param mowerId The mower id.
      */
-    resume(mowerId: string): Promise<void>;
+    resumeAsync(mowerId: string): Promise<void>;
     
     /**
      * Parks the mower.

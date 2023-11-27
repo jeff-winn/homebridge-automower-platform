@@ -76,7 +76,7 @@ export interface MowerCommand {
 export class GardenaManualMowerControlService implements MowerControlService {
     public constructor(private readonly tokenManager: AccessTokenManager, private readonly client: GardenaClient) { }
 
-    public async resume(mowerId: string): Promise<void> {
+    public async resumeAsync(mowerId: string): Promise<void> {
         try {
             const command: MowerCommand = {
                 id: uuid(),
