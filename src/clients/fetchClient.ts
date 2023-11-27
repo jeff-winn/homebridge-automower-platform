@@ -13,7 +13,7 @@ export interface FetchClient {
      * @param url The url.
      * @param init The request details.
      */
-     execute(url: RequestInfo, init?: RequestInit | undefined): Promise<Response>;
+     executeAsync(url: RequestInfo, init?: RequestInit | undefined): Promise<Response>;
 }
 
 /**
@@ -59,7 +59,7 @@ const EXPONENTIAL_BACKOFF_MULTIPLIER = 1.97435; // Causes a 30 second maximum ba
 export class RetryerFetchClient implements FetchClient {
     public constructor(private log: PlatformLogger, private maxRetryAttempts: number = DEFAULT_MAX_RETRY_ATTEMPTS) { }
 
-    public async execute(url: RequestInfo, init?: RequestInit): Promise<Response> {
+    public async executeAsync(url: RequestInfo, init?: RequestInit): Promise<Response> {
         let response: Response;
         let retry: boolean;
 
@@ -142,7 +142,7 @@ export class RetryerFetchClient implements FetchClient {
         });
     }    
 
-    protected doFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
-        return fetch(url, init);
+    protected async doFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
+        return await fetch(url, init);
     }
 }

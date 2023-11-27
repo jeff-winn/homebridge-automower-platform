@@ -146,7 +146,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.doAction(MOWER_ID, action, token)).resolves.toBeUndefined();
     });
@@ -168,7 +168,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.doAction(MOWER_ID, {
             type: 'go'
@@ -190,7 +190,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.doAction(MOWER_ID, {
             type: 'go'
@@ -212,7 +212,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.getMower(MOWER_ID, token)).rejects.toThrowError();
     });
@@ -234,7 +234,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.getMower(MOWER_ID, token)).rejects.toThrowError(NotAuthorizedError);
     });
@@ -253,7 +253,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.getMower(MOWER_ID, token)).resolves.toBeUndefined();
     });
@@ -272,7 +272,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.getMower(MOWER_ID, token)).resolves.toBeUndefined();
     });
@@ -346,7 +346,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.getMower(MOWER_ID, token)).resolves.toStrictEqual(mower);
     });
@@ -373,7 +373,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).resolves.toStrictEqual(mowers);
     });
@@ -449,7 +449,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).resolves.toStrictEqual(mowers);
     });
@@ -573,7 +573,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).resolves.toStrictEqual(mowers);
     });
@@ -593,7 +593,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         
         await expect(target.getMower(MOWER_ID, token)).rejects.toThrowError();
     });
@@ -618,7 +618,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
     });
@@ -646,7 +646,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
     });
@@ -672,7 +672,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
     });
@@ -709,7 +709,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.getMowers(token)).rejects.toThrowError(UnexpectedServerError);
     });
@@ -768,7 +768,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         errorFactory.setup(o => o.unexpectedServerError(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()))
             .returns(new UnexpectedServerError('hello world', '12345'));
 
@@ -789,7 +789,7 @@ describe('AutomowerClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.changeSettings('12345', { }, token)).resolves.toBeUndefined();
     });

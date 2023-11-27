@@ -51,7 +51,7 @@ describe('RetryerFetchClient', () => {
             url: url,
         });
         
-        const result = await target.execute(url, {
+        const result = await target.executeAsync(url, {
             method: 'POST',
             headers: {
                 'X-Api-Key': '12345'
@@ -78,7 +78,7 @@ describe('RetryerFetchClient', () => {
             url: url,
         });    
         
-        const result = await target.execute(url, {
+        const result = await target.executeAsync(url, {
             method: 'POST',
             headers: {
                 'X-Api-Key': '12345'
@@ -105,7 +105,7 @@ describe('RetryerFetchClient', () => {
             url: url,
         });
         
-        const result = await target.execute(url, {
+        const result = await target.executeAsync(url, {
             method: 'GET'
         });
 
@@ -128,7 +128,7 @@ describe('RetryerFetchClient', () => {
             url: url,
         });
         
-        const result = await target.execute(url, { });
+        const result = await target.executeAsync(url, { });
 
         expect(result.status).toBe(503);
         expect(target.waited).toBeTruthy();
@@ -149,7 +149,7 @@ describe('RetryerFetchClient', () => {
             url: url,
         });
         
-        const result = await target.execute(url, {
+        const result = await target.executeAsync(url, {
             method: 'GET'
         });
 
@@ -181,7 +181,7 @@ describe('RetryerFetchClient', () => {
             });
         };
         
-        const result = await target.execute(url, {
+        const result = await target.executeAsync(url, {
             method: 'GET'
         });
 

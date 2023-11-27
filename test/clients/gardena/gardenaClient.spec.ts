@@ -59,7 +59,7 @@ describe('GardenaClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.doCommand(mowerId, command, token)).resolves.toBeUndefined();
     });
@@ -102,7 +102,7 @@ describe('GardenaClientImpl', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returnsAsync(response);
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returnsAsync(response);
         
         await expect(target.getLocation(LOCATION_ID, token)).resolves.toBeUndefined();
     });
@@ -121,7 +121,7 @@ describe('GardenaClientImpl', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returnsAsync(response);
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returnsAsync(response);
         
         const result = await target.getLocations(token);
 
@@ -146,7 +146,7 @@ describe('GardenaClientImpl', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returnsAsync(response);
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returnsAsync(response);
         
         const result = await target.createSocket(locationId, token);
 

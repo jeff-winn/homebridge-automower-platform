@@ -53,7 +53,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });       
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(AccountLockedError);
     });
@@ -69,7 +69,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });       
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
@@ -93,7 +93,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });       
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(BadCredentialsError);
     });
@@ -110,7 +110,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(NotAuthorizedError);
     });
@@ -124,7 +124,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(Error);
     });
@@ -150,7 +150,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
@@ -176,7 +176,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
     });
@@ -190,7 +190,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.logoutClientCredentialsAsync({
             access_token: '12345',
@@ -212,7 +212,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.logoutClientCredentialsAsync({
             access_token: '12345',
@@ -234,7 +234,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.logoutClientCredentialsAsync({
             access_token: '12345',
@@ -266,7 +266,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });       
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangeClientCredentialsAsync(APPKEY, PASSWORD, DeviceType.AUTOMOWER)).rejects.toThrowError(SimultaneousLoginError);
     });
@@ -292,7 +292,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.AUTOMOWER)).resolves.toStrictEqual(token);
     });
@@ -318,7 +318,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.exchangePasswordAsync(APPKEY, USERNAME, PASSWORD, DeviceType.GARDENA)).resolves.toStrictEqual(token);
     });
@@ -332,7 +332,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
@@ -354,7 +354,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
@@ -379,7 +379,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
@@ -401,7 +401,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.logoutPasswordAsync(APPKEY, {
             access_token: '12345',
@@ -426,7 +426,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
@@ -451,7 +451,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
@@ -473,7 +473,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',
@@ -506,7 +506,7 @@ describe('AuthenticationClientImpl', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
 
         await expect(target.refreshAsync(APPKEY, {
             access_token: '12345',

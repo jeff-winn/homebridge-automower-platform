@@ -462,7 +462,7 @@ export class GardenaClientImpl implements GardenaClient {
             }
         };
 
-        const res = await this.fetch.execute(`${this.baseUrl}/websocket`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/websocket`, {
             method: 'POST',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -487,7 +487,7 @@ export class GardenaClientImpl implements GardenaClient {
             data: command
         };
 
-        const res = await this.fetch.execute(`${this.baseUrl}/command/${id}`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/command/${id}`, {
             method: 'PUT',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -505,7 +505,7 @@ export class GardenaClientImpl implements GardenaClient {
     public async getLocation(locationId: string, token: AccessToken): Promise<LocationResponse | undefined> {
         this.guardAppKeyMustBeProvided();
         
-        const res = await this.fetch.execute(`${this.baseUrl}/locations/${locationId}`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/locations/${locationId}`, {
             method: 'GET',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -529,7 +529,7 @@ export class GardenaClientImpl implements GardenaClient {
     public async getLocations(token: AccessToken): Promise<LocationsResponse | undefined> {
         this.guardAppKeyMustBeProvided();
         
-        const res = await this.fetch.execute(`${this.baseUrl}/locations`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/locations`, {
             method: 'GET',
             headers: {
                 'X-Application-Id': PLUGIN_ID,

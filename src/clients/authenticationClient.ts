@@ -129,7 +129,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             token: token.access_token
         });
 
-        const response = await this.fetch.execute(this.baseUrl + '/oauth2/revoke', {
+        const response = await this.fetch.executeAsync(this.baseUrl + '/oauth2/revoke', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token.access_token}`,
@@ -173,7 +173,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     private async exchange(body: BodyInit): Promise<OAuthToken> {
-        const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
+        const response = await this.fetch.executeAsync(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -203,7 +203,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
     }
 
     public async logoutPasswordAsync(appKey: string, token: OAuthToken): Promise<void> {
-        const response = await this.fetch.execute(this.baseUrl + '/token/' + token.access_token, {
+        const response = await this.fetch.executeAsync(this.baseUrl + '/token/' + token.access_token, {
             method: 'DELETE',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -228,7 +228,7 @@ export class AuthenticationClientImpl implements AuthenticationClient {
             refresh_token: token.refresh_token
         });
 
-        const response = await this.fetch.execute(this.baseUrl + '/oauth2/token', {
+        const response = await this.fetch.executeAsync(this.baseUrl + '/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',

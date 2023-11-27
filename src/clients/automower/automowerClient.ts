@@ -401,7 +401,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
         this.guardAppKeyMustBeProvided();
 
-        const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}/settings`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/mowers/${id}/settings`, {
             method: 'POST',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -432,7 +432,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
         this.guardAppKeyMustBeProvided();
         
-        const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}/actions`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/mowers/${id}/actions`, {
             method: 'POST',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -456,7 +456,7 @@ export class AutomowerClientImpl implements AutomowerClient {
 
         this.guardAppKeyMustBeProvided();
 
-        const res = await this.fetch.execute(`${this.baseUrl}/mowers/${id}`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/mowers/${id}`, {
             method: 'GET',
             headers: {
                 'X-Application-Id': PLUGIN_ID,
@@ -479,7 +479,7 @@ export class AutomowerClientImpl implements AutomowerClient {
     public async getMowers(token: AccessToken): Promise<Mower[]> {
         this.guardAppKeyMustBeProvided();
 
-        const res = await this.fetch.execute(`${this.baseUrl}/mowers`, {
+        const res = await this.fetch.executeAsync(`${this.baseUrl}/mowers`, {
             method: 'GET',
             headers: {
                 'X-Application-Id': PLUGIN_ID,

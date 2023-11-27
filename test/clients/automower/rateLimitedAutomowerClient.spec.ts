@@ -69,7 +69,7 @@ describe('RateLimitedAutomowerClient', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         target.unsafeSetLastAccessed(new Date());
 
         await target.doAction('id', { }, token);
@@ -92,7 +92,7 @@ describe('RateLimitedAutomowerClient', () => {
             url: 'http://localhost',
         });
 
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         target.unsafeSetLastAccessed(undefined);
 
         await target.doAction('id', { }, token);
@@ -114,7 +114,7 @@ describe('RateLimitedAutomowerClient', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         target.unsafeSetLastAccessed(new Date());
 
         await target.getMower('id', token);
@@ -136,7 +136,7 @@ describe('RateLimitedAutomowerClient', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         target.unsafeSetLastAccessed(undefined);
 
         await target.getMower('id', token);
@@ -158,7 +158,7 @@ describe('RateLimitedAutomowerClient', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         target.unsafeSetLastAccessed(new Date());
 
         await target.getMowers(token);
@@ -180,7 +180,7 @@ describe('RateLimitedAutomowerClient', () => {
             url: 'http://localhost',
         });
         
-        fetch.setup(o => o.execute(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
+        fetch.setup(o => o.executeAsync(It.IsAny(), It.IsAny())).returns(Promise.resolve(response));
         target.unsafeSetLastAccessed(undefined);
 
         await target.getMowers(token);
