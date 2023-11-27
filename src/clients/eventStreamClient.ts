@@ -16,12 +16,12 @@ export interface EventStreamClient {
      * Opens the stream.
      * @param token The token which will be used to authenticate.
      */
-    open(token: AccessToken): Promise<void>;
+    openAsync(token: AccessToken): Promise<void>;
 
     /**
      * Closes the stream.
      */
-    close(): Promise<void>;
+    closeAsync(): Promise<void>;
 
     /**
      * Sets the callback to execute when the client is disconnected.
@@ -73,7 +73,7 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
         this.errorReceivedCallback = callback;
     }
 
-    public async open(token: AccessToken): Promise<void> {
+    public async openAsync(token: AccessToken): Promise<void> {
         if (this.socket !== undefined) {
             this.socket.close();
         }
@@ -164,7 +164,7 @@ export abstract class AbstractEventStreamClient implements EventStreamClient {
         this.connecting = value;
     }
 
-    public close(): Promise<void> {
+    public closeAsync(): Promise<void> {
         if (this.socket !== undefined) {
             this.socket.terminate();
         }

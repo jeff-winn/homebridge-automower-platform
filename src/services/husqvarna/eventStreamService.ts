@@ -162,7 +162,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
             const token = await this.tokenManager.getCurrentTokenAsync();
 
             this.log.debug('STARTING_STREAM');
-            await this.stream.open(token);
+            await this.stream.openAsync(token);
             this.log.debug('STARTED_STREAM');
         } catch (e) {
             if (e instanceof BadCredentialsError) {
@@ -282,7 +282,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         }
 
         this.log.debug('CLOSING_STREAM');
-        await this.stream.close();
+        await this.stream.closeAsync();
         this.log.debug('CLOSED_STREAM');
     }
     

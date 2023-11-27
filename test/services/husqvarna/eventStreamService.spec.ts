@@ -31,7 +31,7 @@ describe('AbstractEventStreamService', () => {
             provider: 'provider'
         };
 
-        stream.setup(o => o.open(token)).returnsAsync(undefined);
+        stream.setup(o => o.openAsync(token)).returnsAsync(undefined);
         stream.setup(o => o.setOnConnectedCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
         stream.setup(o => o.setOnDisconnectedCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
         stream.setup(o => o.setOnErrorCallback(It.IsAny<(() => Promise<void>)>())).returns(undefined);
@@ -43,7 +43,7 @@ describe('AbstractEventStreamService', () => {
 
         await expect(target.startAsync()).resolves.toBeUndefined();
         
-        stream.verify(o => o.open(token), Times.Once());
+        stream.verify(o => o.openAsync(token), Times.Once());
         stream.verify(o => o.setOnConnectedCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
         stream.verify(o => o.setOnDisconnectedCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
         stream.verify(o => o.setOnErrorCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
@@ -54,11 +54,11 @@ describe('AbstractEventStreamService', () => {
     it('should not close the stream when not connected', async () => {
         timer.setup(o => o.stop()).returns(undefined);
         stream.setup(o => o.isConnected()).returns(false);
-        stream.setup(o => o.close()).returnsAsync(undefined);
+        stream.setup(o => o.closeAsync()).returnsAsync(undefined);
 
         await expect(target.stopAsync()).resolves.toBeUndefined();
         
-        stream.verify(o => o.close(), Times.Never());
+        stream.verify(o => o.closeAsync(), Times.Never());
         timer.verify(o => o.stop(), Times.Once());
     });
 
@@ -115,12 +115,12 @@ describe('AbstractEventStreamService', () => {
         timer.setup(o => o.stop()).returns(undefined);
 
         stream.setup(o => o.isConnected()).returns(true);
-        stream.setup(o => o.close()).returnsAsync(undefined);
+        stream.setup(o => o.closeAsync()).returnsAsync(undefined);
 
         await expect(target.stopAsync()).resolves.toBeUndefined();
         expect(() => target.unsafeIsStopping()).toBeTruthy();
 
-        stream.verify(o => o.close(), Times.Once());
+        stream.verify(o => o.closeAsync(), Times.Once());
         timer.verify(o => o.stop(), Times.Once());
     });
 
@@ -198,12 +198,12 @@ describe('AbstractEventStreamService', () => {
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         stream.setup(o => o.isConnected()).returns(false);
-        stream.setup(o => o.open(token)).returnsAsync(undefined);
+        stream.setup(o => o.openAsync(token)).returnsAsync(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
 
-        stream.verify(o => o.open(token), Times.Once());
+        stream.verify(o => o.openAsync(token), Times.Once());
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Never());
     });
 
@@ -218,16 +218,16 @@ describe('AbstractEventStreamService', () => {
         };
         
         stream.setup(o => o.isConnected()).returns(true);
-        stream.setup(o => o.open(token)).returnsAsync(undefined);
-        stream.setup(o => o.close()).returnsAsync(undefined);
+        stream.setup(o => o.openAsync(token)).returnsAsync(undefined);
+        stream.setup(o => o.closeAsync()).returnsAsync(undefined);
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
         
-        stream.verify(o => o.close(), Times.Once());
-        stream.verify(o => o.open(token), Times.Once());
+        stream.verify(o => o.closeAsync(), Times.Once());
+        stream.verify(o => o.openAsync(token), Times.Once());
     });
 
     it('should ping the server when the last event has been recent', async () => {
@@ -267,16 +267,16 @@ describe('AbstractEventStreamService', () => {
         };
 
         stream.setup(o => o.isConnected()).returns(true);
-        stream.setup(o => o.close()).returnsAsync(undefined);
-        stream.setup(o => o.open(token)).returnsAsync(undefined);
+        stream.setup(o => o.closeAsync()).returnsAsync(undefined);
+        stream.setup(o => o.openAsync(token)).returnsAsync(undefined);
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
         await expect(target.unsafeKeepAliveAsync()).resolves.toBeUndefined();
 
-        stream.verify(o => o.close(), Times.Once());
-        stream.verify(o => o.open(token), Times.Once());
+        stream.verify(o => o.closeAsync(), Times.Once());
+        stream.verify(o => o.openAsync(token), Times.Once());
         expect(target.unsafeGetStarted()).toBeDefined();
         expect(target.unsafeGetLastEventReceived()).toBeUndefined();
     });

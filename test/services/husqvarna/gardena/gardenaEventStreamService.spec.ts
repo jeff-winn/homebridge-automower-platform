@@ -55,7 +55,7 @@ describe('GardenaLocationEventStreamService', () => {
         stream.setup(o => o.setOnConnectedCallback(It.IsAny())).returns(undefined);
         stream.setup(o => o.setOnDisconnectedCallback(It.IsAny())).returns(undefined);
         stream.setup(o => o.setOnErrorCallback(It.IsAny())).returns(undefined);
-        stream.setup(o => o.open(token)).returnsAsync(undefined);
+        stream.setup(o => o.openAsync(token)).returnsAsync(undefined);
 
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
@@ -67,7 +67,7 @@ describe('GardenaLocationEventStreamService', () => {
         stream.verify(o => o.setOnConnectedCallback(It.IsAny()), Times.Once());
         stream.verify(o => o.setOnDisconnectedCallback(It.IsAny()), Times.Once());
         stream.verify(o => o.setOnErrorCallback(It.IsAny()), Times.Once());
-        stream.verify(o => o.open(token), Times.Once());
+        stream.verify(o => o.openAsync(token), Times.Once());
     });
 
     it('should run the mower event callback when mower event is received', async () => {

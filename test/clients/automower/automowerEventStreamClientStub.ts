@@ -16,12 +16,12 @@ export class AutomowerEventStreamClientStub implements AutomowerEventStreamClien
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public open(token: AccessToken): Promise<void> {
+    public openAsync(token: AccessToken): Promise<void> {
         this.opened = true;
         return Promise.resolve(undefined);
     }
 
-    public close(): Promise<void> {
+    public closeAsync(): Promise<void> {
         this.closed = true;
         return Promise.resolve(undefined);
     }

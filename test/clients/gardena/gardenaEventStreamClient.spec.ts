@@ -45,7 +45,7 @@ describe('GardenaEventStreamClientImpl', () => {
 
         target.callback = () => socket.object();
 
-        await expect(target.open(token)).resolves.toBeUndefined();
+        await expect(target.openAsync(token)).resolves.toBeUndefined();
         
         expect(target.isConnecting()).toBeTruthy();
         
@@ -106,8 +106,8 @@ describe('GardenaEventStreamClientImpl', () => {
             }
         };
 
-        await expect(target.open(token1)).resolves.toBeUndefined();
-        await expect(target.open(token2)).resolves.toBeUndefined();
+        await expect(target.openAsync(token1)).resolves.toBeUndefined();
+        await expect(target.openAsync(token2)).resolves.toBeUndefined();
 
         socket.verify(o => o.close(), Times.Once());
     });
@@ -135,7 +135,7 @@ describe('GardenaEventStreamClientImpl', () => {
         socket.setup(o => o.ping(It.IsAny())).returns(undefined);
 
         target.callback = () => socket.object();
-        await expect(target.open(token)).resolves.toBeUndefined();
+        await expect(target.openAsync(token)).resolves.toBeUndefined();
 
         target.ping();
 
@@ -297,7 +297,7 @@ describe('GardenaEventStreamClientImpl', () => {
     });
 
     it('should do nothing when not connected on close', () => {
-        expect(() => target.close()).not.toThrow();
+        expect(() => target.closeAsync()).not.toThrow();
     });
 
     it('should terminate the connection when connected on close', async () => {
@@ -324,8 +324,8 @@ describe('GardenaEventStreamClientImpl', () => {
 
         target.callback = () => socket.object();
 
-        await expect(target.open(token)).resolves.toBeUndefined();
-        await expect(target.close()).resolves.toBeUndefined();
+        await expect(target.openAsync(token)).resolves.toBeUndefined();
+        await expect(target.closeAsync()).resolves.toBeUndefined();
 
         socket.verify(o => o.terminate(), Times.Once());
     });

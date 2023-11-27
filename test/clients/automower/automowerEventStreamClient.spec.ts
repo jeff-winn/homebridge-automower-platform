@@ -26,7 +26,7 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         target.callback = () => socket.object();
 
-        await expect(target.open({
+        await expect(target.openAsync({
             value: 'hello',
             provider: 'world'
         })).resolves.toBeUndefined();
@@ -57,12 +57,12 @@ describe('AutomowerEventStreamClientImpl', () => {
             }
         };
 
-        await target.open({
+        await target.openAsync({
             value: 'hello1',
             provider: 'world1'
         });
 
-        await target.open({
+        await target.openAsync({
             value: 'hello2',
             provider: 'world2'
         });
@@ -76,7 +76,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         socket.setup(o => o.ping(It.IsAny())).returns(undefined);
 
         target.callback = () => socket.object();
-        await target.open({
+        await target.openAsync({
             value: 'hello1',
             provider: 'world1'
         });
@@ -245,7 +245,7 @@ describe('AutomowerEventStreamClientImpl', () => {
     });
 
     it('should do nothing when not connected on close', () => {
-        expect(() => target.close()).not.toThrow();
+        expect(() => target.closeAsync()).not.toThrow();
     });
 
     it('should terminate the connection when connected on close', async () => {
@@ -255,12 +255,12 @@ describe('AutomowerEventStreamClientImpl', () => {
 
         target.callback = () => socket.object();
 
-        await target.open({
+        await target.openAsync({
             value: 'hello1',
             provider: 'world1'
         });
 
-        await expect(target.close()).resolves.toBeUndefined();
+        await expect(target.closeAsync()).resolves.toBeUndefined();
 
         socket.verify(o => o.terminate(), Times.Once());
     });
