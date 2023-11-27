@@ -36,7 +36,7 @@ describe('GetMowersServiceImpl', () => {
         tokenManager.setup(x => x.flagAsInvalid()).returns(undefined);
         client.setup(x => x.getMowers(token)).throws(new NotAuthorizedError('Ouch', 'ERR0000'));
 
-        await expect(target.getMowers()).rejects.toThrow(NotAuthorizedError);
+        await expect(target.getMowersAsync()).rejects.toThrow(NotAuthorizedError);
 
         tokenManager.verify(x => x.flagAsInvalid(), Times.Once());
     });
@@ -110,7 +110,7 @@ describe('GetMowersServiceImpl', () => {
         });
         client.setup(x => x.getMowers(token)).returns(Promise.resolve([ mower ]));
 
-        const result = await target.getMowers();
+        const result = await target.getMowersAsync();
 
         expect(result).toBeDefined();
 

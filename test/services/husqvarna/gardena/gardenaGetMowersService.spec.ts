@@ -33,7 +33,7 @@ describe('GardenaGetMowersService', () => {
         tokenManager.setup(o => o.getCurrentTokenAsync()).throws(new NotAuthorizedError('Unable to authenticate', 'ERR0000'));
         tokenManager.setup(o => o.flagAsInvalid()).returns(undefined);
 
-        await expect(target.getMowers()).rejects.toThrowError(NotAuthorizedError);
+        await expect(target.getMowersAsync()).rejects.toThrowError(NotAuthorizedError);
 
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
         log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
@@ -50,7 +50,7 @@ describe('GardenaGetMowersService', () => {
             data: []
         });        
 
-        const result = await target.getMowers();
+        const result = await target.getMowersAsync();
         expect(result).toBeDefined();
         expect(result).toHaveLength(0);
 
@@ -158,7 +158,7 @@ describe('GardenaGetMowersService', () => {
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
         log.setup(o => o.warn(It.IsAny(), It.IsAny())).returns(undefined);
 
-        const mowers = await target.getMowers();
+        const mowers = await target.getMowersAsync();
         expect(mowers).toBeDefined();
         expect(mowers.length).toBe(0);
 
@@ -312,7 +312,7 @@ describe('GardenaGetMowersService', () => {
             state: State.CHARGING
         });
 
-        const mowers = await target.getMowers();
+        const mowers = await target.getMowersAsync();
         expect(mowers).toBeDefined();
 
         const result = mowers[0];

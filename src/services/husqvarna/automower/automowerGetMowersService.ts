@@ -19,7 +19,7 @@ export class AutomowerGetMowersService implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private mowerStateConverter: AutomowerMowerStateConverter, 
         private mowerScheduleConverter: AutomowerMowerScheduleConverter, private client: AutomowerClient) { }    
 
-    public async getMowers(): Promise<model.Mower[]> {
+    public async getMowersAsync(): Promise<model.Mower[]> {
         try {
             const token = await this.tokenManager.getCurrentTokenAsync();
             const mowers = await this.client.getMowers(token);

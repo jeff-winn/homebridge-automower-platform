@@ -21,7 +21,7 @@ export class GardenaGetMowersService implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private mowerStateConverter: GardenaMowerStateConverter, 
         private client: GardenaClient, private log: PlatformLogger) { }
     
-    public async getMowers(): Promise<model.Mower[]> {
+    public async getMowersAsync(): Promise<model.Mower[]> {
         this.notifyPreviewFeatureIsBeingUsed();
         
         try {

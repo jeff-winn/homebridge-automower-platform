@@ -26,12 +26,12 @@ describe('DiscoveryServiceImpl', () => {
         const platform = new Mock<AutomowerPlatform>();
 
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
-        getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ ]));
+        getMowersService.setup(x => x.getMowersAsync()).returns(Promise.resolve([ ]));
         platform.setup(x => x.registerMowers(It.IsAny()));
 
         await target.discoverMowersAsync(platform.object());
 
-        getMowersService.verify(x => x.getMowers(), Times.Once());
+        getMowersService.verify(x => x.getMowersAsync(), Times.Once());
         platform.verify(x => x.registerMowers(It.IsAny()), Times.Never());
     });
 
@@ -100,7 +100,7 @@ describe('DiscoveryServiceImpl', () => {
         log.setup(x => x.info(It.IsAny(), It.IsAny())).returns(undefined);
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
-        getMowersService.setup(o => o.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
+        getMowersService.setup(o => o.getMowersAsync()).returns(Promise.resolve([ mower1, mower2 ]));
         factory.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
 
         platform.setup(o => o.getMower(mower1Id)).returns(undefined);
@@ -184,7 +184,7 @@ describe('DiscoveryServiceImpl', () => {
         log.setup(o => o.info(It.IsAny(), It.IsAny())).returns(undefined);
         log.setup(o => o.debug(It.IsAny(), It.IsAny())).returns(undefined);
 
-        getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ mower1, mower2 ]));
+        getMowersService.setup(x => x.getMowersAsync()).returns(Promise.resolve([ mower1, mower2 ]));
         factory.setup(o => o.createAccessory(mower1)).returns(mower1Accessory.object());
         factory.setup(o => o.createAccessory(mower2)).returns(mower2Accessory.object());
 

@@ -11,7 +11,7 @@ export interface GetMowersService {
     /**
      * Gets the mowers.
      */
-    getMowers(): Promise<Mower[]>;
+    getMowersAsync(): Promise<Mower[]>;
 }
 
 /**
@@ -35,7 +35,7 @@ export class DiscoveryServiceImpl implements DiscoveryService {
         this.log.info('DISCOVERING_NEW_MOWERS');
 
         const found: MowerAccessory[] = [];
-        const mowers = await this.mowerService.getMowers();
+        const mowers = await this.mowerService.getMowersAsync();
         
         for (const mower of mowers) {
             let accessory = platform.getMower(mower.id);
