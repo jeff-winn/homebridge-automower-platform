@@ -60,7 +60,7 @@ describe('GardenaLocationEventStreamService', () => {
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await expect(target.start()).resolves.toBeUndefined();
+        await expect(target.startAsync()).resolves.toBeUndefined();
         
         timer.verify(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>()), Times.Once());
         stream.verify(o => o.setOnEventCallback(It.IsAny()), Times.Once());
@@ -189,13 +189,13 @@ describe('CompositeGardenaEventStreamService', () => {
     it('should throw an exception when onSettingsEventCallback is null on start', async () => {
         target.setOnStatusEventCallback(_ => Promise.resolve(undefined));
 
-        await expect(target.start()).rejects.toThrowError(InvalidStateError);
+        await expect(target.startAsync()).rejects.toThrowError(InvalidStateError);
     });
 
     it('should throw an exception when onStatusEventCallback is null on start', async () => {
         target.setOnSettingsEventCallback(_ => Promise.resolve(undefined));
 
-        await expect(target.start()).rejects.toThrowError(InvalidStateError);
+        await expect(target.startAsync()).rejects.toThrowError(InvalidStateError);
     });
 
     it('should log a warning when no locations detected', async () => {
@@ -212,7 +212,7 @@ describe('CompositeGardenaEventStreamService', () => {
         client.setup(o => o.getLocations(token)).returnsAsync(undefined);
         log.setup(o => o.warn('GARDENA_NO_LOCATIONS_FOUND')).returns(undefined);
 
-        await expect(target.start()).resolves.toBeUndefined();
+        await expect(target.startAsync()).resolves.toBeUndefined();
 
         log.verify(o => o.warn('GARDENA_NO_LOCATIONS_FOUND'), Times.Once());
     });
@@ -245,20 +245,20 @@ describe('CompositeGardenaEventStreamService', () => {
         const service = new Mock<EventStreamService>();
         service.setup(o => o.setOnSettingsEventCallback(It.IsAny())).returns(undefined);
         service.setup(o => o.setOnStatusEventCallback(It.IsAny())).returns(undefined);
-        service.setup(o => o.start()).returnsAsync(undefined);
-        service.setup(o => o.stop()).returnsAsync(undefined);
+        service.setup(o => o.startAsync()).returnsAsync(undefined);
+        service.setup(o => o.stopAsync()).returnsAsync(undefined);
 
         serviceFactory.setup(o => o.create('12345')).returns(service.object());
 
-        await expect(target.start()).resolves.toBeUndefined();
+        await expect(target.startAsync()).resolves.toBeUndefined();
 
         service.verify(o => o.setOnStatusEventCallback(It.IsAny()), Times.Once());
         service.verify(o => o.setOnSettingsEventCallback(It.IsAny()), Times.Once());
-        service.verify(o => o.start(), Times.Once());
+        service.verify(o => o.startAsync(), Times.Once());
 
-        await expect(target.stop()).resolves.toBeUndefined();
+        await expect(target.stopAsync()).resolves.toBeUndefined();
 
-        service.verify(o => o.stop(), Times.Once());
+        service.verify(o => o.stopAsync(), Times.Once());
     });
 
     it('should only initialize once', async () => {
@@ -289,19 +289,19 @@ describe('CompositeGardenaEventStreamService', () => {
         const service = new Mock<EventStreamService>();
         service.setup(o => o.setOnSettingsEventCallback(It.IsAny())).returns(undefined);
         service.setup(o => o.setOnStatusEventCallback(It.IsAny())).returns(undefined);
-        service.setup(o => o.start()).returnsAsync(undefined);
+        service.setup(o => o.startAsync()).returnsAsync(undefined);
 
         serviceFactory.setup(o => o.create('12345')).returns(service.object());
 
-        await expect(target.start()).resolves.toBeUndefined();
-        await expect(target.start()).resolves.toBeUndefined();
+        await expect(target.startAsync()).resolves.toBeUndefined();
+        await expect(target.startAsync()).resolves.toBeUndefined();
 
         service.verify(o => o.setOnStatusEventCallback(It.IsAny()), Times.Once());
         service.verify(o => o.setOnSettingsEventCallback(It.IsAny()), Times.Once());
-        service.verify(o => o.start(), Times.Exactly(2));
+        service.verify(o => o.startAsync(), Times.Exactly(2));
     });
     
     it('should do nothing when not initialized', async () => {
-        await expect(target.stop()).resolves.toBeUndefined();
+        await expect(target.stopAsync()).resolves.toBeUndefined();
     });
 });

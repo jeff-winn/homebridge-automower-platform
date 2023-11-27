@@ -24,12 +24,12 @@ export interface EventStreamService {
     /**
      * Starts streaming events.
      */
-    start(): Promise<void>;
+    startAsync(): Promise<void>;
     
     /**
      * Stops streaming events.
      */
-    stop(): Promise<void>;
+    stopAsync(): Promise<void>;
 }
 
 /**
@@ -85,7 +85,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.onStatusEventCallback = callback;        
     }
 
-    public async start(): Promise<void> {
+    public async startAsync(): Promise<void> {
         if (!this.attached) { 
             this.attachTo(this.stream);
             this.attached = true;
@@ -263,7 +263,7 @@ export abstract class AbstractEventStreamService<TStream extends EventStreamClie
         this.stream.ping();
     }
 
-    public async stop(): Promise<void> {
+    public async stopAsync(): Promise<void> {
         this.flagAsStopping();
 
         this.stopKeepAlive();

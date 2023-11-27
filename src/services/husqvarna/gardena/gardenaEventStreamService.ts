@@ -85,14 +85,14 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
         this.onStatusEventCallback = callback;        
     }
 
-    public async start(): Promise<void> {
+    public async startAsync(): Promise<void> {
         if (!this.hasBeenInitialized()) {
             await this.init();
             this.flagAsInitialized();
         }
         
         for (const service of this.getServices()) {
-            await service.start();
+            await service.startAsync();
         }
     }
 
@@ -131,13 +131,13 @@ export class CompositeGardenaEventStreamService implements EventStreamService {
         }
     }
 
-    public async stop(): Promise<void> {
+    public async stopAsync(): Promise<void> {
         if (!this.hasBeenInitialized()) {
             return;
         }
 
         for (const service of this.getServices()) {
-            await service.stop();
+            await service.stopAsync();
         }
     }
 }

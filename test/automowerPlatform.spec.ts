@@ -217,7 +217,7 @@ describe('AutomowerPlatform', () => {
         const eventStreamService = new Mock<EventStreamService>();
         eventStreamService.setup(o => o.setOnStatusEventCallback(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
         eventStreamService.setup(o => o.setOnSettingsEventCallback(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
-        eventStreamService.setup(o => o.start()).returns(Promise.resolve(undefined));
+        eventStreamService.setup(o => o.startAsync()).returns(Promise.resolve(undefined));
 
         const discoveryServiceFactory = new Mock<DiscoveryServiceFactoryImpl>();
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
@@ -235,7 +235,7 @@ describe('AutomowerPlatform', () => {
         expect(target.containerConfigured).toBeTruthy();
 
         discoveryService.verify(o => o.discoverMowersAsync(target), Times.Once());
-        eventStreamService.verify(o => o.start(), Times.Once());
+        eventStreamService.verify(o => o.startAsync(), Times.Once());
     });
 
     /** Required for compliance with homebridge verified status */
@@ -244,7 +244,7 @@ describe('AutomowerPlatform', () => {
         container.setup(o => o.registerEverything()).returns(undefined);
         
         const eventStreamService = new Mock<EventStreamService>();
-        eventStreamService.setup(o => o.stop()).throws(new Error('Ouch'));
+        eventStreamService.setup(o => o.stopAsync()).throws(new Error('Ouch'));
 
         const eventStreamServiceFactory = new Mock<EventStreamServiceFactoryImpl>();
         eventStreamServiceFactory.setup(o => o.create(container.object())).returns(eventStreamService.object());

@@ -145,7 +145,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
         service.setOnStatusEventCallback(this.onStatusEventReceivedAsync.bind(this));
         service.setOnSettingsEventCallback(this.onSettingsEventReceivedAsync.bind(this));
         
-        await service.start();
+        await service.startAsync();
     }
 
     protected getEventService(): EventStreamService {        
@@ -205,7 +205,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
     }
 
     private async onShutdownCallbackAsync(): Promise<void> {
-        await this.getEventService()?.stop();
+        await this.getEventService()?.stopAsync();
         await this.getTokenManager()?.logoutAsync();
     }
 

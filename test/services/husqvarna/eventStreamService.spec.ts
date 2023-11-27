@@ -41,7 +41,7 @@ describe('AbstractEventStreamService', () => {
 
         log.setup(o => o.debug('OPENING_CONNECTION')).returns(undefined);
 
-        await expect(target.start()).resolves.toBeUndefined();
+        await expect(target.startAsync()).resolves.toBeUndefined();
         
         stream.verify(o => o.open(token), Times.Once());
         stream.verify(o => o.setOnConnectedCallback(It.IsAny<(() => Promise<void>)>()), Times.Once());
@@ -56,7 +56,7 @@ describe('AbstractEventStreamService', () => {
         stream.setup(o => o.isConnected()).returns(false);
         stream.setup(o => o.close()).returnsAsync(undefined);
 
-        await expect(target.stop()).resolves.toBeUndefined();
+        await expect(target.stopAsync()).resolves.toBeUndefined();
         
         stream.verify(o => o.close(), Times.Never());
         timer.verify(o => o.stop(), Times.Once());
@@ -117,7 +117,7 @@ describe('AbstractEventStreamService', () => {
         stream.setup(o => o.isConnected()).returns(true);
         stream.setup(o => o.close()).returnsAsync(undefined);
 
-        await expect(target.stop()).resolves.toBeUndefined();
+        await expect(target.stopAsync()).resolves.toBeUndefined();
         expect(() => target.unsafeIsStopping()).toBeTruthy();
 
         stream.verify(o => o.close(), Times.Once());

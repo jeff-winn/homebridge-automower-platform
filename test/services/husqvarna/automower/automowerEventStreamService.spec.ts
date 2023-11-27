@@ -46,7 +46,7 @@ describe('AutomowerEventStreamService', () => {
         tokenManager.setup(o => o.getCurrentTokenAsync()).returns(Promise.resolve(token));       
         timer.setup(o => o.start(It.IsAny<(() => void)>(), It.IsAny<number>())).returns(undefined);
 
-        await target.start();
+        await target.startAsync();
 
         expect(stream.opened).toBeTruthy();
         expect(stream.callbackSet).toBeTruthy();
@@ -59,7 +59,7 @@ describe('AutomowerEventStreamService', () => {
     it('should not close the stream when not connected', async () => {
         timer.setup(o => o.stop()).returns(undefined);
 
-        await target.stop();
+        await target.stopAsync();
 
         expect(stream.closed).toBeFalsy();
 
@@ -118,7 +118,7 @@ describe('AutomowerEventStreamService', () => {
         timer.setup(o => o.stop()).returns(undefined);
         stream.opened = true;
 
-        await target.stop();
+        await target.stopAsync();
 
         expect(stream.closed).toBeTruthy();
         expect(() => target.unsafeIsStopping()).toBeTruthy();
