@@ -3,10 +3,10 @@
  */
 export interface SupportsPauseControl {
     /**
-     * Pauses the mower indefinitely.
+     * Pauses the mower.
      * @param mowerId The mower id.
      */
-    pause(mowerId: string): Promise<void>;
+    pauseAsync(mowerId: string): Promise<void>;
 }
 
 /**
@@ -15,7 +15,7 @@ export interface SupportsPauseControl {
  * @returns true if the object is {@link SupportsPauseControl}.
  */
 export function supportsPause(object: unknown): object is SupportsPauseControl {
-    return (<SupportsPauseControl>object).pause !== undefined;
+    return (<SupportsPauseControl>object).pauseAsync !== undefined;
 }
 
 /**

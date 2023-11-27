@@ -48,14 +48,14 @@ describe('PauseSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        controlService.setup(o => o.pause(mowerId)).returns(Promise.resolve(undefined));
+        controlService.setup(o => o.pauseAsync(mowerId)).returns(Promise.resolve(undefined));
 
         let status: Error | HAPStatus | null | undefined = undefined;
         await target.unsafeOnSetCallbackAsync(true, (e) => {
             status = e;
         });
 
-        controlService.verify(o => o.pause(mowerId), Times.Once());
+        controlService.verify(o => o.pauseAsync(mowerId), Times.Once());
         expect(status).toBe(HAPStatus.SUCCESS);
     });
 
@@ -90,7 +90,7 @@ describe('PauseSwitchImpl', () => {
             mowerId: mowerId
         });
 
-        controlService.setup(o => o.pause(mowerId)).throws(new Error('hello'));
+        controlService.setup(o => o.pauseAsync(mowerId)).throws(new Error('hello'));
         log.setup(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returns(undefined);
 
         let status: Error | HAPStatus | null | undefined = undefined;
@@ -101,7 +101,7 @@ describe('PauseSwitchImpl', () => {
         // Required to cause the async function to execute.
         await new Promise(process.nextTick);
 
-        controlService.verify(o => o.pause(mowerId), Times.Once());
+        controlService.verify(o => o.pauseAsync(mowerId), Times.Once());
         log.verify(o => o.error(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()), Times.Once());
         expect(status).toBe(HAPStatus.SERVICE_COMMUNICATION_FAILURE);
     });

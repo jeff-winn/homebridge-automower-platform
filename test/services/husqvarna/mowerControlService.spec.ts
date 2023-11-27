@@ -5,7 +5,7 @@ import { supportsPause, SupportsPauseControl } from '../../../src/services/husqv
 describe('supportsPause', () => {
     it('should return an object supports pause control', () => {
         const target = new Mock<SupportsPauseControl>();
-        target.setup(o => o.pause(It.IsAny())).returns(Promise.resolve(undefined));
+        target.setup(o => o.pauseAsync(It.IsAny())).returns(Promise.resolve(undefined));
 
         expect(supportsPause(target.object())).toBeTruthy();
     });

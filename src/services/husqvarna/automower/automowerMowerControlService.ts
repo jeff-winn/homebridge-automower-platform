@@ -16,7 +16,7 @@ export interface Action {
 export class AutomowerMowerControlService implements MowerControlService, SupportsPauseControl {
     public constructor(private readonly tokenManager: AccessTokenManager, private readonly client: AutomowerClient) { }
 
-    public async pause(mowerId: string): Promise<void> {
+    public async pauseAsync(mowerId: string): Promise<void> {
         try {
             const action: Action = {
                 type: 'Pause'
