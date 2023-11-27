@@ -29,7 +29,7 @@ describe('DiscoveryServiceImpl', () => {
         getMowersService.setup(x => x.getMowers()).returns(Promise.resolve([ ]));
         platform.setup(x => x.registerMowers(It.IsAny()));
 
-        await target.discoverMowers(platform.object());
+        await target.discoverMowersAsync(platform.object());
 
         getMowersService.verify(x => x.getMowers(), Times.Once());
         platform.verify(x => x.registerMowers(It.IsAny()), Times.Never());
@@ -110,7 +110,7 @@ describe('DiscoveryServiceImpl', () => {
         mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
         mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
 
-        await target.discoverMowers(platform.object());
+        await target.discoverMowersAsync(platform.object());
 
         mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
         mower2Accessory.verify(o => o.refresh(mower2), Times.Once());
@@ -194,7 +194,7 @@ describe('DiscoveryServiceImpl', () => {
         mower1Accessory.setup(o => o.refresh(mower1)).returns(undefined);
         mower2Accessory.setup(o => o.refresh(mower2)).returns(undefined);
 
-        await target.discoverMowers(platform.object());
+        await target.discoverMowersAsync(platform.object());
 
         mower1Accessory.verify(o => o.refresh(mower1), Times.Once());
         mower2Accessory.verify(o => o.refresh(mower2), Times.Once());

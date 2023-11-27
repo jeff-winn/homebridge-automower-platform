@@ -174,7 +174,7 @@ describe('AutomowerPlatform', () => {
         container.setup(o => o.registerEverything()).returns(undefined);
 
         const discoveryService = new Mock<DiscoveryService>();
-        discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).throws(new BadConfigurationError('Ouch', 'ERR0000'));
+        discoveryService.setup(o => o.discoverMowersAsync(It.IsAny<AutomowerPlatform>())).throws(new BadConfigurationError('Ouch', 'ERR0000'));
 
         const discoveryServiceFactory = new Mock<DiscoveryServiceFactoryImpl>();
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
@@ -194,7 +194,7 @@ describe('AutomowerPlatform', () => {
         container.setup(o => o.registerEverything()).returns(undefined);
 
         const discoveryService = new Mock<DiscoveryService>();
-        discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).throws(new Error('Ouch'));
+        discoveryService.setup(o => o.discoverMowersAsync(It.IsAny<AutomowerPlatform>())).throws(new Error('Ouch'));
 
         const discoveryServiceFactory = new Mock<DiscoveryServiceFactoryImpl>();
         discoveryServiceFactory.setup(o => o.create(container.object())).returns(discoveryService.object());
@@ -212,7 +212,7 @@ describe('AutomowerPlatform', () => {
         container.setup(o => o.registerEverything()).returns(undefined);
 
         const discoveryService = new Mock<DiscoveryService>();
-        discoveryService.setup(o => o.discoverMowers(It.IsAny<AutomowerPlatform>())).returns(Promise.resolve(undefined));
+        discoveryService.setup(o => o.discoverMowersAsync(It.IsAny<AutomowerPlatform>())).returns(Promise.resolve(undefined));
 
         const eventStreamService = new Mock<EventStreamService>();
         eventStreamService.setup(o => o.setOnStatusEventCallback(It.IsAny<((e) => Promise<void>)>())).returns(undefined);
@@ -234,7 +234,7 @@ describe('AutomowerPlatform', () => {
         
         expect(target.containerConfigured).toBeTruthy();
 
-        discoveryService.verify(o => o.discoverMowers(target), Times.Once());
+        discoveryService.verify(o => o.discoverMowersAsync(target), Times.Once());
         eventStreamService.verify(o => o.start(), Times.Once());
     });
 

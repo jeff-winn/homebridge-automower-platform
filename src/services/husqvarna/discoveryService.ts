@@ -22,7 +22,7 @@ export interface DiscoveryService {
      * Discovers any new mowers that should register.
      * @param platform The platform to which the accessories should be registered.
      */
-    discoverMowers(platform: AutomowerPlatform): Promise<void>;
+    discoverMowersAsync(platform: AutomowerPlatform): Promise<void>;
 }
 
 /**
@@ -31,7 +31,7 @@ export interface DiscoveryService {
 export class DiscoveryServiceImpl implements DiscoveryService {
     public constructor(private mowerService: GetMowersService, private factory: MowerAccessoryFactory, private log: PlatformLogger) { }
 
-    public async discoverMowers(platform: AutomowerPlatform): Promise<void> {
+    public async discoverMowersAsync(platform: AutomowerPlatform): Promise<void> {
         this.log.info('DISCOVERING_NEW_MOWERS');
 
         const found: MowerAccessory[] = [];

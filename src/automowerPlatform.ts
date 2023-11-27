@@ -136,7 +136,7 @@ export class AutomowerPlatform implements DynamicPlatformPlugin {
 
     protected async discoverMowersAsync(): Promise<void> {
         const service = this.getDiscoveryService();
-        await service.discoverMowers(this);
+        await service.discoverMowersAsync(this);
     }
 
     protected async startReceivingEventsAsync(): Promise<void> {
