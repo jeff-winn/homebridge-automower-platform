@@ -19,7 +19,7 @@ on:
 
 env:
   # See LTS versions supported: https://nodejs.org/en/about/releases/
-  NODE_VERSION: 16
+  NODE_VERSION: 18
 
 jobs:
   build:
