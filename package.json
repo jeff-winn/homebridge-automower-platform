@@ -37,7 +37,7 @@
     "url": "https://github.com/jeff-winn/homebridge-automower-platform/issues"
   },
   "engines": {
-    "node": ">=14",
+    "node": ">=18",
     "homebridge": ">=1.6.0"
   },
   "keywords": [
