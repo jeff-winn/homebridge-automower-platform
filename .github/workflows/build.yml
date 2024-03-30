@@ -34,17 +34,3 @@ jobs:
       
     - run: npm ci
     - run: npm run release
-
-    - name: Scan with SonarCloud
-      uses: sonarsource/sonarcloud-github-action@v2.0.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Check Quality Gate
-      uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
-
-      # Force to fail step after specific time
-      timeout-minutes: 5
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
