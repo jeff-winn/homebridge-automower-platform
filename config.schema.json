@@ -99,7 +99,7 @@
           "default": "en",
           "enum": [
             "en",
-            "gardena"
+            "de"
           ],
           "x-schema-form": {
             "type": "select",
@@ -107,6 +107,10 @@
               {
                 "value": "en",
                 "name": "English (en)"
+              },
+              {
+                "value": "de",
+                "name": "Deutsch (de)"
               }
             ]
           }
