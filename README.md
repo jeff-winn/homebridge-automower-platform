@@ -5,7 +5,7 @@
 
 A plugin for controlling [Husqvarna Automower](https://www.husqvarna.com/us/robotic-lawn-mowers/) and [Gardena Smart](https://www.gardena.com/int/products/lawn-care/robotic-mower/) robotic lawn mowers as [Apple HomeKit](https://www.apple.com/ios/home/) accessories using the [Husqvarna Group](https://developer.husqvarnagroup.cloud) cloud services.
 
-Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mowers(s).
+Be advised, because this plug-in uses cloud services, service disruptions or outages are possible as it relies solely on the aforementioned cloud services to manage the communication with your mower(s).
 
 ## Installation
 For help installing and configuring the plugin, please see the documentation found at:
