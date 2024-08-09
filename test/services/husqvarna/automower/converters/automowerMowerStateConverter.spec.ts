@@ -3,6 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 import * as model from '../../../../../src/model';
 
 import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
+import { StatusEvent, AutomowerEventTypes } from '../../../../../src/clients/automower/automowerEventStreamClient';
 import { PlatformLogger } from '../../../../../src/diagnostics/platformLogger';
 import { AutomowerMowerStateConverterImpl } from '../../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
 
@@ -16,10 +17,45 @@ describe('AutomowerMowerStateConverterImpl', () => {
         target = new AutomowerMowerStateConverterImpl(log.object());
     });
 
+    it('should return parked and idle when parked and outside of scheduled window', () => {
+        const mower: StatusEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.STATUS,
+            attributes:{
+                battery:{
+                    batteryPercent: 82
+                },
+                mower:{
+                    mode: Mode.MAIN_AREA, // Waiting for the next scheduled run, not actually mowing.
+                    activity: Activity.PARKED_IN_CS,
+                    state: State.RESTRICTED, // The mower is outside of the cutting schedule.
+                    errorCode: 0,
+                    errorCodeTimestamp: 0
+                },
+                planner:{
+                    nextStartTimestamp: 1723075200000,
+                    override:{
+                        action: OverrideAction.NOT_ACTIVE
+                    },
+                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
+                },
+                metadata:{
+                    connected: true,
+                    statusTimestamp: 1723071500034}
+                }
+            };
+
+        const result = target.convertMowerState(mower.attributes.mower);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.PARKED);
+        expect(result.state).toEqual(model.State.IDLE);
+    });
+
     it('should return mowing when forced to mow', () => {
         const mower: Mower = {
             type: 'mower',
-            id: 'ed6c1900-5a15-4143-8c9b-6fb01ad1a606',
+            id: '12345',
             attributes: {
                 system: {
                     name: 'Dobby',
@@ -1214,74 +1250,6 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     errorCodeTimestamp: 0,
                     mode: Mode.MAIN_AREA,
                     state: State.FATAL_ERROR
-                },
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: { },
-                    restrictedReason: RestrictedReason.PARK_OVERRIDE
-                },
-                positions: [],
-                settings: {
-                    cuttingHeight: 1,
-                    headlight: {
-                        mode: HeadlightMode.ALWAYS_ON
-                    }
-                },
-                statistics: {
-                    numberOfChargingCycles: 1,
-                    numberOfCollisions: 1,
-                    totalChargingTime: 1,
-                    totalCuttingTime: 1,
-                    totalRunningTime: 1,
-                    totalSearchingTime: 1
-                },
-                system: {
-                    model: 'Hello World',
-                    name: 'Groovy',
-                    serialNumber: 1
-                },
-                battery: {
-                    batteryPercent: 100
-                },
-                calendar: {
-                    tasks: [ 
-                        {
-                            start: 1,
-                            duration: 1,
-                            sunday: true,
-                            monday: false,
-                            tuesday: false,
-                            wednesday: false,
-                            thursday: false,
-                            friday: false,
-                            saturday: false
-                        }
-                    ]
-                }
-            }
-        };
-
-        const result = target.convertMower(mower);
-
-        expect(result).toBeDefined();
-        expect(result.state).toEqual(model.State.FAULTED);
-    });
-
-    it('should return faulted when restricted', () => {
-        const mower: Mower = {
-            id: '12345',
-            type: 'mower',
-            attributes: {
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 1
-                },
-                mower: {
-                    activity: Activity.UNKNOWN,
-                    errorCode: 0,
-                    errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
-                    state: State.RESTRICTED
                 },
                 planner: {
                     nextStartTimestamp: 0,
