@@ -39,13 +39,13 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.Activity.OFF;
         }
 
-        if (mower.mode === Mode.MAIN_AREA || mower.mode === Mode.SECONDARY_AREA) {
-            return model.Activity.MOWING;
-        }
-
-        if (mower.mode === Mode.HOME) {
+        if (mower.mode === Mode.HOME || (mower.mode === Mode.MAIN_AREA && mower.state === State.RESTRICTED)) {
             return model.Activity.PARKED;
         }
+
+        if (mower.mode === Mode.MAIN_AREA || mower.mode === Mode.SECONDARY_AREA) {
+            return model.Activity.MOWING;
+        }        
         
         this.log.debug('VALUE_NOT_SUPPORTED', mower.activity);
         return model.Activity.UNKNOWN;
@@ -60,7 +60,7 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.State.CHARGING;
         }
 
-        if (mower.mode === Mode.HOME && mower.activity === Activity.PARKED_IN_CS) {
+        if (mower.activity === Activity.PARKED_IN_CS) {
             return model.State.IDLE;
         }
         
@@ -79,7 +79,6 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             case State.ERROR:
             case State.ERROR_AT_POWER_UP:
             case State.FATAL_ERROR:
-            case State.RESTRICTED:
             case State.STOPPED:
                 return model.State.FAULTED;
 
