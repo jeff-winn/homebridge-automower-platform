@@ -12,9 +12,9 @@ Please follow the instructions below:
 3. After the plug-in has installed, you will need to modify your version installed to be the next version by:
    - Open the Homebridge UI Plugins menu.
    - Find the plug-in within your installed list of plug-ins.
-   - Click the wrench icon.
-   - Click `Install Alternate Version`
-   - From the drop down, select the next version you wish to install.
+   - Click the '...' icon.
+   - Click `Manage Version`
+   - From the drop down, select the next version you wish to install. The 'preview' builds are what changes have been actively made since the last release.
    - Click the `Install` button.
 4. Restart Homebridge.
 
