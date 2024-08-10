@@ -15,6 +15,12 @@ WARNING: Enabling DEBUG logging **WILL** show log entries that are sensitive and
 ```
 homebridge-automower-platform
 ```
+- Open the Config JSON editor
+- Find the Homebridge Automower Platform section
+- Add the line (including the trailing comma):
+```json
+"logger_type": "imitation",
+```
 - Restart Homebridge.
 
 At this point, you should see additional log entries. To revert the change, simply remove the DEBUG environment variable and restart Homebridge.
