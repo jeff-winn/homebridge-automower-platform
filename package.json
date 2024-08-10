@@ -37,8 +37,8 @@
     "url": "https://github.com/jeff-winn/homebridge-automower-platform/issues"
   },
   "engines": {
-    "node": ">=18",
-    "homebridge": ">=1.7.0"
+    "node": "^18.20.4 || ^20.16.0",
+    "homebridge": "^1.8.0 || ^2.0.0-beta.0"
   },
   "keywords": [
     "homebridge-plugin",
@@ -64,7 +64,7 @@
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "eslint": "^8.57.0",
-    "homebridge": "^1.7.0",
+    "homebridge": "^2.0.0-beta.0",
     "jest": "^29.7.0",
     "jest-sonar-reporter": "^2.0.0",
     "moq.ts": "^10.0.8",
