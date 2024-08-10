@@ -52,10 +52,6 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
     }
 
     protected convertState(mower: MowerState): model.State {
-        if (mower.state === State.STOPPED && mower.errorCode !== 0) {
-            return model.State.TAMPERED;
-        }
-
         if (mower.activity === Activity.CHARGING) {
             return model.State.CHARGING;
         }

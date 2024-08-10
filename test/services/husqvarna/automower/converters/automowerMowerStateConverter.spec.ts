@@ -825,7 +825,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         log.verify(o => o.debug(It.IsAny(), It.IsAny()), Times.Once());
     });   
 
-    it('should return tampered when stopped with error', () => {
+    it('should return faulted when stopped with error', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -890,7 +890,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.state).toEqual(model.State.TAMPERED);
+        expect(result.state).toEqual(model.State.FAULTED);
     });
 
     it('should return charging while mowing secondary area', () => {
