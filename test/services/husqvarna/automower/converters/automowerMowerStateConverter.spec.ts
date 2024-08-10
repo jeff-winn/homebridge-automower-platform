@@ -616,7 +616,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.state).toEqual(model.State.LEAVING_HOME);
     });
 
-    it('should return mowing when stopped in garden', () => {
+    it('should return faulted when stopped in garden', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -629,7 +629,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.STOPPED_IN_GARDEN,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.SECONDARY_AREA,
                     state: State.UNKNOWN
                 },
                 planner: {
@@ -682,7 +682,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.MOWING);
-        expect(result.state).toEqual(model.State.UNKNOWN);
+        expect(result.state).toEqual(model.State.FAULTED);
     });
 
     it('should return mowing when mowing', () => {
