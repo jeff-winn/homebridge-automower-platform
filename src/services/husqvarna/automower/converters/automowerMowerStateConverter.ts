@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Activity, Mode, Mower, MowerState, State } from '../../../../clients/automower/automowerClient';
+import { Activity, Mode, Mower, MowerAttributes, MowerState, State, StatusAttributes } from '../../../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../diagnostics/platformLogger';
 
 /**
@@ -14,23 +14,23 @@ export interface AutomowerMowerStateConverter {
     convertMower(mower: Mower): model.MowerState;
 
     /**
-     * Converts the mower state.
-     * @param mower The mower state to convert.
+     * Converts the status attributes.
+     * @param attributes The mower attributes to convert.
      */
-    convertMowerState(mower: MowerState): model.MowerState;
+    convertStatusAttributes(attributes: StatusAttributes): model.MowerState;
 }
 
 export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConverter {
     public constructor(private log: PlatformLogger) { }
     
     public convertMower(mower: Mower): model.MowerState {
-        return this.convertMowerState(mower.attributes.mower);
+        return this.convertStatusAttributes(mower.attributes);
     }
 
-    public convertMowerState(mower: MowerState): model.MowerState {
+    public convertStatusAttributes(attributes: StatusAttributes): model.MowerState {
         return {
-            activity: this.convertActivity(mower),
-            state: this.convertState(mower)
+            activity: this.convertActivity(attributes.mower),
+            state: this.convertState(attributes.mower)
         };
     }
 

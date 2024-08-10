@@ -9,17 +9,28 @@ import { FetchClient, Response } from '../fetchClient';
 export interface Mower {
     type: string;
     id: string;    
-    attributes: {
-        system: Device;
-        battery: Battery;
-        mower: MowerState;
-        calendar: Calendar;
-        planner: Planner;
-        metadata: MowerMetadata;
-        positions: Position[];
-        settings: Settings;
-        statistics: Statistics;
-    };
+    attributes: MowerAttributes;
+}
+
+/**
+ * Describes the mower attributes.
+ */
+export interface MowerAttributes extends StatusAttributes {
+    system: Device;
+    calendar: Calendar;
+    positions: Position[];
+    settings: Settings;
+    statistics: Statistics;
+}
+
+/**
+ * Describes status attributes.
+ */
+export interface StatusAttributes {
+    battery: Battery;
+    mower: MowerState;
+    planner: Planner;
+    metadata: MowerMetadata;
 }
 
 /**

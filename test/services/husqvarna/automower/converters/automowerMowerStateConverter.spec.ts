@@ -45,7 +45,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                 }
             };
 
-        const result = target.convertMowerState(mower.attributes.mower);
+        const result = target.convertStatusAttributes(mower.attributes);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);

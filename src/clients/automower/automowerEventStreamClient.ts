@@ -2,7 +2,7 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
 import { WebSocketWrapper } from '../../primitives/webSocketWrapper';
 import { AbstractEventStreamClient, EventStreamClient } from '../eventStreamClient';
-import { Battery, Calendar, Headlight, MowerMetadata, MowerState, Planner, Position } from './automowerClient';
+import { Calendar, Headlight, Position, StatusAttributes } from './automowerClient';
 
 /**
  * Describes a connected event.
@@ -34,12 +34,7 @@ export enum AutomowerEventTypes {
  * Describes a status event.
  */
 export interface StatusEvent extends AutomowerEvent {
-    attributes: {
-        battery: Battery;
-        mower: MowerState;
-        planner: Planner;
-        metadata: MowerMetadata;
-    };
+    attributes: StatusAttributes;
 }
 
 /**
