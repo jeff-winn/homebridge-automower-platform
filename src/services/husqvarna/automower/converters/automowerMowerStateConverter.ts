@@ -52,10 +52,10 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
     }
 
     protected convertState(mower: MowerState): model.State {
-        if (mower.activity === Activity.STOPPED_IN_GARDEN) {
+        if (mower.mode === Mode.SECONDARY_AREA && mower.activity === Activity.STOPPED_IN_GARDEN) {
             return model.State.FAULTED;
         }
-        
+
         if (mower.activity === Activity.CHARGING) {
             return model.State.CHARGING;
         }
