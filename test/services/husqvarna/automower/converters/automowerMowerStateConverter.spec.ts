@@ -17,6 +17,78 @@ describe('AutomowerMowerStateConverterImpl', () => {
         target = new AutomowerMowerStateConverterImpl(log.object());
     });
 
+    it('should return faulted when battery has been depleted while mowing main area', () => {
+        const mower: StatusEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.STATUS,
+            attributes:{
+                battery:{
+                    batteryPercent: 0
+                },
+                mower:{
+                    mode: Mode.MAIN_AREA,
+                    activity: Activity.NOT_APPLICABLE,
+                    state: State.PAUSED,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0
+                },
+                planner:{
+                    nextStartTimestamp: 0,
+                    override:{
+                        action: OverrideAction.NOT_ACTIVE
+                    },
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
+                },
+                metadata:{
+                    connected: true,
+                    statusTimestamp: 1723315112510
+                }
+            }
+        };
+
+        const result = target.convertStatusAttributes(mower.attributes);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
+    it('should return faulted when battery has been depleted while mowing secondary area', () => {
+        const mower: StatusEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.STATUS,
+            attributes:{
+                battery:{
+                    batteryPercent: 0
+                },
+                mower:{
+                    mode: Mode.SECONDARY_AREA,
+                    activity: Activity.NOT_APPLICABLE,
+                    state: State.PAUSED,
+                    errorCode: 0,
+                    errorCodeTimestamp: 0
+                },
+                planner:{
+                    nextStartTimestamp: 0,
+                    override:{
+                        action: OverrideAction.NOT_ACTIVE
+                    },
+                    restrictedReason: RestrictedReason.NOT_APPLICABLE
+                },
+                metadata:{
+                    connected: true,
+                    statusTimestamp: 1723315112510
+                }
+            }
+        };
+
+        const result = target.convertStatusAttributes(mower.attributes);
+
+        expect(result).toBeDefined();
+        expect(result.activity).toEqual(model.Activity.MOWING);
+        expect(result.state).toEqual(model.State.FAULTED);
+    });
+
     it('should return parked and idle when parked and outside of scheduled window', () => {
         const mower: StatusEvent = {
             id: '12345',
@@ -41,11 +113,12 @@ describe('AutomowerMowerStateConverterImpl', () => {
                 },
                 metadata:{
                     connected: true,
-                    statusTimestamp: 1723071500034}
+                    statusTimestamp: 1723071500034
                 }
-            };
+            }
+        };
 
-        const result = target.convertMowerState(mower.attributes.mower);
+        const result = target.convertStatusAttributes(mower.attributes);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
@@ -616,7 +689,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.state).toEqual(model.State.LEAVING_HOME);
     });
 
-    it('should return mowing when stopped in garden', () => {
+    it('should return faulted when stopped in garden', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -629,7 +702,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     activity: Activity.STOPPED_IN_GARDEN,
                     errorCode: 0,
                     errorCodeTimestamp: 0,
-                    mode: Mode.MAIN_AREA,
+                    mode: Mode.SECONDARY_AREA,
                     state: State.UNKNOWN
                 },
                 planner: {
@@ -682,7 +755,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.MOWING);
-        expect(result.state).toEqual(model.State.UNKNOWN);
+        expect(result.state).toEqual(model.State.FAULTED);
     });
 
     it('should return mowing when mowing', () => {
@@ -825,7 +898,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         log.verify(o => o.debug(It.IsAny(), It.IsAny()), Times.Once());
     });   
 
-    it('should return tampered when stopped with error', () => {
+    it('should return faulted when stopped with error', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -890,10 +963,10 @@ describe('AutomowerMowerStateConverterImpl', () => {
         const result = target.convertMower(mower);
 
         expect(result).toBeDefined();
-        expect(result.state).toEqual(model.State.TAMPERED);
+        expect(result.state).toEqual(model.State.FAULTED);
     });
 
-    it('should return charging while mowing secondary area', () => {
+    it('should return charging while mowing secondary area and battery has been depleted', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -935,7 +1008,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     serialNumber: 1
                 },
                 battery: {
-                    batteryPercent: 100
+                    batteryPercent: 80
                 },
                 calendar: {
                     tasks: [ 
@@ -962,7 +1035,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
         expect(result.state).toEqual(model.State.CHARGING);
     });
 
-    it('should return charging while mowing main area', () => {
+    it('should return charging while mowing main area and battery has been depleted', () => {
         const mower: Mower = {
             id: '12345',
             type: 'mower',
@@ -1004,7 +1077,7 @@ describe('AutomowerMowerStateConverterImpl', () => {
                     serialNumber: 1
                 },
                 battery: {
-                    batteryPercent: 100
+                    batteryPercent: 80
                 },
                 calendar: {
                     tasks: [ 

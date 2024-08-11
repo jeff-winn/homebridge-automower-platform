@@ -353,7 +353,7 @@ describe('AutomowerEventStreamService', () => {
             }
         };
 
-        stateConverter.setup(o => o.convertMowerState(mowerState)).returns({
+        stateConverter.setup(o => o.convertStatusAttributes(event.attributes)).returns({
             activity: model.Activity.MOWING,
             state: model.State.IN_OPERATION
         });

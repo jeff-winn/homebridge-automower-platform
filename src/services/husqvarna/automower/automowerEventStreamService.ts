@@ -88,7 +88,7 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
                 connection: {
                     connected: event.attributes.metadata.connected
                 },
-                mower: this.stateConverter.convertMowerState(event.attributes.mower)
+                mower: this.stateConverter.convertStatusAttributes(event.attributes)
             }
         });
 

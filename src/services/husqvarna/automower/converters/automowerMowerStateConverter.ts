@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Activity, Mode, Mower, MowerState, State } from '../../../../clients/automower/automowerClient';
+import { Activity, Mode, Mower, MowerState, State, StatusAttributes } from '../../../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../diagnostics/platformLogger';
 
 /**
@@ -14,23 +14,23 @@ export interface AutomowerMowerStateConverter {
     convertMower(mower: Mower): model.MowerState;
 
     /**
-     * Converts the mower state.
-     * @param mower The mower state to convert.
+     * Converts the status attributes.
+     * @param attributes The mower attributes to convert.
      */
-    convertMowerState(mower: MowerState): model.MowerState;
+    convertStatusAttributes(attributes: StatusAttributes): model.MowerState;
 }
 
 export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConverter {
     public constructor(private log: PlatformLogger) { }
     
     public convertMower(mower: Mower): model.MowerState {
-        return this.convertMowerState(mower.attributes.mower);
+        return this.convertStatusAttributes(mower.attributes);
     }
 
-    public convertMowerState(mower: MowerState): model.MowerState {
+    public convertStatusAttributes(attributes: StatusAttributes): model.MowerState {
         return {
-            activity: this.convertActivity(mower),
-            state: this.convertState(mower)
+            activity: this.convertActivity(attributes.mower),
+            state: this.convertState(attributes)
         };
     }
 
@@ -39,7 +39,7 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.Activity.OFF;
         }
 
-        if (mower.mode === Mode.HOME || (mower.mode === Mode.MAIN_AREA && mower.state === State.RESTRICTED)) {
+        if (mower.mode === Mode.HOME || (mower.activity === Activity.PARKED_IN_CS)) {
             return model.Activity.PARKED;
         }
 
@@ -47,32 +47,36 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.Activity.MOWING;
         }        
         
-        this.log.debug('VALUE_NOT_SUPPORTED', mower.activity);
+        this.log.debug('VALUE_NOT_SUPPORTED', mower.mode);
         return model.Activity.UNKNOWN;
     }
 
-    protected convertState(mower: MowerState): model.State {
-        if (mower.state === State.STOPPED && mower.errorCode !== 0) {
-            return model.State.TAMPERED;
+    protected convertState(attributes: StatusAttributes): model.State {
+        if (attributes.battery.batteryPercent === 0) {
+            return model.State.FAULTED; // The battery has been depleted, and will need intervention to fix.
         }
 
-        if (mower.activity === Activity.CHARGING) {
+        if (attributes.mower.mode === Mode.SECONDARY_AREA && attributes.mower.activity === Activity.STOPPED_IN_GARDEN) {
+            return model.State.FAULTED;
+        }
+
+        if (attributes.mower.activity === Activity.CHARGING) {
             return model.State.CHARGING;
         }
 
-        if (mower.activity === Activity.PARKED_IN_CS) {
+        if (attributes.mower.activity === Activity.PARKED_IN_CS) {
             return model.State.IDLE;
         }
         
-        if (mower.activity === Activity.GOING_HOME) {
+        if (attributes.mower.activity === Activity.GOING_HOME) {
             return model.State.GOING_HOME;
         }
 
-        if (mower.activity === Activity.LEAVING) {
+        if (attributes.mower.activity === Activity.LEAVING) {
             return model.State.LEAVING_HOME;
         }
         
-        switch (mower.state) {
+        switch (attributes.mower.state) {
             case State.IN_OPERATION:
                 return model.State.IN_OPERATION;
 
@@ -93,7 +97,7 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
                 return model.State.UNKNOWN;
 
             default:
-                this.log.debug('VALUE_NOT_SUPPORTED', mower.state);
+                this.log.debug('VALUE_NOT_SUPPORTED', attributes.mower.state);
                 return model.State.UNKNOWN;
         }
     }

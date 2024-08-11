@@ -70,6 +70,35 @@
             ]
           }
         },
+        "logger_type": {
+          "title": "Logging",
+          "type": "string",
+          "description": "This determines how your plugin logs statements. The default logger doesn't do debugging.",
+          "required": true,
+          "default": "default",
+          "enum": [
+            "default",
+            "imitation",
+            "force_debug"
+          ],
+          "x-schema-form": {
+            "type": "select",
+            "titleMap": [
+              {
+                "value": "default",
+                "name": "Default - Homebridge stock logger"
+              },
+              {
+                "value": "imitation",
+                "name": "Imitation - Looks like the default logger but includes debugging support"
+              },
+              {
+                "value": "force_debug",
+                "name": "Force debug statements"
+              }
+            ]
+          }
+        },
         "username": {
           "title": "Email Address",
           "type": "string",
@@ -187,6 +216,7 @@
       },
       "device_type",
       "sensor_mode",
+      "logger_type",
       {
         "type": "fieldset",
         "title": "Account Settings",
