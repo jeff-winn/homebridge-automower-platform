@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Activity, Mode, Mower, MowerAttributes, MowerState, State, StatusAttributes } from '../../../../clients/automower/automowerClient';
+import { Activity, Mode, Mower, MowerState, State, StatusAttributes } from '../../../../clients/automower/automowerClient';
 import { PlatformLogger } from '../../../../diagnostics/platformLogger';
 
 /**
