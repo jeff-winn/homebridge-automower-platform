@@ -10,16 +10,15 @@ WARNING: Enabling DEBUG logging **WILL** show log entries that are sensitive and
 
 ### How to enable debug mode:
 - Open the Homebridge UI.
+- Open the Plugins section
+- Click the ... and select Plugin Config for the plugin
+- In the Logging option, ensure the Imitation mode is selected
+- Click Save
+- When prompted to restart Homebridge click close (it will be restarted after the next step)
 - Open the Homebridge Settings menu.
 - In the environment variables section, enter the following value into the DEBUG text box:
 ```
 homebridge-automower-platform
-```
-- Open the Config JSON editor
-- Find the Homebridge Automower Platform section
-- Add the line (including the trailing comma):
-```json
-"logger_type": "imitation",
 ```
 - Restart Homebridge.
 
