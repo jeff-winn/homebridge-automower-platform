@@ -39,7 +39,7 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
             return model.Activity.OFF;
         }
 
-        if (mower.mode === Mode.HOME || (mower.activity === Activity.PARKED_IN_CS)) {
+        if (mower.mode === Mode.HOME || mower.activity === Activity.PARKED_IN_CS) {
             return model.Activity.PARKED;
         }
 
@@ -51,12 +51,8 @@ export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConv
         return model.Activity.UNKNOWN;
     }
 
-    protected convertState(attributes: StatusAttributes): model.State {
-        if (attributes.battery.batteryPercent === 0) {
-            return model.State.FAULTED; // The battery has been depleted, and will need intervention to fix.
-        }
-
-        if (attributes.mower.mode === Mode.SECONDARY_AREA && attributes.mower.activity === Activity.STOPPED_IN_GARDEN) {
+    protected convertState(attributes: StatusAttributes): model.State {        
+        if (attributes.mower.activity === Activity.STOPPED_IN_GARDEN) {
             return model.State.FAULTED;
         }
 
