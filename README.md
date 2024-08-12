@@ -57,6 +57,7 @@ The following describes the configuration settings available within the plugin. 
   "name": "Homebridge Automower Platform",
   "device_type": "automower",
   "sensor_mode": "all",
+  "logger_type": "default",
   "lang": "en",
   "authentication_mode": "client_credentials",
   "appKey": "<<REDACTED>>",
@@ -74,6 +75,10 @@ The following describes the configuration settings available within the plugin. 
   - _motion_only_: Only motion sensors will be registered
   - _contact_only_: Only contact sensors will be registered
   - _none_: No sensors
+- _logger_type_: This determines how the plugin will log statements to Homebridge
+  - _default_: Uses the stock Homebridge logger
+  - _imitation_: Looks like the default logger, but adds improved support for debugging
+  - _force_debug_: This forcibly writes the debug statements to stdout.
 - _lang_: This will be the language used during logging. The following languages are supported:
   - _en_: English (US)
 - _authentication_mode_: The type of authentication modes available to login to Husqvarna Group cloud services. The following authentication modes are supported:
