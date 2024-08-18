@@ -24,7 +24,6 @@ describe('GardenaGetMowersService', () => {
         mowerStateConverter = new Mock<GardenaMowerStateConverter>();
 
         log = new Mock<PlatformLogger>();
-        log.setup(o => o.warn('GARDENA_PREVIEW_IN_USE')).returns(undefined);
 
         target = new GardenaGetMowersService(tokenManager.object(), mowerStateConverter.object(), client.object(), log.object());
     });
@@ -36,7 +35,6 @@ describe('GardenaGetMowersService', () => {
         await expect(target.getMowers()).rejects.toThrowError(NotAuthorizedError);
 
         tokenManager.verify(o => o.flagAsInvalid(), Times.Once());
-        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 
     it('should return an empty array when no locations are found', async () => {
@@ -53,8 +51,6 @@ describe('GardenaGetMowersService', () => {
         const result = await target.getMowers();
         expect(result).toBeDefined();
         expect(result).toHaveLength(0);
-
-        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 
     it('should return an empty array when common is not provided', async () => {
@@ -162,7 +158,6 @@ describe('GardenaGetMowersService', () => {
         expect(mowers).toBeDefined();
         expect(mowers.length).toBe(0);
 
-        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
         log.verify(o => o.warn('GARDENA_MISSING_REQUIRED_COMMON_SERVICE', '12345'), Times.Once());
     });
 
@@ -326,7 +321,5 @@ describe('GardenaGetMowersService', () => {
         expect(result.attributes.metadata.serialNumber).toBe('1234567890');
         expect(result.attributes.mower.activity).toBe(Activity.PARKED);
         expect(result.attributes.mower.state).toBe(State.CHARGING);
-
-        log.verify(o => o.warn('GARDENA_PREVIEW_IN_USE'), Times.Once());
     });
 });

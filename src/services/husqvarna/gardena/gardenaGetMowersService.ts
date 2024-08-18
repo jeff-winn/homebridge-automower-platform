@@ -21,9 +21,7 @@ export class GardenaGetMowersService implements GetMowersService {
     public constructor(private tokenManager: AccessTokenManager, private mowerStateConverter: GardenaMowerStateConverter, 
         private client: GardenaClient, private log: PlatformLogger) { }
     
-    public async getMowers(): Promise<model.Mower[]> {
-        this.notifyPreviewFeatureIsBeingUsed();
-        
+    public async getMowers(): Promise<model.Mower[]> {        
         try {
             const token = await this.tokenManager.getCurrentTokenAsync();
 
@@ -148,12 +146,5 @@ export class GardenaGetMowersService implements GetMowersService {
             manufacturer: value.substring(0, firstIndex),
             model: value.substring(firstIndex + 1)
         };
-    }
-
-    /**
-     * Notifies the user that the preview feature is currently being used, to ensure they're aware.
-     */
-    protected notifyPreviewFeatureIsBeingUsed(): void {
-        this.log.warn('GARDENA_PREVIEW_IN_USE');
     }
 }
