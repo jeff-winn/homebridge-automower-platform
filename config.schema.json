@@ -31,7 +31,7 @@
               },
               {
                 "value": "gardena",
-                "name": "Gardena Smart (BETA)"
+                "name": "Gardena Smart"
               }
             ]
           }
@@ -214,9 +214,17 @@
           "lang"
         ]
       },
-      "device_type",
-      "sensor_mode",
-      "logger_type",
+      "device_type",      
+      {
+        "type": "fieldset",
+        "title": "Behaviors",
+        "description": "Allows you to change how the plugin behaves. These settings are all optional.",
+        "expandable": true,
+        "items": [
+          "sensor_mode",
+          "logger_type"
+        ]
+      },
       {
         "type": "fieldset",
         "title": "Account Settings",
