@@ -17,10 +17,53 @@ export interface Mower {
  */
 export interface MowerAttributes extends StatusAttributes {
     system: Device;
+    capabilities: MowerCapabilities;
     calendar: Calendar;
     positions: Position[];
     settings: Settings;
     statistics: Statistics;
+    stayOutZones: StayOutZones;
+    workAreas: WorkArea[];
+}
+
+/**
+ * Describes the stay out zones for a particular mower.
+ */
+export interface StayOutZones {
+    dirty: boolean;
+    zones: StayOutZone[];
+}
+
+/**
+ * Describes a stay out zone.
+ */
+export interface StayOutZone {
+    id: string;
+    name: string;
+    enabled: boolean;
+}
+
+/**
+ * Describes a work area.
+ */
+export interface WorkArea {
+    workAreaId: number;
+    name: string;
+    cuttingHeight: number;
+    enabled: boolean;
+    progress: number;
+    lastTimeCompleted: number;
+}
+
+/**
+ * Describes the capabilities of a mower.
+ */
+export interface MowerCapabilities {
+    canConfirmError: boolean;
+    headlights: boolean,
+    position: boolean,
+    stayOutZones: boolean,
+    workAreas: boolean
 }
 
 /**
@@ -79,6 +122,8 @@ export enum HeadlightMode {
 export interface Settings {
     cuttingHeight: number;
     headlight: Headlight;
+    dateTime: number;
+    timeZone: string;
 }
 
 /**
@@ -95,9 +140,12 @@ export interface MowerMetadata {
 export interface MowerState {
     mode: Mode;
     activity: Activity;
+    inactiveReason: string;
     state: State;
+    workAreaId: number;
     errorCode: number;
     errorCodeTimestamp: number;
+    isErrorConfirmable: boolean;
 }
 
 /**
@@ -249,6 +297,7 @@ export interface Planner {
         action?: OverrideAction;
     };
     restrictedReason?: RestrictedReason;
+    externalReason?: number;
 }
 
 /**
@@ -290,6 +339,7 @@ export interface Position {
 export interface Task {
     start: number;
     duration: number;
+    workAreaId: number;
     monday: boolean;
     tuesday: boolean;
     wednesday: boolean;
@@ -303,12 +353,16 @@ export interface Task {
  * Describes the statistics for the mower.
  */
 export interface Statistics {
+    cuttingBladeUsageTime: number;
+    downTime: number;
     numberOfChargingCycles: number;
     numberOfCollisions: number;
     totalChargingTime: number;
     totalCuttingTime: number;
+    totalDriveDistance: number;
     totalRunningTime: number;
     totalSearchingTime: number;
+    upTime: number;
 }
 
 /**
