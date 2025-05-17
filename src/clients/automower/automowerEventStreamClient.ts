@@ -137,7 +137,7 @@ export interface PlannerEvent extends AutomowerEvent {
  * Describes a position event.
  */
 export interface PositionEvent extends AutomowerEvent {
-    attriutes: {
+    attributes: {
         position: Position;
     }
 }

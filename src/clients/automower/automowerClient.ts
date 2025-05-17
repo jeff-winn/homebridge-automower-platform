@@ -9,25 +9,20 @@ import { FetchClient, Response } from '../fetchClient';
 export interface Mower {
     type: string;
     id: string;    
-    attributes: MowerAttributes;
-}
-
-/**
- * Describes the mower attributes.
- */
-export interface MowerAttributes {
-    system: System;
-    battery: Battery;
-    capabilities: Capabilities;
-    mower: MowerState;
-    calendar: Calendar;
-    planner: Planner;
-    metadata: Metadata;
-    positions: Position[];
-    settings: Settings;
-    statistics: Statistics;
-    stayOutZones: StayOutZones;
-    workAreas: WorkArea[];
+    attributes: {
+        system: System;
+        battery: Battery;
+        capabilities: Capabilities;
+        mower: MowerState;
+        calendar: Calendar;
+        planner: Planner;
+        metadata: Metadata;
+        positions: Position[];
+        settings: Settings;
+        statistics: Statistics;
+        stayOutZones?: StayOutZones;
+        workAreas?: WorkArea[];
+    }
 }
 
 /**
@@ -63,11 +58,11 @@ export interface WorkArea {
  * Describes the capabilities of a mower.
  */
 export interface Capabilities {
-    canConfirmError: boolean;
     headlights: boolean,
-    position: boolean,
-    stayOutZones: boolean,
     workAreas: boolean
+    position: boolean,
+    canConfirmError: boolean;
+    stayOutZones: boolean,
 }
 
 /**
@@ -131,8 +126,8 @@ export enum HeadlightMode {
 export interface Settings {
     cuttingHeight: number;
     headlight: Headlight;
-    dateTime: number;
-    timeZone: string;
+    dateTime?: number;
+    timeZone?: string;
 }
 
 /**
@@ -167,12 +162,12 @@ export interface Message {
 export interface MowerState {
     mode: Mode;
     activity: Activity;
-    inactiveReason: string;
+    inactiveReason?: InactiveReason;
     state: State;
     errorCode: number;
-    errorCodeTimestamp: number;
-    isErrorConfirmable: boolean;
-    workAreaId: number;
+    errorCodeTimestamp?: number;
+    isErrorConfirmable?: boolean;
+    workAreaId?: number;
 }
 
 /**
@@ -412,7 +407,7 @@ export interface Position {
 export interface CalendarTask {
     start: number;
     duration: number;
-    workAreaId: number;
+    workAreaId?: number;
     monday: boolean;
     tuesday: boolean;
     wednesday: boolean;
@@ -426,16 +421,16 @@ export interface CalendarTask {
  * Describes the statistics for the mower.
  */
 export interface Statistics {
-    cuttingBladeUsageTime: number;
-    downTime: number;
+    cuttingBladeUsageTime?: number;
+    downTime?: number;
     numberOfChargingCycles: number;
     numberOfCollisions: number;
     totalChargingTime: number;
     totalCuttingTime: number;
-    totalDriveDistance: number;
+    totalDriveDistance?: number;
     totalRunningTime: number;
     totalSearchingTime: number;
-    upTime: number;
+    upTime?: number;
 }
 
 /**
