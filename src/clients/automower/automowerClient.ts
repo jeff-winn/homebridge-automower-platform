@@ -510,8 +510,8 @@ export interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
-        private errorFactory: ErrorFactory) { }    
+    public constructor(private readonly appKey: string | undefined, private readonly baseUrl: string, 
+        private readonly fetch: FetchClient, private readonly errorFactory: ErrorFactory) { }    
 
     public getApplicationKey(): string | undefined {
         return this.appKey;

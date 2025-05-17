@@ -166,7 +166,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     private messageReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
     private connectionId?: string;
     
-    public constructor(private baseUrl: string, log: PlatformLogger) { 
+    public constructor(private readonly baseUrl: string, readonly log: PlatformLogger) { 
         super(log);
     }
 
