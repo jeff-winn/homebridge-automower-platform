@@ -21,7 +21,7 @@ export interface AutomowerMowerStateConverter {
 }
 
 export class AutomowerMowerStateConverterImpl implements AutomowerMowerStateConverter {
-    public constructor(private log: PlatformLogger) { }
+    public constructor(private readonly log: PlatformLogger) { }
     
     public convertMower(mower: Mower): model.MowerState {
         return this.convertMowerState(mower.attributes.mower);
