@@ -5,7 +5,7 @@
         "data": [
             {
                 "type": "mower",
-                "id": "ddfdacd8-d364-481b-9386-a0cb6d4f43a5",
+                "id": "REDACTED",
                 "attributes": {
                     "system": {
                         "name": "Automower",
@@ -15,12 +15,21 @@
                     "battery": {
                         "batteryPercent": 44
                     },
+                    "capabilities": {
+                        "headlights": true,
+                        "workAreas": false,
+                        "position": true,
+                        "canConfirmError": false,
+                        "stayOutZones": false
+                    },
                     "mower": {
                         "mode": "MAIN_AREA",
-                        "activity": "CHARGING",
+                        "activity": "MOWING",
+                        "inactiveReason": "NONE",
                         "state": "IN_OPERATION",
                         "errorCode": 0,
-                        "errorCodeTimestamp": 0
+                        "errorCodeTimestamp": 0,
+                        "isErrorConfirmable": false
                     },
                     "calendar": {
                         "tasks": [
@@ -38,7 +47,7 @@
                         ]
                     },
                     "planner": {
-                        "nextStartTimestamp": 1684262215000,
+                        "nextStartTimestamp": 0,
                         "override": {
                             "action": "NOT_ACTIVE"
                         },
@@ -50,8 +59,8 @@
                     },
                     "positions": [
                         {
-                            "latitude": 0.00,
-                            "longitude": 0.00
+                            "latitude": 0.000000,
+                            "longitude": 0.000000
                         }
                     ],
                     "settings": {
@@ -61,12 +70,13 @@
                         }
                     },
                     "statistics": {
-                        "numberOfChargingCycles": 319,
-                        "numberOfCollisions": 10661,
-                        "totalChargingTime": 1069200,
-                        "totalCuttingTime": 3088800,
-                        "totalRunningTime": 3376800,
-                        "totalSearchingTime": 288000
+                        "numberOfChargingCycles": 1105,
+                        "numberOfCollisions": 35223,
+                        "totalChargingTime": 3672000,
+                        "totalCuttingTime": 8251200,
+                        "totalDriveDistance": 3630744,
+                        "totalRunningTime": 9309600,
+                        "totalSearchingTime": 1058400
                     }
                 }
             }
