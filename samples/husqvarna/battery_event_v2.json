@@ -1,0 +1,9 @@
+{
+    "id": "REDACTED",
+    "type": "battery-event-v2",
+    "attributes": {
+        "battery": {
+            "batteryPercent": 48
+        }
+    }
+}

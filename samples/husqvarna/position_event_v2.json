@@ -1,0 +1,10 @@
+{
+    "id": "REDACTED",
+    "type": "position-event-v2",
+    "attributes": {
+        "position": {
+            "latitude": 3.000000,
+            "longitude": -3.000000
+        }
+    }
+}

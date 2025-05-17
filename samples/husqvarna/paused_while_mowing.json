@@ -4,8 +4,8 @@
     "attributes": {
         "mower": {
             "mode": "MAIN_AREA",
-            "activity": "MOWING",
-            "state": "IN_OPERATION",
+            "activity": "NOT_APPLICABLE",
+            "state": "PAUSED",
             "errorCode": 0
         }
     }
