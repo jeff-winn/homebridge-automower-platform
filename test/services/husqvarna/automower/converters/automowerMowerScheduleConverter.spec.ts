@@ -14,6 +14,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -80,6 +87,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -146,6 +160,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -200,6 +221,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -255,6 +283,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -310,6 +345,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -377,6 +419,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -444,6 +493,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -511,6 +567,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -578,6 +641,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -645,6 +715,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -712,6 +789,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -779,6 +863,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -846,6 +937,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -924,6 +1022,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -991,6 +1096,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1058,6 +1170,13 @@ describe('AutomowerScheduleConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1

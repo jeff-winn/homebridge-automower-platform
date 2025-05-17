@@ -293,6 +293,13 @@ describe('AutomowerClientImpl', () => {
                 calendar: {
                     tasks: []
                 },
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -395,6 +402,13 @@ describe('AutomowerClientImpl', () => {
                     calendar: {
                         tasks: []
                     },
+                    capabilities: {
+                        canConfirmError: false,
+                        headlights: true,
+                        position: true,
+                        stayOutZones: false,
+                        workAreas: false
+                    },
                     metadata: {
                         connected: true,
                         statusTimestamp: 1
@@ -471,6 +485,13 @@ describe('AutomowerClientImpl', () => {
                     calendar: {
                         tasks: []
                     },
+                    capabilities: {
+                        canConfirmError: false,
+                        headlights: true,
+                        position: true,
+                        stayOutZones: false,
+                        workAreas: false
+                    },
                     metadata: {
                         connected: true,
                         statusTimestamp: 1
@@ -518,6 +539,13 @@ describe('AutomowerClientImpl', () => {
                     },
                     calendar: {
                         tasks: []
+                    },
+                    capabilities: {
+                        canConfirmError: false,
+                        headlights: true,
+                        position: true,
+                        stayOutZones: false,
+                        workAreas: false
                     },
                     metadata: {
                         connected: true,

@@ -2,7 +2,7 @@ import { Mock, Times } from 'moq.ts';
 
 import * as model from '../../../../src/model';
 
-import { Activity, AutomowerClient, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
+import { Activity, AutomowerClient, HeadlightMode, InactiveReason, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
 import { NotAuthorizedError } from '../../../../src/errors/notAuthorizedError';
 import { AccessToken } from '../../../../src/model';
 import { AccessTokenManager } from '../../../../src/services/husqvarna/accessTokenManager';
@@ -57,6 +57,13 @@ describe('GetMowersServiceImpl', () => {
                 calendar: {
                     tasks: [ ]
                 },
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },                
                 metadata: {
                     connected: true,
                     statusTimestamp: 100
@@ -66,7 +73,10 @@ describe('GetMowersServiceImpl', () => {
                     errorCode: 0,
                     errorCodeTimestamp: 0,
                     mode: Mode.MAIN_AREA,
-                    state: State.IN_OPERATION
+                    state: State.IN_OPERATION,
+                    inactiveReason: InactiveReason.NONE,
+                    isErrorConfirmable: false,
+                    workAreaId: 0
                 },
                 planner: {
                     nextStartTimestamp: 0,
@@ -77,24 +87,35 @@ describe('GetMowersServiceImpl', () => {
                 },
                 positions: [ ],
                 settings: {
+                    dateTime: 0,
+                    timeZone: 'America/Detroit',
                     cuttingHeight: 1,
                     headlight: {
                         mode: HeadlightMode.ALWAYS_ON
                     }
                 },
                 statistics: {
+                    cuttingBladeUsageTime: 0,
+                    downTime: 0,
                     numberOfChargingCycles: 0,
                     numberOfCollisions: 0,
                     totalChargingTime: 0,
                     totalCuttingTime: 0,
+                    totalDriveDistance: 0,
                     totalRunningTime: 0,
-                    totalSearchingTime: 0
+                    totalSearchingTime: 0,
+                    upTime: 0
+                },
+                stayOutZones: {
+                    dirty: false,
+                    zones: []
                 },
                 system: {
                     model: 'hello 12345',
                     name: 'dobby',
                     serialNumber: 123456
-                }
+                },
+                workAreas: []
             }
         };
     

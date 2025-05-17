@@ -3,7 +3,7 @@ import { It, Mock, Times } from 'moq.ts';
 import * as model from '../../../../../src/model';
 
 import { Activity, HeadlightMode, Mode, Mower, OverrideAction, RestrictedReason, State } from '../../../../../src/clients/automower/automowerClient';
-import { StatusEvent, AutomowerEventTypes } from '../../../../../src/clients/automower/automowerEventStreamClient';
+import { AutomowerEventTypes, MowerEvent } from '../../../../../src/clients/automower/automowerEventStreamClient';
 import { PlatformLogger } from '../../../../../src/diagnostics/platformLogger';
 import { AutomowerMowerStateConverterImpl } from '../../../../../src/services/husqvarna/automower/converters/automowerMowerStateConverter';
 
@@ -18,35 +18,21 @@ describe('AutomowerMowerStateConverterImpl', () => {
     });    
 
     it('should return parked and idle when parked and outside of scheduled window', () => {
-        const mower: StatusEvent = {
+        const event: MowerEvent = {
             id: '12345',
-            type: AutomowerEventTypes.STATUS,
-            attributes:{
-                battery:{
-                    batteryPercent: 82
-                },
-                mower:{
+            type: AutomowerEventTypes.MOWER,
+            attributes: {                
+                mower: {
                     mode: Mode.MAIN_AREA, // Waiting for the next scheduled run, not actually mowing.
                     activity: Activity.PARKED_IN_CS,
                     state: State.RESTRICTED, // The mower is outside of the cutting schedule.
                     errorCode: 0,
                     errorCodeTimestamp: 0
-                },
-                planner:{
-                    nextStartTimestamp: 1723075200000,
-                    override:{
-                        action: OverrideAction.NOT_ACTIVE
-                    },
-                    restrictedReason: RestrictedReason.WEEK_SCHEDULE
-                },
-                metadata:{
-                    connected: true,
-                    statusTimestamp: 1723071500034
                 }
             }
         };
 
-        const result = target.convertStatusAttributes(mower.attributes);
+        const result = target.convertMowerState(event.attributes.mower);
 
         expect(result).toBeDefined();
         expect(result.activity).toEqual(model.Activity.PARKED);
@@ -65,6 +51,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
                 },
                 battery: {
                     batteryPercent: 69
+                },
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
                 },
                 mower: {
                     mode: Mode.MAIN_AREA,
@@ -140,6 +133,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -209,6 +209,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -278,6 +285,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -347,6 +361,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -415,6 +436,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -484,6 +512,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -553,6 +588,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -622,6 +664,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -691,6 +740,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -761,6 +817,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -831,6 +894,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -899,6 +969,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -968,6 +1045,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1037,6 +1121,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1105,6 +1196,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1173,6 +1271,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1241,6 +1346,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1309,6 +1421,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1377,6 +1496,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1447,6 +1573,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1518,6 +1651,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1587,6 +1727,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1
@@ -1655,6 +1802,13 @@ describe('AutomowerMowerStateConverterImpl', () => {
             id: '12345',
             type: 'mower',
             attributes: {
+                capabilities: {
+                    canConfirmError: false,
+                    headlights: true,
+                    position: true,
+                    stayOutZones: false,
+                    workAreas: false
+                },
                 metadata: {
                     connected: true,
                     statusTimestamp: 1

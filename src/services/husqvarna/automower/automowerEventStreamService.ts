@@ -79,7 +79,6 @@ export class AutomowerEventStreamService extends AbstractEventStreamService<Auto
         this.lastPlannerEvents[event.id] = event;
 
         await this.raiseMowerScheduleChangedEventIfNeeded(event.id);
-        await this.raiseMowerStatusChangedEventIfNeeded(event.id);
     }
 
     protected async onCalendarEvent(event: CalendarEvent): Promise<void> {

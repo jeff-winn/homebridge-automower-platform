@@ -339,7 +339,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         const id = '12345';
         const event: AutomowerEvent = {
             id: id,
-            type: AutomowerEventTypes.UNKNOWN
+            type: AutomowerEventTypes.UNDEFINED
         };
 
         const payload = Buffer.from(JSON.stringify(event));
@@ -356,7 +356,7 @@ describe('AutomowerEventStreamClientImpl', () => {
         const id = '12345';
         const event: AutomowerEvent = {
             id: id,
-            type: AutomowerEventTypes.UNKNOWN
+            type: AutomowerEventTypes.UNDEFINED
         };
 
         const payload = Buffer.from(JSON.stringify(event));

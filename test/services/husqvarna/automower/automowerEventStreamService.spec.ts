@@ -2,8 +2,10 @@ import { It, Mock, Times } from 'moq.ts';
 
 import * as model from '../../../../src/model';
 
-import { Activity, HeadlightMode, Mode, MowerState, OverrideAction, RestrictedReason, State } from '../../../../src/clients/automower/automowerClient';
-import { AutomowerEventTypes, PositionsEvent, SettingsEvent, StatusEvent } from '../../../../src/clients/automower/automowerEventStreamClient';
+import { Activity, Calendar, HeadlightMode, InactiveReason, Mode, MowerState, OverrideAction, Planner, RestrictedReason, SeverityLevel, State } from '../../../../src/clients/automower/automowerClient';
+import { 
+    AutomowerEventTypes, BatteryEvent, CalendarEvent, CuttingHeightEvent, MowerEvent, PlannerEvent, HeadlightsEvent, MessageEvent, PositionEvent
+ } from '../../../../src/clients/automower/automowerEventStreamClient';
 import { PlatformLogger } from '../../../../src/diagnostics/platformLogger';
 import { BadCredentialsError } from '../../../../src/errors/badCredentialsError';
 import { Timer } from '../../../../src/primitives/timer';
@@ -274,39 +276,182 @@ describe('AutomowerEventStreamService', () => {
         expect(target.unsafeGetLastEventReceived()).toBeUndefined();
     });
 
-    it('should do nothing when settings-event is received', async () => {
-        const e: SettingsEvent = {
+    it('should do nothing when headlights event is received', async () => {
+        const e: HeadlightsEvent = {
             id: '12345',
-            type: AutomowerEventTypes.SETTINGS,
-            attributes: { }
+            type: AutomowerEventTypes.HEADLIGHTS,
+            attributes: { 
+                headlight: {
+                    mode: HeadlightMode.ALWAYS_ON
+                }
+            }
         };
 
         await target.unsafeEventReceived(e);
     });
 
-    it('should do nothing when positions-event is received', async () => {
-        const e: PositionsEvent = {
+    it('should do nothing when message event is received', async () => {
+        const e: MessageEvent = {
             id: '12345',
-            type: AutomowerEventTypes.POSITIONS,
+            type: AutomowerEventTypes.HEADLIGHTS,
             attributes: { 
-                positions: []
+                message: {
+                    code: 1,
+                    latitude: 1,
+                    longitude: 1,
+                    severity: SeverityLevel.INFO,
+                    time: 1
+                }
+            }
+        };
+
+        await target.unsafeEventReceived(e);
+    });
+
+    it('should do nothing when position event is received', async () => {
+        const e: PositionEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.POSITION,
+            attributes: {
+                position: {
+                    latitude: 1,
+                    longitude: 1
+                }
             }
         };
 
         await target.unsafeEventReceived(e);
     });   
-    
-    it('should run the callback when settings-event is received', async () => {
-        const event: SettingsEvent = {
+
+    it('should run the callback when battery event is received', async () => {
+        const event: BatteryEvent = {
             id: '12345',
-            type: AutomowerEventTypes.SETTINGS,
+            type: AutomowerEventTypes.BATTERY,
+            attributes: {
+                battery: {
+                    batteryPercent: 100
+                }
+            }
+        };
+
+        let executed = false;
+        target.setOnStatusEventCallback(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        await expect(target.unsafeEventReceived(event)).resolves.toBeUndefined();
+
+        expect(executed).toBeTruthy();
+    });
+    
+    it('should run the callback once both calendar and planner events have been received', async () => {
+        const calendar: Calendar = {
+            tasks: []
+        };
+
+        const event1: CalendarEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.CALENDAR,
+            attributes: {
+                calendar: calendar
+            }
+        };
+
+        let executed = false;
+        target.setOnSettingsEventCallback(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        await expect(target.unsafeEventReceived(event1)).resolves.toBeUndefined();
+
+        expect(executed).toBeFalsy();
+
+        const planner: Planner = {
+            nextStartTimestamp: 0,
+            override: {
+                action: OverrideAction.NOT_ACTIVE
+            },
+            restrictedReason: RestrictedReason.NONE,
+            externalReason: 1
+        };
+
+        scheduleConverter.setup(o => o.convertPlannerAndCalendar(planner, calendar)).returns({
+            runContinuously: true,
+            runInFuture: true,
+            runOnSchedule: true
+        });
+
+        const event2: PlannerEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.PLANNER,
+            attributes: {
+                planner: planner
+            }
+        };
+
+        await expect(target.unsafeEventReceived(event2)).resolves.toBeUndefined();
+
+        expect(executed).toBeTruthy();
+    });
+
+    it('should not run the callback when only the calendar event is received', async () => {
+        const event: CalendarEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.CALENDAR,
             attributes: {
                 calendar: {
                     tasks: []
-                },
-                cuttingHeight: 10,
-                headlight: {
-                    mode: HeadlightMode.EVENING_ONLY
+                }
+            }
+        };
+
+        let executed = false;
+        target.setOnSettingsEventCallback(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        await expect(target.unsafeEventReceived(event)).resolves.toBeUndefined();
+
+        expect(executed).toBeFalsy();
+    });
+
+    it('should not run the callback when only the planner event is received', async () => {
+        const event: PlannerEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.PLANNER,
+            attributes: {
+                planner: {
+                    nextStartTimestamp: 0,
+                    override: {
+                        action: OverrideAction.NOT_ACTIVE
+                    },
+                    restrictedReason: RestrictedReason.NONE,
+                    externalReason: 1
+                }
+            }
+        };
+
+        let executed = false;
+        target.setOnSettingsEventCallback(() => {
+            executed = true;
+            return Promise.resolve(undefined);
+        });
+
+        await expect(target.unsafeEventReceived(event)).resolves.toBeUndefined();
+
+        expect(executed).toBeFalsy();
+    });
+
+    it('should run the callback when cutting height event is received', async () => {
+        const event: CuttingHeightEvent = {
+            id: '12345',
+            type: AutomowerEventTypes.CUTTING_HEIGHT,
+            attributes: {
+                cuttingHeight: {
+                    height: 1
                 }
             }
         };
@@ -322,38 +467,27 @@ describe('AutomowerEventStreamService', () => {
         expect(executed).toBeTruthy();
     });
 
-    it('should run the callback when status-event is received', async () => {
-        const mowerState: MowerState = {
+    it('should run the callback when mower event is received', async () => {
+        const state: MowerState = {
             activity: Activity.MOWING,
             errorCode: 0,
+            inactiveReason: InactiveReason.NONE,
             errorCodeTimestamp: 0,
             mode: Mode.MAIN_AREA,
-            state: State.IN_OPERATION
+            state: State.IN_OPERATION,
+            isErrorConfirmable: false,
+            workAreaId: 0
         };
 
-        const event: StatusEvent = {
+        const event: MowerEvent = {
             id: '12345',
-            type: AutomowerEventTypes.STATUS,
+            type: AutomowerEventTypes.MOWER,
             attributes: {
-                battery: {
-                    batteryPercent: 100
-                },
-                metadata: {
-                    connected: true,
-                    statusTimestamp: 0
-                },
-                mower: mowerState,
-                planner: {
-                    nextStartTimestamp: 0,
-                    override: {
-                        action: OverrideAction.NO_SOURCE
-                    },
-                    restrictedReason: RestrictedReason.NOT_APPLICABLE
-                }
+                mower: state
             }
         };
 
-        stateConverter.setup(o => o.convertStatusAttributes(event.attributes)).returns({
+        stateConverter.setup(o => o.convertMowerState(state)).returns({
             activity: model.Activity.MOWING,
             state: model.State.IN_OPERATION
         });
@@ -374,8 +508,8 @@ describe('AutomowerEventStreamService', () => {
         
         await target.unsafeEventReceived({
             id: '12345',
-            type: AutomowerEventTypes.UNKNOWN
-        });        
+            type: AutomowerEventTypes.UNDEFINED
+        });
 
         log.verify(o => o.warn(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
     });
