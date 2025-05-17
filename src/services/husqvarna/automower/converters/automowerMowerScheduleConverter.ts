@@ -1,6 +1,6 @@
 import * as model from '../../../../model';
 
-import { Calendar, Mower, Planner, RestrictedReason, Task } from '../../../../clients/automower/automowerClient';
+import { Calendar, Mower, Planner, RestrictedReason, CalendarTask } from '../../../../clients/automower/automowerClient';
 
 /**
  * A mechanism which converts a {@link Mower} to a {@link model.MowerSchedule} instance.
@@ -64,11 +64,11 @@ export class AutomowerMowerScheduleConverterImpl implements AutomowerMowerSchedu
         return this.isAlwaysRunTask(task);
     }
 
-    private isAnyDayOfWeekTask(task: Task): boolean {
+    private isAnyDayOfWeekTask(task: CalendarTask): boolean {
         return task.sunday || task.monday || task.tuesday || task.wednesday || task.thursday || task.friday || task.saturday;
     }
 
-    private isAlwaysRunTask(task: Task): boolean {
+    private isAlwaysRunTask(task: CalendarTask): boolean {
         return task.start === 0 && task.duration === 1440 && 
             task.sunday && task.monday && task.tuesday && task.wednesday && task.thursday && task.friday && task.saturday;
     }
