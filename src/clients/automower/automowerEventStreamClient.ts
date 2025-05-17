@@ -2,7 +2,7 @@ import { PlatformLogger } from '../../diagnostics/platformLogger';
 import { AccessToken } from '../../model';
 import { WebSocketWrapper } from '../../primitives/webSocketWrapper';
 import { AbstractEventStreamClient, EventStreamClient } from '../eventStreamClient';
-import { Calendar, Headlight, Position, StatusAttributes } from './automowerClient';
+import { Battery, Calendar, CuttingHeight, Headlight, Message, MowerState, Planner, Position } from './automowerClient';
 
 /**
  * Describes a connected event.
@@ -24,39 +24,122 @@ export interface AutomowerEvent {
  * Describes the automower event types.
  */
 export enum AutomowerEventTypes {
-    UNKNOWN = 'unknown-event',
-    STATUS = 'status-event',
-    POSITIONS = 'positions-event',
-    SETTINGS = 'settings-event'
+    /**
+     * An undefined event type.
+     */
+    UNDEFINED = '',
+    
+    /**
+    * Occurs when the battery percent is updated. 
+    */
+    BATTERY = 'battery-event-v2',
+
+    /**
+     * Occurs when the cutting height is updated.
+     */
+    CUTTING_HEIGHT = 'cuttingHeight-event-v2',
+
+    /**
+     * Occurs when the headlight mode is updated.
+     */
+    HEADLIGHTS = 'headlights-event-v2',
+
+    /**
+     * Occurs when a new message is added.
+     */
+    MESSAGE = 'message-event-v2',
+
+    /**
+     * Occurs when the mower status is updated.
+     */
+    MOWER = 'mower-event-v2',
+
+    /**
+     * Occurs when the planner is updated.
+     */
+    PLANNER = 'planner-event-v2',
+
+    /**
+     * Occurs when a new position is added.
+     */
+    POSITION = 'position-event-v2',
+
+    /**
+     * Occurs when the calendar is updated or a new task is added.
+     */
+    CALENDAR = 'calendar-event-v2'    
 }
 
 /**
- * Describes a status event.
+ * Describes a battery event.
  */
-export interface StatusEvent extends AutomowerEvent {
-    attributes: StatusAttributes;
-}
-
-/**
- * Describes a positions event.
- */
-export interface PositionsEvent extends AutomowerEvent {
+export interface BatteryEvent extends AutomowerEvent {
     attributes: {
-        positions: Position[];
-    };
+        battery: Battery;
+    }
 }
 
 /**
- * Describes a settings event.
- * <p>
- * This event occurs when the settings have been modified on a mower.
+ * Describes a calendar event.
  */
-export interface SettingsEvent extends AutomowerEvent {
+export interface CalendarEvent extends AutomowerEvent {
     attributes: {
-        calendar?: Calendar;
-        cuttingHeight?: number;
-        headlight?: Headlight;
-    };
+        calendar: Calendar;
+    }
+}
+
+/**
+ * Describes a cutting height event.
+ */
+export interface CuttingHeightEvent extends AutomowerEvent {
+    attributes: {
+        cuttingHeight: CuttingHeight;
+    }   
+}
+
+/**
+ * Describes a headlights event.
+ */
+export interface HeadlightsEvent extends AutomowerEvent {
+    attributes: {
+        headlight: Headlight;
+    }
+}
+
+/**
+ * Describes a message event.
+ */
+export interface MessageEvent extends AutomowerEvent {
+    attributes: {
+        message: Message;
+    }
+}
+
+/**
+ * Describes a mower event.
+ */
+export interface MowerEvent extends AutomowerEvent {
+    attributes: {
+        mower: MowerState;
+    }
+}
+
+/**
+ * Describes a planner event.
+ */
+export interface PlannerEvent extends AutomowerEvent {
+    attributes: {
+        planner: Planner;
+    }
+}
+
+/**
+ * Describes a position event.
+ */
+export interface PositionEvent extends AutomowerEvent {
+    attributes: {
+        position: Position;
+    }
 }
 
 /**
@@ -83,7 +166,7 @@ export class AutomowerEventStreamClientImpl extends AbstractEventStreamClient im
     private messageReceivedCallback?: (payload: AutomowerEvent) => Promise<void>;
     private connectionId?: string;
     
-    public constructor(private baseUrl: string, log: PlatformLogger) { 
+    public constructor(private readonly baseUrl: string, readonly log: PlatformLogger) { 
         super(log);
     }
 

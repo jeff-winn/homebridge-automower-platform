@@ -9,28 +9,60 @@ import { FetchClient, Response } from '../fetchClient';
 export interface Mower {
     type: string;
     id: string;    
-    attributes: MowerAttributes;
+    attributes: {
+        system: System;
+        battery: Battery;
+        capabilities: Capabilities;
+        mower: MowerState;
+        calendar: Calendar;
+        planner: Planner;
+        metadata: Metadata;
+        positions: Position[];
+        settings: Settings;
+        statistics: Statistics;
+        stayOutZones?: StayOutZones;
+        workAreas?: WorkArea[];
+    }
 }
 
 /**
- * Describes the mower attributes.
+ * Describes the stay out zones for a particular mower.
  */
-export interface MowerAttributes extends StatusAttributes {
-    system: Device;
-    calendar: Calendar;
-    positions: Position[];
-    settings: Settings;
-    statistics: Statistics;
+export interface StayOutZones {
+    dirty: boolean;
+    zones: StayOutZone[];
 }
 
 /**
- * Describes status attributes.
+ * Describes a stay out zone.
  */
-export interface StatusAttributes {
-    battery: Battery;
-    mower: MowerState;
-    planner: Planner;
-    metadata: MowerMetadata;
+export interface StayOutZone {
+    id: string;
+    name: string;
+    enabled: boolean;
+}
+
+/**
+ * Describes a work area.
+ */
+export interface WorkArea {
+    workAreaId: number;
+    name: string;
+    cuttingHeight: number;
+    enabled: boolean;
+    progress: number;
+    lastTimeCompleted: number;
+}
+
+/**
+ * Describes the capabilities of a mower.
+ */
+export interface Capabilities {
+    headlights: boolean,
+    workAreas: boolean
+    position: boolean,
+    canConfirmError: boolean;
+    stayOutZones: boolean,
 }
 
 /**
@@ -44,13 +76,13 @@ export interface Battery {
  * Describes the calendar.
  */
 export interface Calendar {
-    tasks: Task[];
+    tasks: CalendarTask[];
 }
 
 /**
  * Describes the device.
  */
-export interface Device {
+export interface System {
     name: string;
     model: string;
     serialNumber: number;
@@ -67,9 +99,24 @@ export interface Headlight {
  * Defines the headlight modes.
  */
 export enum HeadlightMode {
+    /**
+     * Always on.
+     */
     ALWAYS_ON = 'ALWAYS_ON',
+    
+    /**
+     * Always off.
+     */
     ALWAYS_OFF = 'ALWAYS_OFF',
+
+    /**
+     * Only in the evening.
+     */
     EVENING_ONLY = 'EVENING_ONLY',
+
+    /**
+     * In evening and night.
+     */
     EVENING_AND_NIGHT = 'EVENING_AND_NIGHT'
 }
 
@@ -79,14 +126,34 @@ export enum HeadlightMode {
 export interface Settings {
     cuttingHeight: number;
     headlight: Headlight;
+    dateTime?: number;
+    timeZone?: string;
+}
+
+/**
+ * Describes the cutting height.
+ */
+export interface CuttingHeight {
+    height: number;
 }
 
 /**
  * Describes the additional metadata about a mower.
  */
-export interface MowerMetadata {
+export interface Metadata {
     connected: boolean;
     statusTimestamp: number;
+}
+
+/**
+ * Describes a message.
+ */
+export interface Message {
+    time: number;
+    code: number;
+    severity: SeverityLevel;
+    latitude: number,
+    longitude: number;
 }
 
 /**
@@ -95,9 +162,25 @@ export interface MowerMetadata {
 export interface MowerState {
     mode: Mode;
     activity: Activity;
+    inactiveReason?: InactiveReason;
     state: State;
     errorCode: number;
-    errorCodeTimestamp: number;
+    errorCodeTimestamp?: number;
+    isErrorConfirmable?: boolean;
+    workAreaId?: number;
+}
+
+/**
+ * Defines the severity of the message.
+ */
+export enum SeverityLevel {
+    FATAL = 'FATAL',
+    ERROR = 'ERROR',
+    WARNING = 'WARNING',
+    INFO = 'INFO',
+    DEBUG = 'DEBUG',
+    SW = 'SW',
+    UNKNOWN = 'UNKNOWN'
 }
 
 /**
@@ -110,6 +193,11 @@ export enum Mode {
     MAIN_AREA = 'MAIN_AREA',
 
     /**
+     * Same as main area, but shorter times (No blade operation)
+     */
+    DEMO = 'DEMO',
+
+    /**
      * Mower is in secondary area. Schedule is overridden with forced park or forced mowing. Mower will mow for request time or untill the battery runs out.
      */
     SECONDARY_AREA = 'SECONDARY_AREA',
@@ -117,17 +205,17 @@ export enum Mode {
     /**
      * Mower goes home and parks forever. Week schedule is not used. Cannot be overridden with forced mowing.
      */
-    HOME = 'HOME',
-
-    /**
-     * Same as main area, but shorter times. No blade operation.
-     */
-    DEMO = 'DEMO',
+    HOME = 'HOME',    
 
     /**
      * Unknown mode.
      */
-    UNKNOWN = 'UNKNOWN'
+    UNKNOWN = 'UNKNOWN',
+
+    /**
+     * Point of interest.
+     */
+    POI = 'POI'
 }
 
 /**
@@ -135,42 +223,42 @@ export enum Mode {
  */
 export enum Activity {
     /**
-     * Unknown activity.
+     * Unknown.
      */
     UNKNOWN = 'UNKNOWN',
     
     /**
-     * Manual start required in mower.
+     *  Not applicable.
      */
     NOT_APPLICABLE = 'NOT_APPLICABLE',
 
     /**
-     * Mower is mowing lawn. If in demo mode the blades are not in operation.
+     * Mower is currently mowing. If in demo mode the blades are not in operation.
      */
     MOWING = 'MOWING',
 
     /**
-     * Mower is going home to the charging station.
+     * Mower is currently going home to the charging station.
      */
     GOING_HOME = 'GOING_HOME',
 
     /**
-     * Mower is charging in station due to low battery.
+     * Mower is currently charging. Note that the mower will only report the activity charging if it was its own decision to go home and charge. I.e., it would like to mow but is charging because it has to. If the mower is restricted it may very well charge when in the charging station, but the activity will be Parked.
      */
     CHARGING = 'CHARGING',
     
     /**
-     * Mower is leaving the charging station.
+     * Mower is currently leaving the charging station and is heading out to a starting point.
      */
     LEAVING = 'LEAVING',
 
     /**
-     * Mower is parked in charging station.
+     * Mower is parked in the charging station.
      */
     PARKED_IN_CS = 'PARKED_IN_CS',
 
     /**
-     * Mower has stopped. Needs manual action to resume.
+     * Mower has stopped in garden, for instance in manual mode when the task has been completed.
      */
     STOPPED_IN_GARDEN = 'STOPPED_IN_GARDEN'
 }
@@ -249,6 +337,7 @@ export interface Planner {
         action?: OverrideAction;
     };
     restrictedReason?: RestrictedReason;
+    externalReason?: number;
 }
 
 /**
@@ -269,11 +358,39 @@ export enum RestrictedReason {
  * Defines the possible reasons mower behavior may be overridden.
  */
 export enum OverrideAction {
+    /**
+     * Not active.
+     */
     NOT_ACTIVE = 'NOT_ACTIVE',
+
+    /**
+     * Undocumented.
+     */
     NO_SOURCE = 'NO_SOURCE',
+    
+    /**
+     * Force park until next start means that no more mowing will be done within the current task. Operation will be resumed at the start of the next task instead.
+     */
     FORCE_PARK = 'FORCE_PARK',
+
+    /**
+     * Force the mower to mow for the specified amount of time. When the time has elapsed, the override is removed and the Planner reverts to the Calendar instead.
+     */
     FORCE_MOW = 'FORCE_MOW',
+
+    /**
+     * Undocumented.
+     */
     WEEK_TIMER = 'WEEK_TIMER'
+}
+
+/**
+ * Defines the reasons a mower may be inactive.
+ */
+export enum InactiveReason {
+    NONE = 'NONE',
+    PLANNING = 'PLANNING',
+    SEARCHING_FOR_SATELLITES = 'SEARCHING_FOR_SATELLITES'
 }
 
 /**
@@ -287,9 +404,10 @@ export interface Position {
 /**
  * Describes a task for the mower.
  */
-export interface Task {
+export interface CalendarTask {
     start: number;
     duration: number;
+    workAreaId?: number;
     monday: boolean;
     tuesday: boolean;
     wednesday: boolean;
@@ -303,12 +421,16 @@ export interface Task {
  * Describes the statistics for the mower.
  */
 export interface Statistics {
+    cuttingBladeUsageTime?: number;
+    downTime?: number;
     numberOfChargingCycles: number;
     numberOfCollisions: number;
     totalChargingTime: number;
     totalCuttingTime: number;
+    totalDriveDistance?: number;
     totalRunningTime: number;
     totalSearchingTime: number;
+    upTime?: number;
 }
 
 /**
@@ -388,8 +510,8 @@ export interface Error {
 }
 
 export class AutomowerClientImpl implements AutomowerClient {
-    public constructor(private appKey: string | undefined, private baseUrl: string, private fetch: FetchClient, 
-        private errorFactory: ErrorFactory) { }    
+    public constructor(private readonly appKey: string | undefined, private readonly baseUrl: string, 
+        private readonly fetch: FetchClient, private readonly errorFactory: ErrorFactory) { }    
 
     public getApplicationKey(): string | undefined {
         return this.appKey;
