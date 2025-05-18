@@ -14,7 +14,7 @@ Please follow the instructions below:
    - Find the plug-in within your installed list of plug-ins.
    - Click the '...' icon.
    - Click `Manage Version`
-   - From the drop down, select the next version you wish to install. The 'preview' builds are what changes have been actively made since the last release.
+   - From the dialog that is displayed, select the next version you wish to install. The 'next' builds are what changes have been actively made since the last release.
    - Click the `Install` button.
 4. Restart Homebridge.
 
