@@ -17,10 +17,6 @@ The following hardware requirements are necessary for the proper operation of th
 - The Automower *must* have an Automower Connect module installed, Bluetooth only models will require an upgrade. For more information, please contact your local Husqvarna Automower dealer.
 - The Sileno *must* be a Smart series mower which you can control remotely via an app while not near the device, Bluetooth only models are not supported.
 
-## Known Issues
-- Starting with iOS 16, Apple has changed their naming scheme within HomeKit such that all services for an accessory use the accessory name. If all the switches and sensors are named after your mower, and you are using 1.4.0 or later of the plug-in, removing the mower using the instructions found [HERE](https://jeff-winn.github.io/homebridge-automower-platform/extras/removing-mower) should correct the issue.
-- The Husqvarna NERA series mowers with the EPOS plugin have partial compatibility with the plugin. See [#365](https://github.com/jeff-winn/homebridge-automower-platform/issues/365) for more information.
-
 ## Supported Capabilities
 Be advised, the capabilities mentioned below vary between product lines by Husqvarna. Depending on the type of robotic mower you are using, different capabilities will be provided by the plug-in.
 
